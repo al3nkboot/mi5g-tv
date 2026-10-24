@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "sequence": 3,
+  "sequence": 4,
   "generated": "2026-10-24T12:00:00Z",
   "expires": "2027-01-22T12:00:00Z",
   "modules": [
@@ -19,13 +19,13 @@
       "artwork": null,
       "versions": [
         {
-          "version_code": 1,
-          "version_name": "1.0.0",
+          "version_code": 2,
+          "version_name": "1.1.0",
           "released": "2026-10-24T12:00:00Z",
           "apk": {
-            "url": "https://github.com/al3nkboot/mi5g-tv/releases/download/v1.2.0/mi5g-tv-dns.apk",
-            "size": 16650,
-            "sha256": "b372ebe9e378090cc6198657689966334cec9ea501734698775ef5bd8903c739",
+            "url": "https://github.com/al3nkboot/mi5g-tv/releases/download/v1.3.1/mi5g-tv-dns.apk",
+            "size": 74432,
+            "sha256": "570a5a01f20a3ad8fa94a28e523a3c3519205f620c36bb0324713ec9eb18efa0",
             "signer_sha256": "c1f317965f154fe5e79fe7483abd5dd5dec7df57d87f3a645a5fd12f39a5480c"
           },
           "permissions": [
@@ -61,13 +61,13 @@
       "artwork": null,
       "versions": [
         {
-          "version_code": 1,
-          "version_name": "1.0.0",
+          "version_code": 2,
+          "version_name": "1.1.0",
           "released": "2026-10-24T12:00:00Z",
           "apk": {
-            "url": "https://github.com/al3nkboot/mi5g-tv/releases/download/v1.2.0/mi5g-tv-prayer.apk",
-            "size": 20746,
-            "sha256": "37a23d6e74544a280129ae82f0152c4baa5d38f9b0574ad04a34b04be0785f3d",
+            "url": "https://github.com/al3nkboot/mi5g-tv/releases/download/v1.3.1/mi5g-tv-prayer.apk",
+            "size": 78527,
+            "sha256": "b1faebab37f7a7ed7046dcb140a93b75634572805efa3bb27a13b15eee22554c",
             "signer_sha256": "c1f317965f154fe5e79fe7483abd5dd5dec7df57d87f3a645a5fd12f39a5480c"
           },
           "permissions": [
@@ -103,13 +103,13 @@
       "artwork": null,
       "versions": [
         {
-          "version_code": 1,
-          "version_name": "1.0.0",
+          "version_code": 2,
+          "version_name": "1.1.0",
           "released": "2026-10-24T12:00:00Z",
           "apk": {
-            "url": "https://github.com/al3nkboot/mi5g-tv/releases/download/v1.2.0/mi5g-tv-speedtest.apk",
-            "size": 20746,
-            "sha256": "c33907f361dc60fdace8a0b49af7d44ad303d674de5e8c84c8b62905ca5de3f9",
+            "url": "https://github.com/al3nkboot/mi5g-tv/releases/download/v1.3.1/mi5g-tv-speedtest.apk",
+            "size": 82626,
+            "sha256": "d0b0c6762941498110167ca054b102301ff859c36c248aa98dc25757b37b4b5f",
             "signer_sha256": "c1f317965f154fe5e79fe7483abd5dd5dec7df57d87f3a645a5fd12f39a5480c"
           },
           "permissions": [
@@ -145,13 +145,13 @@
       "artwork": null,
       "versions": [
         {
-          "version_code": 1,
-          "version_name": "1.0.0",
+          "version_code": 2,
+          "version_name": "1.1.0",
           "released": "2026-10-24T12:00:00Z",
           "apk": {
-            "url": "https://github.com/al3nkboot/mi5g-tv/releases/download/v1.2.0/mi5g-tv-files.apk",
-            "size": 16650,
-            "sha256": "de281d4c0fd0c649e0e1534183e413015dbe29075f26f638d09afb9cc82efee8",
+            "url": "https://github.com/al3nkboot/mi5g-tv/releases/download/v1.3.1/mi5g-tv-files.apk",
+            "size": 70335,
+            "sha256": "e119611de04ea185d44f541884436274acae40d18737a053555f0769afe985cc",
             "signer_sha256": "c1f317965f154fe5e79fe7483abd5dd5dec7df57d87f3a645a5fd12f39a5480c"
           },
           "permissions": [

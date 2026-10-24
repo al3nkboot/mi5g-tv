@@ -470,6 +470,10 @@ com.meetingroom	Meeting room app	Preloaded meeting room app	preloads
 com.megogo.application	MEGOGO	Streaming app	streaming
 com.mgmedia.androidApp	CHILI	Film rental and streaming app	streaming
 com.mi.bluetooth	Mi Bluetooth	Remote and Bluetooth pairing	system
+com.midroid.mi5gtv.dns	مانع الإعلانات	حجب الإعلانات والحماية العائلية على التلفاز	other
+com.midroid.mi5gtv.files	مدير الملفات	تصفح مجلد التنزيلات والذاكرة وملفات USB	other
+com.midroid.mi5gtv.prayer	الطقس والصلاة	مواقيت الصلاة وحالة الطقس للمدن العربية	other
+com.midroid.mi5gtv.speedtest	قياس السرعة	فحص سرعة الإنترنت وجودة بث 4K على التلفاز	other
 com.mitv.ABUpdateStatus	Update status	Shows the progress of a firmware update	updates
 com.mitv.alarmcenter	Xiaomi alarms	Reminders and alarms, also those set by XiaoAI voice	preloads
 com.mitv.cloudcontrol	Xiaomi cloud control	Lets Xiaomi push apps to the TV remotely	ads

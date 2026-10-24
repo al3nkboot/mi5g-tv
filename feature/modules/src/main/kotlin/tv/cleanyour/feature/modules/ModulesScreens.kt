@@ -255,6 +255,7 @@ internal fun DetailScreen(d: ModuleDetail, tvName: String, onIntent: (ModulesInt
         bottomBar = when {
             paused && d.installed -> ({ PrimaryButton(stringResource(R.string.modules_remove), { onIntent(ModulesIntent.Remove(m.id)) }) })
             !paused && !d.installed -> ({ PrimaryButton(msg(R.string.module_add, "tv" to tvName), { onIntent(ModulesIntent.Add(m.id)) }) })
+            !paused && d.installed && m.pkg.value.startsWith("com.midroid.mi5gtv.") -> ({ PrimaryButton(stringResource(R.string.modules_update), { onIntent(ModulesIntent.Update(m.id)) }) })
             else -> null
         }) {
         val oneLine = localizedOneLine(m.id, m.oneLine)

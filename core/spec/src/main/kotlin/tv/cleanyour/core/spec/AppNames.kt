@@ -41,7 +41,11 @@ object AppNames {
         "sa.sba.aloula" to "الأولى (Aloula)",
         "ae.dmi.awaan" to "أوان (Awaan)",
         "com.anghami" to "أنغامي (Anghami)",
-        "com.bein.connect" to "beIN CONNECT",
+                "com.bein.connect" to "beIN CONNECT",
+        "com.midroid.mi5gtv.prayer" to "الطقس والصلاة",
+        "com.midroid.mi5gtv.files" to "مدير الملفات",
+        "com.midroid.mi5gtv.speedtest" to "قياس السرعة",
+        "com.midroid.mi5gtv.dns" to "مانع الإعلانات",
     )
 
     fun fromPackage(pkg: PackageName): String {

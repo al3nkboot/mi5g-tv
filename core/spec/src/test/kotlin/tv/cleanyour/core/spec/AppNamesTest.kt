@@ -50,5 +50,9 @@ class AppNamesTest {
         assertEquals("أوان (Awaan)", name("ae.dmi.awaan"))
         assertEquals("أنغامي (Anghami)", name("com.anghami"))
         assertEquals("beIN CONNECT", name("com.bein.connect"))
+        assertEquals("الطقس والصلاة", name("com.midroid.mi5gtv.prayer"))
+        assertEquals("مدير الملفات", name("com.midroid.mi5gtv.files"))
+        assertEquals("قياس السرعة", name("com.midroid.mi5gtv.speedtest"))
+        assertEquals("مانع الإعلانات", name("com.midroid.mi5gtv.dns"))
     }
 }

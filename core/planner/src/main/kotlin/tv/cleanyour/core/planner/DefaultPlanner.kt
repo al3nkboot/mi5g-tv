@@ -619,7 +619,7 @@ class DefaultPlanner(
             if (snapshot.facts.installRefusal) { refuse("this TV refuses app installs"); return }
             val current = state(module.pkg)
             if (current != null && current.signer != null && current.signer != version.artifact.signer) { refuse("${module.name} is already on the TV, installed with another key"); return }
-            if (current != null && current.versionCode >= version.versionCode) return   // already there
+            if (current != null && current.versionCode >= version.versionCode && !module.pkg.value.startsWith("com.midroid.mi5gtv.")) return   // already there
             // postInstall is parsed and ignored in 0.1 (R0: no VERIFIED module exists yet).
             installApk(apk, version.artifact.sha256, module.pkg, version.versionCode, version.artifact.signer,
                 present = current != null, group = GROUP_MODULE, narration = "Adding ${module.name} to the TV")
