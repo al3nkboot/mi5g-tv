@@ -19,6 +19,7 @@ import tv.cleanyour.core.model.SHA256_RE
 import tv.cleanyour.core.model.SettingKey
 import tv.cleanyour.core.model.Sha256
 import tv.cleanyour.core.model.ShellLine
+import tv.cleanyour.core.model.TvKeyEvent
 import java.security.MessageDigest
 
 // The one renderer (SECURITY 3, PRODUCT-SPEC 5.2). An op is a verb with typed arguments; this
@@ -342,8 +343,49 @@ class ShellRenderer(private val watchdogVariant: WatchdogVariant = WatchdogVaria
         const val MAX_APK_BYTES = 200L * 1024 * 1024
         const val MAX_PNG_BYTES = 2L * 1024 * 1024
 
+        const val MAX_INPUT_TEXT_LEN = 500
+
         fun sha256Of(bytes: ByteArray): Sha256 =
             Sha256(MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") { "%02x".format(it) })
+
+        fun keyEventLine(key: TvKeyEvent): ShellLine =
+            ShellLine(ShellTokens.line(listOf("input", "keyevent", key.keyCode.toString())))
+
+        fun openSettingsLine(): ShellLine =
+            ShellLine(ShellTokens.line(listOf(AM, "start", "-a", "android.settings.SETTINGS")))
+
+        fun escapeInputText(raw: String): String {
+            val trimmed = raw.trim('\r', '\n')
+            require(trimmed.isNotBlank() && trimmed.length <= MAX_INPUT_TEXT_LEN) { "input text must be 1 to $MAX_INPUT_TEXT_LEN characters" }
+            val sb = StringBuilder()
+            for (c in trimmed) {
+                when {
+                    c == ' ' || c == '\t' -> sb.append("%s")
+                    c == '\'' -> {}
+                    c in '!'..'~' -> sb.append(c)
+                    else -> {}
+                }
+            }
+            val token = sb.toString()
+            require(token.isNotEmpty() && ShellTokens.isSafeToken(token)) { "input text has no printable ASCII characters" }
+            return token
+        }
+
+        fun inputTextLine(raw: String): ShellLine =
+            ShellLine(ShellTokens.line(listOf("input", "text", escapeInputText(raw))))
+
+        fun mkdirTmpLine(): ShellLine =
+            ShellLine(ShellTokens.line(listOf("mkdir", "-p", RemoteDir.TMP.path)))
+
+        fun pmInstallLine(apk: RemotePath): ShellLine {
+            require(apk.dir == RemoteDir.TMP && apk.segments.last().endsWith(".apk")) { "apk must be in ${RemoteDir.TMP.path}" }
+            return ShellLine(ShellTokens.line(listOf(PM, "install", "-r", USER, "0", apk.absolute)))
+        }
+
+        fun removeTmpLine(apk: RemotePath): ShellLine {
+            require(apk.dir == RemoteDir.TMP) { "path must be in ${RemoteDir.TMP.path}" }
+            return ShellLine(ShellTokens.line(listOf("rm", "-f", apk.absolute)))
+        }
     }
 }
 

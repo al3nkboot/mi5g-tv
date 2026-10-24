@@ -2,6 +2,13 @@
 
 All notable changes to the app. Versions follow [semantic versioning](https://semver.org/).
 
+## 1.1.0 (2026-10-24)
+
+### الجديد في الإصدار 1.1.0
+- حماية تطبيقات البث العربية (شاهد، TOD، stc tv، STARZPLAY، OSN+، WATCH IT، Yango Play، الأولى، أوان، أنغامي، beIN CONNECT) من الإيقاف وإضافتها تلقائيا إلى شريط التطبيقات.
+- إضافة شاشة أدوات التحكم بالتلفاز (ريموت التلفاز الكامل، إرسال النص عبر ADB، وتصوير شاشة التلفاز مع المشاركة الفورية).
+- إضافة أداة تثبيت ملفات APK عن بعد من الهاتف إلى التلفاز عبر ADB.
+
 ## 0.3.3 (2026-10-24)
 
 Fixes from the first public day of issues. Thank you to everyone who reported.

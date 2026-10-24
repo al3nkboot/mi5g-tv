@@ -16,7 +16,38 @@ internal object DockRankingImpl {
     private const val PRIME = "com.amazon.amazonvideo.livingroom"
     private const val DISNEY = "com.disney.disneyplus"
 
-    private val GLOBAL = listOf(NETFLIX, YOUTUBE, PRIME, DISNEY, "com.apple.atve.androidtv.appletv", "com.spotify.tv.android", "com.plexapp.android")
+    val ARABIC_STREAMING: List<String> = listOf(
+        "net.mbc.shahid",
+        "net.mbc.shahid.tv",
+        "com.mbc.shahid",
+        "tv.tod.android",
+        "com.todtv.tod",
+        "com.intigral.jawwytv",
+        "com.stctv.app",
+        "tv.stc.android",
+        "com.parsifal.starz",
+        "com.starzplay.arabia",
+        "com.osn.go",
+        "com.anghami.osnplus",
+        "com.watchit.android",
+        "com.watchit.tv",
+        "com.yango.play",
+        "sa.sba.aloula",
+        "ae.dmi.awaan",
+        "com.anghami",
+        "com.bein.connect",
+    )
+
+    private val MENA_REGIONS: Set<String> = setOf(
+        "SA", "AE", "OM", "KW", "QA", "BH", "EG", "JO", "IQ", "MA", "DZ", "TN", "LB", "PS", "YE", "SY", "SD", "LY", "MR",
+    )
+
+    private val MENA_RANKING: List<String> = listOf(NETFLIX, YOUTUBE) + ARABIC_STREAMING + listOf(PRIME, DISNEY)
+
+    private val GLOBAL = listOf(
+        NETFLIX, YOUTUBE, PRIME, DISNEY, "com.apple.atve.androidtv.appletv", "com.spotify.tv.android", "com.plexapp.android",
+    ) + ARABIC_STREAMING
+
     private val BY_REGION: Map<String, List<String>> = mapOf(
         "IN" to listOf(NETFLIX, YOUTUBE, PRIME, "in.startv.hotstar", "com.jio.media.ondemand", "com.sonyliv", "com.graymatrix.did"),
         "US" to listOf(NETFLIX, YOUTUBE, PRIME, DISNEY, "com.hulu.livingroomplus", "com.wbd.stream", "com.peacocktv.peacockandroid", "com.cbs.ott", "com.tubitv"),
@@ -30,8 +61,22 @@ internal object DockRankingImpl {
         locale.split('-', '_').drop(1).lastOrNull { it.length == 2 && it.all(Char::isLetter) }?.uppercase()
             ?: locale.takeIf { it.length == 2 && it.all(Char::isUpperCase) }
 
-    fun ranking(locale: String): List<PackageName> =
-        ((region(locale)?.let { BY_REGION[it] } ?: emptyList()) + GLOBAL).distinct().map(::PackageName)
+    fun isArabicOrMena(locale: String): Boolean {
+        val norm = locale.trim().lowercase()
+        if (norm == "ar" || norm.startsWith("ar-") || norm.startsWith("ar_")) return true
+        val reg = region(locale)
+        return reg != null && reg in MENA_REGIONS
+    }
+
+    fun ranking(locale: String): List<PackageName> {
+        val reg = region(locale)
+        val regional = when {
+            isArabicOrMena(locale) -> MENA_RANKING
+            reg != null -> BY_REGION[reg].orEmpty()
+            else -> emptyList()
+        }
+        return (regional + GLOBAL).distinct().map(::PackageName)
+    }
 
     fun pick(profile: Profile?, installed: Set<PackageName>, hasInputs: Boolean, liveTv: PackageName?, locale: String): List<PackageName> {
         val live = (liveTv ?: profile?.liveTv)?.takeIf { hasInputs && it in installed }

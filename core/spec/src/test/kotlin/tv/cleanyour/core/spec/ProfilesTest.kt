@@ -408,4 +408,34 @@ class ProfilesTest {
         val everyUpstream = examples.flatMap { e -> DebloatTxtParser.parse(e.debloatTxt, e.folder).groups.flatMap { g -> g.packages.map { it.name } } }.distinct()
         assertEquals(emptyList(), everyUpstream.filter { facts.lookup(it) == null })
     }
+
+    @Test fun arabicStreamingAppsAreInFactsAndAutoPickedForDock() {
+        val facts = BundledFactsTable()
+        for (pkgName in DockRankingImpl.ARABIC_STREAMING) {
+            val f = facts.lookup(p(pkgName))
+            assertNotNull(f, "missing from facts.tsv: $pkgName")
+            assertEquals("streaming", f.category, pkgName)
+        }
+        val installed = setOf(
+            p("com.google.android.youtube.tv"),
+            p("net.mbc.shahid.tv"),
+            p("tv.tod.android"),
+            p("com.stctv.app"),
+            p("com.android.tv"),
+        )
+        // Arabic/MENA locale prioritizes installed Arabic streaming apps + YouTube + Live TV
+        assertEquals(
+            listOf("com.google.android.youtube.tv", "net.mbc.shahid.tv", "tv.tod.android", "com.android.tv"),
+            DockRanking.pick(null, installed, hasInputs = true, liveTv = p("com.android.tv"), locale = "ar-OM").map { it.value },
+        )
+        assertEquals(
+            listOf("com.google.android.youtube.tv", "net.mbc.shahid.tv", "tv.tod.android", "com.stctv.app"),
+            DockRanking.pick(null, installed, hasInputs = false, liveTv = null, locale = "ar").map { it.value },
+        )
+        // Even on an English locale, installed Arabic streaming apps are included via GLOBAL ranking
+        assertEquals(
+            listOf("com.google.android.youtube.tv", "net.mbc.shahid.tv", "tv.tod.android", "com.stctv.app"),
+            DockRanking.pick(null, installed, hasInputs = false, liveTv = null, locale = "en-US").map { it.value },
+        )
+    }
 }

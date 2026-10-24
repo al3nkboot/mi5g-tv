@@ -65,8 +65,33 @@ object Denylist {
     const val REASON_KEYBOARD = "it is the TV's keyboard"
     const val REASON_SCREENSAVER = "it is the TV's screensaver"
 
+    const val REASON_ARABIC_STREAMING = "it is a protected Arabic streaming app"
+
+    val arabicStreaming: Map<String, String> = linkedMapOf(
+        "net.mbc.shahid" to REASON_ARABIC_STREAMING,
+        "net.mbc.shahid.tv" to REASON_ARABIC_STREAMING,
+        "com.mbc.shahid" to REASON_ARABIC_STREAMING,
+        "tv.tod.android" to REASON_ARABIC_STREAMING,
+        "com.todtv.tod" to REASON_ARABIC_STREAMING,
+        "com.intigral.jawwytv" to REASON_ARABIC_STREAMING,
+        "com.stctv.app" to REASON_ARABIC_STREAMING,
+        "tv.stc.android" to REASON_ARABIC_STREAMING,
+        "com.parsifal.starz" to REASON_ARABIC_STREAMING,
+        "com.starzplay.arabia" to REASON_ARABIC_STREAMING,
+        "com.osn.go" to REASON_ARABIC_STREAMING,
+        "com.anghami.osnplus" to REASON_ARABIC_STREAMING,
+        "com.watchit.android" to REASON_ARABIC_STREAMING,
+        "com.watchit.tv" to REASON_ARABIC_STREAMING,
+        "com.yango.play" to REASON_ARABIC_STREAMING,
+        "sa.sba.aloula" to REASON_ARABIC_STREAMING,
+        "ae.dmi.awaan" to REASON_ARABIC_STREAMING,
+        "com.anghami" to REASON_ARABIC_STREAMING,
+        "com.bein.connect" to REASON_ARABIC_STREAMING,
+    )
+
     fun staticReason(pkg: String): String? {
         exact[pkg]?.let { return it }
+        arabicStreaming[pkg]?.let { return it }
         for ((prefix, reason) in prefixes) if (pkg.startsWith(prefix)) return reason
         return null
     }

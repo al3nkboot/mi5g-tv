@@ -62,4 +62,12 @@ class NavigationTest {
         assertEquals("Google Pixel 7", AppGraph.phoneName("google", "Google Pixel 7"))   // not "Google Google Pixel 7"
         assertEquals("SM-S921B", AppGraph.phoneName("", "SM-S921B"))
     }
+
+    @Test fun theToolsRouteOpensTvToolsOnTop() {
+        val stack = mutableListOf<NavKey>(Dest.Manage("0123456789abcdef"))
+        assertTrue(applyRoute(stack, "tools/0123456789abcdef", noTvs = false))
+        assertEquals(Dest.TvTools("0123456789abcdef"), stack.last())
+        assertTrue(applyRoute(stack, "back", noTvs = false))
+        assertEquals(listOf<NavKey>(Dest.Manage("0123456789abcdef")), stack)
+    }
 }

@@ -35,4 +35,20 @@ class AppNamesTest {
         assertEquals("Play Games", AppNames.fromPackage(PackageName("com.google.android.play.games")))
         assertEquals("Tv", AppNames.fromPackage(PackageName("com.google.android.tv")))
     }
+
+    @Test fun arabicStreamingAppsHaveCleanLabels() {
+        assertEquals("شاهد (Shahid)", name("net.mbc.shahid.tv"))
+        assertEquals("شاهد (Shahid)", AppNames.fromPackage(PackageName("net.mbc.shahid")))
+        assertEquals("TOD", name("tv.tod.android"))
+        assertEquals("stc tv (Jawwy TV)", name("com.intigral.jawwytv"))
+        assertEquals("stc tv", name("com.stctv.app"))
+        assertEquals("STARZPLAY", name("com.starzplay.arabia"))
+        assertEquals("OSN+", name("com.osn.go"))
+        assertEquals("WATCH IT", name("com.watchit.tv"))
+        assertEquals("Yango Play", name("com.yango.play"))
+        assertEquals("الأولى (Aloula)", name("sa.sba.aloula"))
+        assertEquals("أوان (Awaan)", name("ae.dmi.awaan"))
+        assertEquals("أنغامي (Anghami)", name("com.anghami"))
+        assertEquals("beIN CONNECT", name("com.bein.connect"))
+    }
 }

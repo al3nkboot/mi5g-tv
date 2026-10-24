@@ -55,3 +55,18 @@ sealed interface Op {
         val group: CurtainGroup = CurtainGroup.NONE, val groupCount: Int = 0, val groupTotal: Int = 0) : Op }
 
 data class ChangeRecord(val planId: PlanId, val step: Int, val op: Op, val prior: Prior?, val atMs: Long)   // R0: 1 derived from journals, for undo and restore files
+
+enum class TvKeyEvent(val keyCode: Int) {
+    DPAD_UP(19),
+    DPAD_DOWN(20),
+    DPAD_LEFT(21),
+    DPAD_RIGHT(22),
+    DPAD_CENTER(23),
+    BACK(4),
+    HOME(3),
+    MENU(82),
+    PLAY_PAUSE(85),
+    VOLUME_UP(24),
+    VOLUME_DOWN(25),
+    VOLUME_MUTE(164),
+}

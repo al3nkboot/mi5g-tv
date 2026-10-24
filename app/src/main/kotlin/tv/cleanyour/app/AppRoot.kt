@@ -54,6 +54,7 @@ import tv.cleanyour.core.flows.SetupStart
 import tv.cleanyour.core.flows.SetupState
 import tv.cleanyour.core.flows.SnackKind
 import tv.cleanyour.core.flows.StartDestination
+import tv.cleanyour.core.flows.TvToolsIntent
 import tv.cleanyour.core.flows.TvWriter
 import tv.cleanyour.core.model.PlanId
 import tv.cleanyour.core.model.TvId
@@ -69,6 +70,7 @@ import tv.cleanyour.feature.manage.OpenWriteSheet
 import tv.cleanyour.feature.manage.ReportScreen
 import tv.cleanyour.feature.manage.SwitchedOffScreen
 import tv.cleanyour.feature.manage.TvSettingsScreen
+import tv.cleanyour.feature.manage.TvToolsScreen
 import tv.cleanyour.feature.modules.ModulesFlow
 import tv.cleanyour.feature.setup.SetupFlow
 
@@ -83,6 +85,7 @@ import tv.cleanyour.feature.setup.SetupFlow
     @Serializable data class Modules(val tvId: String) : Dest
     @Serializable data class Restore(val tvId: String) : Dest
     @Serializable data class TvSettings(val tvId: String) : Dest
+    @Serializable data class TvTools(val tvId: String) : Dest
     @Serializable data object AppSettings : Dest
     // 0.3.2 B1, B2: the report preview; kind is ReportKind.key ("tv" or "problem").
     @Serializable data class Report(val kind: String, val tvId: String? = null) : Dest
@@ -114,6 +117,7 @@ internal fun applyRoute(stack: MutableList<NavKey>, route: String, noTvs: Boolea
         "leftovers" -> id?.let { Dest.Leftovers(it) }
         "restore" -> id?.let { Dest.Restore(it) }
         "tvsettings" -> id?.let { Dest.TvSettings(it) }
+        "tools" -> id?.let { Dest.TvTools(it) }
         "appsettings" -> Dest.AppSettings
         "report" -> id?.let { k -> ReportKind.of(k) }?.let { k -> if (k == ReportKind.TV && parts.getOrNull(2) == null) null else Dest.Report(k.key, parts.getOrNull(2)) }
         "back" -> return if (stack.size > 1) { stack.removeAt(stack.lastIndex); true } else false
@@ -187,7 +191,7 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
         SetupEffect.RequestNotificationPermission -> if (Build.VERSION.SDK_INT >= 33) notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS) else Unit
     }
 
-    suspend fun onManageEffect(e: ManageEffect, onDocument: (String) -> Unit = {}, onUndo: (ManageEffect.Snackbar) -> Unit = {}) {
+    suspend fun onManageEffect(e: ManageEffect, onDocument: (String) -> Unit = {}, onUndo: (ManageEffect.Snackbar) -> Unit = {}, onPickApk: () -> Unit = {}) {
         when (e) {
             is ManageEffect.Navigate -> go(e.key)
             is ManageEffect.Share -> share(e.text)
@@ -196,6 +200,8 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
             ManageEffect.HapticLight -> haptic(HapticFeedbackConstants.CLOCK_TICK)
             ManageEffect.HapticDouble -> haptic(HapticFeedbackConstants.LONG_PRESS)
             is ManageEffect.CreateDocument -> onDocument(e.suggestedName)
+            ManageEffect.PickApk -> onPickApk()
+            is ManageEffect.SharePng -> sharePng(context, e.png, e.fileName)
             is ManageEffect.Snackbar -> {
                 val (id, args) = SnackText.of(e)
                 val r = snack.showSnackbar(ResourceFlowCopy.format(context, id, args), actionLabel = if (e.undo) undoLabel else null,
@@ -278,6 +284,22 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
                     LaunchedEffect(m) { m.effects.collect { onManageEffect(it) } }
                     TvSettingsScreen(state, m::dispatch, onBack = { go("back") })
                 }
+                entry<Dest.TvTools> { key ->
+                    val m = rememberMachine("tools:${key.tvId}") { graph.tvTools(it, TvId(key.tvId)) }
+                    val state by m.state.collectAsStateWithLifecycle()
+                    val pickApk = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+                        if (uri != null) scope.launch {
+                            val picked = withContext(Dispatchers.IO) { readPickedApk(context, graph, uri) }
+                            if (picked != null) m.dispatch(picked)
+                        }
+                    }
+                    LaunchedEffect(m) {
+                        m.effects.collect { e ->
+                            onManageEffect(e, onPickApk = { pickApk.launch(arrayOf("application/vnd.android.package-archive")) })
+                        }
+                    }
+                    TvToolsScreen(state, m::dispatch, onBack = { go("back") })
+                }
                 entry<Dest.Report> { key ->
                     val kind = ReportKind.of(key.kind) ?: ReportKind.PROBLEM
                     val m = rememberMachine("report:${key.kind}:${key.tvId}") { graph.report(it, kind, key.tvId?.let(::TvId)) }
@@ -333,3 +355,60 @@ object SnackText {
     }
 }
 
+private suspend fun readPickedApk(context: android.content.Context, graph: AppGraph, uri: Uri): TvToolsIntent.ApkPicked? = runCatching {
+    val cr = context.contentResolver
+    var displayName = "app.apk"
+    cr.query(uri, arrayOf(android.provider.OpenableColumns.DISPLAY_NAME), null, null, null)?.use { c ->
+        if (c.moveToFirst()) {
+            val idx = c.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME)
+            if (idx >= 0) c.getString(idx)?.takeIf { it.isNotBlank() }?.let { displayName = it }
+        }
+    }
+    val tmp = java.io.File.createTempFile("sideload-", ".apk", context.cacheDir)
+    try {
+        val md = java.security.MessageDigest.getInstance("SHA-256")
+        var total = 0L
+        cr.openInputStream(uri)?.use { input ->
+            tmp.outputStream().use { out ->
+                val buf = ByteArray(64 * 1024)
+                while (true) {
+                    val n = input.read(buf)
+                    if (n <= 0) break
+                    total += n
+                    if (total > tv.cleanyour.core.ops.ShellRenderer.MAX_APK_BYTES) error("APK exceeds max size")
+                    md.update(buf, 0, n)
+                    out.write(buf, 0, n)
+                }
+            }
+        } ?: return@runCatching null
+        if (total <= 0L) return@runCatching null
+        val sha = tv.cleanyour.core.model.Sha256(md.digest().joinToString("") { "%02x".format(it) })
+        val blob = tmp.inputStream().use { graph.blobs.put(sha, it, total) }
+        TvToolsIntent.ApkPicked(displayName, blob.size, blob)
+    } finally {
+        tmp.delete()
+    }
+}.getOrNull()
+
+private fun sharePng(context: android.content.Context, png: ByteArray, fileName: String) {
+    runCatching {
+        val cacheDir = java.io.File(context.cacheDir, "screenshots").apply { mkdirs() }
+        java.io.File(cacheDir, fileName).writeBytes(png)
+        if (Build.VERSION.SDK_INT >= 29) {
+            val values = android.content.ContentValues().apply {
+                put(android.provider.MediaStore.Images.Media.DISPLAY_NAME, fileName)
+                put(android.provider.MediaStore.Images.Media.MIME_TYPE, "image/png")
+                put(android.provider.MediaStore.Images.Media.RELATIVE_PATH, "Pictures/Mi5G TV")
+            }
+            val uri = context.contentResolver.insert(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+            if (uri != null) {
+                context.contentResolver.openOutputStream(uri)?.use { it.write(png) }
+                val send = Intent(Intent.ACTION_SEND)
+                    .setType("image/png")
+                    .putExtra(Intent.EXTRA_STREAM, uri)
+                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                context.startActivity(Intent.createChooser(send, null))
+            }
+        }
+    }
+}

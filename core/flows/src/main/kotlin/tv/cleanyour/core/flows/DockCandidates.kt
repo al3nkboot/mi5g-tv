@@ -4,6 +4,7 @@ import tv.cleanyour.core.model.EnabledState
 import tv.cleanyour.core.model.PackageName
 import tv.cleanyour.core.model.Profile
 import tv.cleanyour.core.model.Snapshot
+import tv.cleanyour.core.ops.Denylist
 import tv.cleanyour.core.spec.FactsTable
 
 // The dock sheet's "Other apps on the TV" (finding 3 of the emulator run). Only apps a launcher
@@ -22,7 +23,7 @@ object DockCandidates {
         return snap.packages.filter { (pkg, st) ->
             val category = facts.lookup(pkg)?.category
             val on = st.enabled != EnabledState.DISABLED && st.enabled != EnabledState.DISABLED_USER
-            val shown = if (launchable != null) pkg in launchable else !st.system || category == "streaming"
+            val shown = if (launchable != null) pkg in launchable else !st.system || category == "streaming" || pkg.value in Denylist.arabicStreaming
             on && shown && pkg !in homes && category != "launcher" && category != "home" && !isProvider(pkg)
         }.keys
     }

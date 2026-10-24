@@ -193,4 +193,45 @@
     <string name="report_share">Share</string>
     <string name="report_loading">Making the report</string>
     <string name="report_unavailable">We need to read this TV once before we can make its report. Set it up or connect to it, then try again.</string>
+    <!-- M9 TV remote and tools (v1.1.0) -->
+    <string name="manage_row_tools">TV remote and tools</string>
+    <string name="manage_row_tools_sub">Remote, send text, screenshot and install APK</string>
+    <string name="tvtools_title">TV remote and tools</string>
+    <string name="tvtools_remote_section">Remote control</string>
+    <string name="tvtools_dpad_up">Up</string>
+    <string name="tvtools_dpad_down">Down</string>
+    <string name="tvtools_dpad_left">Left</string>
+    <string name="tvtools_dpad_right">Right</string>
+    <string name="tvtools_dpad_ok">OK</string>
+    <string name="tvtools_btn_back">Back</string>
+    <string name="tvtools_btn_home">Home</string>
+    <string name="tvtools_btn_menu">Menu</string>
+    <string name="tvtools_btn_settings">Settings</string>
+    <string name="tvtools_btn_play_pause">Play / Pause</string>
+    <string name="tvtools_btn_vol_up">Vol +</string>
+    <string name="tvtools_btn_vol_down">Vol -</string>
+    <string name="tvtools_btn_mute">Mute</string>
+    <string name="tvtools_remote_sending">Sending command to TV...</string>
+    <string name="tvtools_remote_sent">Command sent to TV.</string>
+    <string name="tvtools_remote_failed">Could not reach the TV. Check the connection.</string>
+    <string name="tvtools_text_section">Send text to TV</string>
+    <string name="tvtools_text_label">Text to type on the TV</string>
+    <string name="tvtools_text_send">Send</string>
+    <string name="tvtools_screenshot_section">TV screenshot</string>
+    <string name="tvtools_screenshot_note">Captures the current TV screen over ADB and opens the share sheet.</string>
+    <string name="tvtools_screenshot_take">Capture TV screenshot</string>
+    <string name="tvtools_screenshot_capturing">Capturing TV screenshot...</string>
+    <string name="tvtools_screenshot_captured">Screenshot captured and ready to share.</string>
+    <string name="tvtools_screenshot_share">Share screenshot</string>
+    <string name="tvtools_screenshot_failed">Could not capture the TV screen.</string>
+    <string name="tvtools_apk_section">Install APK on TV</string>
+    <string name="tvtools_apk_note">Pick an APK file from your phone to stream and install it directly onto the TV.</string>
+    <string name="tvtools_apk_pick">Pick APK file</string>
+    <string name="tvtools_apk_selected">{name} ({size} MB)</string>
+    <string name="tvtools_apk_install">Install on TV</string>
+    <string name="tvtools_apk_change">Choose another file</string>
+    <string name="tvtools_apk_installing">Sending and installing {name} ({percent}%)...</string>
+    <string name="tvtools_apk_installed">{name} was installed on the TV.</string>
+    <string name="tvtools_apk_failed">Could not install {name} on the TV.</string>
 </resources>
+

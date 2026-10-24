@@ -29,6 +29,8 @@ import tv.cleanyour.core.model.PermissionStatement
 import tv.cleanyour.core.model.PlanId
 import tv.cleanyour.core.model.Tier
 import tv.cleanyour.core.model.Tv
+import tv.cleanyour.core.model.TvKeyEvent
+import tv.cleanyour.testing.fixtures.FakeTvSession
 import tv.cleanyour.core.model.WizardDraft
 import tv.cleanyour.core.planner.PlanKind
 import tv.cleanyour.core.planner.PlanRequest
@@ -885,6 +887,78 @@ class ManageMachinesTest {
         assertNull(HomeScreenMachine(h.manageDeps(), backgroundScope, listed.id).also { settle() }.state.value.notOnTv)
         assertFalse(assertNotNull(ManageMachine(h.manageDeps(), backgroundScope, listed.id).also { settle() }.state.value.current).ownHome)
     }
+
+    @Test fun tvToolsMachineRemoteTextScreenshotAndApkSideloader() = runTest(timeout = 30.seconds) {
+        val h = Harness()
+        val tv = h.knownTv()
+        val manage = ManageMachine(h.manageDeps(), backgroundScope, tv.id)
+        settle()
+        manage.effects.test {
+            manage.dispatch(ManageIntent.Open(ManageSection.TV_TOOLS))
+            settle()
+            assertEquals(ManageEffect.Navigate("tools/${tv.id.value}"), drain().single())
+        }
+
+        // System-installed Arabic streaming apps are always included in DockCandidates
+        val shahid = PackageName("net.mbc.shahid.tv")
+        val tod = PackageName("tv.tod.android")
+        val sysState = PackageState(EnabledState.ENABLED, system = true, versionCode = 1, signer = null, persistent = false, tvInput = false, label = null, installedByUs = false)
+        val snapWithArabic = Samples.snapshot(packages = Samples.miTvPackages() + mapOf(shahid to sysState, tod to sysState))
+        val candidates = DockCandidates.of(snapWithArabic, launchable = null, profile = null, facts = h.facts)
+        assertTrue(shahid in candidates && tod in candidates)
+
+        // TvToolsMachine: remote keyevents, open settings, send text, screenshot, and APK sideload
+        val png = byteArrayOf(0x89.toByte(), 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 1, 2, 3)
+        h.prober.screenshotPng = png
+        h.session.recording.on("'input' 'keyevent' '23'", "")
+        h.session.recording.on("'am' 'start' '-a' 'android.settings.SETTINGS'", "")
+        h.session.recording.on("'input' 'text' 'Shahid%sVIP'", "")
+        val tools = TvToolsMachine(h.manageDeps(), backgroundScope, tv.id)
+        settle()
+        assertEquals(tv.nickname, tools.state.value.tvName)
+
+        tools.dispatch(TvToolsIntent.PressKey(TvKeyEvent.DPAD_CENTER))
+        settle()
+        assertEquals(RemoteStatus.Sent, tools.state.value.remoteStatus)
+        assertTrue("'input' 'keyevent' '23'" in h.session.execLines)
+
+        tools.dispatch(TvToolsIntent.OpenTvSettings)
+        settle()
+        assertTrue("'am' 'start' '-a' 'android.settings.SETTINGS'" in h.session.execLines)
+
+        tools.dispatch(TvToolsIntent.UpdateText("Shahid VIP"))
+        tools.dispatch(TvToolsIntent.SendText)
+        settle()
+        assertEquals("", tools.state.value.textInput)
+        assertEquals(RemoteStatus.Sent, tools.state.value.remoteStatus)
+        assertTrue("'input' 'text' 'Shahid%sVIP'" in h.session.execLines)
+
+        tools.effects.test {
+            tools.dispatch(TvToolsIntent.TakeScreenshot)
+            settle()
+            val effs = drain()
+            assertTrue(effs.any { it is ManageEffect.SharePng && (it as ManageEffect.SharePng).png.contentEquals(png) })
+        }
+        assertIs<ScreenshotStatus.Captured>(tools.state.value.screenshotStatus)
+
+        tools.effects.test {
+            tools.dispatch(TvToolsIntent.PickApk)
+            settle()
+            assertEquals(listOf<ManageEffect>(ManageEffect.PickApk), drain())
+        }
+        val apkBytes = "fake apk payload".encodeToByteArray()
+        val apkSha = sha256Of(apkBytes)
+        val blob = h.blobs.put(apkSha, apkBytes.inputStream(), apkBytes.size.toLong())
+        tools.dispatch(TvToolsIntent.ApkPicked("shahid-tv.apk", blob.size, blob))
+        settle()
+        assertEquals(SideloadStatus.Ready("shahid-tv.apk", blob.size, blob), tools.state.value.sideloadStatus)
+
+        tools.dispatch(TvToolsIntent.InstallApk)
+        settle()
+        assertEquals(SideloadStatus.Installed("shahid-tv.apk"), tools.state.value.sideloadStatus)
+        assertTrue(h.session.calls.any { it is FakeTvSession.Call.InstallStream })
+    }
+
 }
 
 private fun kotlinx.coroutines.CoroutineScope.launchAccess(h: Harness, tv: Tv, done: (AccessResult) -> Unit) =

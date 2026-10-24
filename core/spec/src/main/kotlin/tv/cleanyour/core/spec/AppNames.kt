@@ -22,7 +22,30 @@ object AppNames {
     // "app": "plexapp" would read well, "whatsapp" would not.
     private val AFFIXES = listOf("android", "leanback", "atv", "tv")
 
+    val ARABIC_LABELS: Map<String, String> = mapOf(
+        "net.mbc.shahid" to "شاهد (Shahid)",
+        "net.mbc.shahid.tv" to "شاهد (Shahid)",
+        "com.mbc.shahid" to "شاهد (Shahid)",
+        "tv.tod.android" to "TOD",
+        "com.todtv.tod" to "TOD",
+        "com.intigral.jawwytv" to "stc tv (Jawwy TV)",
+        "com.stctv.app" to "stc tv",
+        "tv.stc.android" to "stc tv",
+        "com.parsifal.starz" to "STARZPLAY",
+        "com.starzplay.arabia" to "STARZPLAY",
+        "com.osn.go" to "OSN+",
+        "com.anghami.osnplus" to "OSN+",
+        "com.watchit.android" to "WATCH IT",
+        "com.watchit.tv" to "WATCH IT",
+        "com.yango.play" to "Yango Play",
+        "sa.sba.aloula" to "الأولى (Aloula)",
+        "ae.dmi.awaan" to "أوان (Awaan)",
+        "com.anghami" to "أنغامي (Anghami)",
+        "com.bein.connect" to "beIN CONNECT",
+    )
+
     fun fromPackage(pkg: PackageName): String {
+        ARABIC_LABELS[pkg.value]?.let { return it }
         val all = pkg.value.split('.').filter { it.isNotEmpty() }
         val segments = if (all.size > 1) all.drop(1) else all
         val meaningful = segments.map(::trimAffixes).filter { it.length >= 2 && it.lowercase() !in GENERIC }

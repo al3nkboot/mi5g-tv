@@ -186,4 +186,45 @@
     <string name="report_share">مشاركة</string>
     <string name="report_loading">جارٍ إعداد التقرير</string>
     <string name="report_unavailable">نحتاج إلى قراءة بيانات هذا التلفاز مرة واحدة قبل إنشاء تقريره. أعدّه أو اتصل به أولًا ثم حاول مرة أخرى.</string>
+    <!-- M9 TV remote and tools (v1.1.0) -->
+    <string name="manage_row_tools">أدوات التحكم بالتلفاز</string>
+    <string name="manage_row_tools_sub">ريموت، إرسال نص، تصوير الشاشة وتثبيت APK</string>
+    <string name="tvtools_title">أدوات التحكم بالتلفاز</string>
+    <string name="tvtools_remote_section">ريموت وأدوات سريعة</string>
+    <string name="tvtools_dpad_up">أعلى</string>
+    <string name="tvtools_dpad_down">أسفل</string>
+    <string name="tvtools_dpad_left">يسار</string>
+    <string name="tvtools_dpad_right">يمين</string>
+    <string name="tvtools_dpad_ok">موافق</string>
+    <string name="tvtools_btn_back">رجوع</string>
+    <string name="tvtools_btn_home">الرئيسية</string>
+    <string name="tvtools_btn_menu">القائمة</string>
+    <string name="tvtools_btn_settings">الإعدادات</string>
+    <string name="tvtools_btn_play_pause">تشغيل / إيقاف</string>
+    <string name="tvtools_btn_vol_up">رفع الصوت +</string>
+    <string name="tvtools_btn_vol_down">خفض الصوت -</string>
+    <string name="tvtools_btn_mute">كتم الصوت</string>
+    <string name="tvtools_remote_sending">جارٍ إرسال الأمر إلى التلفاز...</string>
+    <string name="tvtools_remote_sent">تم إرسال الأمر إلى التلفاز.</string>
+    <string name="tvtools_remote_failed">تعذّر الوصول إلى التلفاز. تحقق من الاتصال.</string>
+    <string name="tvtools_text_section">إرسال نص للتلفاز</string>
+    <string name="tvtools_text_label">النص المراد كتابته على التلفاز</string>
+    <string name="tvtools_text_send">إرسال</string>
+    <string name="tvtools_screenshot_section">تصوير شاشة التلفاز</string>
+    <string name="tvtools_screenshot_note">يلتقط صورة فورية لشاشة التلفاز عبر ADB ويفتح قائمة المشاركة والحفظ.</string>
+    <string name="tvtools_screenshot_take">تصوير شاشة التلفاز</string>
+    <string name="tvtools_screenshot_capturing">جارٍ تصوير شاشة التلفاز...</string>
+    <string name="tvtools_screenshot_captured">تم تصوير شاشة التلفاز بنجاح.</string>
+    <string name="tvtools_screenshot_share">مشاركة صورة الشاشة</string>
+    <string name="tvtools_screenshot_failed">تعذّر تصوير شاشة التلفاز. تأكد من اتصال التلفاز.</string>
+    <string name="tvtools_apk_section">تثبيت تطبيق APK على التلفاز</string>
+    <string name="tvtools_apk_note">اختر ملف APK من هاتفك لإرساله وتثبيته مباشرة على التلفاز عبر ADB.</string>
+    <string name="tvtools_apk_pick">اختيار ملف APK من الهاتف</string>
+    <string name="tvtools_apk_selected">{name} ({size} ميجابايت)</string>
+    <string name="tvtools_apk_install">تثبيت على التلفاز</string>
+    <string name="tvtools_apk_change">اختيار ملف آخر</string>
+    <string name="tvtools_apk_installing">جاري الإرسال والتثبيت ({percent}%)...</string>
+    <string name="tvtools_apk_installed">تم تثبيت {name} بنجاح على التلفاز.</string>
+    <string name="tvtools_apk_failed">تعذّر تثبيت {name} على التلفاز.</string>
 </resources>
+

@@ -152,4 +152,68 @@ class ProtectedTest {
         assertNull(r.inverse(Op.SettingsPut(tv.cleanyour.core.model.SettingKey.ADB_ENABLED, "0"), Prior(settingValue = "1")))
         assertNull(r.inverse(Op.DebugOff, Prior(settingValue = "1")))
     }
+
+    @Test fun arabicStreamingAppsAreProtectedAndCannotBeDisabledOrUninstalled() {
+        val arabicPkgs = listOf(
+            "net.mbc.shahid", "net.mbc.shahid.tv", "com.mbc.shahid",
+            "tv.tod.android", "com.todtv.tod",
+            "com.intigral.jawwytv", "com.stctv.app", "tv.stc.android",
+            "com.parsifal.starz", "com.starzplay.arabia",
+            "com.osn.go", "com.anghami.osnplus",
+            "com.watchit.android", "com.watchit.tv",
+            "com.yango.play", "sa.sba.aloula", "ae.dmi.awaan",
+            "com.anghami", "com.bein.connect",
+        )
+        val r = ShellRenderer()
+        for (name in arabicPkgs) {
+            val pkg = PackageName(name)
+            assertEquals(Denylist.REASON_ARABIC_STREAMING, Protected.isProtected(pkg, null, null), name)
+            assertEquals(Denylist.REASON_ARABIC_STREAMING, Denylist.reason(pkg, Samples.miTvSnapshot(), null), name)
+            assertFailsWith<RenderRefused>(name) { r.render(Op.Disable(pkg)) }
+            assertFailsWith<RenderRefused>(name) { r.render(Op.Uninstall(pkg)) }
+        }
+    }
+
+    @Test fun remoteKeyEventAndTextEscapingLinesAreSafeAndTokenizable() {
+        val expectedCodes = mapOf(
+            tv.cleanyour.core.model.TvKeyEvent.DPAD_UP to "19",
+            tv.cleanyour.core.model.TvKeyEvent.DPAD_DOWN to "20",
+            tv.cleanyour.core.model.TvKeyEvent.DPAD_LEFT to "21",
+            tv.cleanyour.core.model.TvKeyEvent.DPAD_RIGHT to "22",
+            tv.cleanyour.core.model.TvKeyEvent.DPAD_CENTER to "23",
+            tv.cleanyour.core.model.TvKeyEvent.BACK to "4",
+            tv.cleanyour.core.model.TvKeyEvent.HOME to "3",
+            tv.cleanyour.core.model.TvKeyEvent.MENU to "82",
+            tv.cleanyour.core.model.TvKeyEvent.PLAY_PAUSE to "85",
+            tv.cleanyour.core.model.TvKeyEvent.VOLUME_UP to "24",
+            tv.cleanyour.core.model.TvKeyEvent.VOLUME_DOWN to "25",
+            tv.cleanyour.core.model.TvKeyEvent.VOLUME_MUTE to "164",
+        )
+        for ((key, code) in expectedCodes) {
+            val line = ShellRenderer.keyEventLine(key)
+            ShellTokens.assertLine(line.text)
+            assertEquals(listOf("input", "keyevent", code), ShellTokens.tokenize(line.text))
+        }
+        val settingsLine = ShellRenderer.openSettingsLine()
+        ShellTokens.assertLine(settingsLine.text)
+        assertEquals(listOf("am", "start", "-a", "android.settings.SETTINGS"), ShellTokens.tokenize(settingsLine.text))
+
+        val textLine = ShellRenderer.inputTextLine("Shahid VIP 2026")
+        ShellTokens.assertLine(textLine.text)
+        assertEquals("'input' 'text' 'Shahid%sVIP%s2026'", textLine.text)
+        assertEquals(listOf("input", "text", "Shahid%sVIP%s2026"), ShellTokens.tokenize(textLine.text))
+
+        // Quotes and shell metacharacters stay inert inside single quotes or are stripped
+        val quoted = ShellRenderer.inputTextLine(" user's; rm -rf / ")
+        ShellTokens.assertLine(quoted.text)
+        assertEquals(listOf("input", "text", "%susers;%srm%s-rf%s/%s"), ShellTokens.tokenize(quoted.text))
+
+        assertFailsWith<IllegalArgumentException> { ShellRenderer.inputTextLine("   \n\r") }
+        assertFailsWith<IllegalArgumentException> { ShellRenderer.inputTextLine("'''") }
+
+        val apkPath = tv.cleanyour.core.model.RemotePath(tv.cleanyour.core.model.RemoteDir.TMP, listOf("sideload.apk"))
+        assertEquals(listOf("mkdir", "-p", "/data/local/tmp/cleanyourtv"), ShellTokens.tokenize(ShellRenderer.mkdirTmpLine().text))
+        assertEquals(listOf("pm", "install", "-r", "--user", "0", "/data/local/tmp/cleanyourtv/sideload.apk"), ShellTokens.tokenize(ShellRenderer.pmInstallLine(apkPath).text))
+        assertEquals(listOf("rm", "-f", "/data/local/tmp/cleanyourtv/sideload.apk"), ShellTokens.tokenize(ShellRenderer.removeTmpLine(apkPath).text))
+    }
 }

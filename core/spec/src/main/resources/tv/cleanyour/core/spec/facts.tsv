@@ -1,4 +1,5 @@
 # package	name	description	category
+ae.dmi.awaan	أوان (Awaan)	Dubai Media streaming app	streaming
 air.ITVMobilePlayer	ITVX	UK ITV streaming app	streaming
 air.com.vudu.air.DownloaderTablet	Vudu (Fandango at Home)	Movie rental and purchase app	streaming
 android.autoinstalls.config.JVC	JVC partner installs	Installs partner apps without asking	ads
@@ -215,6 +216,8 @@ com.android.tv.feedbackconsent	Feedback consent	Asks permission to send feedback
 com.android.tv.settings	TV settings	The Android TV settings app	system
 com.android.wallpaper.livepicker	Live wallpaper picker	Picks animated wallpapers, for phones	preloads
 com.android.wallpaperbackup	Wallpaper backup	Backs up the wallpaper	preloads
+com.anghami	أنغامي (Anghami)	Arabic music and podcasts streaming app	streaming
+com.anghami.osnplus	OSN+	Middle East series and film streaming app	streaming
 com.appgeneration.itunerfree	Radio tuner app	Radio app preloaded on this TV	streaming
 com.apple.airplay.amazon.airplay	AirPlay	Lets Apple devices play to the TV	casting
 com.apple.atve.androidtv.appletv	Apple TV	Apple TV+ films and series	streaming
@@ -242,6 +245,7 @@ com.apps.wifihotspot	Wi-Fi hotspot	Lets the TV act as a Wi-Fi hotspot	brand
 com.asanteegames.magicrampage	Magic Rampage	Preloaded game	preloads
 com.at.factory.androidtvaidlservice	Factory test service	Factory test service	demo
 com.at.factory.factorymanager	Factory test manager	Factory test manager	demo
+com.bein.connect	beIN CONNECT	Live sports and entertainment streaming app	streaming
 com.bloomberg.btva	Bloomberg TV	Business news app	streaming
 com.boosteroidtv.streaming	Boosteroid	Cloud gaming service	streaming
 com.bruyere.android.solitaire	Solitaire	Preloaded card game	preloads
@@ -419,6 +423,7 @@ com.hulu.plus	Hulu	Streaming app	streaming
 com.hungama.movies	Hungama	Streaming app	streaming
 com.iflytek.xiri.translate	iFlytek translate	Voice translation helper	voice
 com.imdb.livingroom.firetv	IMDb	Film and TV database app	preloads
+com.intigral.jawwytv	stc tv (Jawwy TV)	Live TV and on-demand streaming app	streaming
 com.iqiyi.i18n.tv	iQIYI	Asian drama and film streaming app	streaming
 com.ivona.orchestrator	Alexa speech engine	Text-to-speech for Alexa	voice
 com.ivona.tts.oem	Alexa speech voices	Voice data for Alexa speech	voice
@@ -439,6 +444,7 @@ com.kick.mobile	Kick	Live streaming app	streaming
 com.king.candycrushsaga	Candy Crush Saga	Preloaded game	preloads
 com.limelight	Moonlight	Game streaming from a PC	streaming
 com.mautilus.tvgames.portal.androidtv	TV games portal	Preloaded game portal	preloads
+com.mbc.shahid	شاهد (Shahid)	MBC Arabic series, films and live TV	streaming
 com.mediatek.AirplayAPK	AirPlay (MediaTek)	Receives AirPlay from Apple devices	casting
 com.mediatek.airplaydaemon	AirPlay service	Background service for AirPlay	casting
 com.mediatek.android.leanbacklauncher.partnercustomizer	Home screen partner config	Partner rows; some MediaTek TVs need it for the TV service at boot	system
@@ -543,6 +549,7 @@ com.panasonic.demomode	Panasonic demo mode	Store demo mode	demo
 com.panasonic.ehelp	Panasonic eHelp	On-screen user manual	preloads
 com.panasonic.hotelmode	Panasonic hotel mode	Hotel mode settings	demo
 com.pandora.android.atv	Pandora	Music streaming app	streaming
+com.parsifal.starz	STARZPLAY	Series, movies and sports streaming app	streaming
 com.peacock.peacockfiretv	Peacock	Streaming app	streaming
 com.peacocktv.peacockandroid	Peacock	NBC series, films and live sport	streaming
 com.phorus.playfi.softap	Play-Fi access point	Wi-Fi helper for Play-Fi speakers	brand
@@ -670,6 +677,8 @@ com.sonyericsson.idd.agent	Sony device data agent	Device data agent	tracking
 com.sonyliv	SonyLIV	Sony's series, films and live sport	streaming
 com.sonypicturescore	Sony Pictures Core	Sony film streaming app	streaming
 com.spotify.tv.android	Spotify	Music streaming app	streaming
+com.starzplay.arabia	STARZPLAY	Series, movies and sports streaming app	streaming
+com.stctv.app	stc tv	Live TV and on-demand streaming app	streaming
 com.stellamore.guide	Stellamore setup guide	First-time setup guide	other
 com.stellamore.tvfactory	Stellamore factory menu	Factory settings menu	demo
 com.stm	Stellamore feature test	Factory feature test app	demo
@@ -769,6 +778,7 @@ com.tcl.xian.StartandroidService	TCL start service	TCL system service, needed	sy
 com.teamviewer.quicksupport.market	TeamViewer QuickSupport	Remote support app	preloads
 com.ted.android.tv	TED	TED talks	streaming
 com.tianci.localmedia	Skyworth USB media player	Plays media from USB	system
+com.todtv.tod	TOD	beIN sports and entertainment streaming app	streaming
 com.tubitv	Tubi	Free films and series with adverts	streaming
 com.tubitv.ott	Tubi	Streaming app	streaming
 com.twentyfouri.tvbridge.rte	RTE bridge	Part of the Freeview Play app layer	streaming
@@ -805,6 +815,8 @@ com.vt.tv.protector	Hisense device assistant	Cleaner and speed-up tool	brand
 com.vt.tv.singlelisten	Vu My Music	Music app	preloads
 com.vt.tv.smartsense.ui	SmartSense screens	Hisense system screens, needed to boot	system
 com.vt.tv.usbota	Hisense USB updater	Updates firmware from USB	updates
+com.watchit.android	WATCH IT	Arabic series and movies streaming app	streaming
+com.watchit.tv	WATCH IT	Arabic series and movies streaming app	streaming
 com.wbd.hbomax	Max (HBO Max)	HBO's streaming app	streaming
 com.wbd.stream	HBO Max	HBO series and films	streaming
 com.witsoftware.ir.vodafonetv	Vodafone TV	Vodafone's TV app	streaming
@@ -862,6 +874,7 @@ com.xiaomi.wfdsinkhelperservice	Miracast helper	Xiaomi Miracast receiver helper	
 com.xiaomitv.sonyliv	Sony LIV (old Mi copy)	Old partner copy of the Sony LIV app	streaming
 com.xiaomo.tv.milegal	Xiaomi legal notices	Legal and privacy screens	other
 com.xm.webcontent	Xiaomi web promos	Promo web content	ads
+com.yango.play	Yango Play	Movies, series and music streaming app	streaming
 com.yodo1.crossyroad	Crossy Road	Preloaded game	preloads
 com.youview.tv.servicehost	YouView services	Background service for YouView	streaming
 com.yupptv.androidtv	YuppTV	Streaming app	streaming
@@ -896,6 +909,8 @@ mobi.zona	Zona	Streaming app	streaming
 net.aljazeera.english	Al Jazeera	News streaming app	streaming
 net.froemling.bombsquad	BombSquad	Preloaded game	preloads
 net.hexage.ritual	Ritual	Preloaded game	preloads
+net.mbc.shahid	شاهد (Shahid)	MBC Arabic series, films and live TV	streaming
+net.mbc.shahid.tv	شاهد (Shahid)	MBC Arabic series, films and live TV	streaming
 net.vidaatv.hisense.android.tv	VIDAA	Hisense VIDAA app preload	preloads
 oneplus.smarthome	OnePlus Smart Home	Smart home control	brand
 org.chromium.webview_shell	WebView test browser	AOSP test browser for the web view, not the web view itself	preloads
@@ -938,6 +953,7 @@ org.videolan.vlc	VLC	Video player	streaming
 paskov.biz.happyfruits	Happy Fruits	Preloaded game	preloads
 ro.pontes.forinaline	Four in a Line	Preloaded game	preloads
 rocks.funkykarts	Funky Karts	Preloaded game	preloads
+sa.sba.aloula	الأولى (Aloula)	Saudi Broadcasting Authority streaming app	streaming
 screnmirroring.com	Screen mirroring	Miracast receiver	casting
 tunein.player	TuneIn Radio	Radio streaming app	streaming
 tv.alphonso.alphonso_eula	Alphonso	Recognises what you watch to target ads	tracking
@@ -950,7 +966,9 @@ tv.okko.androidtv	Okko	Streaming app (Russia)	streaming
 tv.pluto.android	Pluto TV	Free streaming TV app	streaming
 tv.samba.ssm	Samba TV	Reports what you watch	tracking
 tv.samba.ssm.ui	Samba TV settings	Opt-in and privacy screens for Samba TV	tracking
+tv.stc.android	stc tv	Live TV and on-demand streaming app	streaming
 tv.sweet.tvplayer	Sweet TV	Ukrainian TV streaming app	streaming
+tv.tod.android	TOD	beIN sports and entertainment streaming app	streaming
 tv.twitch.android.app	Twitch	Live game streaming app	streaming
 tv.wuaki.apptv	Rakuten TV	Film rental and streaming app	streaming
 uk.co.bbc.iplayer	BBC iPlayer	BBC channels and programmes	streaming
