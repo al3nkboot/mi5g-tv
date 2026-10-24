@@ -141,6 +141,8 @@ data class SetupExtras(
     val apps: List<AppChoice> = emptyList(),     // installed apps for the dock sheet
     val dockColumns: Int = DockLayers.DEFAULT_COLUMNS,   // apps per row for the chosen look (DockLayers)
     val addOns: Boolean = true,                  // STORES-PLAN 1: Done's "Add a card" (off in the Play build)
+    val canForceHome: Boolean = false,           // v1.1.1: HOME_CHANGED / UNKNOWN_HOME can opt in to installing home screen
+    val forceHome: Boolean = false,
 )
 
 class SetupDeps(
@@ -232,6 +234,7 @@ class SetupMachine(
     // pause the collector never saw, and neither path logs the same pause twice.
     private var lastPauseLogged: RunState.Paused? = null
     private var lastDecision: HomeDecision? = null
+    private var forceHome: Boolean = false
 
     private var discoveryJob: Job? = null
     private var pollJob: Job? = null
@@ -415,6 +418,10 @@ class SetupMachine(
             is SetupIntent.SetTheme -> editDraft { it.copy(themeId = event.id) }
             is SetupIntent.KeepDebuggingOn -> editDraft { it.copy(keepDebuggingOn = event.on) }
             is SetupIntent.ShowOnTv -> editDraft { it.copy(curtain = event.on) }
+            is SetupIntent.InstallHomeAnyway -> {
+                forceHome = event.on
+                tv?.let { r -> draftJob = scope.launch { replan(r) } }
+            }
             SetupIntent.MakeItClean -> if (after is SetupState.Found && !mutableExtras.value.starting) {
                 mutableExtras.update { it.copy(starting = true) }
                 scope.launch {
@@ -703,23 +710,18 @@ class SetupMachine(
         val wifi = wizardWifi(s, snap)
         val block = homeBlock(snap, wifi)
         val possible = block == HomeBlock.NONE
+        val canForce = block == HomeBlock.HOME_CHANGED || block == HomeBlock.UNKNOWN_HOME || block == HomeBlock.WIZARD_STAYS_ON
+        val installHome = possible || (canForce && forceHome)
         val choices = Choices(
             kept = draft.kept, extraOff = draft.extraOff, dock = dock,
             theme = theme,
-            installLauncher = possible, takeover = possible,
+            installLauncher = installHome, takeover = possible,
             replaceLauncherSigner = installed?.signer?.let { it != launcher.signer } ?: false,
             keepDebuggingOn = draft.keepDebuggingOn,
             wizardWifi = wifi,
         )
-        // RFC-DOCK-1: the same config.json Manage's ApplyTheme would push for this dock and look, so
-        // the plan, its hash and "Show commands" carry it. Only when the switch is possible: without
-        // the new home screen there is nothing to read it. If it cannot be made, the plan goes without
-        // it and the launcher keeps its own dock.
-        // RFC-CARDS-1: module_cards off, so the new home screen never asks about cards the person did
-        // not ask for; on only when they turned cards on for this TV in an earlier session (kept, or
-        // said outright by the TV's overlay).
         val cards = Cards.of(deps.homePrefs?.let { attempt { it.load(record.id) }.getOrNull() }?.cards, snap.launcherOverlay, Cards.SETUP_DEFAULT)
-        val look = if (!possible) null else attempt { Look.encode(deps.encoder, deps.blobs, theme, dock, cards) }
+        val look = if (!installHome) null else attempt { Look.encode(deps.encoder, deps.blobs, theme, dock, cards) }
             .onFailure { deps.log.line("setup: the look could not be encoded, planned without it") }.getOrNull()
         setupHome = look?.let { it.digest to HomeChoice(it.doc.dockApps.orEmpty(), draft.themeId, cards) }
         // RFC-CURTAIN-1: the TV shows the progress unless Custom switched it off (Simple never shows
@@ -745,9 +747,9 @@ class SetupMachine(
                     deps.homeDecisions?.let { store -> attempt { store.save(record.id, decision) } }
                 }
                 mutableExtras.update {
-                    it.copy(commands = commandsOf(r.plan), unknownModel = res !is ProfileResolution.Exact, homePossible = possible, homeBlock = block,
+                    it.copy(commands = commandsOf(r.plan), unknownModel = res !is ProfileResolution.Exact, homePossible = installHome, homeBlock = block,
                         noScreenLock = !deps.screenLock.available(), draft = draft, dock = dock.map { p -> AppChoice(p, label(p)) }, apps = apps,
-                        dockColumns = columns)
+                        dockColumns = columns, canForceHome = canForce, forceHome = canForce && forceHome)
                 }
                 send(Ev.PlanReady(record.id, r.plan, draft.level))
             }
@@ -933,7 +935,10 @@ class SetupMachine(
                 send(Ev.Stop(tvId, homePutBackCard(f.plan.id)))
             f.status == RunStatus.ABANDONED -> effect(SetupEffect.Navigate("manage/${tvId.value}"))
             f.home != null && f.home != HomeOutcome.CONFIRMED -> send(Ev.Stop(tvId, homeCard(f)))
-            else -> showDone(tvId, f, homeOn = f.plan.sections.isNotEmpty() && f.home == HomeOutcome.CONFIRMED)
+            else -> {
+                val directHome = f.plan.sections.isEmpty() && f.plan.steps.any { it.op is Op.SetHome } && f.status != RunStatus.ABANDONED
+                showDone(tvId, f, homeOn = (f.plan.sections.isNotEmpty() && f.home == HomeOutcome.CONFIRMED) || directHome)
+            }
         }
     }
 

@@ -18,6 +18,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -214,7 +215,7 @@ internal fun AddScreen(state: ModulesState, onIntent: (ModulesIntent) -> Unit, o
         if (state.index !is IndexView.Loading && state.filtered.isEmpty()) Body(stringResource(R.string.addmodule_empty), Modifier.padding(top = 16.dp, start = 4.dp))
         Column(Modifier.padding(top = 16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             state.filtered.forEach { m ->
-                ModuleCard(m.name, m.oneLine, moduleChips(m.tier, m.licence, m.sizeBytes), accentColor(m.accent) ?: CytTheme.colors.glowBrand,
+                ModuleCard(m.name, localizedOneLine(m.id, m.oneLine), moduleChips(m.tier, m.licence, m.sizeBytes), accentColor(m.accent) ?: CytTheme.colors.glowBrand,
                     { onIntent(ModulesIntent.Open(m.id)) })
             }
         }
@@ -256,10 +257,12 @@ internal fun DetailScreen(d: ModuleDetail, tvName: String, onIntent: (ModulesInt
             !paused && !d.installed -> ({ PrimaryButton(msg(R.string.module_add, "tv" to tvName), { onIntent(ModulesIntent.Add(m.id)) }) })
             else -> null
         }) {
-        ModuleHero(m.name, m.oneLine, accent ?: c.glowBrand, Modifier.padding(top = 8.dp),
+        val oneLine = localizedOneLine(m.id, m.oneLine)
+        val desc = if (paused) m.description else localizedDescription(m.id, m.description)
+        ModuleHero(m.name, oneLine, accent ?: c.glowBrand, Modifier.padding(top = 8.dp),
             badge = if (m.type == "card") stringResource(R.string.module_hero_badge) else null)
         ScreenTitle(m.name, Modifier.padding(top = 16.dp))
-        Body(m.description, Modifier.padding(top = 4.dp))
+        Body(desc, Modifier.padding(top = 4.dp))
         // F-Droid Inclusion Policy (security 5): before the first download, say where add-ons come
         // from. Back declines with one tap, as Add accepts with one, and nothing downloads before
         // the credential prompt that follows Add.
@@ -273,11 +276,12 @@ internal fun DetailScreen(d: ModuleDetail, tvName: String, onIntent: (ModulesInt
         SectionLabel(stringResource(R.string.module_what_title))
         Column(Modifier.padding(horizontal = 4.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             v.permissions.forEach { p ->
-                val cd = msg(R.string.module_perm_can_cd, "statement" to p.plainWords)
-                CheckLine(p.plainWords, Modifier.semantics { contentDescription = cd }, emphasised = true)
+                val words = localizedPermission(m.id, p.permission, p.plainWords)
+                val cd = msg(R.string.module_perm_can_cd, "statement" to words)
+                CheckLine(words, Modifier.semantics { contentDescription = cd }, emphasised = true)
             }
-            if (v.networkStatement.isNotBlank()) CheckLine(v.networkStatement, emphasised = true)
-            if (m.type == "service") CheckLine(msg(R.string.module_runs_background, "reason" to m.oneLine), emphasised = true)
+            if (v.networkStatement.isNotBlank()) CheckLine(localizedNetwork(m.id, v.networkStatement), emphasised = true)
+            if (m.type == "service") CheckLine(msg(R.string.module_runs_background, "reason" to oneLine), emphasised = true)
             else CheckLine(stringResource(R.string.module_no_background), state = CheckState.NONE)
         }
         SectionLabel(stringResource(R.string.module_who_title))
@@ -356,3 +360,31 @@ internal fun InstallScreen(step: InstallStep, state: ModulesState, onIntent: (Mo
         }
     }
 }
+
+@Composable
+private fun isArabicLocale(): Boolean = LocalConfiguration.current.locales[0].language == "ar"
+
+@Composable
+internal fun localizedOneLine(id: String, fallback: String): String =
+    if (isArabicLocale() && id == "retro") "ألعاب NES الكلاسيكية على التلفاز" else fallback
+
+@Composable
+internal fun localizedDescription(id: String, fallback: String): String =
+    if (isArabicLocale() && id == "retro") {
+        "متصفح ومشغل ألعاب NES مفتوح المصدر مصمم لأجهزة التلفاز. ينزّل الألعاب المجانية من صفحات مطوريها ويتحقق من كل لعبة قبل حفظها، كما يعرض ملفات الألعاب الخاصة بك في مجلد Roms على التلفاز."
+    } else fallback
+
+@Composable
+internal fun localizedPermission(moduleId: String, permission: String, fallback: String): String {
+    if (!isArabicLocale() || moduleId != "retro") return fallback
+    return when (permission) {
+        "android.permission.INTERNET" -> "ينزّل الألعاب المجانية وأغلفة الألعاب عبر اتصال HTTPS آمن."
+        "android.permission.READ_EXTERNAL_STORAGE" -> "يقرأ ملفات الألعاب الخاصة بك من مجلد Roms/NES على التلفاز."
+        "io.github.udhaykumarbala.retro.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" -> "يُستخدم داخل تطبيق Retro فقط ولا يمكن لأي تطبيق آخر الوصول إليه."
+        else -> fallback
+    }
+}
+
+@Composable
+internal fun localizedNetwork(moduleId: String, fallback: String): String =
+    if (isArabicLocale() && moduleId == "retro") "يتصل فقط بصفحات وروابط تنزيل الألعاب التي تختارها وأغلفتها عبر HTTPS." else fallback

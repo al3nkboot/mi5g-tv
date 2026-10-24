@@ -80,6 +80,7 @@ import tv.cleanyour.ui.design.component.ScreenScaffold
 import tv.cleanyour.ui.design.component.ScreenTitle
 import tv.cleanyour.ui.design.component.SecondaryButton
 import tv.cleanyour.ui.design.component.SheetHeader
+import tv.cleanyour.ui.design.component.SmallGlassButton
 import tv.cleanyour.ui.design.component.Spinner
 import tv.cleanyour.ui.design.component.StepCard
 import tv.cleanyour.ui.design.component.StopCard
@@ -479,14 +480,25 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
         ScreenTitle(stringResource(R.string.tvtools_title), titleTop)
 
         SectionLabel(stringResource(R.string.tvtools_remote_section))
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                SecondaryButton(
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                SmallGlassButton(
+                    stringResource(R.string.tvtools_btn_back),
+                    { onIntent(TvToolsIntent.PressKey(TvKeyEvent.BACK)) },
+                    Modifier.weight(1f),
+                    enabled = !sending,
+                )
+                SmallGlassButton(
                     stringResource(R.string.tvtools_dpad_up),
                     { onIntent(TvToolsIntent.PressKey(TvKeyEvent.DPAD_UP)) },
-                    Modifier.fillMaxWidth(0.45f),
+                    Modifier.weight(1f),
                     enabled = !sending,
-                    guardObscured = true,
+                )
+                SmallGlassButton(
+                    stringResource(R.string.tvtools_btn_home),
+                    { onIntent(TvToolsIntent.PressKey(TvKeyEvent.HOME)) },
+                    Modifier.weight(1f),
+                    enabled = !sending,
                 )
             }
             // Physical D-Pad direction stays Left on the left and Right on the right in both LTR and RTL.
@@ -495,123 +507,103 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
             val rightLabel = stringResource(R.string.tvtools_dpad_right)
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    SecondaryButton(
+                    SmallGlassButton(
                         leftLabel,
                         { onIntent(TvToolsIntent.PressKey(TvKeyEvent.DPAD_LEFT)) },
                         Modifier.weight(1f),
                         enabled = !sending,
-                        guardObscured = true,
                     )
-                    PrimaryButton(
+                    SmallGlassButton(
                         okLabel,
                         { onIntent(TvToolsIntent.PressKey(TvKeyEvent.DPAD_CENTER)) },
                         Modifier.weight(1f),
                         enabled = !sending,
                     )
-                    SecondaryButton(
+                    SmallGlassButton(
                         rightLabel,
                         { onIntent(TvToolsIntent.PressKey(TvKeyEvent.DPAD_RIGHT)) },
                         Modifier.weight(1f),
                         enabled = !sending,
-                        guardObscured = true,
                     )
                 }
             }
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                SecondaryButton(
-                    stringResource(R.string.tvtools_dpad_down),
-                    { onIntent(TvToolsIntent.PressKey(TvKeyEvent.DPAD_DOWN)) },
-                    Modifier.fillMaxWidth(0.45f),
-                    enabled = !sending,
-                    guardObscured = true,
-                )
-            }
-            Row(Modifier.fillMaxWidth().padding(top = 4.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                SecondaryButton(
-                    stringResource(R.string.tvtools_btn_back),
-                    { onIntent(TvToolsIntent.PressKey(TvKeyEvent.BACK)) },
-                    Modifier.weight(1f),
-                    enabled = !sending,
-                    guardObscured = true,
-                )
-                SecondaryButton(
-                    stringResource(R.string.tvtools_btn_home),
-                    { onIntent(TvToolsIntent.PressKey(TvKeyEvent.HOME)) },
-                    Modifier.weight(1f),
-                    enabled = !sending,
-                    guardObscured = true,
-                )
-                SecondaryButton(
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                SmallGlassButton(
                     stringResource(R.string.tvtools_btn_menu),
                     { onIntent(TvToolsIntent.PressKey(TvKeyEvent.MENU)) },
                     Modifier.weight(1f),
                     enabled = !sending,
-                    guardObscured = true,
                 )
-            }
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                SecondaryButton(
-                    stringResource(R.string.tvtools_btn_play_pause),
-                    { onIntent(TvToolsIntent.PressKey(TvKeyEvent.PLAY_PAUSE)) },
+                SmallGlassButton(
+                    stringResource(R.string.tvtools_dpad_down),
+                    { onIntent(TvToolsIntent.PressKey(TvKeyEvent.DPAD_DOWN)) },
                     Modifier.weight(1f),
                     enabled = !sending,
-                    guardObscured = true,
                 )
-                SecondaryButton(
+                SmallGlassButton(
                     stringResource(R.string.tvtools_btn_settings),
                     { onIntent(TvToolsIntent.OpenTvSettings) },
                     Modifier.weight(1f),
                     enabled = !sending,
-                    guardObscured = true,
                 )
             }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                SecondaryButton(
+                SmallGlassButton(
                     stringResource(R.string.tvtools_btn_vol_up),
                     { onIntent(TvToolsIntent.PressKey(TvKeyEvent.VOLUME_UP)) },
                     Modifier.weight(1f),
                     enabled = !sending,
-                    guardObscured = true,
                 )
-                SecondaryButton(
+                SmallGlassButton(
                     stringResource(R.string.tvtools_btn_mute),
                     { onIntent(TvToolsIntent.PressKey(TvKeyEvent.VOLUME_MUTE)) },
                     Modifier.weight(1f),
                     enabled = !sending,
-                    guardObscured = true,
                 )
-                SecondaryButton(
+                SmallGlassButton(
                     stringResource(R.string.tvtools_btn_vol_down),
                     { onIntent(TvToolsIntent.PressKey(TvKeyEvent.VOLUME_DOWN)) },
                     Modifier.weight(1f),
                     enabled = !sending,
-                    guardObscured = true,
+                )
+            }
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                SmallGlassButton(
+                    stringResource(R.string.tvtools_btn_play_pause),
+                    { onIntent(TvToolsIntent.PressKey(TvKeyEvent.PLAY_PAUSE)) },
+                    Modifier.fillMaxWidth(),
+                    enabled = !sending,
                 )
             }
         }
         when (state.remoteStatus) {
             RemoteStatus.Sending -> LiveLine(stringResource(R.string.tvtools_remote_sending))
-            RemoteStatus.Sent -> CheckLine(stringResource(R.string.tvtools_remote_sent), Modifier.padding(top = 12.dp, start = 4.dp))
-            RemoteStatus.Failed -> Body(stringResource(R.string.tvtools_remote_failed), Modifier.padding(top = 12.dp, start = 4.dp), color = CytTheme.colors.danger)
+            RemoteStatus.Sent -> CheckLine(stringResource(R.string.tvtools_remote_sent), Modifier.padding(top = 8.dp, start = 4.dp))
+            RemoteStatus.Failed -> Body(stringResource(R.string.tvtools_remote_failed), Modifier.padding(top = 8.dp, start = 4.dp), color = CytTheme.colors.danger)
             RemoteStatus.Idle -> {}
         }
 
         SectionLabel(stringResource(R.string.tvtools_text_section))
-        CytTextField(
-            value = state.textInput,
-            onValueChange = { onIntent(TvToolsIntent.UpdateText(it)) },
-            label = stringResource(R.string.tvtools_text_label),
-        )
-        SecondaryButton(
-            stringResource(R.string.tvtools_text_send),
-            { onIntent(TvToolsIntent.SendText) },
-            Modifier.padding(top = 12.dp),
-            enabled = state.textInput.isNotBlank() && !sending,
-            guardObscured = true,
-        )
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            CytTextField(
+                value = state.textInput,
+                onValueChange = { onIntent(TvToolsIntent.UpdateText(it)) },
+                label = stringResource(R.string.tvtools_text_label),
+                modifier = Modifier.weight(1f),
+            )
+            SmallGlassButton(
+                stringResource(R.string.tvtools_text_send),
+                { onIntent(TvToolsIntent.SendText) },
+                enabled = state.textInput.isNotBlank() && !sending,
+            )
+        }
 
         SectionLabel(stringResource(R.string.tvtools_screenshot_section))
-        Body(stringResource(R.string.tvtools_screenshot_note), Modifier.padding(bottom = 12.dp, start = 4.dp, end = 4.dp))
+        Body(stringResource(R.string.tvtools_screenshot_note), Modifier.padding(bottom = 8.dp, start = 4.dp, end = 4.dp))
         SecondaryButton(
             stringResource(R.string.tvtools_screenshot_take),
             { onIntent(TvToolsIntent.TakeScreenshot) },
@@ -621,15 +613,15 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
         when (state.screenshotStatus) {
             ScreenshotStatus.Capturing -> LiveLine(stringResource(R.string.tvtools_screenshot_capturing))
             is ScreenshotStatus.Captured -> {
-                CheckLine(stringResource(R.string.tvtools_screenshot_captured), Modifier.padding(top = 12.dp, start = 4.dp))
+                CheckLine(stringResource(R.string.tvtools_screenshot_captured), Modifier.padding(top = 8.dp, start = 4.dp))
                 TertiaryButton(stringResource(R.string.tvtools_screenshot_share), { onIntent(TvToolsIntent.ShareScreenshot) }, Modifier.padding(top = 4.dp))
             }
-            ScreenshotStatus.Failed -> Body(stringResource(R.string.tvtools_screenshot_failed), Modifier.padding(top = 12.dp, start = 4.dp), color = CytTheme.colors.danger)
+            ScreenshotStatus.Failed -> Body(stringResource(R.string.tvtools_screenshot_failed), Modifier.padding(top = 8.dp, start = 4.dp), color = CytTheme.colors.danger)
             ScreenshotStatus.Idle -> {}
         }
 
         SectionLabel(stringResource(R.string.tvtools_apk_section))
-        Body(stringResource(R.string.tvtools_apk_note), Modifier.padding(bottom = 12.dp, start = 4.dp, end = 4.dp))
+        Body(stringResource(R.string.tvtools_apk_note), Modifier.padding(bottom = 8.dp, start = 4.dp, end = 4.dp))
         when (val s = state.sideloadStatus) {
             SideloadStatus.Idle -> {
                 SecondaryButton(stringResource(R.string.tvtools_apk_pick), { onIntent(TvToolsIntent.PickApk) })
@@ -657,6 +649,6 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
                 SecondaryButton(stringResource(R.string.tvtools_apk_pick), { onIntent(TvToolsIntent.PickApk) }, Modifier.padding(top = 12.dp))
             }
         }
-        Gap(24.dp)
+        Gap(48.dp)
     }
 }

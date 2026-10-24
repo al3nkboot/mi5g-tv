@@ -239,6 +239,16 @@ fun FoundScreen(
             }
             Banner(line, BannerTone.INFO, Modifier.padding(top = 16.dp))
         }
+        if (extras.canForceHome) {
+            ListGroup(Modifier.padding(top = 12.dp)) {
+                SwitchRow(
+                    stringResource(R.string.found_force_home_title),
+                    extras.forceHome,
+                    { actions.intent(SetupIntent.InstallHomeAnyway(it)) },
+                    subtitle = stringResource(R.string.found_force_home_sub),
+                )
+            }
+        }
         if (extras.noScreenLock) Body(stringResource(R.string.found_no_lock), Modifier.padding(start = 4.dp, top = 12.dp))
         Gap(8.dp)
     }

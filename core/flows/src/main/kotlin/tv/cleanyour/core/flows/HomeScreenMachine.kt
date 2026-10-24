@@ -35,7 +35,9 @@ data class NotOnTv(
     val unlisted: Boolean = false,
     val setupAgain: Boolean = false,
     val helpAddTv: Boolean = false,
-)
+) {
+    val canInstall: Boolean get() = reason != HomeBlock.OLD_ANDROID && reason != HomeBlock.TV_REFUSES
+}
 
 data class HomeScreenState(
     val tvName: String = "",
@@ -66,6 +68,7 @@ sealed interface HomeScreenIntent {
     data object UpdateHomeScreen : HomeScreenIntent    // D4
     data object RunSetupAgain : HomeScreenIntent       // 0.3.3 D2, NotOnTv.setupAgain
     data object HelpAddTv : HomeScreenIntent           // 0.3.3 D2, NotOnTv.helpAddTv
+    data object InstallHomeScreen : HomeScreenIntent   // v1.1.1: direct install and activate
 }
 
 class HomeScreenMachine(
@@ -112,6 +115,7 @@ class HomeScreenMachine(
             HomeScreenIntent.UpdateHomeScreen -> scope.launch { update() }
             HomeScreenIntent.RunSetupAgain -> if (after.notOnTv?.setupAgain == true) effect(ManageEffect.Navigate("setup/${tvId.value}"))
             HomeScreenIntent.HelpAddTv -> if (after.notOnTv?.helpAddTv == true) effect(ManageEffect.Navigate("report/tv/${tvId.value}"))
+            HomeScreenIntent.InstallHomeScreen -> if (after.notOnTv?.canInstall == true) scope.launch { installHomeScreen() }
             else -> {}
         }
     }
@@ -263,6 +267,35 @@ class HomeScreenMachine(
         if (r is WriteResult.Done) {
             d.tv(tvId)?.let { d.tvs.upsert(it.copy(launcher = null)) }
             effect(ManageEffect.Snackbar(SnackKind.HOME_SAVED, d.nameOf(stock.pkg), false))
+        }
+        load()
+    }
+
+    private suspend fun installHomeScreen() {
+        val pin = attempt { d.launcherPin.bundled() }.getOrNull() ?: return effect(ManageEffect.Snackbar(SnackKind.FAILED, "", false))
+        val tv = d.tv(tvId) ?: return
+        val profile = d.profileOf(tv)
+        val snap = d.snapshots.latest(tvId)
+        val choice = d.homePrefs.load(tvId)
+        val dock = choice?.dock?.takeIf { it.isNotEmpty() }
+            ?: snap?.let { DockPicker.Ranking.pick(profile, it.packages.keys, it.hdmi.isNotEmpty(), profile?.liveTv, "ar") }.orEmpty()
+        val cards = Cards.of(choice?.cards, snap?.launcherOverlay, Cards.SETUP_DEFAULT)
+        val look = attempt { Look.encode(d.encoder, d.blobs, theme(choice?.themeId), dock, cards) }.getOrNull()
+            ?: return effect(ManageEffect.Snackbar(SnackKind.FAILED, "", false))
+        val kept = look.doc.dockApps.orEmpty()
+        val r = writer.write(tvId, PlanRequest.UpdateLauncher(pin, look.config, look.wallpaper, installFresh = true), fresh = true) { send(BusyNow(it)) }
+        send(BusyNow(null))
+        when {
+            r is WriteResult.Done && (r.finished.status == RunStatus.COMPLETED || r.finished.status == RunStatus.COMPLETED_WITH_SKIPS) -> {
+                d.homePrefs.save(tvId, HomeChoice(kept, choice?.themeId, cards))
+                rememberPushedLook(d, tvId, look.digest)
+                attempt { d.homeDecisions.save(tvId, HomeDecision(true, alreadyOn = true)) }
+                d.access.live(tvId)?.let { s -> attempt { d.runner.freshSnapshot(s) } }
+                send(Drift(false))
+                effect(ManageEffect.Snackbar(SnackKind.HOME_SAVED, "", false))
+            }
+            r is WriteResult.GateCancelled || r is WriteResult.NoTv || r is WriteResult.Paused -> {}
+            else -> effect(ManageEffect.Snackbar(SnackKind.FAILED, "", false))
         }
         load()
     }

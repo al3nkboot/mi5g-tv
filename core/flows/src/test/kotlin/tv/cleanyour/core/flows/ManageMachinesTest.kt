@@ -959,6 +959,41 @@ class ManageMachinesTest {
         assertTrue(h.session.calls.any { it is FakeTvSession.Call.InstallStream })
     }
 
+    @Test fun installHomeScreenFromNotOnTvInstallsAndActivatesTheLauncher() = runTest(timeout = 30.seconds) {
+        val h = Harness()
+        val tv = h.knownTv().copy(nickname = "AndroidTV", profileId = null).also { h.tvs.upsert(it) }
+        val shahid = PackageName("net.mbc.shahid.tv")
+        val tod = PackageName("tv.tod.android")
+        val sysState = PackageState(EnabledState.ENABLED, system = false, versionCode = 1, signer = null, persistent = false, tvInput = false, label = "Shahid", installedByUs = false)
+        h.snapshots.save(Samples.snapshot(packages = Samples.miTvPackages() + mapOf(shahid to sysState, tod to sysState.copy(label = "TOD")), takenAtMs = Samples.NOW_MS + 1))
+        HomeDecisions(h.documents).save(tv.id, HomeDecision(false, "HOME_CHANGED"))
+        val pin = Samples.launcherArtifact()
+        val installPlan = h.plan(
+            listOf(Op.InstallStream(pin.blob, pin.sha256, pin.pkg, pin.versionCode, pin.signer), Op.SetHome(Launcher.home), Op.PressHome),
+            kind = PlanKind.UPDATE_LAUNCHER,
+            id = "01FAKEINST0000000000000001",
+        )
+        val previous = h.planner.respond
+        h.planner.respond = { r, snap -> if (r is PlanRequest.UpdateLauncher && r.installFresh) PlanResult.Ok(installPlan) else previous(r, snap) }
+        val m = HomeScreenMachine(h.manageDeps(encoder = ConfigEncoder.Codec), backgroundScope, tv.id)
+        settle()
+        val notOnTv = assertNotNull(m.state.value.notOnTv)
+        assertEquals(HomeBlock.HOME_CHANGED, notOnTv.reason)
+        assertTrue(notOnTv.unlisted)
+        assertTrue(notOnTv.canInstall)
+        m.effects.test {
+            m.dispatch(HomeScreenIntent.InstallHomeScreen)
+            settle()
+            val snack = assertIs<ManageEffect.Snackbar>(drain().single())
+            assertEquals(SnackKind.HOME_SAVED, snack.kind)
+        }
+        val req = h.planner.requests.filterIsInstance<PlanRequest.UpdateLauncher>().single()
+        assertTrue(req.installFresh)
+        assertNotNull(req.config)
+        assertNull(m.state.value.notOnTv, "after installation, notOnTv is null and Dock/Look are active")
+        assertTrue(m.state.value.homeScreenOurs)
+        assertNotNull(h.tvs.tvs.value.single { it.id == tv.id }.launcher)
+    }
 }
 
 private fun kotlinx.coroutines.CoroutineScope.launchAccess(h: Harness, tv: Tv, done: (AccessResult) -> Unit) =

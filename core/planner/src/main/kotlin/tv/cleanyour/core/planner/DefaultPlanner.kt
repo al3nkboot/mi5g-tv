@@ -97,7 +97,7 @@ class DefaultPlanner(
             PlanRequest.DebugOff -> { d.debugOff(); PlanKind.DEBUG_OFF }
             is PlanRequest.WriteRestorePoint -> { d.writeRestorePoint(request.restorePointJson, request.restoreTxt); PlanKind.WRITE_RESTORE_POINT }
             PlanRequest.Reboot -> { d.reboot(); PlanKind.REBOOT }
-            is PlanRequest.UpdateLauncher -> { d.updateLauncher(request.launcher); PlanKind.UPDATE_LAUNCHER }
+            is PlanRequest.UpdateLauncher -> { d.updateLauncher(request); PlanKind.UPDATE_LAUNCHER }
         }
         if (d.reasons.isNotEmpty()) return PlanResult.Refused(d.reasons.toList())
         val steps = d.steps.toList()
@@ -250,11 +250,19 @@ class DefaultPlanner(
             // pushes CONTINUE on failure: a STOP here would pause the setup with an offer to undo the
             // whole run for a cosmetic step that Manage can send again at any time.
             val config = req.config
-            if (choices.takeover && config != null && (launcherSteps || installed(launcher.pkg))) {
+            val directHome = !choices.takeover && choices.installLauncher && config != null && StockHome.of(snapshot, stockLaunchers) == null
+            if ((choices.takeover || directHome) && config != null && (launcherSteps || installed(launcher.pkg))) {
                 val overlayGone = !installed(launcher.pkg) || replacesLauncher   // a fresh install, or the uninstall took its files
                 look(config, req.wallpaper, overlayGone, FailurePolicy.CONTINUE)
             }
             if (choices.takeover) takeover(req.launcher, profile, stockLaunchers, launcherSteps, choices.wizardWifi)
+            else if (directHome && (launcherSteps || installed(launcher.pkg))) {
+                if (snapshot.home.resolved != launcher) {
+                    step(Op.SetHome(launcher), Prior(home = snapshot.home.resolved), GROUP_HOME, "Making the new home screen the default", FailurePolicy.CONTINUE)
+                }
+                step(Op.PressHome, null, GROUP_HOME, "Showing the home screen", FailurePolicy.CONTINUE)
+                homeScreenPossible = true
+            }
             homeSwitchRows()
             val curtain = req.curtain
             // RF-PROFILES-63 P1: the curtain is an app like the launcher (minSdk TV_MIN_SDK); below it there is none.
@@ -739,8 +747,37 @@ class DefaultPlanner(
         // look in config.json, its card answers and its Launcher settings all stay, since only an
         // uninstall removes them. Anything else is not an update and is refused: another key is
         // Setup's replace (D36), an unknown key is never guessed, a newer one is never downgraded.
-        fun updateLauncher(artifact: LauncherArtifact) {
+        fun updateLauncher(req: PlanRequest.UpdateLauncher) {
+            val artifact = req.launcher
             if (artifact.pkg != launcher.pkg) { refuse("the launcher artifact is ${artifact.pkg.value}, not ${launcher.pkg.value}"); return }
+            if (req.installFresh) {
+                if (snapshot.facts.installRefusal) { refuse("this TV refuses app installs"); return }
+                if (refusesOtherHomes(managedProfile)) { refuse(REASON_TV_REFUSES_HOME); return }
+                if (snapshot.facts.sdk < TV_MIN_SDK) { refuse(REASON_OLD_ANDROID); return }
+                val current = state(artifact.pkg)
+                val foreignSigner = current != null && current.signer != null && current.signer != artifact.signer
+                if (foreignSigner) {
+                    if (snapshot.home.resolved == launcher) { refuse("the home screen app can only be replaced while another home screen is in charge (D36)"); return }
+                    step(Op.Uninstall(artifact.pkg), Prior(present = true), GROUP_LAUNCHER, NARRATION_REPLACE_LAUNCHER, FailurePolicy.STOP_AND_ROLLBACK)
+                }
+                val needsInstall = current == null || foreignSigner || current.versionCode < artifact.versionCode
+                if (needsInstall) {
+                    installApk(artifact.blob, artifact.sha256, artifact.pkg, artifact.versionCode, artifact.signer,
+                        present = current != null && !foreignSigner, group = GROUP_LAUNCHER, narration = "Installing the new home screen")
+                }
+                val config = req.config
+                if (config != null) {
+                    look(config, req.wallpaper, overlayGone = current == null || foreignSigner, pushPolicy = FailurePolicy.CONTINUE)
+                } else {
+                    step(Op.StartActivity(launcher, wait = true), null, GROUP_LAUNCHER, "Starting the new home screen", FailurePolicy.CONTINUE)
+                }
+                if (snapshot.home.resolved != launcher) {
+                    step(Op.SetHome(launcher), Prior(home = snapshot.home.resolved), GROUP_HOME, "Making the new home screen the default", FailurePolicy.CONTINUE)
+                }
+                step(Op.PressHome, null, GROUP_HOME, "Showing the home screen", FailurePolicy.CONTINUE)
+                homeScreenPossible = true
+                return
+            }
             val current = state(artifact.pkg) ?: run { refuse("the new home screen is not on this TV"); return }
             if (current.signer == null) { refuse("the key of the home screen app on the TV cannot be read, so it is not updated"); return }
             if (current.signer != artifact.signer) { refuse("the home screen app on the TV was installed with a different key; set the TV up again to replace it (D36)"); return }

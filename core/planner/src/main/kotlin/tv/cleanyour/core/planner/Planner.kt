@@ -40,7 +40,9 @@ sealed interface PlanRequest {
     data object DebugOff : PlanRequest
     data class WriteRestorePoint(val restorePointJson: BlobRef, val restoreTxt: BlobRef) : PlanRequest   // R0: 11 D44; pushes only, runs after every other plan
     data object Reboot : PlanRequest   // RFC-W8-5: the D24 restart test, journaled like every write, not gated (D17)
-    data class UpdateLauncher(val launcher: LauncherArtifact) : PlanRequest }   // RFC-LAUNCHER-1 (D4): the pin over our older launcher, in place
+    data class UpdateLauncher(val launcher: LauncherArtifact,
+        val config: BlobRef? = null, val wallpaper: BlobRef? = null,
+        val installFresh: Boolean = false) : PlanRequest }   // RFC-LAUNCHER-1 (D4) + v1.1.1 direct install
 // R0: 9 the engine runs a section from this data alone: the live check compares homeFocus with expectedHome and rolls back
 // when the focused package is in rollbackIfFocus; rollback is section 3.4 step R, rendered at run time
 data class GuardedSection(val name: String, val from: Int, val to: Int, val token: RunToken, val confirmWindowMs: Long,

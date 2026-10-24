@@ -65,7 +65,7 @@ import tv.cleanyour.ui.design.theme.Glow
 @Composable
 fun HomeScreen(state: HomeScreenState, onIntent: (HomeScreenIntent) -> Unit, onBack: () -> Unit, modifier: Modifier = Modifier) {
     val notOnTv = state.notOnTv
-    if (notOnTv != null) { NotOnTvScreen(state.tvName, notOnTv, onIntent, onBack, modifier); return }
+    if (notOnTv != null) { NotOnTvScreen(state.tvName, notOnTv, state.busy, onIntent, onBack, modifier); return }
     var dockOpen by rememberSaveable { mutableStateOf(false) }
     var lookOpen by rememberSaveable { mutableStateOf(false) }
     val busy = state.busy
@@ -126,21 +126,42 @@ fun HomeScreen(state: HomeScreenState, onIntent: (HomeScreenIntent) -> Unit, onB
 // is one: Setup again (the reason can change) or Help add this TV (a list is what is missing).
 // Both buttons only navigate; nothing here writes to the TV.
 @Composable
-private fun NotOnTvScreen(tvName: String, n: NotOnTv, onIntent: (HomeScreenIntent) -> Unit, onBack: () -> Unit, modifier: Modifier) {
-    val action = when {
+private fun NotOnTvScreen(tvName: String, n: NotOnTv, busy: Busy?, onIntent: (HomeScreenIntent) -> Unit, onBack: () -> Unit, modifier: Modifier) {
+    val secondary = when {
         n.setupAgain -> R.string.home_run_setup_again to HomeScreenIntent.RunSetupAgain
         n.helpAddTv -> R.string.home_help_add_tv to HomeScreenIntent.HelpAddTv
         else -> null
     }
+    val hasBottom = n.canInstall || secondary != null
     ScreenScaffold(
         Glow.Tv, modifier,
         topBar = { CytTopBar(onBack = onBack) },
-        bottomBar = if (action == null) null else ({
-            ActionColumn { PrimaryButton(stringResource(action.first), { onIntent(action.second) }, guardObscured = false) }
+        bottomBar = if (!hasBottom) null else ({
+            ActionColumn {
+                if (n.canInstall) {
+                    PrimaryButton(
+                        stringResource(R.string.home_install_now),
+                        { onIntent(HomeScreenIntent.InstallHomeScreen) },
+                        enabled = busy == null,
+                        loading = busy != null,
+                    )
+                }
+                if (secondary != null) {
+                    if (n.canInstall) {
+                        TertiaryButton(stringResource(secondary.first), { onIntent(secondary.second) }, enabled = busy == null)
+                    } else {
+                        PrimaryButton(stringResource(secondary.first), { onIntent(secondary.second) }, guardObscured = false)
+                    }
+                }
+            }
         }),
     ) {
         ScreenTitle(stringResource(R.string.home_title), Modifier.padding(top = 20.dp))
         Lead(msg(R.string.home_not_on_tv_lead, "tv" to tvName), Modifier.padding(top = 12.dp))
+        if (busy != null) {
+            LiveLine(stringResource(R.string.home_installing))
+            if (busy is Busy.Working) ProgressBar(busy.percent / 100f, Modifier.padding(top = 16.dp))
+        }
         val why = when (n.reason) {
             HomeBlock.TV_REFUSES -> msg(R.string.home_not_on_tv_refuses, "brand" to (if (n.fireTv) stringResource(R.string.home_fire_tv_name) else n.brand))
             HomeBlock.OLD_ANDROID -> stringResource(R.string.home_not_on_tv_old_android)
@@ -156,13 +177,16 @@ private fun NotOnTvScreen(tvName: String, n: NotOnTv, onIntent: (HomeScreenInten
         Banner(why, BannerTone.INFO, Modifier.padding(top = 16.dp), icon = CytIcons.Info)
         val next = when {
             n.helpAddTv -> R.string.home_not_on_tv_next_list
-            !n.setupAgain -> null
+            !n.setupAgain -> if (n.canInstall) R.string.home_not_on_tv_next_install else null
             n.reason == HomeBlock.WIZARD_WIFI -> R.string.home_not_on_tv_next_wifi
             n.reason == HomeBlock.WIZARD_WIFI_UNKNOWN -> R.string.home_not_on_tv_next_check
             n.reason == HomeBlock.HOME_CHANGED -> R.string.home_not_on_tv_next_home_changed
             else -> R.string.home_not_on_tv_next_setup
         }
         next?.let { Body(stringResource(it), Modifier.padding(top = 16.dp, start = 4.dp, end = 4.dp)) }
+        if (n.canInstall && next != R.string.home_not_on_tv_next_install) {
+            Body(stringResource(R.string.home_not_on_tv_next_install), Modifier.padding(top = 12.dp, start = 4.dp, end = 4.dp))
+        }
     }
 }
 

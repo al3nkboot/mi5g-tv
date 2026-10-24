@@ -49,7 +49,7 @@ import tv.cleanyour.ui.design.theme.CytTheme
 
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-@Config(sdk = [35], qualifiers = "ar-rSA-ldrtl-w360dp-h1250dp-xhdpi")
+@Config(sdk = [35], qualifiers = "ar-rSA-ldrtl-w360dp-h1400dp-xhdpi")
 class ArabicReleaseScreenshotsTest {
     @get:Rule val compose = createComposeRule()
     private var prevLocale: Locale = Locale.getDefault()
@@ -164,5 +164,23 @@ class ArabicReleaseScreenshotsTest {
                 {},
             )
         }
+
+        val outDir111 = File("/workspace/apps/mi5g-tv-out/screens/1.1.1").apply { mkdirs() }
+        currentHeight = 1220.dp
+        currentScreen = {
+            TvToolsScreen(
+                TvToolsState(
+                    tvName = "AndroidTV",
+                    textInput = "Shahid VIP",
+                    remoteStatus = RemoteStatus.Sent,
+                    screenshotStatus = ScreenshotStatus.Captured(shotBytes),
+                    sideloadStatus = SideloadStatus.Ready("shahid-tv-release.apk", fakeBlob.size, fakeBlob),
+                ),
+                {},
+                {},
+            )
+        }
+        compose.waitForIdle()
+        compose.onNodeWithTag("shot").captureRoboImage(File(outDir111, "03_tv_tools_scrolled_ar.png"))
     }
 }

@@ -85,6 +85,8 @@
     <string name="found_home_old_android">The new home screen needs Android 8 or newer, so this TV keeps its own. We\'ll still switch off the adverts and tracking, which is most of the win.</string>
     <string name="found_home_changed">The home screen on this TV was already changed, by another app or an earlier change, so we leave it as it is. We\'ll still switch off the adverts and tracking.</string>
     <string name="found_home_unknown_stock">We don\'t know this TV\'s own home screen well enough to swap it safely, so it stays. We\'ll still switch off the adverts and tracking.</string>
+    <string name="found_force_home_title">Install the new home screen anyway</string>
+    <string name="found_force_home_sub">Installs and activates the new home screen while keeping the current launcher enabled as a safe fallback.</string>
     <!-- RF-SAFETY-250: home screen switches skipped up front for safety, shown in place of the home screen row -->
     <string name="found_home_wizard_wifi">This TV\'s Wi-Fi was saved by its setup wizard. The new home screen needs the wizard off, which would forget the Wi-Fi, and with the wizard left on the TV can crash. So it keeps its own home screen. We\'ll still switch off the adverts and tracking. To swap it later, forget and re-add the network in Settings, or use a cable, then run Setup again.</string>
     <string name="found_home_wizard_wifi_unlisted">This TV\'s Wi-Fi was saved by its setup wizard, and we don\'t know this TV well enough yet to switch the wizard off safely. With the wizard left on, a new home screen can crash the TV, so it keeps its own home screen. We\'ll still switch off the adverts and tracking.</string>
