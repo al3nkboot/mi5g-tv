@@ -1,0 +1,12 @@
+# Make our launcher the HOME activity; undo is the stock launcher
+op: SetHome component=com.gathin.tvhome/.MainActivity
+privilege: TAKEOVER
+timeout_ms: 30000
+stdout_cap: 65536
+line: 'cmd' 'package' 'set-home-activity' '--user' '0' 'com.gathin.tvhome/.MainActivity'
+transfer: none
+verify: Read kind=HOME
+verify_line: 'cmd' 'package' 'resolve-activity' '--brief' '-c' 'android.intent.category.HOME' '-a' 'android.intent.action.MAIN'
+prior: home=com.google.android.tvlauncher/.MainActivity
+inverse: SetHome component=com.google.android.tvlauncher/.MainActivity
+inverse_line: 'cmd' 'package' 'set-home-activity' '--user' '0' 'com.google.android.tvlauncher/.MainActivity'

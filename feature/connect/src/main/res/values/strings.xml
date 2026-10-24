@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Clean Your TV, :feature:connect. English source strings.
+  Every string that takes an argument is ICU MessageFormat with NAMED arguments in braces,
+  formatted by the app's message helper (android.icu.text.MessageFormat). No printf placeholders,
+  no Android plurals elements. Counts go through the plural selector.
+  Screens: S1, S1b, S1c, S2a to S2d, S2x, the "I don't see it" sheet, the stop cards for finding
+  and reaching the TV. The Wi-Fi name is never shown (D19).
+-->
+<resources>
+
+    <!-- Shared button words -->
+    <string name="action_back">Back</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_ok">OK</string>
+
+    <!-- S1 Welcome. The overline is the product name, as on the TV launcher. -->
+    <string name="welcome_overline">Clean Your TV</string>
+    <string name="welcome_title">Your TV, tidied up.</string>
+    <string name="welcome_body">Switch off the clutter, keep the apps you use, and get a calm home screen. Five minutes. Everything can be put back.</string>
+    <string name="welcome_hero_cd">A TV home screen full of sponsored rows turns into a clean one with four apps along the bottom</string>
+    <string name="welcome_looking">Looking for TVs on your Wi-Fi...</string>
+    <string name="welcome_found_one">Found {name} ({room})</string>
+    <string name="welcome_found_one_noroom">Found {name}</string>
+    <string name="welcome_found_many">{count, plural, one {Found # TV} other {Found # TVs}}</string>
+    <string name="welcome_none_yet">No TV yet. Keep going, we\'ll keep looking.</string>
+    <string name="welcome_start">Start</string>
+    <string name="welcome_returning">I\'ve set up a TV before</string>
+
+    <!-- S1b Which TV? -->
+    <string name="picker_title">Which TV?</string>
+    <string name="picker_body">Not sure? The TV you pick will show a message on its screen in a moment.</string>
+    <string name="picker_row">{name}, {room} · {platform}</string>
+    <string name="picker_row_noroom">{name} · {platform}</string>
+    <string name="picker_name_with_suffix">{name} ...{suffix}</string>
+    <string name="picker_platform_android_tv">Android TV {version}</string>
+    <string name="picker_platform_google_tv">Google TV {version}</string>
+    <string name="picker_platform_fire_tv">Fire TV</string>
+    <string name="picker_footer">Phone and TV must be on the same Wi-Fi.</string>
+    <string name="picker_primary">Use {name}</string>
+    <string name="picker_tertiary">Enter the TV\'s address</string>
+
+    <!-- S1c Enter the TV's address (sheet) -->
+    <string name="address_title">Type the TV\'s address</string>
+    <string name="address_body">On the TV: Settings > Network > your Wi-Fi name shows an address like 192.168.1.50.</string>
+    <string name="address_field_label">TV address</string>
+    <string name="address_error">That isn\'t an address on your home network</string>
+    <string name="address_connect">Connect</string>
+
+    <!-- S2a Let the phone in (steps) -->
+    <string name="door_title">Let the phone in</string>
+    <string name="door_body">Pick up the TV remote. This takes about a minute and is the only fiddly part.</string>
+    <string name="door_step_cd">Step {current} of {total}</string>
+    <string name="door_next">Next</string>
+    <string name="door_menu_names_vary">Menu names may differ a little on your TV.</string>
+    <string name="door_same_wifi">Phone and TV must be on the same Wi-Fi.</string>
+    <string name="door_waiting">Waiting for the TV...</string>
+    <string name="door_connecting">Connecting...</string>
+    <string name="door_still_waiting">Still waiting. Did USB debugging turn on? Some TVs need Network debugging too.</string>
+    <string name="door_still_waiting_show_me">Show me</string>
+    <string name="door_change_model">Not a {model}? Change model</string>
+    <string name="door_change_model_generic">Not this TV? Change model</string>
+    <!-- Round 3: the S1b tertiary's words, for a door Start opened on the one device found -->
+    <string name="door_not_this_tv">Not this TV? Enter the TV\'s address</string>
+    <string name="door_brand_prompt">Which brand?</string>
+    <string name="door_brand_xiaomi">Xiaomi</string>
+    <string name="door_brand_tcl">TCL</string>
+    <string name="door_brand_sony">Sony</string>
+    <string name="door_brand_hisense">Hisense</string>
+    <string name="door_brand_philips">Philips</string>
+    <string name="door_brand_google">Google</string>
+    <string name="door_brand_amazon">Amazon</string>
+    <string name="door_brand_other">Other</string>
+    <string name="door_unknown_note">We haven\'t met this exact TV before. The steps are usually the same.</string>
+
+    <!-- S2a step cards by platform family (UX 2 table). Note to translators: match the TV's own menu names. -->
+    <!-- Android TV 9 to 11 -->
+    <string name="family_atv_step1">On the TV, open Settings (the gear, top right), then Device Preferences > About. Press OK on \"Build\" seven times until the TV says \"You are now a developer\".</string>
+    <string name="family_atv_step2">Go back one screen. Open Developer options and switch on USB debugging. If the TV also shows \"Network debugging\" or \"ADB debugging\", switch that on too.</string>
+    <string name="family_atv_step3">Leave the TV on this screen. Your phone will connect on its own.</string>
+    <string name="family_atv_extra_shield">On a Shield, \"Network debugging\" is the one that matters.</string>
+    <!-- Google TV 12 to 14 -->
+    <string name="family_gtv_step1">On the TV, open Settings, then System > About. Press OK on \"Android TV OS build\" seven times until the TV says \"You are now a developer\".</string>
+    <string name="family_gtv_step2">Go back one screen. Open System > Developer options and switch on USB debugging, then also Wireless debugging.</string>
+    <string name="family_gtv_step3">Leave the TV on this screen. Your phone will connect on its own.</string>
+    <!-- Fire TV (Fire OS 7) -->
+    <string name="family_fire_step1">On the TV, open Settings > My Fire TV > About. Select the device name seven times until the TV says \"You are now a developer\".</string>
+    <string name="family_fire_step2">Go back one screen. Open Developer options and switch on ADB debugging.</string>
+    <string name="family_fire_step3">Leave the TV on this screen. Your phone will connect on its own.</string>
+    <!-- TCL China (Android 9) -->
+    <string name="family_tcl_step1">On the TV, open Settings > About > 本机信息, then press Up, Down, Left, Right on the remote.</string>
+    <string name="family_tcl_step2">A small \"ADB\" window appears with an address. Leave it open.</string>
+    <string name="family_tcl_step3">Leave the TV on this screen. Your phone will connect on its own.</string>
+    <!-- Unknown brand: the generic Android TV path -->
+    <string name="family_unknown_step1">On the TV, open Settings (the gear, top right), then Device Preferences > About. Press OK on \"Build\" seven times until the TV says \"You are now a developer\".</string>
+    <string name="family_unknown_step2">Go back one screen. Open Developer options and switch on USB debugging. If the TV also shows \"Network debugging\" or \"ADB debugging\", switch that on too.</string>
+    <string name="family_unknown_step3">Leave the TV on this screen. Your phone will connect on its own.</string>
+
+    <!-- S2a profile banners (UX 2 and 4.15) -->
+    <string name="banner_fire">Fire TV lets us switch off adverts and tracking but keeps its own home screen. You still get the clean-up.</string>
+    <string name="banner_tcl">This TV keeps its own home screen (TCL does not allow others). You still get the clean-up.</string>
+    <string name="banner_mibox_usb">While debugging is on, this box switches off its USB port. A USB speaker or drive will stop until we\'re done (we switch debugging off again at the end).</string>
+
+    <!-- S2c Look at the TV (Allow) -->
+    <string name="allow_title">Look at the TV</string>
+    <string name="allow_body">The TV is asking whether to trust this phone. Tick \"Always allow\", then choose OK.</string>
+    <!-- The two parts of allow_body shown in text.primary; each must appear in allow_body exactly. -->
+    <string name="allow_body_emphasis_always">\"Always allow\"</string>
+    <string name="allow_body_emphasis_ok">OK.</string>
+    <string name="allow_code_label">The code on the TV ends in</string>
+    <string name="allow_code_caption">That is this phone.</string>
+    <string name="allow_waiting">Waiting for your tap on the TV...</string>
+    <string name="allow_still_waiting">Still waiting for OK on the TV.</string>
+    <string name="allow_trusted">Trusted</string>
+    <string name="allow_dont_see">I don\'t see it on the TV</string>
+    <string name="allow_art_cd">The TV\'s Allow USB debugging box. The fingerprint ends in {tail}.</string>
+
+    <!-- S2c sheet: I don't see it on the TV (UX 4.4) -->
+    <string name="notseen_title">I don\'t see it on the TV</string>
+    <string name="notseen_hidden">The box can hide behind another screen. Press Home on the remote, then Back once. If it\'s still not there, we\'ll ask the TV again.</string>
+    <string name="notseen_cancelled">If someone chose Cancel: switch USB debugging off and on again on the TV, then tap \"Ask the TV again\".</string>
+    <string name="notseen_greyed">If \"Always allow\" is greyed out on the TV, OK alone is fine; we\'ll ask again next time.</string>
+    <string name="notseen_ask_again">Ask the TV again</string>
+    <string name="notseen_asking">Asking the TV again...</string>
+    <string name="notseen_restart">The TV isn\'t accepting the phone. This happens on a few models when debugging was switched on before the TV finished starting. Restart the TV, switch debugging on again, and come back.</string>
+    <string name="notseen_restarted">I\'ve restarted it</string>
+
+    <!-- S2d Connected, and the identity check "Is this your TV?" (D38) -->
+    <string name="connected_title">Connected to {tv}</string>
+    <string name="connected_cd">Connected</string>
+    <string name="identity_question">Is this your TV?</string>
+    <string name="identity_detail">{name}, serial ending {serial}</string>
+    <string name="identity_body">Check that the picture is what your TV is showing right now.</string>
+    <string name="identity_screenshot_cd">What the TV is showing right now</string>
+    <string name="identity_yes">Yes, that\'s mine</string>
+    <string name="identity_no">No</string>
+
+    <!-- S2x Pairing needed (D9). The three commands are code and are not translated. -->
+    <string name="pairing_title">This TV needs a pairing code</string>
+    <string name="pairing_body">This version can\'t type pairing codes yet; the next one will. If you have a computer, pair once with adb and run adb tcpip 5555, then come back; the phone takes it from there.</string>
+    <string name="pairing_show_steps">Show me the computer steps</string>
+    <string name="pairing_steps_title">Pair once from a computer</string>
+    <string name="pairing_steps_intro">On the TV, open Developer options > Wireless debugging > Pair device with pairing code. Then run these three commands on the computer, one at a time.</string>
+    <string name="pairing_steps_cmd_pair" translatable="false">adb pair ADDRESS:PAIR_PORT</string>
+    <string name="pairing_steps_cmd_connect" translatable="false">adb connect ADDRESS:CONNECT_PORT</string>
+    <string name="pairing_steps_cmd_tcpip" translatable="false">adb tcpip 5555</string>
+    <string name="pairing_steps_note">Use the address, ports and six-digit code the TV shows. When the last command has run, come back to this app.</string>
+
+    <!-- Stop: TV not found (UX 4.1, no Wi-Fi name, D19) -->
+    <string name="stop_tv_not_found_title">No TV found yet</string>
+    <string name="stop_tv_not_found_body">Make sure the TV is switched on and on the same Wi-Fi as this phone. TVs can take a minute to show up after they wake.</string>
+    <string name="stop_tv_not_found_primary">Keep looking</string>
+    <string name="stop_tv_not_found_secondary">Enter the TV\'s address</string>
+    <string name="stop_tv_not_found_tertiary">Help</string>
+    <string name="stop_tv_not_found_help_title">Why a TV may not show up</string>
+    <string name="stop_tv_not_found_help_isolation">Guest Wi-Fi, or a router that keeps devices apart. Ask the router for \"AP isolation\" or \"client isolation\" and switch it off.</string>
+    <string name="stop_tv_not_found_help_ethernet">The TV is on Ethernet while the phone is on Wi-Fi. That is fine on most routers, but some keep the two apart. Typing the TV\'s address gets around it.</string>
+    <string name="stop_tv_not_found_help_mesh">A mesh system with a separate guest network. Join the phone to the main network.</string>
+
+    <!-- Stop: wrong network (UX 4.2 with D19 copy) -->
+    <string name="stop_wrong_network_title">Phone and TV are on different networks</string>
+    <string name="stop_wrong_network_body">The TV was last seen on a different network. Join the same Wi-Fi as the TV and we\'ll carry on.</string>
+    <string name="stop_wrong_network_primary">Open Wi-Fi settings</string>
+    <string name="stop_wrong_network_secondary">I\'m on the right one, look again</string>
+    <string name="stop_wrong_network_off_title">This phone isn\'t on Wi-Fi</string>
+    <string name="stop_wrong_network_off_body">Wi-Fi is off. The TV can only be reached over the same Wi-Fi.</string>
+
+    <!-- Stop: identity changed (D37) -->
+    <string name="stop_identity_changed_title">A different TV answered at this address</string>
+    <string name="stop_identity_changed_body">The TV at this address isn\'t the one we set up as {name}. Its address may have changed, or another TV has taken it. We stopped before changing anything.</string>
+    <string name="stop_identity_changed_primary">Look for it again</string>
+    <string name="stop_identity_changed_secondary">Back</string>
+
+    <!-- Stop: shell v2 missing (F1) -->
+    <string name="stop_tv_not_supported_title">This TV can\'t be set up from a phone yet</string>
+    <string name="stop_tv_not_supported_body">This TV\'s debugging connection is too basic for the phone to make changes safely, so we stopped before touching anything. Nothing on the TV was changed.</string>
+    <string name="stop_tv_not_supported_primary">Back</string>
+
+</resources>

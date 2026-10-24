@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Clean Your TV, :feature:modules. English source strings.
+  Every string that takes an argument is ICU MessageFormat with NAMED arguments in braces,
+  formatted by the app's message helper (android.icu.text.MessageFormat). No printf placeholders,
+  no Android plurals elements. Counts go through the plural selector.
+  Screens: M3, M3a, M3b, M3c, update re-consent, the index and fetch failure lines.
+  Module names, publisher handles and index text are data and are never put in these strings.
+-->
+<resources>
+
+    <!-- Shared button words -->
+    <string name="action_back">Back</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_ok">OK</string>
+    <string name="action_done">Done</string>
+    <string name="action_undo">Undo</string>
+
+    <!-- Credential prompt (D17), raised by "Add to {tv}" -->
+    <string name="gate_title">Confirm it\'s you</string>
+    <string name="gate_subtitle">Before we change anything on {tv}</string>
+    <string name="gate_negative">Cancel</string>
+    <string name="gate_failed">We couldn\'t confirm it\'s you, so nothing was changed.</string>
+
+    <!-- M3 Cards and modules -->
+    <string name="modules_title">Cards and modules</string>
+    <string name="modules_state_shown">Shown</string>
+    <string name="modules_state_hidden">Hidden</string>
+    <string name="modules_state_over_limit">Over the limit</string>
+    <string name="modules_over_limit_note">The home screen shows up to eight cards.</string>
+    <string name="modules_remove">Remove from TV</string>
+    <string name="modules_show_card">Show its card</string>
+    <string name="modules_cards_off_note">Cards are off on this TV\'s home screen. Show one and the TV asks you to confirm.</string>
+    <string name="modules_update">Update</string>
+    <string name="modules_add">Add</string>
+    <string name="modules_update_available">{version} is available</string>
+    <string name="modules_empty">No cards yet. Add one to put it on the home screen.</string>
+    <string name="modules_normal_app_note">On this TV it appears as a normal app</string>
+    <string name="modules_remove_title">Remove {name} from {tv}?</string>
+    <string name="modules_remove_body">This takes the app off the TV. Your home screen and your other cards stay as they are.</string>
+    <string name="modules_remove_confirm">Remove</string>
+    <string name="modules_removed">{name} was removed.</string>
+    <string name="modules_state_cd">{name}: {state}</string>
+
+    <!-- Update re-consent (UX 5.4) -->
+    <string name="modules_update_consent">{name} {version} now also wants to: {permissions}. Allow this version?</string>
+    <string name="modules_update_skip">Skip this version</string>
+
+    <!-- M3a Add to {tv} -->
+    <string name="addmodule_title">Add to {tv}</string>
+    <string name="addmodule_search_hint">Search</string>
+    <string name="addmodule_search_cd">Search modules</string>
+    <string name="addmodule_open_source">Open source</string>
+    <string name="addmodule_size">{size, plural, other {# MB}}</string>
+    <string name="addmodule_tier_community">Community</string>
+    <string name="addmodule_tier_verified">Verified</string>
+    <string name="addmodule_tier_paused">Paused</string>
+    <string name="addmodule_loading">Loading the list...</string>
+    <string name="addmodule_empty">No modules match your search.</string>
+    <string name="addmodule_refresh">Refresh</string>
+    <string name="addmodule_footer">All modules are made by people in the community and checked automatically.</string>
+    <string name="addmodule_footer_link">Who made each one</string>
+    <string name="addmodule_tiers_title">Who made each one</string>
+    <string name="addmodule_tiers_community">Community: made by someone outside this app, and checked automatically against what the author published.</string>
+    <string name="addmodule_tiers_verified">Verified: a named person has reviewed that version.</string>
+    <string name="addmodule_tiers_paused">Paused: the maintainers have stopped offering it for now.</string>
+
+    <!-- M3b Module detail -->
+    <string name="module_what_title">WHAT IT CAN DO ON THE TV</string>
+    <string name="module_who_title">WHO MADE IT</string>
+    <string name="module_runs_background">Runs in the background: {reason}</string>
+    <string name="module_no_background">No background service</string>
+    <string name="module_perm_can_cd">{statement}. It can do this.</string>
+    <string name="module_perm_cannot_cd">{statement}. It does not do this.</string>
+    <string name="module_maker">{handle} on GitHub</string>
+    <string name="module_version_line">Version {version}, released {date}</string>
+    <string name="module_checks">{count, plural, =0 {Checked automatically: the file matches what the author published, and asks for no permissions.} one {Checked automatically: the file matches what the author published, and asks for the # permission listed above and nothing else.} other {Checked automatically: the file matches what the author published, and asks for the # permissions listed above and nothing else.}}</string>
+    <string name="module_not_reviewed">Checked automatically. Not yet reviewed by a person.</string>
+    <string name="module_key_line">Key {key}, the same as on the TV</string>
+    <string name="module_source">Source code</string>
+    <string name="module_report">Report a problem</string>
+    <string name="module_hero_badge">Its card on your TV</string>
+    <string name="module_add">Add to {tv}</string>
+    <!-- Shown before the first add-on download (F-Droid Inclusion Policy, security item 5). -->
+    <string name="module_outside_store">Add-ons are downloaded from their authors\' GitHub releases, outside any app store, and are not built or checked by F-Droid.</string>
+    <string name="module_add_turns_cards_on">Adding it turns cards on for this TV\'s home screen; the TV asks before the card shows.</string>
+    <string name="module_paused_reason">Paused by the maintainers: {reason}</string>
+    <string name="module_install_adding">Adding {name}...</string>
+    <string name="module_install_downloading">{size, plural, other {Downloading (# MB)...}}</string>
+    <string name="module_install_checking">Checking it matches the author\'s copy...</string>
+    <string name="module_install_installing">Installing on the TV...</string>
+    <string name="module_install_asking">Asking the TV to show its question...</string>
+    <string name="module_install_failed">{name} couldn\'t be installed on the TV. Nothing else was changed.</string>
+
+    <!-- M3c Look at the TV (card prompt, D1 and D45) -->
+    <string name="cardprompt_title">Look at the TV</string>
+    <string name="cardprompt_art_keep">Keep hidden</string>
+    <string name="cardprompt_art_cd">The TV asks: {name} wants a card on your home screen. Key {key}. The choices are Keep hidden and Show card.</string>
+    <string name="cardprompt_body">The TV double-checks with you so no app can put itself on the home screen without asking.</string>
+    <string name="cardprompt_instruction">Choose \"Show card\" with the remote. The key on the TV should read {key}, the same as here.</string>
+    <string name="cardprompt_waiting">Waiting for your answer on the TV...</string>
+    <string name="cardprompt_later">Do it later: hold OK on the TV\'s Settings pill to find Module cards.</string>
+    <string name="cardprompt_shown">{name} is on the home screen.</string>
+    <string name="cardprompt_hidden">{name} is installed and hidden. It still appears as an ordinary app. You can show the card any time from Cards and modules.</string>
+    <string name="cardprompt_signer_changed">The new version of {name} is signed with a different key than before. That\'s unusual; the TV asks again on purpose. If you didn\'t expect an update, choose Keep hidden.</string>
+
+    <!-- Module list (index) failures. Calm, never blame the user. -->
+    <string name="index_failure_bad_signature">We couldn\'t confirm the module list is genuine, so we didn\'t use it. Nothing on the TV was touched.</string>
+    <string name="index_failure_unknown_key">The module list is signed with a key we don\'t recognise, so we didn\'t use it. Nothing on the TV was touched.</string>
+    <string name="index_failure_revoked_key">The module list is signed with a key that has been withdrawn, so we didn\'t use it. Nothing on the TV was touched.</string>
+    <string name="index_failure_bad_keys_file">The list of trusted keys didn\'t pass our checks, so we didn\'t use the module list. Nothing on the TV was touched.</string>
+    <string name="index_failure_expired">The module list is out of date. Connect to the internet and refresh it.</string>
+    <string name="index_failure_rollback">The module list we received is older than the one we already have, so we kept the newer one.</string>
+    <string name="index_failure_malformed">We couldn\'t read the module list. Try again in a little while.</string>
+    <string name="index_stale_warning">The module list may be out of date; refresh when you\'re online</string>
+
+    <!-- Download (fetch) failures -->
+    <string name="fetch_failure_offline">This phone has no internet connection right now. Connect and try again.</string>
+    <string name="fetch_failure_host_not_allowed">That download isn\'t from a place we use, so we stopped. Nothing was installed.</string>
+    <string name="fetch_failure_http_error">The download site answered with an error ({code}). Try again in a little while.</string>
+    <string name="fetch_failure_too_large">That download is larger than expected, so we stopped. Nothing was installed.</string>
+    <string name="fetch_failure_hash_mismatch">The download doesn\'t match the author\'s copy, so we didn\'t install it.</string>
+    <string name="fetch_failure_size_mismatch">The download isn\'t the size the list says, so we stopped. Nothing was installed.</string>
+    <string name="fetch_failure_signer_mismatch">The app is signed by someone other than the author in the list, so we didn\'t install it.</string>
+    <string name="fetch_failure_try_again">Try again</string>
+
+</resources>

@@ -1,0 +1,8 @@
+HdmiControlService:
+  mProhibitMode: false
+  HdmiCecNetwork:
+    mDeviceInfos:
+      CEC: logical_address: 0x04 device_type: 0x04 vendor_id: 0x0010FA display_name: Apple TV power_status: 0x00 physical_address: 0x1000 port_id: 1 cec_version: 0x05
+    mPortInfo:
+      HdmiPortInfo{id=1, type=INPUT, address=0x1000, cec=true, arc=false, eArc=false}
+      HdmiPortInfo{id=2, type=INPUT, address=0x2000, cec=true, arc=true, eArc=true}

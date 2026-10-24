@@ -1,0 +1,12 @@
+# Return a package to its default state
+op: DefaultState pkg=com.xiaomi.mitv.handbook
+privilege: PROFILE_STEP
+timeout_ms: 30000
+stdout_cap: 65536
+line: 'pm' 'default-state' '--user' '0' 'com.xiaomi.mitv.handbook'
+transfer: none
+verify: Read kind=PACKAGE_DUMP pkg=com.xiaomi.mitv.handbook
+verify_line: 'dumpsys' 'package' 'com.xiaomi.mitv.handbook'
+prior: packageState=ENABLED
+inverse: Enable pkg=com.xiaomi.mitv.handbook
+inverse_line: 'pm' 'enable' '--user' '0' 'com.xiaomi.mitv.handbook'

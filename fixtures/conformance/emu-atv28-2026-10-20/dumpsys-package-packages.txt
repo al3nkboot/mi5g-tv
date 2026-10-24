@@ -1,0 +1,336 @@
+Packages:
+  Package [com.android.cts.priv.ctsshim] (60c551c):
+    codePath=/system/priv-app/CtsShimPrivPrebuilt
+    versionCode=27 minSdk=24 targetSdk=24
+    pkgFlags=[ SYSTEM ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    User 0: ceDataInode=-4294852528 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.ext.services] (217a708):
+    codePath=/system/priv-app/GoogleExtServices
+    versionCode=1 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    User 0: ceDataInode=-4294852603 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.katniss] (42bb4):
+    codePath=/system/priv-app/Katniss
+    versionCode=9000182 minSdk=23 targetSdk=25
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP LARGE_HEAP ]
+    User 0: ceDataInode=-4294852524 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.providers.telephony] (e0cda4f):
+    codePath=/system/priv-app/TelephonyProvider
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_BACKUP KILL_AFTER_RESTORE RESTORE_ANY_VERSION ]
+    User 0: ceDataInode=-4294852597 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.providers.calendar] (8f26474):
+    codePath=/system/priv-app/CalendarProvider
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=-4294852520 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.tv.settings] (c0701ee):
+    codePath=/system/priv-app/TvSettings
+    versionCode=1 minSdk=23 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    User 0: ceDataInode=-4294852514 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.lego.android.tvleanback] (de3e9e4):
+    codePath=/system/app/LeanbackSampleApp
+    versionCode=1 minSdk=21 targetSdk=22
+    pkgFlags=[ SYSTEM DEBUGGABLE HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=-4294852511 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.providers.media] (ad61a65):
+    codePath=/system/priv-app/MediaProvider
+    versionCode=900 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=-4294852508 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.ext.shared] (610917c):
+    codePath=/system/app/GoogleExtShared
+    versionCode=1 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=-4294852591 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.documentsui] (6934968):
+    codePath=/system/priv-app/DocumentsUIMinimal
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=-4294852505 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.externalstorage] (79414):
+    codePath=/system/priv-app/ExternalStorageProvider
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    User 0: ceDataInode=-4294852502 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.htmlviewer] (9d3dd80):
+    codePath=/system/app/HTMLViewer
+    versionCode=28 minSdk=23 targetSdk=23
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    User 0: ceDataInode=-4294852499 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.companiondevicemanager] (95951ac):
+    codePath=/system/app/CompanionDeviceManager
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=-4294852496 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.providers.downloads] (d77a65b):
+    codePath=/system/priv-app/DownloadProvider
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=-4294852493 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.providers.tv] (f82bf57):
+    codePath=/system/priv-app/TvProvider
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    User 0: ceDataInode=-4294852490 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.backdrop] (909f9f3):
+    codePath=/system/app/Backdrop
+    versionCode=1004001 minSdk=17 targetSdk=23
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    User 0: ceDataInode=-4294852487 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.tungsten.setupwraith] (8c0424f):
+    codePath=/system/priv-app/SetupWraith
+    versionCode=2018052200 minSdk=23 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=-4294852484 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.configupdater] (be8b46b):
+    codePath=/system/priv-app/ConfigUpdater
+    versionCode=28 minSdk=25 targetSdk=25
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=-4294852481 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.defcontainer] (6dc2c47):
+    codePath=/system/priv-app/DefaultContainerService
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=-4294852584 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.vending] (a545e3):
+    codePath=/system/app/LicenseChecker
+    versionCode=1801 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    User 0: ceDataInode=-4294852478 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.pacprocessor] (c5c5d3f):
+    codePath=/system/app/PacProcessor
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    User 0: ceDataInode=-4294852475 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.certinstaller] (c438e5b):
+    codePath=/system/app/CertInstaller
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=-4294852471 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.carrierconfig] (aa2b537):
+    codePath=/system/priv-app/CarrierConfig
+    versionCode=1 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=-4294852468 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.marvin.talkback] (aae8c64):
+    codePath=/system/app/talkback
+    versionCode=60101118 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP KILL_AFTER_RESTORE RESTORE_ANY_VERSION ]
+    User 0: ceDataInode=-4294852465 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [android] (b1b3532):
+    codePath=/system/framework/framework-res.apk
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM PERSISTENT ALLOW_BACKUP ]
+    User 0: ceDataInode=-4294852577 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.backupconfirm] (ee8f11a):
+    codePath=/system/priv-app/BackupRestoreConfirmation
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ]
+    User 0: ceDataInode=-4294852462 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.statementservice] (61504e6):
+    codePath=/system/priv-app/StatementService
+    versionCode=1 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=-4294852459 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.settings.intelligence] (c9c8972):
+    codePath=/system/priv-app/SettingsIntelligence
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    User 0: ceDataInode=-4294852456 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.providers.settings] (61df1af):
+    codePath=/system/priv-app/SettingsProvider
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_BACKUP RESTORE_ANY_VERSION ]
+    User 0: ceDataInode=-4294852571 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.sharedstoragebackup] (8e60835):
+    codePath=/system/priv-app/SharedStorageBackup
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_BACKUP KILL_AFTER_RESTORE ]
+    User 0: ceDataInode=-4294852453 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.printspooler] (2fbf2b1):
+    codePath=/system/app/PrintSpooler
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=-4294852450 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.dreams.basic] (4ac08ed):
+    codePath=/system/app/BasicDreams
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    User 0: ceDataInode=-4294852446 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.se] (65f0225):
+    codePath=/system/app/SecureElement
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE PERSISTENT ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    User 0: ceDataInode=-4294852443 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.tv] (aaa68a5):
+    codePath=/system/priv-app/LiveTv
+    versionCode=417001170 minSdk=23 targetSdk=26
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    User 0: ceDataInode=-4294852440 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.inputdevices] (2ee1071):
+    codePath=/system/priv-app/InputDevices
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_BACKUP ]
+    User 0: ceDataInode=-4294852565 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.tvrecommendations] (517ed34):
+    codePath=/system/priv-app/TVRecommendations
+    versionCode=1010303100 minSdk=26 targetSdk=26
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=-4294852436 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.leanbacklauncher.recommendations] (2e0a8a0):
+    codePath=/system/priv-app/RecommendationsService
+    versionCode=1900102100 minSdk=26 targetSdk=26
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    User 0: ceDataInode=-4294852433 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.sdksetup] (eb7aecc):
+    codePath=/system/priv-app/SdkSetup
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    User 0: ceDataInode=-4294852430 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.internal.display.cutout.emulation.emu01] (116ebb8):
+    codePath=/vendor/overlay/DisplayCutoutEmulationEmu01
+    versionCode=1 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    User 0: ceDataInode=-4294852427 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.tvlauncher] (e2b0b64):
+    codePath=/system/priv-app/TVLauncher
+    versionCode=1010301100 minSdk=26 targetSdk=27
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=-4294852422 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.webview] (e3f79d0):
+    codePath=/system/app/WebViewGoogle
+    versionCode=336015815 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    User 0: ceDataInode=-4294852419 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.syncadapters.contacts] (ea62fc):
+    codePath=/system/app/GoogleContactsSyncAdapter
+    versionCode=28 minSdk=23 targetSdk=23
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=-4294852414 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.keychain] (2698017):
+    codePath=/system/app/KeyChain
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=-4294852411 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.packageinstaller] (38505e7):
+    codePath=/system/priv-app/GooglePackageInstaller
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=-4294852559 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.gms] (fe07e52):
+    codePath=/system/priv-app/PrebuiltGmsCorePano
+    versionCode=202414084 minSdk=21 targetSdk=30
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=-4294852407 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.gsf] (2fcacee):
+    codePath=/system/priv-app/GoogleServicesFramework
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=-4294852403 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.tts] (1ec5b8a):
+    codePath=/system/app/GoogleTTS
+    versionCode=210315200 minSdk=19 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=-4294852399 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.proxyhandler] (9bca656):
+    codePath=/system/priv-app/ProxyHandler
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    User 0: ceDataInode=-4294852553 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.tungsten.overscan] (c74d1e2):
+    codePath=/system/priv-app/Overscan
+    versionCode=1 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    User 0: ceDataInode=-4294852395 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.netspeed] (5922a2e):
+    codePath=/system/app/NetSpeed
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    User 0: ceDataInode=-4294852392 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.leanbacklauncher] (91abb3a):
+    codePath=/system/priv-app/LeanbackLauncher
+    versionCode=1901105100 minSdk=26 targetSdk=26
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=-4294852389 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.backuptransport] (5839943):
+    codePath=/system/priv-app/GoogleBackupTransport
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    User 0: ceDataInode=-4294852386 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.sss.authbridge] (8634869):
+    codePath=/system/app/SecondScreenSetupAuthBridge
+    versionCode=2018052200 minSdk=14 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    User 0: ceDataInode=-4294852382 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.cts.ctsshim] (13ff560):
+    codePath=/system/app/CtsShimPrebuilt
+    versionCode=27 minSdk=24 targetSdk=24
+    pkgFlags=[ SYSTEM ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    User 0: ceDataInode=-4294852409 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.vpndialogs] (69f078c):
+    codePath=/system/priv-app/VpnDialogs
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=-4294852378 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.shell] (6bd69bc):
+    codePath=/system/priv-app/Shell
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    User 0: ceDataInode=-4294852547 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.wallpaperbackup] (5b92f49):
+    codePath=/system/app/WallpaperBackup
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_BACKUP ]
+    User 0: ceDataInode=-4294852375 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.providers.userdictionary] (790e46d):
+    codePath=/system/priv-app/UserDictionaryProvider
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_BACKUP ]
+    User 0: ceDataInode=-4294852372 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.emergency] (4383124):
+    codePath=/system/priv-app/EmergencyInfo
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    User 0: ceDataInode=-4294852366 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.location.fused] (75e4385):
+    codePath=/system/priv-app/FusedLocation
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    User 0: ceDataInode=-4294852541 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.systemui] (2f6bb70):
+    codePath=/system/priv-app/SystemUI
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE PERSISTENT ]
+    User 0: ceDataInode=-4294852535 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.traceur] (a3426f2):
+    codePath=/system/app/Traceur
+    versionCode=2 minSdk=26 targetSdk=26
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    User 0: ceDataInode=-4294852363 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.bluetooth] (daeed74):
+    codePath=/system/app/Bluetooth
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    User 0: ceDataInode=-4294852356 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.providers.contacts] (ebc869f):
+    codePath=/system/priv-app/ContactsProvider
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=-4294852352 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.captiveportallogin] (b183e31):
+    codePath=/system/app/CaptivePortalLogin
+    versionCode=28 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    User 0: ceDataInode=-4294852349 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.inputmethod.latin] (d018c6d):
+    codePath=/system/app/LatinIMEGoogleTvPrebuilt
+    versionCode=26641623 minSdk=26 targetSdk=26
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP RESTORE_ANY_VERSION ]
+    User 0: ceDataInode=-4294852532 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.tvtutorials] (8b78269):
+    codePath=/system/priv-app/TvTutorials
+    versionCode=1011002100 minSdk=26 targetSdk=26
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    User 0: ceDataInode=-4294852346 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false

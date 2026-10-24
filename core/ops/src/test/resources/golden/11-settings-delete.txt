@@ -1,0 +1,12 @@
+# A null value renders settings delete; the undo puts the old value back
+op: SettingsPut key=SCREENSAVER_COMPONENTS value=null
+privilege: PROFILE_STEP
+timeout_ms: 30000
+stdout_cap: 65536
+line: 'settings' 'delete' 'secure' 'screensaver_components'
+transfer: none
+verify: Read kind=SETTINGS ns=SECURE
+verify_line: 'settings' 'list' 'secure'
+prior: settingValue=com.google.android.backdrop/.Backdrop
+inverse: SettingsPut key=SCREENSAVER_COMPONENTS value=com.google.android.backdrop/.Backdrop
+inverse_line: 'settings' 'put' 'secure' 'screensaver_components' 'com.google.android.backdrop/.Backdrop'

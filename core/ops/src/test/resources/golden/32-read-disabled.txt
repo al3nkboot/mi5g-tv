@@ -1,0 +1,10 @@
+# Disabled packages
+op: Read kind=DISABLED
+privilege: READ
+timeout_ms: 30000
+stdout_cap: 262144
+line: 'pm' 'list' 'packages' '-d'
+transfer: none
+verify: none
+prior: none
+inverse: none

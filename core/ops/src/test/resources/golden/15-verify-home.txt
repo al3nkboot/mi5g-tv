@@ -1,0 +1,10 @@
+# Resolve HOME; checked against the op's own output, no undo
+op: VerifyHome expected=com.gathin.tvhome/.MainActivity
+privilege: READ
+timeout_ms: 30000
+stdout_cap: 65536
+line: 'cmd' 'package' 'resolve-activity' '--brief' '-c' 'android.intent.category.HOME' '-a' 'android.intent.action.MAIN'
+transfer: none
+verify: none
+prior: none
+inverse: none

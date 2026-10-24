@@ -1,0 +1,10 @@
+# The resumed activity, for the live check
+op: Read kind=HOME_FOCUS
+privilege: READ
+timeout_ms: 20000
+stdout_cap: 1048576
+line: 'dumpsys' 'activity' 'activities'
+transfer: none
+verify: none
+prior: none
+inverse: none

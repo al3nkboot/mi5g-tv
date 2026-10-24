@@ -1,0 +1,10 @@
+# am start -W, 180 s
+op: StartActivity component=com.gathin.tvhome/.MainActivity wait=true
+privilege: PROFILE_STEP
+timeout_ms: 180000
+stdout_cap: 65536
+line: 'am' 'start' '-W' '-n' 'com.gathin.tvhome/.MainActivity'
+transfer: none
+verify: none
+prior: none
+inverse: none

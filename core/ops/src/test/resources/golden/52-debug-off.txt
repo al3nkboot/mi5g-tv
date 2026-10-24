@@ -1,0 +1,10 @@
+# Debugging off: the last op of a session
+op: DebugOff
+privilege: SESSION_END
+timeout_ms: 30000
+stdout_cap: 65536
+line: 'settings' 'put' 'global' 'adb_enabled' '0'
+transfer: none
+verify: none
+prior: none
+inverse: none

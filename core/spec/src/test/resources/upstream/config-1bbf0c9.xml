@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Launcher configuration. Edit this file, then run launcher/build-and-install.sh.
+  Or leave it and push a theme instead: tools/theme.sh themes/<name> puts a config.json (same keys, see
+  themes/README.md) and an optional wallpaper on the TV, and the launcher overlays it at start.
+  Package names: on the TV run `pm list packages` (tools/tv.py 'pm list packages').
+-->
+<resources>
+
+    <!-- Apps pinned to the dock row at the bottom, in this order. Missing apps are skipped. -->
+    <string-array name="dock_apps">
+        <item>com.netflix.ninja</item>
+        <item>com.amazon.amazonvideo.livingroom</item>
+        <item>com.google.android.youtube.tv</item>
+        <item>in.startv.hotstar</item>
+    </string-array>
+
+    <!-- Apps never shown as tiles (e.g. the Live TV app, which the Inputs menu already covers). -->
+    <string-array name="hidden_apps">
+        <item>com.mediatek.wwtv.tvcenter</item>
+        <item>com.mitv.gallery</item>
+    </string-array>
+
+    <!-- The TV's Live TV / tuner app, offered at the end of the Inputs menu. Leave empty to omit. -->
+    <string name="live_tv_package" translatable="false">com.mediatek.wwtv.tvcenter</string>
+
+    <!-- Some TVs give their Live TV app no leanback entry point at all, so `live_tv_package` above
+         resolves to nothing (TCL Android TV 9 on China-market sets is one). This action is then sent
+         to that package instead, and the app starts normally. Leave empty to omit. -->
+    <string name="live_tv_action" translatable="false"></string>
+
+    <!-- TVs with no TvInputManager have no HDMI list to read, but their own source-selection panel
+         still switches inputs (TCL Android TV 9 again). When nothing could be listed, the Inputs menu
+         offers one row that starts this service: component first, then action. Leave empty to omit. -->
+    <string name="source_panel_service" translatable="false"></string>
+    <string name="source_panel_action" translatable="false"></string>
+
+    <!-- Inputs menu: HDMI and AV rows normally open with ACTION_VIEW on the input's channel URI, which the
+         Live TV app handles. Where nothing answers that, this action is sent with the same URI instead
+         (XGIMI projectors: com.xgimi.action.hdmiPlayer). Leave empty to omit. -->
+    <string name="input_action" translatable="false"></string>
+
+    <!-- Show the Solar Hijri (Shamsi) date used in Iran and Afghanistan, e.g. "27 Mehr 1405", above the
+         Gregorian date. -->
+    <bool name="shamsi_date">false</bool>
+    <!-- Optional VPN app the network pill opens (hold the pill for Wi-Fi settings), e.g. the package of the
+         VPN you use. Empty: the pill opens Wi-Fi settings. The green VPN badge shows for any VPN either way;
+         with an app set here, a red "VPN off" badge also shows while no VPN is up. -->
+    <string name="vpn_app" translatable="false"></string>
+    <!-- Grid rows left visible under the dock on the home screen. 0 = dock sits at the very bottom. -->
+    <integer name="rows_below_dock">0</integer>
+
+    <!-- Tiles per row in the grid; the dock always has this many slots. Tiles are 180dp wide at 4 columns and
+         shrink to fit from 5 up (about 144dp at 5, 117dp at 6 on a 1080p TV). -->
+    <integer name="columns">4</integer>
+
+    <!-- "Default home" tile that opens Android's home-screen picker, for TVs whose settings have one
+         (most Android TVs don't; the tile only appears when the page exists). Off by default. -->
+    <bool name="show_home_settings_shortcut">false</bool>
+
+    <!-- Module cards: an app that declares a card (docs/specs/card.md) can stand in for its tile with its own
+         label, caption and glow colour, once you answer Show on the prompt. false: never look for cards or ask. -->
+    <bool name="module_cards">true</bool>
+</resources>

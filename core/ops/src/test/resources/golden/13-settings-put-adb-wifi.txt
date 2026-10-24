@@ -1,0 +1,11 @@
+# The session-end key: privilege SESSION_END, value 0 only
+op: SettingsPut key=ADB_WIFI_ENABLED value=0
+privilege: SESSION_END
+timeout_ms: 30000
+stdout_cap: 65536
+line: 'settings' 'put' 'global' 'adb_wifi_enabled' '0'
+transfer: none
+verify: Read kind=SETTINGS ns=GLOBAL
+verify_line: 'settings' 'list' 'global'
+prior: settingValue=1
+inverse: none

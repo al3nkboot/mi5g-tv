@@ -1,0 +1,71 @@
+Mi5G TV (phone app): third-party notices
+
+Mi5G TV (`com.midroid.mi5gtv`) is an Arabic-first Android edition based on Clean Your TV (phone app)
+by udhaykumarbala (https://github.com/udhaykumarbala/cleanyourtv-app, MIT License) and Clean Your TV
+by Gathin (https://github.com/Gathin23/cleanyourtv, MIT License).
+
+The app is MIT licensed (see LICENSE). It contains, or is built with, the following third-party
+work. The full licence texts are linked or included below.
+
+1. Clean Your TV launcher (bundled TV launcher APK, com.gathin.tvhome)
+   https://github.com/Gathin23/cleanyourtv, tag v2.5.0, commit 9071ec8d2f41826778f6b4c7f5f42dadc22f5b22
+   (the third_party/cleanyourtv submodule). The APK in android/platform/src/main/assets/bundled is
+   built from that commit without changes and re-signed with this project's launcher key. The
+   upstream repository's per TV clean-up lists, written by its community contributors, are
+   converted into this app's TV profiles, and three of its themes (default, aurora with its
+   wallpaper picture, six-columns) are bundled as they are. Licence: MIT. The aurora wallpaper
+   is the upstream author's own work; he confirmed on 2026-10-23 that it is MIT like the rest.
+
+     MIT License
+
+     Copyright (c) 2026 Gathin
+
+     Permission is hereby granted, free of charge, to any person obtaining a copy
+     of this software and associated documentation files (the "Software"), to deal
+     in the Software without restriction, including without limitation the rights
+     to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     copies of the Software, and to permit persons to whom the Software is
+     furnished to do so, subject to the following conditions:
+
+     The above copyright notice and this permission notice shall be included in all
+     copies or substantial portions of the Software.
+
+     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+     SOFTWARE.
+
+   The launcher itself uses AndroidX RecyclerView and DynamicAnimation (Apache License 2.0) and
+   the Outfit typeface (item 3).
+
+2. dadb (ADB protocol code, module :adb:wire)
+   https://github.com/mobile-dev-inc/dadb, version 2.0.0, Copyright (c) 2021 mobile.dev inc.
+   Parts of :adb:wire are derived from it; see adb/wire/NOTICE for the files and the full
+   Apache License 2.0 text. No dadb binary is used.
+
+3. Outfit typeface (the app's and the launcher's font)
+   https://github.com/Outfitio/Outfit-Fonts, Copyright 2021 The Outfit Project Authors.
+   Licence: SIL Open Font License 1.1, full text in
+   ui/design/src/main/res/raw/cyt_outfit_ofl.txt (also shown in the app under Settings, Licences).
+
+4. Libraries compiled into the APK
+   Licence: Apache License 2.0 (https://www.apache.org/licenses/LICENSE-2.0), unless noted.
+   - Kotlin standard library (JetBrains)
+   - kotlinx.coroutines and kotlinx.serialization (JetBrains)
+   - AndroidX: Activity Compose, Lifecycle, Navigation 3, ProfileInstaller, Core and their
+     transitive AndroidX dependencies (Google)
+   - Jetpack Compose: runtime, UI, foundation, Material 3 (Google)
+   - Bouncy Castle Crypto APIs, bcprov-jdk18on (Ed25519 for the signed module index).
+     Licence: Bouncy Castle Licence (MIT style), https://www.bouncycastle.org/licence.html
+     Copyright (c) 2000 to 2026 The Legion of the Bouncy Castle Inc. (https://www.bouncycastle.org)
+
+   The exact versions are pinned in gradle/libs.versions.toml and verified by
+   gradle/verification-metadata.xml; release builds also publish a CycloneDX SBOM.
+
+5. Build and test tools (not in the APK)
+   Gradle, the Android Gradle Plugin and build tools, Robolectric, Roborazzi, JUnit, Turbine,
+   Kotest, apksig and apksigcopier, each under its own licence (Apache License 2.0, MIT, EPL 1.0
+   for JUnit 4, GPL 3.0 or later for apksigcopier, which only compares release APKs).

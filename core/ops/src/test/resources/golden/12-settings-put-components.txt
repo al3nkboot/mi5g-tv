@@ -1,0 +1,12 @@
+# A ComponentList value
+op: SettingsPut key=SCREENSAVER_COMPONENTS value=com.a.b/.X:com.c.d/.Y
+privilege: PROFILE_STEP
+timeout_ms: 30000
+stdout_cap: 65536
+line: 'settings' 'put' 'secure' 'screensaver_components' 'com.a.b/.X:com.c.d/.Y'
+transfer: none
+verify: Read kind=SETTINGS ns=SECURE
+verify_line: 'settings' 'list' 'secure'
+prior: empty
+inverse: SettingsPut key=SCREENSAVER_COMPONENTS value=null
+inverse_line: 'settings' 'delete' 'secure' 'screensaver_components'

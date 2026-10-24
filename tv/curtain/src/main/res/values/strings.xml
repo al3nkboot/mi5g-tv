@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Every word the TV curtain shows (RFC-CURTAIN-1): the phone sends stage and group names and
+     numbers only, never text. English only in 0.1. -->
+<resources>
+    <string name="app_name">Clean Your TV</string>
+    <string name="caption">Clean Your TV</string>
+    <string name="hint">Keep the TV on. Your phone shows the details.</string>
+    <string name="chip">Restore point</string>
+    <string name="all_clean">All clean.</string>
+
+    <string name="stage_scan">Saving a restore point...</string>
+    <string name="stage_restore_saved">Restore point saved</string>
+    <string name="stage_off">Switching things off: %1$d of %2$d...</string>
+    <string name="stage_off_group">%1$s: %2$d of %3$d...</string>
+    <string name="stage_group_done">%1$d switched off</string>
+    <string name="stage_group_done_group">%1$s switched off (%2$d)</string>
+    <string name="stage_install">Installing the new home screen</string>
+    <string name="stage_installed">New home screen installed</string>
+    <string name="stage_finale">Switching Home over</string>
+
+    <string name="group_adverts">Adverts</string>
+    <string name="group_tracking">Tracking</string>
+    <string name="group_nobody">Apps nobody asked for</string>
+    <string name="group_brand">%1$s extras</string>
+    <string name="group_brand_unknown">Maker extras</string>
+    <string name="group_shop">Shop and demo mode</string>
+    <string name="group_other">Other apps</string>
+</resources>

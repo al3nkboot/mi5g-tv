@@ -1,0 +1,10 @@
+# Screenshot to tmp then a sync pull, 2 MiB cap
+op: Read kind=SCREENCAP
+privilege: READ
+timeout_ms: 30000
+stdout_cap: 65536
+line: 'screencap' '-p' '/data/local/tmp/cleanyourtv/screen.png'
+transfer: sync:/data/local/tmp/cleanyourtv/screen.png 2097152
+verify: none
+prior: none
+inverse: none

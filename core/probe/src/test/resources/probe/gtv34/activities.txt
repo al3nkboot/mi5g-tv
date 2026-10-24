@@ -1,0 +1,2 @@
+  topResumedActivity=ActivityRecord{9c1e2f0 u0 com.gathin.tvhome/.MainActivity t31}
+    ResumedActivity: ActivityRecord{9c1e2f0 u0 com.gathin.tvhome/.MainActivity t31}

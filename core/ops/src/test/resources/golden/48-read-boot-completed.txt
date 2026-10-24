@@ -1,0 +1,10 @@
+# sys.boot_completed
+op: Read kind=BOOT_COMPLETED
+privilege: READ
+timeout_ms: 30000
+stdout_cap: 65536
+line: 'getprop' 'sys.boot_completed'
+transfer: none
+verify: none
+prior: none
+inverse: none

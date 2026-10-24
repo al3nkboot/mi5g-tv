@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Clean Your TV, :feature:setup. English source strings.
+  Every string that takes an argument is ICU MessageFormat with NAMED arguments in braces,
+  formatted by the app's message helper (android.icu.text.MessageFormat). No printf placeholders,
+  no Android plurals elements. Counts go through the plural selector.
+  Screens: probing, S3, S3a, S3b, S4a, S4b, S4c, S4d, S4e, install failure, S5 Done, restart flow,
+  credential prompt, foreground notification. Strings that contain a percent sign are marked
+  formatted="false" so lint does not read them as printf.
+-->
+<resources>
+
+    <!-- Shared button words -->
+    <string name="action_back">Back</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_ok">OK</string>
+    <string name="action_done">Done</string>
+    <string name="action_undo">Undo</string>
+
+    <!-- Credential prompt (D17) -->
+    <string name="gate_title">Confirm it\'s you</string>
+    <string name="gate_subtitle">Before we change anything on {tv}</string>
+    <string name="gate_negative">Cancel</string>
+    <string name="gate_failed">We couldn\'t confirm it\'s you, so nothing was changed.</string>
+
+    <!-- Notifications (D18, D16) -->
+    <string name="notify_channel_name">Setting up a TV</string>
+    <string name="notify_channel_description">Shows progress while the phone changes things on your TV, and tells you when to look at the TV.</string>
+    <string name="notify_progress" formatted="false">Setting up {tv}, {percent}%</string>
+    <string name="notify_look">Look at the TV. Tap to answer.</string>
+    <string name="notify_rationale">We\'ll buzz you when it\'s time to look at the TV. Allow notifications so that works with the phone in your pocket.</string>
+    <string name="notify_rationale_allow">Allow notifications</string>
+    <string name="notify_rationale_skip">Not now</string>
+
+    <!-- S2d to S3: probing -->
+    <string name="probing_line">Reading what\'s on the TV...</string>
+    <string name="probing_progress_cd">Reading what is on the TV</string>
+
+    <!-- Stop: probe failure -->
+    <string name="stop_probe_failed_title">We couldn\'t read what\'s on the TV</string>
+    <string name="stop_probe_failed_body">The TV stopped answering while we were reading it. Nothing was changed. Check that it\'s still on, then try again.</string>
+    <string name="stop_probe_failed_primary">Try again</string>
+    <string name="stop_probe_failed_secondary">Back</string>
+    <string name="stop_probe_failed_tertiary">Show details</string>
+
+    <!-- S3 What we found -->
+    <string name="found_title">{count, plural, =0 {Nothing to switch off. Want the new home screen?} one {We found one thing to switch off} other {We found # things to switch off}}</string>
+    <string name="found_headline">{count, plural, =0 {Nothing to switch off. Want the new home screen?} one {thing to switch off} other {things to switch off}}</string>
+    <string name="found_overline">We found</string>
+    <string name="found_zero_body">This TV is already tidy.</string>
+    <string name="found_group_ads">Adverts and sponsored rows</string>
+    <string name="found_group_tracking">Tracking and analytics</string>
+    <string name="found_group_nobody">Apps nobody asked for</string>
+    <string name="found_group_brand">{brand} extras</string>
+    <string name="found_group_shop">Shop and demo mode</string>
+    <string name="found_group_needed">Needed for the new home screen</string>
+    <string name="found_group_count_cd">{group}: {count, plural, one {# thing} other {# things}}</string>
+    <string name="found_see_list">See the list</string>
+    <string name="found_keep_intro">We keep everything you use:</string>
+    <string name="found_keep_paragraph">We keep everything you use: {apps}, {fixed}.</string>
+    <string name="found_keep_paragraph_no_apps">We keep everything you use: {fixed}.</string>
+    <string name="found_keep_fixed">Live TV and HDMI, the remote, the keyboard, Chromecast, the voice assistant and software updates</string>
+    <string name="found_home_row">Home screen: {dock}</string>
+    <!-- The dock with rows under it: the dock's apps, then how many more sit in the rows -->
+    <string name="found_home_row_rows">Home screen: {dock}, plus {count, plural, one {# app} other {# apps}} below</string>
+    <string name="found_home_row_cd">Home screen dock: {dock}</string>
+    <string name="found_home_change">Change</string>
+    <!-- An empty dock: the row names the new home screen (UX 2 dock card title) instead of a blank list -->
+    <string name="found_home_row_empty">Your new home screen</string>
+    <string name="found_safety">A restore point is saved first, so everything can be put back.</string>
+    <string name="found_make_clean">Make it clean</string>
+    <string name="found_customise">Customise</string>
+    <!-- D36 (RF-LAUNCHER-240 F1): the plan replaces a home screen app signed with another key -->
+    <string name="found_replaces_launcher">Replaces the home screen app already on this TV. Its look, app order, settings and card answers start fresh.</string>
+    <string name="found_no_lock">No screen lock on this phone, so we can\'t double-check it\'s you.</string>
+    <!-- Unknown model (no profile) -->
+    <string name="found_unknown_title">{count, plural, =0 {We didn\'t find anything we\'re sure about} one {We found one thing we\'re sure about} other {We found # things we\'re sure about}}</string>
+    <string name="found_unknown_headline">{count, plural, =0 {We didn\'t find anything we\'re sure about} one {thing we\'re sure about} other {things we\'re sure about}}</string>
+    <string name="found_unknown_body">We haven\'t met this exact TV before, so we\'re being careful. More can be switched off under Customise once you\'ve lived with it.</string>
+    <string name="found_help_add_tv">Help add this TV</string>
+    <!-- TV refuses other home screens (UX 4.6), shown in place of the home screen row -->
+    <string name="stop_tv_refuses_home_title">The new home screen isn\'t possible on this TV</string>
+    <string name="stop_tv_refuses_home_body">{brand} only allows its own. We\'ll switch off the adverts and tracking, which is most of the win.</string>
+    <string name="fire_tv_name" translatable="false">Fire TV</string>
+    <string name="found_home_old_android">The new home screen needs Android 8 or newer, so this TV keeps its own. We\'ll still switch off the adverts and tracking, which is most of the win.</string>
+    <string name="found_home_changed">The home screen on this TV was already changed, by another app or an earlier change, so we leave it as it is. We\'ll still switch off the adverts and tracking.</string>
+    <string name="found_home_unknown_stock">We don\'t know this TV\'s own home screen well enough to swap it safely, so it stays. We\'ll still switch off the adverts and tracking.</string>
+    <!-- RF-SAFETY-250: home screen switches skipped up front for safety, shown in place of the home screen row -->
+    <string name="found_home_wizard_wifi">This TV\'s Wi-Fi was saved by its setup wizard. The new home screen needs the wizard off, which would forget the Wi-Fi, and with the wizard left on the TV can crash. So it keeps its own home screen. We\'ll still switch off the adverts and tracking. To swap it later, forget and re-add the network in Settings, or use a cable, then run Setup again.</string>
+    <string name="found_home_wizard_wifi_unlisted">This TV\'s Wi-Fi was saved by its setup wizard, and we don\'t know this TV well enough yet to switch the wizard off safely. With the wizard left on, a new home screen can crash the TV, so it keeps its own home screen. We\'ll still switch off the adverts and tracking.</string>
+    <string name="found_home_wizard_wifi_unknown">We couldn\'t check who saved this TV\'s Wi-Fi. The new home screen needs the setup wizard off, which could forget the Wi-Fi, and with the wizard left on the TV can crash. So it keeps its own home screen. We\'ll still switch off the adverts and tracking.</string>
+    <string name="found_home_casting">On this Google device the new home screen needs the setup wizard off, and without it casting from phones stops working after every restart. So it keeps its own home screen. We\'ll still switch off the adverts and tracking.</string>
+    <string name="found_home_boot_loop">On this TV family the setup wizard comes back at every restart, and with the TV\'s own home screen off that can stop the TV starting up. So it keeps its own home screen. We\'ll still switch off the adverts and tracking.</string>
+    <string name="found_home_wizard_stays_on">We don\'t know this TV well enough to switch its setup wizard off, and with the wizard left on and the TV\'s own home screen off, the TV can crash. So it keeps its own home screen. We\'ll still switch off the adverts and tracking.</string>
+
+    <!-- S3a Customise sheet -->
+    <string name="customise_title">Customise</string>
+    <string name="customise_live">{total, plural, other {{off} of # off}}</string>
+    <string name="customise_nothing_deleted">Nothing is deleted; \"off\" means asleep.</string>
+    <string name="customise_show_fewer">Show fewer</string>
+    <string name="customise_group_voice">Voice assistant</string>
+    <string name="customise_group_cast">Chromecast</string>
+    <string name="customise_group_updates">Software updates</string>
+    <string name="customise_group_streaming">Streaming apps you don\'t use</string>
+    <string name="customise_group_brand_features">{brand} features</string>
+    <string name="customise_updates_note">Kept on so the TV keeps getting security fixes. Switching off stops update nags too.</string>
+    <string name="customise_wizard_name">Setup wizard</string>
+    <string name="customise_wizard_line">Switch off the first-run setup wizard so the new home screen can take over</string>
+    <string name="customise_wizard_note">We switch it back on if you ever undo or reset the TV.</string>
+    <string name="customise_protected_title">We keep these</string>
+    <string name="customise_protected_pill">Protected</string>
+    <string name="customise_protected_why_title">Why we keep this</string>
+    <string name="customise_group_home">Home screen</string>
+    <string name="customise_dock_row">Dock: {names}</string>
+    <string name="customise_dock_row_rows">Dock: {names}, plus {count, plural, one {# app} other {# apps}} in the {rows, plural, one {row} other {rows}} below</string>
+    <string name="customise_dock_row_empty">Dock</string>
+    <string name="customise_look_row">Look: {theme}</string>
+    <!-- RFC-CURTAIN-1: Custom only; the TV shows the progress while the phone works -->
+    <string name="customise_group_tv">On the TV</string>
+    <string name="customise_show_on_tv">Show the progress on the TV</string>
+    <string name="customise_show_on_tv_note">The TV shows each step, then the new home screen</string>
+    <string name="customise_group_afterwards">Afterwards</string>
+    <string name="customise_keep_debugging">Keep debugging on</string>
+    <string name="customise_keep_debugging_warning">Others on your Wi-Fi could ask to connect</string>
+    <string name="customise_group_commands">Show commands</string>
+    <string name="customise_commands_intro">Every command we would run, in order.</string>
+    <string name="customise_copy_commands">Copy as commands</string>
+    <string name="customise_commands_copied">Copied</string>
+    <string name="customise_snackbar_kept">{name} will be kept.</string>
+    <string name="customise_snackbar_off">{name} will be switched off.</string>
+
+    <!-- Themes (S3a theme picker) -->
+    <string name="theme_title">Look</string>
+    <string name="theme_default">Default</string>
+    <string name="theme_default_desc">A black background with four apps along the bottom.</string>
+    <string name="theme_aurora">Aurora</string>
+    <string name="theme_aurora_desc">A deep blue background with a soft glow behind the apps.</string>
+    <string name="theme_six_columns">Six columns</string>
+    <string name="theme_six_columns_desc">Six apps across, so more fit on the screen.</string>
+    <string name="theme_card_cd">{name}. {description}</string>
+    <string name="theme_card_selected_cd">{name}, selected. {description}</string>
+
+    <!-- S3b Your dock (sheet) -->
+    <string name="dock_title">Your dock</string>
+    <string name="dock_body">Up to {count, spellout} along the bottom. Drag an app by its dots to change the order.</string>
+
+    <!-- S4a Making it clean -->
+    <string name="working_title">Making it clean</string>
+    <string name="working_step_restore_active">Saving a restore point...</string>
+    <string name="working_step_restore_done">Restore point saved</string>
+    <string name="working_group_ads">Adverts</string>
+    <string name="working_group_tracking">Tracking</string>
+    <string name="working_group_nobody">Apps nobody asked for</string>
+    <string name="working_group_brand">{brand} extras</string>
+    <string name="working_group_shop">Shop and demo mode</string>
+    <string name="working_step_group_active">{total, plural, other {{group}: {done} of #...}}</string>
+    <string name="working_step_group_done">{count, plural, other {{group} switched off (#)}}</string>
+    <string name="working_step_install_active">Installing the new home screen</string>
+    <string name="working_step_install_done">New home screen installed</string>
+    <string name="working_step_replace_active">Replacing the home screen app</string>
+    <string name="working_step_replace_done">Home screen app replaced</string>
+    <string name="working_step_home_active">Switching Home over</string>
+    <string name="working_step_home_done">Home switched over</string>
+    <string name="working_step_done_cd">{step}, done</string>
+    <string name="working_thumbnail_caption">Live from the TV</string>
+    <string name="working_thumbnail_cd">Live from the TV</string>
+    <string name="working_keep_on">Keep the TV on. You can put the phone down; we\'ll buzz when it\'s time to look at the TV.</string>
+    <string name="working_stop">Stop and undo</string>
+    <string name="working_putting_back">Putting the old home screen back...</string>
+    <string name="working_stopping">Stopping and undoing what we did...</string>
+
+    <!-- S4b Can you see it? -->
+    <string name="check_overline">Look at the TV</string>
+    <string name="check_title">Can you see it?</string>
+    <string name="check_thumbnail_cd">{count, plural, =0 {The TV shows the new home screen with an empty dock} one {The TV shows the new home screen with one app in the dock} other {The TV shows the new home screen with # apps in the dock}}</string>
+    <string name="check_dock_sentence">The new home screen, with {dock} along the bottom.</string>
+    <string name="check_dock_sentence_empty">The new home screen.</string>
+    <string name="check_press_home">Press Home on the remote once.</string>
+    <string name="check_live_ok">Home opens the new screen</string>
+    <string name="check_live_pending_cd">Not checked yet</string>
+    <string name="check_live_done_cd">Checked</string>
+    <string name="check_countdown_text">If we don\'t hear from you, we put the old home screen back on our own. Nothing to worry about.</string>
+    <string name="check_thumbnail_note">If you can\'t see the TV, the picture above is what it shows right now.</string>
+    <string name="check_no_thumbnail_note">We couldn\'t fetch a picture; please look at the TV.</string>
+    <string name="check_yes">Yes, I see it</string>
+    <string name="check_no">No, put it back</string>
+
+    <!-- S4c Stopped: the old home screen is back (UX 4.7) -->
+    <string name="stop_show_details">Show details</string>
+    <string name="stop_report">Report a problem</string>
+    <string name="stop_home_wait_hint">Give it a few seconds.</string>
+    <string name="stop_home_setupwraith_title">The old home screen is back</string>
+    <string name="stop_home_setupwraith_body">This TV\'s first-run setup wizard holds on to the Home button. On this model the new home screen only works if the wizard is switched off too. That\'s safe for everyday use; we switch it back on if you undo or before a factory reset.</string>
+    <string name="stop_home_setupwraith_primary">Try with the wizard off</string>
+    <string name="stop_home_setupwraith_secondary">Leave the old home screen</string>
+    <!-- D3: the wizard saved the TV's Wi-Fi (or the TV could not say), so it is never switched off. -->
+    <string name="stop_home_setupwraith_wifi_body">Your TV\'s Wi-Fi was saved by its setup wizard, so switching the wizard off would forget it. Use a cable, or forget and re-add the network in Settings, then try again.</string>
+    <string name="stop_home_setupwraith_wifi_primary">Try again</string>
+    <!-- RF-LAUNCHER-240 F6: the TV could not say who saved its Wi-Fi, so the wizard stayed on. -->
+    <string name="stop_home_setupwraith_wifi_unknown_body">We couldn\'t check who saved this TV\'s Wi-Fi, so we left its setup wizard on to keep the Wi-Fi safe.</string>
+    <string name="stop_home_other_launcher_title">The old home screen is back</string>
+    <string name="stop_home_other_launcher_body">Another home screen app, {launcher}, is in charge of Home. We don\'t switch off apps we don\'t know. Choose which one you want.</string>
+    <string name="stop_home_other_launcher_primary">Use the new home screen</string>
+    <string name="stop_home_other_launcher_secondary">Keep {launcher}</string>
+    <string name="stop_home_unknown_title">The old home screen is back</string>
+    <string name="stop_home_unknown_body">We couldn\'t make the new home screen take over on this TV, so we put things back. Everything else we did is kept. You can try again from Manage, or send us a report so we can look at this model.</string>
+    <string name="stop_home_unknown_primary">Report a problem</string>
+    <string name="stop_home_unknown_secondary">OK</string>
+    <string name="stop_home_user_said_no_title">The old home screen is back</string>
+    <string name="stop_home_user_said_no_body">Put back. Was something wrong, or did you just want to look first?</string>
+    <string name="stop_home_user_said_no_primary">Try again</string>
+    <string name="stop_home_user_said_no_secondary">Something looked wrong</string>
+    <string name="stop_home_timed_out_title">The old home screen is back</string>
+    <string name="stop_home_timed_out_body">Putting the old home screen back... Done. Your TV is as it was. You can try again from Manage.</string>
+    <string name="stop_home_timed_out_primary">OK</string>
+    <string name="stop_home_timed_out_secondary">Try again</string>
+
+    <!-- Stop: undone -->
+    <string name="stop_step_failed_title">We stopped</string>
+    <string name="stop_step_failed_body">{total, plural, other {One step didn\'t work, so we stopped after switching off {done} of #. Nothing else was changed.}}</string>
+    <string name="stop_undone_title">We undid what we did</string>
+    <string name="stop_undone_body">Your TV is as it was. You can try again from Manage.</string>
+    <string name="stop_undone_primary">OK</string>
+    <string name="stop_undone_secondary">Show details</string>
+
+    <!-- S4d Stopped: connection lost mid-plan (UX 4.14) -->
+    <string name="stop_connection_lost_title">The TV stopped answering</string>
+    <string name="stop_connection_lost_body">{total, plural, one {The TV stopped answering after we switched off {done} of # thing. Usually it\'s back in a few seconds.} other {The TV stopped answering after we switched off {done} of # things. Usually it\'s back in a few seconds.}}</string>
+    <string name="stop_connection_lost_reconnecting">Reconnecting...</string>
+    <string name="stop_connection_lost_back">Back. Carry on?</string>
+    <string name="stop_connection_lost_primary">Carry on with the rest</string>
+    <string name="stop_connection_lost_secondary">Stop here</string>
+    <string name="stop_connection_lost_tertiary">Undo what we did</string>
+    <string name="stop_connection_lost_suspect">We\'ve turned \"{name}\" back on, it seems to carry Wi-Fi on this TV. Carrying on without it.</string>
+    <string name="stop_connection_lost_gone_body">The TV still isn\'t answering. Check that it\'s on and on the same Wi-Fi as this phone.</string>
+    <string name="stop_connection_lost_keep_trying">Keep trying</string>
+
+    <!-- S4e Resume after process death (UX 4.9, 4.14) -->
+    <string name="stop_resume_title">We were in the middle of setting up {tv}</string>
+    <string name="stop_resume_body">{total, plural, one {{done} of # thing is switched off; the home screen hasn\'t been changed yet. Carry on?} other {{done} of # things are switched off; the home screen hasn\'t been changed yet. Carry on?}}</string>
+    <string name="stop_resume_primary">Carry on</string>
+    <string name="stop_resume_secondary">Undo what we did</string>
+    <string name="stop_resume_tertiary">Leave it as is</string>
+    <string name="stop_resume_home_title">We put the old home screen back</string>
+    <string name="stop_resume_home_body">We\'ve put the old home screen back to be safe. Try the switch again?</string>
+    <string name="stop_resume_home_primary">Try the switch again</string>
+    <string name="stop_resume_home_secondary">Leave it as is</string>
+    <string name="stop_resume_change_title">We were in the middle of a change on {tv}</string>
+    <string name="stop_resume_change_body">It stopped before it finished. Carry on with the rest, or undo what we did?</string>
+    <string name="stop_reconnect_home_body">Reconnect to the TV to put the old home screen back. We\'ll do it as soon as {tv} answers.</string>
+
+    <!-- Stop: install failure (UX 4.14) -->
+    <string name="stop_install_failed_title">The new home screen couldn\'t be installed</string>
+    <string name="stop_install_failed_body">The TV is out of space: {free, plural, other {# MB}} free, {needed, plural, other {# MB}} needed. We cleared caches and tried again. Still no. The clean-up is done; try the home screen later from Manage after freeing space in Settings > Storage.</string>
+    <string name="stop_install_failed_generic_body">The TV wouldn\'t accept the new home screen. The clean-up is done; you can try the home screen again later from Manage.</string>
+    <string name="stop_install_failed_primary">OK</string>
+    <string name="stop_install_failed_secondary">Show details</string>
+
+    <!-- Stop: the TV has not come back (UX 4.8) -->
+    <string name="stop_not_back_title">The TV hasn\'t come back</string>
+    <string name="stop_not_back_body">If the TV is stuck on its logo: hold the power button on the TV itself (not the remote) for 10 seconds, then turn it on again. If it shows a screen that says \"Can\'t load Android system\", choose Try again. Don\'t choose factory reset; it isn\'t needed.</string>
+    <string name="stop_not_back_auto">As soon as the TV is back on Wi-Fi we\'ll reconnect and put the old home screen back automatically, so you can decide what to do calmly.</string>
+    <string name="stop_not_back_primary">It\'s on again</string>
+    <string name="stop_not_back_secondary">Help me</string>
+
+    <!-- S5 Done -->
+    <string name="done_title">Your TV is ready</string>
+    <string name="done_title_nothing">Nothing was changed</string>
+    <string name="done_body_nothing">There was nothing left to switch off, so your TV is just as it was.</string>
+    <string name="done_body_nothing_kept">Everything we tried to switch off stayed on, so your TV is just as it was.</string>
+    <string name="done_body_nothing_stopped">Setup stopped before anything was changed, so your TV is just as it was.</string>
+    <string name="done_body_nothing_unknown">We weren\'t sure about anything on this TV, so it\'s just as it was. Help add this TV from Manage, and a later version can do more.</string>
+    <string name="done_hero_cd">A clean home screen with a glass check mark</string>
+    <string name="done_body">{count, plural, =0 {New home screen on. Everything can be put back.} one {# thing switched off. New home screen on. Everything can be put back.} other {# things switched off. New home screen on. Everything can be put back.}}</string>
+    <string name="done_body_no_home">{count, plural, one {# thing switched off. Everything can be put back.} other {# things switched off. Everything can be put back.}}</string>
+    <string name="done_body_partial">{total, plural, other {{done} of # switched off; the home screen is unchanged. Everything can be put back.}}</string>
+    <string name="done_body_partial_home_on">{total, plural, other {{done} of # switched off. New home screen on. Everything can be put back.}}</string>
+    <string name="done_restore_saved">Restore point saved on this phone ({date})</string>
+    <string name="done_debug_note">Debugging on the TV switches off when you tap Finish</string>
+    <string name="done_skipped">{name} wouldn\'t switch off; it\'s harmless.</string>
+    <!-- RF-LAUNCHER-250 F1 (owner copy): a switch-off the TV refused because the app runs the TV's inputs, on Done and in Manage -->
+    <string name="kept_tv_input">{name}. Kept: it runs the TV\'s HDMI and tuner inputs.</string>
+    <string name="done_skipped_many">{count, plural, one {# thing wouldn\'t switch off; it\'s harmless.} other {# things wouldn\'t switch off; they\'re harmless.}}</string>
+    <string name="done_mibox_usb">Your USB port is powered again.</string>
+    <string name="done_add_card_title">Add a card to the home screen</string>
+    <!-- Optional, never a step of Setup: the new home screen starts with module cards off (RFC-CARDS-1) -->
+    <string name="done_add_card_body">Optional. You can add cards later in Manage.</string>
+    <string name="done_note_title">Save a restore note for the family</string>
+    <string name="done_finish">Finish</string>
+    <string name="done_finishing">Switching debugging off...</string>
+    <string name="done_finished">Switching debugging off... done.</string>
+
+    <!-- S5 restart card and flow (D24, UX 4.8) -->
+    <string name="restart_card_title">Restart the TV to check it all sticks</string>
+    <string name="restart_card_recommended">2 minutes, recommended</string>
+    <string name="restart_card_optional">Optional</string>
+    <string name="restart_button">Restart</string>
+    <string name="restart_getting_ready">{seconds, plural, other {Getting ready... # s}}</string>
+    <string name="restart_intro">Restarting the TV. It usually takes about a minute. We\'re watching for it.</string>
+    <string name="restart_progress_off">TV off...</string>
+    <string name="restart_progress_starting">Starting...</string>
+    <string name="restart_progress_found">Found it at {time}...</string>
+    <string name="restart_progress_home">Home screen is the new one.</string>
+    <string name="restart_progress_good">All good.</string>
+    <string name="restart_came_back">{count, plural, one {# thing came back on after the restart; switched off again.} other {# things came back on after the restart; switched off again.}}</string>
+    <string name="restart_slow">Taking longer than usual. Some TVs are slow to rejoin Wi-Fi. If the TV shows its logo and nothing else, wait another two minutes.</string>
+    <string name="restart_back_safe">The TV is back. We\'ve restored the old home screen to be safe. Want to try the new one again with the setup wizard off?</string>
+    <string name="restart_back_try">Try with the wizard off</string>
+    <string name="restart_back_leave">Leave it as is</string>
+
+
+    <!-- Stop and undo ask first (Confirmations): a question, one calm sentence, the verb and a way back -->
+    <string name="confirm_stop_title">Stop now?</string>
+    <string name="confirm_stop_body">We stop here and put back what we changed so far. Your TV stays safe.</string>
+    <string name="confirm_stop_button">Stop and undo</string>
+    <string name="confirm_keep_going">Keep going</string>
+    <string name="confirm_stop_here_title">Stop here?</string>
+    <string name="confirm_stop_here_body">We keep what is already done and change nothing else. Your TV stays safe.</string>
+    <string name="confirm_stop_here_button">Stop here</string>
+    <string name="confirm_undo_title">Undo the changes on the TV?</string>
+    <string name="confirm_undo_body">We put back everything this change did, so the TV is as it was before. Nothing is deleted.</string>
+    <string name="confirm_undo_button">Undo the changes</string>
+</resources>

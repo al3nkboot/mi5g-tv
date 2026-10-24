@@ -1,0 +1,10 @@
+# Our tmp folder
+op: Mkdir dir=TMP
+privilege: COMMUNITY
+timeout_ms: 30000
+stdout_cap: 65536
+line: 'mkdir' '-p' '/data/local/tmp/cleanyourtv'
+transfer: none
+verify: none
+prior: none
+inverse: none

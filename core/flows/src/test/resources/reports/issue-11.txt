@@ -1,0 +1,140 @@
+Clean Your TV: TV report
+App: 0.3.2 (full)
+Phone: motorola edge 50 fusion, Android 16
+
+TV
+Brand: Haier
+Manufacturer: Haier
+Model: haierATVnippori
+Device: nippori
+Android: 11 (SDK 30)
+Build: Haier/nippori/nippori:11/RTO5.250812.001/13924387:user/release-keys
+Google Play services: yes
+Home screen it came with: Android TV (Leanback)
+Read from the TV: 2026-10-23
+
+Matching
+Profile: none
+Home switch: blocked WIZARD_WIFI
+
+Home screen
+Resolves to: com.google.android.tvlauncher/.MainActivity
+Claimant: com.google.android.tvlauncher/.MainActivity priority 2
+Claimant: com.android.tv.settings/.system.FallbackHome priority -1000
+
+System apps (113)
+android default
+android.auto_generated_rro_product__ default
+android.auto_generated_rro_vendor__ default
+android.autoinstalls.config.haier.hanyang default
+com.android.backupconfirm default
+com.android.bluetooth default
+com.android.bluetooth.auto_generated_rro_product__ default
+com.android.bluetooth.auto_generated_rro_vendor__ default
+com.android.captiveportallogin default
+com.android.certinstaller default
+com.android.companiondevicemanager default
+com.android.cts.ctsshim default
+com.android.cts.priv.ctsshim default
+com.android.deskclock default
+com.android.documentsui default
+com.android.dreams.basic default
+com.android.dynsystem default
+com.android.externalstorage default
+com.android.hotspot2.osulogin default
+com.android.htmlviewer default
+com.android.inputdevices default
+com.android.keychain default
+com.android.localtransport default
+com.android.location.fused default
+com.android.networkstack.inprocess default
+com.android.networkstack.permissionconfig default
+com.android.networkstack.tethering.inprocess default
+com.android.networkstack.tethering.inprocess.rro default
+com.android.networkstack.tethering.rro default
+com.android.pacprocessor default
+com.android.printspooler default
+com.android.providers.calendar default
+com.android.providers.contacts default
+com.android.providers.contacts.auto_generated_rro_product__ default
+com.android.providers.downloads default
+com.android.providers.media default
+com.android.providers.media.module default
+com.android.providers.settings default
+com.android.providers.settings.auto_generated_rro_product__ default
+com.android.providers.settings.auto_generated_rro_vendor__ default
+com.android.providers.tv default
+com.android.providers.userdictionary default
+com.android.proxyhandler default
+com.android.se default
+com.android.settings.intelligence default
+com.android.sharedstoragebackup default
+com.android.shell default
+com.android.soundpicker default
+com.android.statementservice default
+com.android.systemui default
+com.android.tv.overlay.lowram default
+com.android.tv.settings default
+com.android.tv.settings.overlay default
+com.android.vending enabled
+com.android.vpndialogs default
+com.android.wallpaperbackup default
+com.android.wifi.resources default
+com.android.wifi.resources.rro default
+com.cltv.fast disabled
+com.google.android.apps.mediashell default
+com.google.android.backdrop disabled-user
+com.google.android.boot.appsplashscreen default
+com.google.android.ext.services default
+com.google.android.ext.shared default
+com.google.android.feedback disabled-user
+com.google.android.gms default
+com.google.android.gsf default
+com.google.android.inputmethod.latin default
+com.google.android.katniss default
+com.google.android.leanbacklauncher.partnercustomizer disabled-user
+com.google.android.marvin.talkback disabled
+com.google.android.modulemetadata default
+com.google.android.onetimeinitializer disabled-user
+com.google.android.overlay.modules.ext.services default
+com.google.android.overlay.modules.modulemetadata.forframework default
+com.google.android.overlay.modules.permissioncontroller default
+com.google.android.overlay.modules.permissioncontroller.forframework default
+com.google.android.packageinstaller default
+com.google.android.partnersetup disabled-user
+com.google.android.permissioncontroller default
+com.google.android.sss.authbridge default
+com.google.android.syncadapters.calendar disabled-user
+com.google.android.tts default
+com.google.android.tungsten.setupwraith default
+com.google.android.tv.frameworkpackagestubs default
+com.google.android.tv.remote.service default
+com.google.android.tvlauncher default
+com.google.android.tvrecommendations disabled-user
+com.google.android.webview default
+com.google.android.youtube.tv default
+com.google.android.youtube.tv.rro default
+com.haier.apps disabled-user
+com.haier.apps.evoSmart default
+com.haier.apps.shahid disabled-user
+com.haier.launcher.haiermatrix enabled
+com.haier.oemmanualtest disabled-user
+com.haier.overlay.tvcenter disabled-user
+com.haier.tv.settings default
+com.haierubic.usmartdevice default
+com.mediatek.autopair default
+com.mediatek.network default
+com.mediatek.testpq disabled-user
+com.mediatek.tv.service default
+com.mediatek.tvinput default
+com.mediatek.wwtv.mediaplayer default
+com.mediatek.wwtv.setupwizard disabled-user
+com.mediatek.wwtv.tvcenter default
+com.netflix.ninja disabled-user
+com.oem default
+fusion.android.tv.demo disabled-user
+mediatek.factorymenu.ui default
+ru.haier.evo disabled
+tv.anoki.acr.controller disabled-user
+
+Other apps: 18 (not named)

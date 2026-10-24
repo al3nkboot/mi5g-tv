@@ -1,0 +1,147 @@
+Clean Your TV: TV report
+App: 0.3.2 (full)
+Phone: OPPO CPH2579, Android 15
+
+TV
+Brand: Smarttech
+Manufacturer: Expressluck
+Model: Apollo Premium4K TV
+Device: marina
+Android: 11 (SDK 30)
+Build: Smarttech/SMARTTECH_4K_ATV3/marina:11/RTMA.250416.028/13485761:user/release-keys
+Google Play services: yes
+Home screen it came with: Google TV
+Read from the TV: 2026-10-23
+
+Matching
+Profile: none
+Home switch: blocked WIZARD_STAYS_ON
+
+Home screen
+Resolves to: com.google.android.apps.tv.launcherx/.home.HomeActivity
+Claimant: com.google.android.apps.tv.launcherx/.home.HomeActivity priority 2
+Claimant: com.google.android.tungsten.setupwraith/.RecoveryActivity priority 1
+Claimant: com.express.at.factory.factorymanager/.FallbackHome priority -999
+Claimant: com.android.tv.settings/.system.FallbackHome priority -1000
+
+System apps (118)
+android default
+android.auto_generated_rro_product__ default
+android.auto_generated_rro_vendor__ default
+android.autoinstalls.config.google.gtvpai default
+com.amazon.amazonvideo.livingroom default
+com.android.backupconfirm default
+com.android.bluetooth default
+com.android.bluetooth.auto_generated_rro_product__ default
+com.android.bluetooth.auto_generated_rro_vendor__ default
+com.android.captiveportallogin default
+com.android.certinstaller default
+com.android.companiondevicemanager default
+com.android.cts.ctsshim default
+com.android.cts.priv.ctsshim default
+com.android.dreams.basic default
+com.android.dynsystem default
+com.android.externalstorage default
+com.android.hotspot2.osulogin default
+com.android.htmlviewer default
+com.android.inputdevices default
+com.android.keychain default
+com.android.localtransport default
+com.android.location.fused default
+com.android.networkstack.inprocess default
+com.android.networkstack.permissionconfig default
+com.android.networkstack.tethering.inprocess default
+com.android.networkstack.tethering.inprocess.rro default
+com.android.networkstack.tethering.rro default
+com.android.pacprocessor default
+com.android.printspooler default
+com.android.providers.calendar default
+com.android.providers.contacts default
+com.android.providers.contacts.auto_generated_rro_product__ default
+com.android.providers.downloads default
+com.android.providers.media default
+com.android.providers.media.module default
+com.android.providers.settings default
+com.android.providers.settings.auto_generated_rro_product__ default
+com.android.providers.settings.auto_generated_rro_vendor__ default
+com.android.providers.tv default
+com.android.providers.userdictionary default
+com.android.proxyhandler default
+com.android.se default
+com.android.settings.intelligence default
+com.android.sharedstoragebackup default
+com.android.shell default
+com.android.soundpicker default
+com.android.statementservice default
+com.android.systemui default
+com.android.tv.settings default
+com.android.tv.settings.google.resoverlay default
+com.android.tv.settings.mediatek.resoverlay default
+com.android.tv.settings.vendor.resoverlay default
+com.android.vending enabled
+com.android.vpndialogs default
+com.android.wallpaperbackup default
+com.android.wifi.resources default
+com.android.wifi.resources.rro default
+com.at.factory.androidtvaidlservice default
+com.at.factory.factorymanager default
+com.cvte.tv.at default
+com.dolby.android.audio.service default
+com.express.at.factory.factorymanager default
+com.express.bt.autopair default
+com.express.fac.test default
+com.expressluck.LiveTV.overlay default
+com.expressluck.TVSettings.overlay default
+com.expressluck.agent.overlay default
+com.expressluck.facmenu default
+com.expressluck.mtkinput.overlay default
+com.expressluck.tvhelpmanual default
+com.google.android.apps.mediashell default
+com.google.android.apps.nbu.smartconnect.tv default
+com.google.android.apps.tv.dreamx default
+com.google.android.apps.tv.launcherx default
+com.google.android.ext.services default
+com.google.android.ext.shared default
+com.google.android.feedback default
+com.google.android.gms default
+com.google.android.gsf default
+com.google.android.inputmethod.latin default
+com.google.android.katniss enabled
+com.google.android.marvin.talkback disabled
+com.google.android.modulemetadata default
+com.google.android.onetimeinitializer default
+com.google.android.overlay.modules.ext.services default
+com.google.android.overlay.modules.modulemetadata.forframework default
+com.google.android.overlay.modules.permissioncontroller default
+com.google.android.overlay.modules.permissioncontroller.forframework default
+com.google.android.packageinstaller default
+com.google.android.partnersetup default
+com.google.android.permissioncontroller default
+com.google.android.play.games default
+com.google.android.sss.authbridge default
+com.google.android.syncadapters.calendar default
+com.google.android.tts default
+com.google.android.tungsten.setupwraith default
+com.google.android.tv.assistant default
+com.google.android.tv.frameworkpackagestubs default
+com.google.android.tv.remote.service default
+com.google.android.webview default
+com.google.android.youtube.tv default
+com.google.android.youtube.tvmusic default
+com.mediatek.android.boot.appsplashscreen default
+com.mediatek.android.leanbacklauncher.partnercustomizer default
+com.mediatek.autopair default
+com.mediatek.hotkey.dispatcher default
+com.mediatek.network default
+com.mediatek.tv.oneworld.tvcenteroverlay default
+com.mediatek.tv.service default
+com.mediatek.tvinput default
+com.mediatek.wwtv.mediaplayer enabled
+com.mediatek.wwtv.setupwizard default
+com.mediatek.wwtv.tvcenter default
+com.mediatek.wwtv.webview default
+com.mstar.android.tv.disclaimercustomization default
+com.netflix.ninja default
+fusion.android.tv.demo default
+
+Other apps: 9 (not named)

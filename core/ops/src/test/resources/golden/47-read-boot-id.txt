@@ -1,0 +1,10 @@
+# The kernel boot id
+op: Read kind=BOOT_ID
+privilege: READ
+timeout_ms: 30000
+stdout_cap: 65536
+line: 'cat' '/proc/sys/kernel/random/boot_id'
+transfer: none
+verify: none
+prior: none
+inverse: none

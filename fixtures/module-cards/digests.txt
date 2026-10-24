@@ -1,0 +1,68 @@
+== bidi.apk
+Signer #1 certificate SHA-256 digest: dacc2ee9eab15834d58c633e955d268e88bf11f8df57593177cc8f3029d6e39d
+APK SHA-256: 05ff8ed742520c495974337165703aa58aed881b76472988ba77f31e2e99a312
+== biglabel.apk
+Signer #1 certificate SHA-256 digest: dacc2ee9eab15834d58c633e955d268e88bf11f8df57593177cc8f3029d6e39d
+APK SHA-256: 2a014505487152962416757379d78a682d0fd89b15e42faa0b4f072d7b4b98af
+== cardclash.apk
+Signer #1 certificate SHA-256 digest: dacc2ee9eab15834d58c633e955d268e88bf11f8df57593177cc8f3029d6e39d
+APK SHA-256: 8bcf4419af6440fd8d8113f2243de2813e3179ab6835c9f5a0c940f574326b1f
+== cardtesta.apk
+Signer #1 certificate SHA-256 digest: dacc2ee9eab15834d58c633e955d268e88bf11f8df57593177cc8f3029d6e39d
+APK SHA-256: 23a54a2b50837de81e39b9ede71176554d4b721806f0c8f8d7e5394a2775a71c
+== cardtestb.apk
+Signer #1 certificate SHA-256 digest: ec8f5bf71162d27a7cd869eaeb648728b2be40daa446726ea23dfbc98bbf9c96
+APK SHA-256: f5d2b90b6843fc1aac24d5ba2bc2f123407fc113d8118a204a92341fda2a3c54
+== deep.apk
+Signer #1 certificate SHA-256 digest: dacc2ee9eab15834d58c633e955d268e88bf11f8df57593177cc8f3029d6e39d
+APK SHA-256: fce0ef575d1788c7aa9967e4eb5c54612d7c8c557cde456ab330703d07f7a541
+== many1.apk
+Signer #1 certificate SHA-256 digest: dacc2ee9eab15834d58c633e955d268e88bf11f8df57593177cc8f3029d6e39d
+APK SHA-256: cd53f9889b6992155abca834247d8f9effc0d63c0fe9e6e6990dff1955d17b95
+== many2.apk
+Signer #1 certificate SHA-256 digest: dacc2ee9eab15834d58c633e955d268e88bf11f8df57593177cc8f3029d6e39d
+APK SHA-256: c0d121111b575821952a4dccd9d04f20d79ebe29541f9640e9a84c73f9059aae
+== many3.apk
+Signer #1 certificate SHA-256 digest: dacc2ee9eab15834d58c633e955d268e88bf11f8df57593177cc8f3029d6e39d
+APK SHA-256: bc768b306f5f0d08a38b8d9b9de57d4edc346707479e2b9ace8f654010dcdb28
+== many4.apk
+Signer #1 certificate SHA-256 digest: dacc2ee9eab15834d58c633e955d268e88bf11f8df57593177cc8f3029d6e39d
+APK SHA-256: 5b93c66ae37e86e6a3452057e8122d643841b0418f68d1f0c02311f3653348a4
+== many5.apk
+Signer #1 certificate SHA-256 digest: dacc2ee9eab15834d58c633e955d268e88bf11f8df57593177cc8f3029d6e39d
+APK SHA-256: eb1497f9e1d0e155ab67c8f956f0d0f48185bb70c58cce5da7d736305a493d72
+== many6.apk
+Signer #1 certificate SHA-256 digest: dacc2ee9eab15834d58c633e955d268e88bf11f8df57593177cc8f3029d6e39d
+APK SHA-256: 47d4c52850f075bf42e19bca51c7cd2bd9c2c7ad15a6009c09437e3900803df7
+== many7.apk
+Signer #1 certificate SHA-256 digest: dacc2ee9eab15834d58c633e955d268e88bf11f8df57593177cc8f3029d6e39d
+APK SHA-256: 929386b4e55b87e812f87488e82189109c2d26d61957455ec19642fb63dbb019
+== many8.apk
+Signer #1 certificate SHA-256 digest: dacc2ee9eab15834d58c633e955d268e88bf11f8df57593177cc8f3029d6e39d
+APK SHA-256: c7b69a744f26f43d2f979bfd1e7429918baded93558a7703532180818dd2caad
+== many9.apk
+Signer #1 certificate SHA-256 digest: dacc2ee9eab15834d58c633e955d268e88bf11f8df57593177cc8f3029d6e39d
+APK SHA-256: e9943435759b6017a41f61ba03c1769e5ee3d6bcb234d4f67abf3752bba6d055
+== plaincollide.apk
+Signer #1 certificate SHA-256 digest: dacc2ee9eab15834d58c633e955d268e88bf11f8df57593177cc8f3029d6e39d
+APK SHA-256: 86a7dded01b6bce25b1891ee3255cdf99faa21610a64afd651ea9302ee6714f3
+== reservedhdmi.apk
+Signer #1 certificate SHA-256 digest: dacc2ee9eab15834d58c633e955d268e88bf11f8df57593177cc8f3029d6e39d
+APK SHA-256: be90a71024d108c2da773276df661e053994c51f595cf719b176dc4a37e8f1af
+== reservedsettings.apk
+Signer #1 certificate SHA-256 digest: dacc2ee9eab15834d58c633e955d268e88bf11f8df57593177cc8f3029d6e39d
+APK SHA-256: 999e04d42c0b7fb09f4473b78905e7bde666b69fb5ae8786a3ad51ba4849501a
+== reservedverified.apk
+Signer #1 certificate SHA-256 digest: dacc2ee9eab15834d58c633e955d268e88bf11f8df57593177cc8f3029d6e39d
+APK SHA-256: 10604373b5d3e8f738ebae5ade494f77de7e10a6ba364058be6654d3b2a9dd63
+== spoof.apk
+Signer #1 certificate SHA-256 digest: dacc2ee9eab15834d58c633e955d268e88bf11f8df57593177cc8f3029d6e39d
+APK SHA-256: 79c215cdc2cf3bae06d9165e8b3cefb48fc03939becb33cf8f1fc63bc44e5260
+== spoofvariant2.apk
+Signer #1 certificate SHA-256 digest: dacc2ee9eab15834d58c633e955d268e88bf11f8df57593177cc8f3029d6e39d
+APK SHA-256: 92f1e012e623f5263746bacad30fe7bb6f9437d41e8359e5e845c6e32d142d53
+== spoofvariant.apk
+Signer #1 certificate SHA-256 digest: dacc2ee9eab15834d58c633e955d268e88bf11f8df57593177cc8f3029d6e39d
+APK SHA-256: a9d3efb8f3e5f0e813feee05104fe10e127c4cf9655fdb3342e1f24054a3f9d4
+single dash check:
+1

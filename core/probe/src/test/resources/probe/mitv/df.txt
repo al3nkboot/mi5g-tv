@@ -1,0 +1,2 @@
+Filesystem      1K-blocks    Used Available Use% Mounted on
+/dev/block/data   4883720 3612180   1271540  74% /data

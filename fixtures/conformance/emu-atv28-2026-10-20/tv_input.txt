@@ -1,0 +1,20 @@
+User Ids (Current user: 0):
+  0
+UserState (0):
+  inputMap: inputId -> TvInputState
+  packageSet:
+  clientStateMap: ITvInputClient -> ClientState
+  serviceStateMap: ComponentName -> ServiceState
+  sessionStateMap: ITvInputSession -> SessionState
+  callbackSet:
+    android.media.tv.ITvInputManagerCallback$Stub$Proxy@cd1aff9
+    android.media.tv.ITvInputManagerCallback$Stub$Proxy@70242fb
+    android.media.tv.ITvInputManagerCallback$Stub$Proxy@5325f4c
+  mainSessionToken: null
+TvInputHardwareManager Info:
+  mConnections: deviceId -> Connection
+  mHardwareList:
+  mHdmiDeviceList:
+  mHardwareInputIdMap: deviceId -> inputId
+  mHdmiInputIdMap: id -> inputId
+  mInputMap: inputId -> inputInfo

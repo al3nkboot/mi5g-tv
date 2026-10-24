@@ -1,0 +1,10 @@
+# Curtain cue: one switch-off, third of twelve, third of four adverts
+op: CurtainCue receiver=tv.cleanyour.curtain/.CueReceiver token=fedcba9876543210 stage=OFF count=3 total=12 group=ADVERTS groupCount=3 groupTotal=4
+privilege: PROFILE_STEP
+timeout_ms: 30000
+stdout_cap: 65536
+line: 'am' 'broadcast' '-n' 'tv.cleanyour.curtain/.CueReceiver' '-a' 'tv.cleanyour.curtain.CUE' '--es' 'token' 'fedcba9876543210' '--es' 'stage' 'OFF' '--es' 'group' 'ADVERTS' '--ei' 'count' '3' '--ei' 'total' '12' '--ei' 'gcount' '3' '--ei' 'gtotal' '4' '--receiver-foreground'
+transfer: none
+verify: none
+prior: none
+inverse: none

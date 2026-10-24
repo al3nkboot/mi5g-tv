@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Debug builds pull in Compose tooling activities (ui-tooling, ui-test-manifest) that are exported.
+     They are removed so the debug APK keeps the single exported component the release has. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <application>
+        <activity android:name="androidx.compose.ui.tooling.PreviewActivity" tools:ignore="MissingClass" tools:node="remove" />
+        <activity android:name="androidx.activity.ComponentActivity" tools:ignore="MissingClass" tools:node="remove" />
+    </application>
+</manifest>

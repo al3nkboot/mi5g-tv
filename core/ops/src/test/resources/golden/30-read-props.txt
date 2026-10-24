@@ -1,0 +1,10 @@
+# getprop
+op: Read kind=PROPS
+privilege: READ
+timeout_ms: 30000
+stdout_cap: 262144
+line: 'getprop'
+transfer: none
+verify: none
+prior: none
+inverse: none

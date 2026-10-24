@@ -1,0 +1,43 @@
+Clean up your Android TV from your phone. No laptop, no coding agent, no cables. Open the app, tap Start, and in about five minutes your TV has a calm home screen and the clutter nobody asked for is switched off.
+
+Clean Your TV is a community-built phone app for Clean Your TV, the open-source project that gives Android TVs a clean home screen. The app uses the project's name with its creator's permission and does the whole job over your Wi-Fi.
+
+HOW IT WORKS IN THREE STEPS
+
+1. Connect. The app finds your TV on the Wi-Fi and shows you, with pictures, how to let your phone in using the TV remote. It takes about a minute.
+
+2. Analyse. The app reads what is on your TV and shows you the plan: what it would switch off and, just as clearly, what stays. Nothing changes yet. You can look at every step, and change the list if you like.
+
+3. Clean. Tap "Make it clean". The app saves a restore point first, then switches off the pre-installed apps you don't use and turns on a clean home screen with the apps you do use. Your phone shows the progress, and so does your TV.
+
+WHAT IT KEEPS
+
+The apps you use stay: Netflix, YouTube, Prime Video, live TV and the HDMI inputs. So do Wi-Fi, the remote, the keyboard and the parts Android needs to run; the app never touches them. Casting, the voice assistant and software updates stay on too. You can still switch off casting or the voice assistant under Customise if you like.
+
+SAFE BY DESIGN
+
+- You see the plan first. Nothing runs until you tap.
+- A restore point is saved on your phone before the first change.
+- Nothing is uninstalled. Apps are only switched off, so every one can come back.
+- Undo anything: put back a single app, or everything, from the restore point. You can also save a copy as plain restore scripts that work from a computer.
+- A watchdog on the TV: if the phone does not confirm the new home screen within 150 seconds (the Wi-Fi drops, the phone dies), the TV puts its own home screen back by itself.
+- On TVs where changing the home screen is known to cause trouble, the app does the clean-up only and tells you why.
+- Come back any time to put an app back, check for leftovers after a TV software update, change the dock or the look, or undo everything.
+
+WHAT YOU NEED
+
+- An Android phone with Android 9 or newer and a screen lock.
+- An Android TV or Google TV on the same Wi-Fi as the phone.
+- Network debugging switched on in the TV's settings. The app shows you where, step by step, and switches it off again at the end unless you keep it on.
+
+SUPPORTED TVS
+
+131 TV models from 46 brands, including TCL, Sony, Xiaomi, Hisense, Philips, Panasonic, XGIMI, BenQ, NVIDIA Shield, onn and Google, on Android TV, Google TV and Fire OS. A model nobody has listed yet still gets a careful clean-up based on its brand. Samsung, LG and Roku TVs do not run Android, so this app does not work on them.
+
+PRIVATE
+
+No accounts, no analytics, no tracking. The app talks to the TV you pick on your home network. The version from GitHub and F-Droid contacts GitHub only when you ask it to: when you tap Check for updates, or when you choose to browse and add optional add-ons. The Google Play version makes no internet connections of its own. The key your TV trusts stays in your phone's secure storage, and restore points stay on your phone. Diagnostics are shared only if you choose to share them, and only after you have seen a preview.
+
+OPEN SOURCE
+
+Built by the community on Gathin's Clean Your TV, with permission, and released under the MIT licence. Source code and issues: github.com/udhaykumarbala/cleanyourtv-app. Website: https://cleanyour.tv/app/android. Privacy policy: https://cleanyour.tv/app/android/privacy

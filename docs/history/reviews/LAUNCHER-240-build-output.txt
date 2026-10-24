@@ -1,0 +1,21 @@
+# scripts/build-launcher-on-forge.sh, 2026-10-20 (RF-LAUNCHER-240 F5): two builds of upstream v2.4.0 (69c93b6)
+# in fresh copies and fresh containers, both re-signed with K1 and compared. Filtered output.
+==> build a: assembleRelease in eclipse-temurin:17-jdk
+==> build b: assembleRelease in eclipse-temurin:17-jdk
+==> sign both builds with the launcher release key (in memory), compare and verify
+0e46460e9fb69ace2e19c89cd87f01907b8b98f0949e6de410a9dbfe2a407936  /src/signed-a.apk
+0e46460e9fb69ace2e19c89cd87f01907b8b98f0949e6de410a9dbfe2a407936  /src/signed-b.apk
+identical after signing: yes
+Signer #1 certificate DN: O=cleanyourtv, CN=Clean Your TV launcher
+Signer #1 certificate SHA-256 digest: 576418154bec6505bfc709ccaa6ae85b6e09d98eb89f4a25147ca1b4b0505132
+package: name='com.gathin.tvhome' versionCode='5' versionName='2.4' platformBuildVersionName='14' platformBuildVersionCode='34' compileSdkVersion='34' compileSdkVersionCodename='14'
+0e46460e9fb69ace2e19c89cd87f01907b8b98f0949e6de410a9dbfe2a407936  /src/cleanyourtv-launcher.apk
+size 386581
+==> android/platform/src/main/assets/bundled/cleanyourtv-launcher.apk
+0e46460e9fb69ace2e19c89cd87f01907b8b98f0949e6de410a9dbfe2a407936  android/platform/src/main/assets/bundled/cleanyourtv-launcher.apk
+size 386581
+Verified using v1 scheme (JAR signing): false
+Verified using v2 scheme (APK Signature Scheme v2): true
+Verified using v3 scheme (APK Signature Scheme v3): true
+Verified using v3.1 scheme (APK Signature Scheme v3.1): false
+Verified using v4 scheme (APK Signature Scheme v4): false

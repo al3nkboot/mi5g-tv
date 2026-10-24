@@ -1,0 +1,543 @@
+Packages:
+  Package [com.droidlogic.tvinput] (6cda469):
+    codePath=/product/app/DroidLogicTvInput
+    versionCode=445888 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA PERSISTENT ]
+    User 0: ceDataInode=3121216 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [mitv.service] (8900a58):
+    codePath=/system/app/TvService
+    versionCode=561190 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA PERSISTENT ]
+    User 0: ceDataInode=3928330 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.cts.priv.ctsshim] (2040a59):
+    codePath=/system/priv-app/CtsShimPrivPrebuilt
+    versionCode=132134 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=924938 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.xiaomi.android.tvsetup.partnercustomizer] (9861277):
+    codePath=/system/priv-app/MiTvSetupCustomizer
+    versionCode=624174 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=4369218 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.ext.services] (cd650f5):
+    codePath=/system/priv-app/GoogleExtServices
+    versionCode=841324 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=5889268 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.apps.mediashell] (7e476e0):
+    codePath=/data/app/com.google.android.apps.mediashell-I3K37dHBVedWlL574CHzxQ==
+    versionCode=517266 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM UPDATED_SYSTEM_APP HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=3620862 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.katniss] (a267d98):
+    codePath=/data/app/com.google.android.katniss-doIYav980fQorWpLfZEYRw==
+    versionCode=665241 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM UPDATED_SYSTEM_APP HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=4656687 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=3 instant=false virtual=false
+  Package [com.android.providers.calendar] (31014da):
+    codePath=/system/priv-app/CalendarProvider
+    versionCode=200752 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=1405264 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.tv.settings] (bda49dd):
+    codePath=/system/priv-app/TvSettings
+    versionCode=776805 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=5437635 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.providers.media] (5094996):
+    codePath=/system/priv-app/MediaProvider
+    versionCode=330085 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=2310595 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.xiaomi.android.TV.audio] (815c5a9):
+    codePath=/system/priv-app/AudioDebugTool
+    versionCode=529889 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=3709223 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.onetimeinitializer] (f177798):
+    codePath=/system/priv-app/GoogleOneTimeInitializer
+    versionCode=89075 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=623525 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.ext.shared] (3ada945):
+    codePath=/system/app/GoogleExtShared
+    versionCode=241093 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=1687651 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.wallpapercropper] (df4360c):
+    codePath=/system/priv-app/WallpaperCropper
+    versionCode=14514 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=101598 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.mitv.tvlock] (b1dde5d):
+    codePath=/system/priv-app/TvLock
+    versionCode=728570 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=5099990 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.externalstorage] (c1a200c):
+    codePath=/system/priv-app/ExternalStorageProvider
+    versionCode=793148 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=5552036 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.htmlviewer] (3248ed1):
+    codePath=/system/app/HTMLViewer
+    versionCode=205994 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=1441958 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.companiondevicemanager] (7669f20):
+    codePath=/system/app/CompanionDeviceManager
+    versionCode=485051 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=3395357 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [android.autoinstalls.config.xioami.dangal] (a3d9bc3):
+    codePath=/system/app/PlayAutoInstallConfig
+    versionCode=671159 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=4698113 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=3 instant=false virtual=false
+  Package [com.android.providers.downloads] (50b37fa):
+    codePath=/system/priv-app/DownloadProvider
+    versionCode=330579 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=2314053 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.providers.tv] (3e959d9):
+    codePath=/system/priv-app/TvProvider
+    versionCode=256373 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA PERSISTENT ]
+    User 0: ceDataInode=1794611 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.xiaomi.floatingframe] (9dabaae):
+    codePath=/system/app/FloatingFrame
+    versionCode=645846 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=4520922 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=3 instant=false virtual=false
+  Package [com.google.android.backdrop] (58f5ded):
+    codePath=/data/app/com.google.android.backdrop-4zd_yUaqqhNmetVLuuuDlQ==
+    versionCode=364409 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM UPDATED_SYSTEM_APP HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=2550863 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.droidlogic] (3038070):
+    codePath=/vendor/priv-app/droidlogic-res
+    versionCode=197532 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA PERSISTENT ]
+    User 0: ceDataInode=1382724 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.droidlogic.tv.settings] (a79a9ef):
+    codePath=/vendor/app/DroidTvSettings
+    versionCode=686533 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=4805731 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.tungsten.setupwraith] (d0c283a):
+    codePath=/data/app/com.google.android.tungsten.setupwraith-TwUUELBXcT26IfaneAG-oA==
+    versionCode=855108 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM UPDATED_SYSTEM_APP HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=5985756 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.xm.webcontent] (e031f1a):
+    codePath=/data/app/com.xm.webcontent-pxfpIJEDIJyZAzMPO5I0CA==
+    versionCode=18331 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM UPDATED_SYSTEM_APP HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=128317 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=3 instant=false virtual=false
+  Package [com.android.defcontainer] (770d1ec):
+    codePath=/system/priv-app/DefaultContainerService
+    versionCode=487661 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=3413627 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.vending] (975db2d):
+    codePath=/data/app/com.android.vending-zcusOhYGWPUeHYnDasCnXw==
+    versionCode=620023 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM UPDATED_SYSTEM_APP HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=4340161 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.pacprocessor] (6e01139):
+    codePath=/system/app/PacProcessor
+    versionCode=450605 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=3154235 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.certinstaller] (782b891):
+    codePath=/system/app/CertInstaller
+    versionCode=492244 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=3445708 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.marvin.talkback] (8fe7082):
+    codePath=/data/app/com.google.android.marvin.talkback-kljQvGXS3nPSnCALo3-d3g==
+    versionCode=589452 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM UPDATED_SYSTEM_APP HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=4126164 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [android] (e4bbe5b):
+    codePath=/system/framework
+    versionCode=36922 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA PERSISTENT ]
+    User 0: ceDataInode=258454 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.camera2] (f3e04f2):
+    codePath=/system/app/Camera2
+    versionCode=98944 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=692608 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.sonyliv] (3aef5a3):
+    codePath=/data/app/com.sonyliv-2RFTW0YE0pvOZ9ScRKOkxQ==
+    versionCode=241425 minSdk=21 targetSdk=28
+    pkgFlags=[ HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=1689975 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.speech.pumpkin] (2e67506):
+    codePath=/system/app/Pumpkin
+    versionCode=190097 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=1330679 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=3 instant=false virtual=false
+  Package [com.mitv.tvhome.atv] (c4fcf56):
+    codePath=/data/app/com.mitv.tvhome.atv-jodH_BUhYtkpI6aYT-HrTw==
+    versionCode=806891 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM UPDATED_SYSTEM_APP HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=5648237 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=3 instant=false virtual=false
+  Package [com.android.backupconfirm] (7dec7eb):
+    codePath=/system/priv-app/BackupRestoreConfirmation
+    versionCode=515811 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=3610677 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.statementservice] (a778da9):
+    codePath=/system/priv-app/StatementService
+    versionCode=685993 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=4801951 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [in.startv.hotstar] (d255cb9):
+    codePath=/data/app/in.startv.hotstar-tZvhLYwguqduBL62S3-wog==
+    versionCode=861560 minSdk=21 targetSdk=28
+    pkgFlags=[ HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=6030920 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.droidlogic.droidlivetv] (ba20ec8):
+    codePath=/vendor/app/DroidLiveTv
+    versionCode=762410 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=5336870 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.settings.intelligence] (671442c):
+    codePath=/system/priv-app/SettingsIntelligence
+    versionCode=422240 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=2955680 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.xiaomi.mitv.mediaexplorer] (daf3813):
+    codePath=/system/priv-app/TVMediaExplorer
+    versionCode=896852 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=6277964 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.amazon.amazonvideo.livingroom] (cddb3f2):
+    codePath=/data/app/com.amazon.amazonvideo.livingroom-rOj21kiQyxOkFlX6hA5Ttg==
+    versionCode=843215 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM UPDATED_SYSTEM_APP HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=5902505 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.providers.settings] (0bfd8a9):
+    codePath=/system/priv-app/SettingsProvider
+    versionCode=49140 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=343980 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.sharedstoragebackup] (1c6bb21):
+    codePath=/system/priv-app/SharedStorageBackup
+    versionCode=116439 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=815073 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.printspooler] (2c6a0c3):
+    codePath=/system/app/PrintSpooler
+    versionCode=181948 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=1273636 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.xiaomi.mitv.updateservice] (4814747):
+    codePath=/data/app/com.xiaomi.mitv.updateservice-VSMc_d_hbRFACrDOyapXYA==
+    versionCode=295267 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM UPDATED_SYSTEM_APP HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=2066869 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.mitv.videoplayer] (21c5377):
+    codePath=/data/app/com.mitv.videoplayer-oDDkxTvqSYw2Ko27VvJvfQ==
+    versionCode=138351 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM UPDATED_SYSTEM_APP HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=968457 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.dreams.basic] (6d0b308):
+    codePath=/system/app/BasicDreams
+    versionCode=446671 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=3126697 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.se] (b3c1787):
+    codePath=/system/app/SecureElement
+    versionCode=736307 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=5154149 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.tv] (d342915):
+    codePath=/system/priv-app/LiveTv
+    versionCode=865349 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=6057443 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.inputdevices] (13c2404):
+    codePath=/system/priv-app/InputDevices
+    versionCode=80960 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=566720 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.tvrecommendations] (d457bdf):
+    codePath=/data/app/com.google.android.tvrecommendations-s7FcXHGPj02wyEA7VG2WJQ==
+    versionCode=869783 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM UPDATED_SYSTEM_APP HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=6088481 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=3 instant=false virtual=false
+  Package [com.google.android.leanbacklauncher.recommendations] (5501a9a):
+    codePath=/system/priv-app/RecommendationsService
+    versionCode=348214 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=2437498 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=3 instant=false virtual=false
+  Package [com.xiaomi.mitv.smartshare] (5c621ae):
+    codePath=/system/priv-app/MiTVMultiCast_india
+    versionCode=378429 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=2649003 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.mxtech.videoplayer.television] (eb0a7cc):
+    codePath=/data/app/com.mxtech.videoplayer.television-fJZ-Ls1PPX6NzNv86Zu-TQ==
+    versionCode=62755 minSdk=21 targetSdk=28
+    pkgFlags=[ HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=439285 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.xiaomi.mimusic2] (74c6e7d):
+    codePath=/system/priv-app/TVMusic
+    versionCode=478346 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=3348422 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=3 instant=false virtual=false
+  Package [com.google.android.tvlauncher] (33d1947):
+    codePath=/data/app/com.google.android.tvlauncher-pob3fA0JHhFJRerbV40akQ==
+    versionCode=212277 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM UPDATED_SYSTEM_APP HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=1485939 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.webview] (29b41f6):
+    codePath=/data/app/com.google.android.webview-GgiPSoc3gi7rV8NrQ6yzBA==
+    versionCode=170845 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM UPDATED_SYSTEM_APP HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=1195915 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.onetimeinitializer] (5d0d2d4):
+    codePath=/system/priv-app/OneTimeInitializer
+    versionCode=381166 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=2668162 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.droidlogic.ble] (ef15287):
+    codePath=/vendor/overlay/BlueOverlay
+    versionCode=79310 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=555170 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.keychain] (ffc17f6):
+    codePath=/system/app/KeyChain
+    versionCode=147603 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=1033221 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.youtube.tvmusic] (ce3e993):
+    codePath=/data/app/com.google.android.youtube.tvmusic-l_zFZzMfx0VM42OZUK8o1w==
+    versionCode=844805 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM UPDATED_SYSTEM_APP HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=5913635 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.gallery3d] (0ede5da):
+    codePath=/system/app/Gallery2
+    versionCode=60929 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=426503 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.packageinstaller] (655325d):
+    codePath=/system/priv-app/GooglePackageInstaller
+    versionCode=415054 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=2905378 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.xiaomi.mitv.res] (5a0dc2e):
+    codePath=/system/app/mitv-framework-res
+    versionCode=368888 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=2582216 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.gms] (9cc7be0):
+    codePath=/data/app/com.google.android.gms-EGloYBvisAN99YFUFQ9-Hg==
+    versionCode=642199 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM UPDATED_SYSTEM_APP HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=4495393 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.gsf] (734a494):
+    codePath=/system/priv-app/GoogleServicesFramework
+    versionCode=472256 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=3305792 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.tts] (8439a62):
+    codePath=/data/app/com.google.android.tts-4qqaESPHC-UXLNotjsDnVA==
+    versionCode=541622 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM UPDATED_SYSTEM_APP HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=3791354 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.partnersetup] (d17b2b7):
+    codePath=/system/priv-app/GooglePartnerSetup
+    versionCode=858062 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=6006434 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.videos] (52ef6f4):
+    codePath=/data/app/com.google.android.videos-Y5c0BwNHISQYUgZarRoZqQ==
+    versionCode=339730 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM UPDATED_SYSTEM_APP HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=2378110 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=3 instant=false virtual=false
+  Package [com.droidlogic.tv.soundeffectsettings] (6173739):
+    codePath=/product/app/DroidSoundEffectSettings
+    versionCode=399187 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=2794309 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.xiaomo.tv.milegal] (3c5dc28):
+    codePath=/system/app/milegal
+    versionCode=247288 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=1731016 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.proxyhandler] (0eae6cf):
+    codePath=/system/priv-app/ProxyHandler
+    versionCode=60162 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=421134 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.feedback] (c1cbbe2):
+    codePath=/system/priv-app/GoogleFeedback
+    versionCode=793815 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=5556705 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=3 instant=false virtual=false
+  Package [com.google.android.syncadapters.calendar] (67a25d0):
+    codePath=/system/app/GoogleCalendarSyncAdapter
+    versionCode=424513 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=2971591 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.tv.bugreportsender] (a379835):
+    codePath=/system/app/BugReportSender
+    versionCode=669620 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=4687340 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=3 instant=false virtual=false
+  Package [com.android.smspush] (def48e4):
+    codePath=/system/app/WAPPushManager
+    versionCode=13252 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=92764 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.mitv.gallery] (30cf75d):
+    codePath=/system/priv-app/MiTVGallery
+    versionCode=199955 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=1399685 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=3 instant=false virtual=false
+  Package [com.miui.tv.analytics] (ca19ae0):
+    codePath=/system/app/MiTVBiAnalytics
+    versionCode=827830 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=5794810 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=3 instant=false virtual=false
+  Package [com.google.android.leanbacklauncher] (2b9e0fe):
+    codePath=/system/priv-app/LeanbackLauncher
+    versionCode=178684 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=1250788 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.backuptransport] (b2e7df7):
+    codePath=/system/priv-app/GoogleBackupTransport
+    versionCode=732825 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=5129775 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.xiaomi.wfdsinkhelperservice] (b0d03e4):
+    codePath=/system/app/WfdSinkHelper
+    versionCode=724255 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=5069785 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.xiaomi.statistic] (e2f1ded):
+    codePath=/system/app/MiTVStat
+    versionCode=29593 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=207151 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=3 instant=false virtual=false
+  Package [com.google.android.sss.authbridge] (a01781b):
+    codePath=/system/priv-app/SssAuthbridgePrebuilt
+    versionCode=655764 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=4590348 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.cts.ctsshim] (2dd23b7):
+    codePath=/system/app/CtsShimPrebuilt
+    versionCode=187711 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=1313977 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.youtube.tv] (e03fe4a):
+    codePath=/data/app/com.google.android.youtube.tv-2_1DLC0oB3nnFlp7yTh-7A==
+    versionCode=18554 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM UPDATED_SYSTEM_APP HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=129878 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.vpndialogs] (769f0a5):
+    codePath=/system/priv-app/VpnDialogs
+    versionCode=485900 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=3401300 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.tv.frameworkpackagestubs] (35d600d):
+    codePath=/system/app/FrameworkPackageStubs
+    versionCode=220540 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=1543780 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.shell] (ba719e6):
+    codePath=/system/priv-app/Shell
+    versionCode=763701 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=5345907 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.wallpaperbackup] (0089497):
+    codePath=/system/app/WallpaperBackup
+    versionCode=2224 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=15568 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.mitv.milinkservice] (dea75ba):
+    codePath=/system/priv-app/MiLink
+    versionCode=12017 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=84119 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.providers.userdictionary] (e2daa7d):
+    codePath=/system/priv-app/UserDictionaryProvider
+    versionCode=29222 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=204554 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.tv.remote.service] (8ce55c3):
+    codePath=/data/app/com.google.android.tv.remote.service-eomwmot1Gx92dCXxjdWJTA==
+    versionCode=577137 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM UPDATED_SYSTEM_APP HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=4039959 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.location.fused] (a3b06d9):
+    codePath=/system/priv-app/FusedLocation
+    versionCode=670498 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=4693486 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.systemui] (268ae76):
+    codePath=/system/priv-app/SystemUI
+    versionCode=157898 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA PERSISTENT ]
+    User 0: ceDataInode=1105286 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.mitv.dream] (bf187ae):
+    codePath=/system/priv-app/MiTVDream
+    versionCode=782755 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=5479285 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.play.games] (100e2a2):
+    codePath=/data/app/com.google.android.play.games-Ly3-ejRFiR8Z5GalswVyZA==
+    versionCode=65790 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM UPDATED_SYSTEM_APP HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=460530 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=3 instant=false virtual=false
+  Package [com.netflix.ninja] (9e73025):
+    codePath=/data/app/com.netflix.ninja-bJrO2pooiESUzE03_XTm7Q==
+    versionCode=649036 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM UPDATED_SYSTEM_APP HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=4543252 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.bluetooth] (ec1df82):
+    codePath=/system/app/Bluetooth
+    versionCode=67163 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=470141 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.xiaomi.mitv.handbook] (27b7349):
+    codePath=/system/app/MiTVHandbook_IND
+    versionCode=162703 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=1138921 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=3 instant=false virtual=false
+  Package [com.android.providers.contacts] (8e17a7b):
+    codePath=/system/priv-app/ContactsProvider
+    versionCode=582038 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=4074266 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.android.captiveportallogin] (579b545):
+    codePath=/system/app/CaptivePortalLogin
+    versionCode=358865 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=2512055 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.droidlogic.overlay] (f337d50):
+    codePath=/vendor/overlay
+    versionCode=96249 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=673743 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.google.android.inputmethod.latin] (3947143):
+    codePath=/data/app/com.google.android.inputmethod.latin-8YW2MOxSaACyly69kzTDlw==
+    versionCode=234637 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM UPDATED_SYSTEM_APP HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=1642459 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false
+  Package [com.xiaomi.mitv.tvmanager] (ee4d75e):
+    codePath=/system/priv-app/TVManager
+    versionCode=76115 minSdk=21 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    User 0: ceDataInode=532805 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=3 instant=false virtual=false
+
+Hidden system packages:
+  Package [com.google.android.gms] (0a1b2c3):
+    codePath=/system/priv-app/PrebuiltGmsCore
+    versionCode=12345 minSdk=28 targetSdk=28
+    pkgFlags=[ SYSTEM HAS_CODE ]
+    User 0: ceDataInode=0 installed=true hidden=false suspended=false stopped=false notLaunched=false enabled=0 instant=false virtual=false

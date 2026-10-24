@@ -1,0 +1,12 @@
+# Install the launcher from tmp with -r; it was absent, so the undo removes it
+op: Install apk=/data/local/tmp/cleanyourtv/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.apk sha256=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa pkg=com.gathin.tvhome versionCode=1 signer=bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb flags=REPLACE
+privilege: COMMUNITY
+timeout_ms: 120000
+stdout_cap: 65536
+line: 'pm' 'install' '-r' '--user' '0' '/data/local/tmp/cleanyourtv/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.apk'
+transfer: none
+verify: Read kind=PACKAGE_DUMP pkg=com.gathin.tvhome
+verify_line: 'dumpsys' 'package' 'com.gathin.tvhome'
+prior: present=false
+inverse: Uninstall pkg=com.gathin.tvhome
+inverse_line: 'pm' 'uninstall' '--user' '0' 'com.gathin.tvhome'

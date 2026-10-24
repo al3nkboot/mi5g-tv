@@ -1,0 +1,11 @@
+# Install the launcher from tmp, no flags, it was present (no undo)
+op: Install apk=/data/local/tmp/cleanyourtv/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.apk sha256=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa pkg=com.gathin.tvhome versionCode=1 signer=bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb flags=
+privilege: COMMUNITY
+timeout_ms: 120000
+stdout_cap: 65536
+line: 'pm' 'install' '--user' '0' '/data/local/tmp/cleanyourtv/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.apk'
+transfer: none
+verify: Read kind=PACKAGE_DUMP pkg=com.gathin.tvhome
+verify_line: 'dumpsys' 'package' 'com.gathin.tvhome'
+prior: present=true
+inverse: none

@@ -1,0 +1,21 @@
+HdmiControlService:
+  mProhibitMode: false
+  mPowerStatus: 0
+  mHdmiControlEnabled: true
+  mLocalDevices:
+    HdmiCecLocalDeviceTv:
+      mDeviceType: 0
+      mAddress: 0
+      mPreferredAddress: 0
+      mDeviceInfo: CEC: logical_address: 0x00 device_type: 0x00 vendor_id: 0x000000 display_name: TV power_status: 0x00 physical_address: 0x0000 port_id: 0
+      mActive: true
+      mActiveSource: (3, 0x2000)
+      mActiveRoutingPath: 0x2000
+      mDeviceInfos:
+        CEC: logical_address: 0x03 device_type: 0x03 vendor_id: 0x00E091 display_name: Set-top Box power_status: 0x00 physical_address: 0x2000 port_id: 2
+        CEC: logical_address: 0x05 device_type: 0x05 vendor_id: 0x0000F0 display_name: Soundbar power_status: 0x00 physical_address: 0x3000 port_id: 3
+        CEC: logical_address: 0x04 device_type: 0x04 vendor_id: 0x000000 display_name:  power_status: 0x01 physical_address: 0x3100 port_id: 3
+  mPortInfo:
+    port_id: 1, address: 0x1000, cec: true, arc: false, mhl: false
+    port_id: 2, address: 0x2000, cec: true, arc: false, mhl: false
+    port_id: 3, address: 0x3000, cec: true, arc: true, mhl: false

@@ -1,0 +1,10 @@
+# Curtain cue: a group is done
+op: CurtainCue receiver=tv.cleanyour.curtain/.CueReceiver token=fedcba9876543210 stage=GROUP_DONE count=4 total=12 group=ADVERTS groupCount=4 groupTotal=4
+privilege: PROFILE_STEP
+timeout_ms: 30000
+stdout_cap: 65536
+line: 'am' 'broadcast' '-n' 'tv.cleanyour.curtain/.CueReceiver' '-a' 'tv.cleanyour.curtain.CUE' '--es' 'token' 'fedcba9876543210' '--es' 'stage' 'GROUP_DONE' '--es' 'group' 'ADVERTS' '--ei' 'count' '4' '--ei' 'total' '12' '--ei' 'gcount' '4' '--ei' 'gtotal' '4' '--receiver-foreground'
+transfer: none
+verify: none
+prior: none
+inverse: none

@@ -1,0 +1,65 @@
+// Internal test fixtures for the launcher's module card system: one tiny plain Java app, one product
+// flavor per scenario. Release builds, no shrinking, signed with throwaway keys A and B.
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'io.example.fixture'
+    compileSdk 34
+
+    defaultConfig {
+        minSdk 26
+        targetSdk 34
+        versionCode 1
+        versionName '1.0'
+        manifestPlaceholders = [cardCategory: 'com.gathin.tvhome.category.DOCK_CARD']
+    }
+
+    signingConfigs {
+        keyA {
+            storeFile file('../keys/keyA.jks')
+            storePassword 'fixture'
+            keyAlias 'keya'
+            keyPassword 'fixture'
+        }
+        keyB {
+            storeFile file('../keys/keyB.jks')
+            storePassword 'fixture'
+            keyAlias 'keyb'
+            keyPassword 'fixture'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            // The flavor picks the key.
+            signingConfig null
+        }
+    }
+
+    flavorDimensions 'fixture'
+    productFlavors {
+        spoof { applicationId 'io.example.spoof'; signingConfig signingConfigs.keyA }
+        spoofvariant { applicationId 'io.example.spoof'; versionCode 2; signingConfig signingConfigs.keyA }
+        cardtesta { applicationId 'io.example.cardtest'; signingConfig signingConfigs.keyA }
+        cardtestb { applicationId 'io.example.cardtest'; signingConfig signingConfigs.keyB }
+        deep { applicationId 'io.example.deep'; signingConfig signingConfigs.keyA }
+        biglabel { applicationId 'io.example.biglabel'; signingConfig signingConfigs.keyA }
+        reservedverified { applicationId 'io.example.verified'; signingConfig signingConfigs.keyA }
+        reservedsettings { applicationId 'io.example.settingsname'; signingConfig signingConfigs.keyA }
+        spoofvariant2 { applicationId 'io.example.spoof'; versionCode 3; signingConfig signingConfigs.keyA }
+        bidi { applicationId 'io.example.bidi'; signingConfig signingConfigs.keyA }
+        // A plain app (no card filter) whose label equals cardtest's card label.
+        plaincollide { applicationId 'io.example.plaincollide'; signingConfig signingConfigs.keyA; manifestPlaceholders = [cardCategory: 'io.example.fixture.NO_CARD'] }
+        cardclash { applicationId 'io.example.cardclash'; signingConfig signingConfigs.keyA }
+        reservedhdmi { applicationId 'io.example.hdminame'; signingConfig signingConfigs.keyA }
+        (1..9).each { n -> "many$n" { applicationId "io.example.many$n"; signingConfig signingConfigs.keyA } }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}

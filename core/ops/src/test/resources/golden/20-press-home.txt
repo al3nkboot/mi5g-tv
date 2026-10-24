@@ -1,0 +1,10 @@
+# The HOME key
+op: PressHome
+privilege: PROFILE_STEP
+timeout_ms: 30000
+stdout_cap: 65536
+line: 'input' 'keyevent' '3'
+transfer: none
+verify: none
+prior: none
+inverse: none

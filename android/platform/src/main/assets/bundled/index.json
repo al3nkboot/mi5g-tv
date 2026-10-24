@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "sequence": 2,
+  "generated": "2026-10-20T16:44:56Z",
+  "expires": "2027-01-18T16:44:56Z",
+  "modules": [
+    {
+      "id": "retro",
+      "name": "Retro",
+      "one_line": "NES games on the TV",
+      "description": "An open source game browser and NES player made for low end TVs. It downloads free homebrew games from their authors' own pages and checks each one before it is stored. Your own game files in the Roms folder on the TV show up too.",
+      "package": "io.github.udhaykumarbala.retro",
+      "type": "app",
+      "tier": "community",
+      "publisher": "udhaykumarbala",
+      "source": "https://github.com/udhaykumarbala/tv-vibehack-retro",
+      "licence": "GPL-3.0",
+      "accent": "#E8A33D",
+      "artwork": null,
+      "versions": [
+        {
+          "version_code": 1,
+          "version_name": "0.1.0",
+          "released": "2026-10-19T09:20:32Z",
+          "apk": {
+            "url": "https://github.com/udhaykumarbala/tv-vibehack-retro/releases/download/v0.1.0/retro-release.apk",
+            "size": 3663466,
+            "sha256": "a3bcf445e1062d9e905b1d21b347236a6831e9ace6bfa1e76f9d154acf2d9db8",
+            "signer_sha256": "0202281bb726dbc12b82622dee50a278656128a82204db3cf055f8f5c006e405"
+          },
+          "permissions": [
+            {
+              "permission": "android.permission.INTERNET",
+              "plain_words": "Downloads free homebrew games and cover art over HTTPS."
+            },
+            {
+              "permission": "android.permission.READ_EXTERNAL_STORAGE",
+              "plain_words": "Reads your own game files from the Roms/NES folder on the TV."
+            },
+            {
+              "permission": "io.github.udhaykumarbala.retro.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION",
+              "plain_words": "Used only inside Retro itself; no other app can use it."
+            }
+          ],
+          "network": "Connects only to the pages and download links of the games you pick, and to their cover art, over HTTPS.",
+          "min_sdk": 26,
+          "abis": [
+            "armeabi-v7a",
+            "arm64-v8a"
+          ],
+          "post_install": []
+        }
+      ]
+    }
+  ],
+  "revoked": []
+}

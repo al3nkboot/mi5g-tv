@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The TV curtain (RFC-CURTAIN-1). No permissions requested; no HOME or LEANBACK_LAUNCHER category,
+     so it is never in a launcher grid and never a home screen candidate. Both entry points require
+     WRITE_SECURE_SETTINGS, which only the shell and the system hold: only adb (the phone's plan) or
+     the system can start or cue it, never another app on the TV. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+
+    <application
+        android:allowBackup="false"
+        android:label="@string/app_name"
+        android:supportsRtl="false"
+        android:theme="@style/Curtain">
+
+        <activity
+            android:name=".CurtainActivity"
+            android:exported="true"
+            android:permission="android.permission.WRITE_SECURE_SETTINGS"
+            android:launchMode="singleTask"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:stateNotNeeded="true"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboard|keyboardHidden|navigation|uiMode|density" />
+
+        <receiver
+            android:name=".CueReceiver"
+            android:exported="true"
+            android:permission="android.permission.WRITE_SECURE_SETTINGS">
+            <intent-filter>
+                <action android:name="tv.cleanyour.curtain.CUE" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>

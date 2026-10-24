@@ -1,0 +1,11 @@
+# Remove a file of ours
+op: RemoveFile path=/sdcard/Android/data/com.gathin.tvhome/files/wallpaper.jpg
+privilege: COMMUNITY
+timeout_ms: 30000
+stdout_cap: 65536
+line: 'rm' '-f' '/sdcard/Android/data/com.gathin.tvhome/files/wallpaper.jpg'
+transfer: none
+verify: Read kind=SHA256_OF_FILE path=/sdcard/Android/data/com.gathin.tvhome/files/wallpaper.jpg
+verify_line: 'sha256sum' '/sdcard/Android/data/com.gathin.tvhome/files/wallpaper.jpg'
+prior: none
+inverse: none

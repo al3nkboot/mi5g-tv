@@ -1,0 +1,10 @@
+# A phone-side wait: no line
+op: Settle seconds=15
+privilege: READ
+timeout_ms: 15000
+stdout_cap: 65536
+line: none
+transfer: none
+verify: none
+prior: none
+inverse: none

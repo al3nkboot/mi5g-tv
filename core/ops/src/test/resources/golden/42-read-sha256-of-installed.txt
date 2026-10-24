@@ -1,0 +1,10 @@
+# The installed APK's path (the prober hashes it)
+op: Read kind=SHA256_OF_INSTALLED pkg=com.gathin.tvhome
+privilege: READ
+timeout_ms: 30000
+stdout_cap: 65536
+line: 'pm' 'path' 'com.gathin.tvhome'
+transfer: none
+verify: none
+prior: none
+inverse: none

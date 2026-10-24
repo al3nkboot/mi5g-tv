@@ -1,0 +1,13 @@
+# The dead-man template, variant A (nohup setsid)
+op: ArmHomeWatchdog stock=com.google.android.tvlauncher/.MainActivity seconds=120 token=0123456789abcdef
+privilege: TAKEOVER
+timeout_ms: 30000
+stdout_cap: 65536
+line: 'rm' '-f' '/data/local/tmp/cleanyourtv/home-ok-0123456789abcdef'
+line: nohup setsid sh -c 'sleep 120 & wait; [ -f /data/local/tmp/cleanyourtv/home-ok-0123456789abcdef ] && exit 0; pm enable --user 0 com.google.android.tvlauncher; cmd package set-home-activity --user 0 com.google.android.tvlauncher/.MainActivity; am start -W -a android.intent.action.MAIN -c android.intent.category.HOME' cleanyourtv-rollback-0123456789abcdef >/data/local/tmp/cleanyourtv/watchdog-0123456789abcdef.log 2>&1 &
+transfer: none
+verify: Read kind=WATCHDOG_ALIVE token=0123456789abcdef
+verify_line: 'pgrep' '-f' '[c]leanyourtv-rollback-0123456789abcdef'
+prior: none
+inverse: KillWatchdog token=0123456789abcdef
+inverse_line: 'pkill' '-f' '[c]leanyourtv-rollback-0123456789abcdef'

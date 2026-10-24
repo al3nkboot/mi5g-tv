@@ -1,0 +1,10 @@
+# CEC devices
+op: Read kind=CEC
+privilege: READ
+timeout_ms: 20000
+stdout_cap: 1048576
+line: 'dumpsys' 'hdmi_control'
+transfer: none
+verify: none
+prior: none
+inverse: none

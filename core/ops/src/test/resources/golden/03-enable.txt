@@ -1,0 +1,12 @@
+# Put back a package we switched off
+op: Enable pkg=com.google.android.katniss
+privilege: PROFILE_STEP
+timeout_ms: 30000
+stdout_cap: 65536
+line: 'pm' 'enable' '--user' '0' 'com.google.android.katniss'
+transfer: none
+verify: Read kind=DISABLED
+verify_line: 'pm' 'list' 'packages' '-d'
+prior: packageState=DISABLED_USER
+inverse: Disable pkg=com.google.android.katniss
+inverse_line: 'pm' 'disable-user' '--user' '0' 'com.google.android.katniss'

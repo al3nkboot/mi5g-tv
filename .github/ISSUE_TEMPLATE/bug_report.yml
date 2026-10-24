@@ -1,0 +1,76 @@
+name: Report a problem
+description: Something in the app went wrong or did not do what you expected.
+title: "Problem: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time. Even a short report helps us fix things for everyone.
+
+        **The app can fill this in for you.** Tap **Report a problem**: it is on the card that stopped you, on
+        "The setup didn't finish", and in the app's Settings (the gear on Manage). Then tap
+        **Open GitHub**: this form opens with the version, the phone, the TV and the report filled in. A very
+        long report doesn't fit in the link; then the button says **Copy and open GitHub**, and you paste the
+        report into the "Report from the app" box below (long-press in the box and choose Paste).
+
+        The report is plain text. Addresses, serial numbers, keys and codes are removed before you see it, and
+        nothing is public until you post this form. Please never paste your TV's serial number, your network
+        addresses or a pairing code yourself. Security problems go through SECURITY.md (a private advisory),
+        not here.
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      description: The app fills this in. Settings shows it too, for example "Version 0.3.2".
+    validations:
+      required: true
+  - type: input
+    id: phone
+    attributes:
+      label: Phone
+      description: Model and Android version, for example "Pixel 7, Android 15". The app fills this in.
+    validations:
+      required: true
+  - type: input
+    id: tv
+    attributes:
+      label: TV
+      description: Brand, model and Android version, for example "Xiaomi Mi TV 4A, Android 9". The app fills this in when it has read the TV.
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what happened instead. Which screen were you on? A few words are fine.
+    validations:
+      required: true
+  - type: dropdown
+    id: tv-state
+    attributes:
+      label: How is the TV now?
+      options:
+        - Fine, nothing changed
+        - Changed, and working
+        - Something on the TV stopped working
+        - The TV's home screen is wrong or missing
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Report from the app
+      description: The app fills this in. If the box is empty, long-press in it and choose Paste; the app copied the report for you.
+      placeholder: Paste the app's report here. No report from the app? Write "none" and say why under What happened.
+      render: text
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        If the TV needs fixing right now: Manage, "Restore point", "Undo everything" puts it back. Without the
+        phone, the restore copy ("Save a copy") contains scripts that run from any computer with adb.
+
+        **What happens next.** We read every report and answer here. If we need more, we ask. When a fix is in a
+        release, we say so here with the version that has it.

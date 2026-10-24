@@ -1,0 +1,12 @@
+# device_name is the one value with a space, quoted like any token
+op: SettingsPut key=DEVICE_NAME value=Living room TV
+privilege: PROFILE_STEP
+timeout_ms: 30000
+stdout_cap: 65536
+line: 'settings' 'put' 'global' 'device_name' 'Living room TV'
+transfer: none
+verify: Read kind=SETTINGS ns=GLOBAL
+verify_line: 'settings' 'list' 'global'
+prior: empty
+inverse: SettingsPut key=DEVICE_NAME value=null
+inverse_line: 'settings' 'delete' 'global' 'device_name'

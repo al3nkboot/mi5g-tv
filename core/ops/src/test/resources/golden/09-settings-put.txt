@@ -1,0 +1,12 @@
+# Allowlisted secure setting with a 0 or 1 shape
+op: SettingsPut key=SCREENSAVER_ENABLED value=0
+privilege: PROFILE_STEP
+timeout_ms: 30000
+stdout_cap: 65536
+line: 'settings' 'put' 'secure' 'screensaver_enabled' '0'
+transfer: none
+verify: Read kind=SETTINGS ns=SECURE
+verify_line: 'settings' 'list' 'secure'
+prior: settingValue=1
+inverse: SettingsPut key=SCREENSAVER_ENABLED value=1
+inverse_line: 'settings' 'put' 'secure' 'screensaver_enabled' '1'

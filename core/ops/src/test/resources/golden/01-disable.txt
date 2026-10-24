@@ -1,0 +1,12 @@
+# Disable a package the profile lists; it was enabled
+op: Disable pkg=com.miui.tv.analytics
+privilege: PROFILE_STEP
+timeout_ms: 30000
+stdout_cap: 65536
+line: 'pm' 'disable-user' '--user' '0' 'com.miui.tv.analytics'
+transfer: none
+verify: Read kind=DISABLED
+verify_line: 'pm' 'list' 'packages' '-d'
+prior: packageState=ENABLED
+inverse: Enable pkg=com.miui.tv.analytics
+inverse_line: 'pm' 'enable' '--user' '0' 'com.miui.tv.analytics'

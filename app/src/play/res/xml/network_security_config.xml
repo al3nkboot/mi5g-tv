@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The Google Play build (STORES-PLAN 1). SECURITY 4.4 and D41 as in the full build: no
+     cleartext, system CAs only (no user CAs). This build makes no internet request of its own: no
+     update check and no add-on downloads, so it names no host at all (its Store.hosts is empty and
+     the HTTP client refuses every URL). ADB sockets are raw TCP made by our code and are not
+     governed by this file. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

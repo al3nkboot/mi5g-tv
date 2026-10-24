@@ -1,0 +1,90 @@
+#!/bin/sh
+# Stub adb for the restore script tests. It replays a fake TV kept as plain files under $STUB_TV
+# and appends every call to $STUB_TV/calls (one line per call, each argument in <>). The TV side
+# checks that a shell line is only constant words and single-quoted tokens, then tokenises it the
+# way the TV's own sh would, by eval of the line as the arguments of set.
+#
+#   $STUB_TV/adb-serial         the serial adb knows the TV by
+#   $STUB_TV/props/<name>       getprop values
+#   $STUB_TV/pkg/<package>      ENABLED, DISABLED_USER, DISABLED or DEFAULT; no file: not installed
+#   $STUB_TV/home               the HOME component
+#   $STUB_TV/settings/<ns>/<key> setting values; no file: not set
+#   $STUB_TV/files/<path>       TV files we wrote, the path with every / as %
+#   $STUB_TV/lines              every TV shell line received, in order
+T="${STUB_TV:?STUB_TV is not set}"
+{ printf 'adb'; for a in "$@"; do printf ' <%s>' "$a"; done; printf '\n'; } >>"$T/calls"
+
+serial=''
+if [ "${1-}" = -s ]; then serial="${2-}"; shift 2; fi
+case "${1-}" in
+  connect)
+    printf 'connected to %s\n' "${2-}"
+    printf '%s' "${2-}" >"$T/adb-serial"
+    exit 0 ;;
+  get-state|shell) ;;
+  *) printf 'stub adb: unsupported command: %s\n' "${1-}" >&2; exit 1 ;;
+esac
+known=$(cat "$T/adb-serial")
+if [ -n "$serial" ] && [ "$serial" != "$known" ]; then
+  printf "error: device '%s' not found\n" "$serial" >&2
+  exit 1
+fi
+if [ "$1" = get-state ]; then printf 'device\n'; exit 0; fi
+shift
+line="$*"
+printf '%s\n' "$line" >>"$T/lines"
+if ! printf '%s\n' "$line" | grep -Eq "^([A-Za-z0-9._/-]+|'[^']*')( ([A-Za-z0-9._/-]+|'[^']*'))*\$"; then
+  printf 'stub adb: unsafe line refused: %s\n' "$line" >&2
+  exit 99
+fi
+eval "set -- $line"
+
+user0() { [ "${1-}" = --user ] && [ "${2-}" = 0 ]; }
+
+case "${1-} ${2-}" in
+  "getprop "*)
+    [ -f "$T/props/$2" ] && cat "$T/props/$2"
+    printf '\n'
+    exit 0 ;;
+  "pm enable"|"pm disable-user"|"pm default-state"|"pm uninstall")
+    verb="$2"; shift 2
+    if user0 "$@"; then shift 2; fi
+    p="${1-}"
+    if [ ! -f "$T/pkg/$p" ]; then
+      printf 'Exception occurred while executing:\njava.lang.IllegalArgumentException: Unknown package: %s\n' "$p" >&2
+      exit 255
+    fi
+    case "$verb" in
+      enable) printf 'ENABLED' >"$T/pkg/$p"; printf 'Package %s new state: enabled\n' "$p" ;;
+      disable-user) printf 'DISABLED_USER' >"$T/pkg/$p"; printf 'Package %s new state: disabled-user\n' "$p" ;;
+      default-state) printf 'DEFAULT' >"$T/pkg/$p"; printf 'Package %s new state: default\n' "$p" ;;
+      uninstall) rm -f "$T/pkg/$p"; printf 'Success\n' ;;
+    esac
+    exit 0 ;;
+  "settings put")
+    mkdir -p "$T/settings/$3"
+    printf '%s' "$5" >"$T/settings/$3/$4"
+    exit 0 ;;
+  "settings delete")
+    rm -f "$T/settings/$3/$4"
+    printf 'Deleted 1 rows\n'
+    exit 0 ;;
+  "cmd package")
+    if [ "${3-}" = set-home-activity ]; then
+      shift 3
+      if user0 "$@"; then shift 2; fi
+      c="${1-}"
+      p="${c%%/*}"
+      state=$(cat "$T/pkg/$p" 2>/dev/null)
+      case "$state" in
+        ENABLED|DEFAULT) printf '%s' "$c" >"$T/home"; printf 'Success\n'; exit 0 ;;
+        *) printf 'Error: Failed to set default home: %s is not enabled\n' "$c"; exit 255 ;;
+      esac
+    fi ;;
+  "rm -f")
+    f=$(printf '%s' "$3" | tr '/' '%')
+    rm -f "$T/files/$f"
+    exit 0 ;;
+esac
+printf '/system/bin/sh: %s: inaccessible or not found\n' "${1-}" >&2
+exit 127

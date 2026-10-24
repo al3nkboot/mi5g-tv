@@ -1,0 +1,10 @@
+# TV inputs
+op: Read kind=TIF_INPUTS
+privilege: READ
+timeout_ms: 20000
+stdout_cap: 1048576
+line: 'dumpsys' 'tv_input'
+transfer: none
+verify: none
+prior: none
+inverse: none

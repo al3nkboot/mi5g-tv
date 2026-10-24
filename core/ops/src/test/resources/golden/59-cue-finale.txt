@@ -1,0 +1,10 @@
+# Curtain cue: the finale, before Home switches over
+op: CurtainCue receiver=tv.cleanyour.curtain/.CueReceiver token=fedcba9876543210 stage=FINALE count=0 total=0 group=NONE groupCount=0 groupTotal=0
+privilege: PROFILE_STEP
+timeout_ms: 30000
+stdout_cap: 65536
+line: 'am' 'broadcast' '-n' 'tv.cleanyour.curtain/.CueReceiver' '-a' 'tv.cleanyour.curtain.CUE' '--es' 'token' 'fedcba9876543210' '--es' 'stage' 'FINALE' '--es' 'group' 'NONE' '--ei' 'count' '0' '--ei' 'total' '0' '--ei' 'gcount' '0' '--ei' 'gtotal' '0' '--receiver-foreground'
+transfer: none
+verify: none
+prior: none
+inverse: none

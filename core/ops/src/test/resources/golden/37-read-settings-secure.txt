@@ -1,0 +1,10 @@
+# A settings namespace
+op: Read kind=SETTINGS ns=SECURE
+privilege: READ
+timeout_ms: 30000
+stdout_cap: 4194304
+line: 'settings' 'list' 'secure'
+transfer: none
+verify: none
+prior: none
+inverse: none

@@ -1,0 +1,11 @@
+# Kill the watchdog by its process name
+op: KillWatchdog token=0123456789abcdef
+privilege: TAKEOVER
+timeout_ms: 30000
+stdout_cap: 65536
+line: 'pkill' '-f' '[c]leanyourtv-rollback-0123456789abcdef'
+transfer: none
+verify: Read kind=WATCHDOG_ALIVE token=0123456789abcdef
+verify_line: 'pgrep' '-f' '[c]leanyourtv-rollback-0123456789abcdef'
+prior: none
+inverse: none

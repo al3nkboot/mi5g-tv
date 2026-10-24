@@ -1,0 +1,10 @@
+# Reboot: shown as a line, dispatched to TvSession.reboot
+op: Reboot
+privilege: TAKEOVER
+timeout_ms: 300000
+stdout_cap: 65536
+line: 'reboot'
+transfer: none
+verify: none
+prior: none
+inverse: none

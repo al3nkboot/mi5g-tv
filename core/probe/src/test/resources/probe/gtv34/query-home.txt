@@ -1,0 +1,10 @@
+3 activities found:
+  Activity #0:
+    priority=2 preferredOrder=0 match=0x108000 specificIndex=-1 isDefault=true
+    com.google.android.apps.tv.launcherx/.home.HomeActivity
+  Activity #1:
+    priority=4 preferredOrder=0 match=0x108000 specificIndex=-1 isDefault=true
+    com.google.android.tungsten.setupwraith/.MainActivity
+  Activity #2:
+    priority=1 preferredOrder=0 match=0x108000 specificIndex=-1 isDefault=true
+    com.google.android.tungsten.setupwraith/.RecoveryActivity

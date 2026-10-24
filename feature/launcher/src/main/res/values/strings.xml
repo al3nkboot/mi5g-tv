@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Clean Your TV, :feature:launcher. English source strings.
+  Every string that takes an argument is ICU MessageFormat with NAMED arguments in braces,
+  formatted by the app's message helper (android.icu.text.MessageFormat). No printf placeholders,
+  no Android plurals elements. Counts go through the plural selector.
+  Screens: M2 Home screen, the theme picker, the dock sheet (S3b, own copy in this module).
+-->
+<resources>
+
+    <!-- Shared button words -->
+    <string name="action_back">Back</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_done">Done</string>
+    <string name="action_undo">Undo</string>
+
+    <!-- Credential prompt (D17), raised by "Restore mine" and "Use the TV's own home screen" -->
+    <string name="gate_title">Confirm it\'s you</string>
+    <string name="gate_subtitle">Before we change anything on {tv}</string>
+    <string name="gate_negative">Cancel</string>
+    <string name="gate_failed">We couldn\'t confirm it\'s you, so nothing was changed.</string>
+
+    <!-- M2 Home screen -->
+    <string name="home_title">Home screen</string>
+    <string name="home_row_dock">Dock</string>
+    <!-- The Dock row's subtitle when rows sit under the dock: the dock's apps, then how many more -->
+    <string name="home_row_dock_rows">{names}, plus {count, plural, one {# app} other {# apps}} below</string>
+    <string name="home_row_look">Look</string>
+    <string name="home_row_stock">Use the TV\'s own home screen</string>
+    <string name="home_row_stock_note">Brings back the TV\'s own home screen. Ours stays installed, so you can switch again.</string>
+    <string name="home_drift_banner">The home screen settings on the TV changed since you set them.</string>
+    <string name="home_drift_restore">Restore mine</string>
+    <string name="home_applying">Updating the home screen on the TV...</string>
+    <string name="home_snackbar_done">Done.</string>
+
+    <!-- 0.3.3 D2 (issue #3): the new home screen isn't on this TV, so there is no dock or look to change.
+         The lead, then why (the reason Setup recorded), then what can change it, when something can. -->
+    <string name="home_not_on_tv_lead">{tv} keeps its own home screen. The dock and the look belong to the new home screen, and it isn\'t on this TV.</string>
+    <string name="home_not_on_tv_refuses">{brand} only allows its own home screen, so Setup didn\'t add ours. The clean-up works without it.</string>
+    <string name="home_not_on_tv_old_android">The new home screen needs Android 8 or newer, so Setup didn\'t add it. The clean-up works without it.</string>
+    <string name="home_not_on_tv_unknown_home">We don\'t know this TV\'s own home screen well enough to swap it safely, so Setup left it alone.</string>
+    <string name="home_not_on_tv_wizard_wifi">This TV\'s Wi-Fi was saved by its setup wizard. The new home screen needs the wizard off, which would forget the Wi-Fi, and with the wizard left on the TV can crash. So Setup left the home screen alone.</string>
+    <string name="home_not_on_tv_wizard_wifi_unlisted">This TV\'s Wi-Fi was saved by its setup wizard, and we don\'t know this TV well enough yet to switch the wizard off safely. With the wizard left on, a new home screen can crash the TV, so Setup left it alone.</string>
+    <string name="home_not_on_tv_wizard_wifi_unknown">We couldn\'t check who saved this TV\'s Wi-Fi. The new home screen needs the setup wizard off, which could forget the Wi-Fi, so Setup left the home screen alone.</string>
+    <string name="home_not_on_tv_casting">On this Google device the new home screen needs the setup wizard off, and then casting from phones stops working after every restart. So Setup left the home screen alone.</string>
+    <string name="home_not_on_tv_boot_loop">On this TV family the setup wizard comes back at every restart, and with the TV\'s own home screen off the TV can fail to start. So Setup left the home screen alone.</string>
+    <string name="home_not_on_tv_wizard_stays_on">We don\'t know this TV well enough to switch its setup wizard off, and with the wizard left on and the TV\'s own home screen off, the TV can crash. So Setup left the home screen alone.</string>
+    <string name="home_not_on_tv_home_changed">This TV\'s home screen was already changed, by another app or an earlier change, so Setup left it as it is and didn\'t add ours. The clean-up works without it.</string>
+    <string name="home_not_on_tv_none">The new home screen isn\'t installed on this TV right now.</string>
+    <string name="home_not_on_tv_next_wifi">To change this, forget the Wi-Fi network in the TV\'s Settings and add it again, or use a network cable. Then run Setup again.</string>
+    <string name="home_not_on_tv_next_check">Running Setup again checks once more.</string>
+    <string name="home_not_on_tv_next_home_changed">If you\'d like the new home screen, set the TV\'s own home screen back as Home in the TV\'s settings, then run Setup again.</string>
+    <string name="home_not_on_tv_next_setup">Run Setup again to add it.</string>
+    <string name="home_not_on_tv_next_list">What would change this is a list made for this TV. Send us its report and we\'ll make one; a later version may then offer the new home screen.</string>
+    <string name="home_run_setup_again">Run Setup again</string>
+    <string name="home_help_add_tv">Help add this TV</string>
+    <string name="home_fire_tv_name" translatable="false">Fire TV</string>
+    <!-- Under the Dock and Look rows: what Launcher settings on the TV itself can change (launcher 2.4 and
+         later; 2.5 adds Edit dock, rows below the dock and a wallpaper pick). Choices there are cleared by
+         every push from the phone; a dock or tile order set there is kept by the launcher while dock_apps
+         stays the same (a new look), and dropped when the phone saves a different dock. The phone cannot
+         read either. -->
+    <string name="home_tv_changes_note">Changes made on the TV itself, such as tiles per row or motion, last until you change the home screen here. A dock changed on the TV is not shown above: a new look keeps it, a different dock saved here replaces it. Apps taken off Home on the TV stay off.</string>
+
+    <!-- M2 Update the home screen (D4): a newer build of our home screen, installed over the old one -->
+    <string name="home_row_update">Update the home screen</string>
+    <string name="home_row_update_note">Version {version} is ready. Your dock and look stay as they are.</string>
+    <string name="home_update_preview_title">Update the home screen?</string>
+    <string name="home_update_preview_body">We\'ll install version {version} over the one on the TV. The dock, the look and the card answers stay. If it is the TV\'s home screen now, it restarts once.</string>
+    <string name="home_update_confirm">Update</string>
+    <string name="home_update_done">The home screen is up to date: version {version}.</string>
+
+    <!-- M2 Use the TV's own home screen: preview, then narration -->
+    <string name="home_stock_preview_title">Use the TV\'s own home screen?</string>
+    <string name="home_stock_preview_body">We\'ll switch the TV\'s own home screen back on and set it as the home screen. The new home screen stays installed.</string>
+    <string name="home_stock_confirm">Use the TV\'s own</string>
+    <string name="home_stock_working">Putting the TV\'s own home screen back...</string>
+    <string name="home_stock_done">The TV\'s own home screen is back. Ours is still installed.</string>
+
+    <!-- M2 Look (theme picker) -->
+    <string name="theme_title">Look</string>
+    <string name="theme_default">Default</string>
+    <string name="theme_default_desc">A black background with four apps along the bottom.</string>
+    <string name="theme_aurora">Aurora</string>
+    <string name="theme_aurora_desc">A deep blue background with a soft glow behind the apps.</string>
+    <string name="theme_six_columns">Six columns</string>
+    <string name="theme_six_columns_desc">Six apps across, so more fit on the screen.</string>
+    <string name="theme_card_cd">{name}. {description}</string>
+    <string name="theme_card_selected_cd">{name}, selected. {description}</string>
+
+    <!-- S3b Your dock (sheet) -->
+    <string name="dock_title">Your dock</string>
+    <string name="dock_body">Up to {count, spellout} along the bottom. Drag an app by its dots to change the order.</string>
+
+</resources>

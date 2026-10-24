@@ -1,0 +1,1 @@
+0.3.3 fixes the first issues reported after launch. A switch-off the TV keeps on is skipped instead of stopping Setup. A launcher you installed is never switched off, and a home screen already changed gets the clean-up only. Done says when nothing was changed. Manage explains why a TV kept its own home screen. Reports now fill the GitHub form in for you.

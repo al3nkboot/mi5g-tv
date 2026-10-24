@@ -1,0 +1,123 @@
+Categories:
+  - App Manager
+  - System
+License: MIT
+AuthorName: udhaykumarbala
+WebSite: https://cleanyour.tv/app/android
+SourceCode: https://github.com/udhaykumarbala/cleanyourtv-app
+IssueTracker: https://github.com/udhaykumarbala/cleanyourtv-app/issues
+Changelog: https://github.com/udhaykumarbala/cleanyourtv-app/blob/HEAD/CHANGELOG.md
+
+AutoName: Clean Your TV
+
+RepoType: git
+Repo: https://github.com/udhaykumarbala/cleanyourtv-app.git
+Binaries: 
+  https://github.com/udhaykumarbala/cleanyourtv-app/releases/download/v%v/cleanyourtv-%v.apk
+
+Builds:
+  - versionName: 0.3.0
+    versionCode: 3
+    commit: c5e08a8962442f3228bf4bbc314efc639a852298
+    subdir: app
+    submodules: true
+    sudo:
+      - apt-get update
+      - apt-get install -y apksigcopier
+    gradle:
+      - full
+    rm:
+      - android/platform/src/main/assets/bundled/cleanyourtv-launcher.apk
+      - android/platform/src/main/assets/bundled/cleanyourtv-curtain.apk
+    prebuild: sed -i -e '/signingConfig signingConfigs.debug/d' ../third_party/cleanyourtv/launcher/app/build.gradle
+    scanignore:
+      - android/platform/signatures/cleanyourtv-launcher/APKSigningBlock
+      - android/platform/signatures/cleanyourtv-curtain/APKSigningBlock
+    build: bash ../scripts/fdroid-build-tv-apks.sh
+    antifeatures:
+      NonFreeNet:
+        en-US: On request only, "Check for updates" asks GitHub for the latest release,
+          and the optional add-ons (Cards and modules) are listed and downloaded from
+          GitHub.
+
+  - versionName: 0.3.1
+    versionCode: 4
+    # Placeholder: at submission this becomes the full commit hash of the v0.3.1 tag.
+    commit: v0.3.1
+    subdir: app
+    submodules: true
+    sudo:
+      - apt-get update
+      - apt-get install -y apksigcopier
+    gradle:
+      - full
+    rm:
+      - android/platform/src/main/assets/bundled/cleanyourtv-launcher.apk
+      - android/platform/src/main/assets/bundled/cleanyourtv-curtain.apk
+    prebuild: sed -i -e '/signingConfig signingConfigs.debug/d' ../third_party/cleanyourtv/launcher/app/build.gradle
+    scanignore:
+      - android/platform/signatures/cleanyourtv-launcher/APKSigningBlock
+      - android/platform/signatures/cleanyourtv-curtain/APKSigningBlock
+    build: bash ../scripts/fdroid-build-tv-apks.sh
+    antifeatures:
+      NonFreeNet:
+        en-US: On request only, "Check for updates" asks GitHub for the latest release,
+          and the optional add-ons (Cards and modules) are listed and downloaded from
+          GitHub.
+
+  - versionName: 0.3.2
+    versionCode: 5
+    # Placeholder: at submission this becomes the full commit hash of the v0.3.2 tag.
+    commit: v0.3.2
+    subdir: app
+    submodules: true
+    sudo:
+      - apt-get update
+      - apt-get install -y apksigcopier
+    gradle:
+      - full
+    rm:
+      - android/platform/src/main/assets/bundled/cleanyourtv-launcher.apk
+      - android/platform/src/main/assets/bundled/cleanyourtv-curtain.apk
+    prebuild: sed -i -e '/signingConfig signingConfigs.debug/d' ../third_party/cleanyourtv/launcher/app/build.gradle
+    scanignore:
+      - android/platform/signatures/cleanyourtv-launcher/APKSigningBlock
+      - android/platform/signatures/cleanyourtv-curtain/APKSigningBlock
+    build: bash ../scripts/fdroid-build-tv-apks.sh
+    antifeatures:
+      NonFreeNet:
+        en-US: On request only, "Check for updates" asks GitHub for the latest release,
+          and the optional add-ons (Cards and modules) are listed and downloaded from
+          GitHub.
+
+  - versionName: 0.3.3
+    versionCode: 6
+    # Placeholder: at submission this becomes the full commit hash of the v0.3.3 tag.
+    commit: v0.3.3
+    subdir: app
+    submodules: true
+    sudo:
+      - apt-get update
+      - apt-get install -y apksigcopier
+    gradle:
+      - full
+    rm:
+      - android/platform/src/main/assets/bundled/cleanyourtv-launcher.apk
+      - android/platform/src/main/assets/bundled/cleanyourtv-curtain.apk
+    prebuild: sed -i -e '/signingConfig signingConfigs.debug/d' ../third_party/cleanyourtv/launcher/app/build.gradle
+    scanignore:
+      - android/platform/signatures/cleanyourtv-launcher/APKSigningBlock
+      - android/platform/signatures/cleanyourtv-curtain/APKSigningBlock
+    build: bash ../scripts/fdroid-build-tv-apks.sh
+    antifeatures:
+      NonFreeNet:
+        en-US: On request only, "Check for updates" asks GitHub for the latest release,
+          and the optional add-ons (Cards and modules) are listed and downloaded from
+          GitHub.
+
+AllowedAPKSigningKeys: eaf7af3867bb29ff4bb038854842c93f42ffe4198a087e611cb18f925201cd65
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags ^v[0-9.]+$
+CurrentVersion: 0.3.3
+CurrentVersionCode: 6

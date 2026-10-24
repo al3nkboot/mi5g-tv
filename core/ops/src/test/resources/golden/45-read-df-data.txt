@@ -1,0 +1,10 @@
+# Free space on /data
+op: Read kind=DF_DATA
+privilege: READ
+timeout_ms: 30000
+stdout_cap: 65536
+line: 'df' '/data'
+transfer: none
+verify: none
+prior: none
+inverse: none

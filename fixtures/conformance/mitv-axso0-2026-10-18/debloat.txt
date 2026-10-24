@@ -1,0 +1,33 @@
+# Mi TV (MiTV-AXSO0) debloat, 2026-10-18. Groups chosen: ads+telemetry, unused preloads, voice assistant.
+# Kept on purpose: casting (Chromecast, Mi Cast, Miracast), firmware updates (com.xiaomi.mitv.updateservice),
+# Live TV (com.android.tv) and droidlogic inputs (HDMI switching depends on them).
+# Disabled with `pm disable-user`, never uninstalled. Undo: restore.sh
+# Xiaomi + Google telemetry
+com.miui.tv.analytics
+com.xiaomi.statistic
+com.google.android.feedback
+com.google.android.tv.bugreportsender
+# PatchWall, content rows, sponsored rows
+com.mitv.tvhome.atv
+com.xm.webcontent
+com.xiaomi.floatingframe
+com.google.android.tvrecommendations
+com.google.android.leanbacklauncher.recommendations
+android.autoinstalls.config.xioami.dangal
+# Xiaomi background services
+com.xiaomi.mitv.tvmanager
+com.xiaomi.mitv.handbook
+# Voice assistant (Mi TV remote mic button)
+com.google.android.katniss
+com.google.android.speech.pumpkin
+# Unused preloads
+com.xiaomi.mimusic2
+com.google.android.play.games
+com.google.android.videos
+com.mitv.gallery
+com.fancode.tv
+com.suntv.sunnxt.mitv
+com.eros.mitv
+com.discoveryplus.mitv
+com.ddnational.prasarbharati
+net.aljazeera.english

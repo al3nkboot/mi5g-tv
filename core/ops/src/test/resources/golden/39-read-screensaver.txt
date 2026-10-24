@@ -1,0 +1,10 @@
+# The screensaver components
+op: Read kind=SCREENSAVER
+privilege: READ
+timeout_ms: 30000
+stdout_cap: 65536
+line: 'settings' 'get' 'secure' 'screensaver_components'
+transfer: none
+verify: none
+prior: none
+inverse: none

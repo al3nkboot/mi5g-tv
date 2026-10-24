@@ -1,0 +1,26 @@
+# build output
+build/
+.gradle/
+.kotlin/
+local.properties
+*.iml
+.idea/
+.DS_Store
+# signing material never goes in git
+*.jks
+*.keystore
+keystore/
+*.p12
+*.pfx
+*.key
+*-password.txt
+# local artefacts from scripts/build-on-forge.sh
+dist/
+# more signing material (W9 release scripts)
+*.p12
+*.pass
+# python caches from scripts/
+__pycache__/
+# local release signing (build-logic ReleaseSigning): never committed
+keystore.properties
+*.jks.properties

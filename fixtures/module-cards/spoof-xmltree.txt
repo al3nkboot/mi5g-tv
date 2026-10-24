@@ -1,0 +1,6 @@
+xml/module_card is stored at res/q6.xml
+E: card (line=2)
+  A: accent=#ffe8a33d
+  A: caption="Not the real one" (Raw: "Not the real one")
+  A: label="Retro" (Raw: "Retro")
+  A: spec=1

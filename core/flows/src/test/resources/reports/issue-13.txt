@@ -1,0 +1,146 @@
+Clean Your TV: TV report
+App: 0.3.2 (full)
+Phone: motorola edge 40 neo, Android 15
+
+TV
+Brand: Philips
+Manufacturer: TPV
+Model: 2020/2021 UHD Android TV
+Device: PH0M_EA_T32
+Android: 11 (SDK 30)
+Build: Philips/PH0M_LT_T32/PH0M_EA_T32:11/RTM2.210929.098/200321:user/release-keys
+Google Play services: yes
+Home screen it came with: Android TV (Leanback)
+Read from the TV: 2026-10-23
+
+Matching
+Profile: brand set Philips
+Home switch: blocked WIZARD_STAYS_ON
+
+Home screen
+Resolves to: com.google.android.tvlauncher/.MainActivity
+Claimant: com.google.android.tvlauncher/.MainActivity priority 2
+Claimant: com.android.tv.settings/.system.FallbackHome priority -1000
+
+System apps (119)
+android default
+android.auto_generated_rro_product__ default
+android.auto_generated_rro_vendor__ default
+android.autoinstalls.config.tpv.device default
+com.amazon.amazonvideo.livingroom disabled-user
+com.android.backupconfirm default
+com.android.bluetooth enabled
+com.android.bluetooth.auto_generated_rro_product__ default
+com.android.bluetooth.auto_generated_rro_vendor__ default
+com.android.captiveportallogin default
+com.android.certinstaller default
+com.android.companiondevicemanager default
+com.android.cts.ctsshim default
+com.android.cts.priv.ctsshim default
+com.android.dreams.basic default
+com.android.dynsystem default
+com.android.externalstorage default
+com.android.hotspot2.osulogin default
+com.android.htmlviewer default
+com.android.inputdevices default
+com.android.keychain default
+com.android.localtransport default
+com.android.location.fused default
+com.android.networkstack.inprocess default
+com.android.networkstack.permissionconfig default
+com.android.networkstack.tethering.inprocess default
+com.android.networkstack.tethering.inprocess.rro default
+com.android.networkstack.tethering.rro default
+com.android.pacprocessor default
+com.android.printspooler default
+com.android.providers.calendar default
+com.android.providers.contacts default
+com.android.providers.contacts.auto_generated_rro_product__ default
+com.android.providers.downloads default
+com.android.providers.media default
+com.android.providers.media.module default
+com.android.providers.settings default
+com.android.providers.settings.auto_generated_rro_product__ default
+com.android.providers.settings.auto_generated_rro_vendor__ default
+com.android.providers.tv default
+com.android.providers.userdictionary default
+com.android.proxyhandler default
+com.android.se default
+com.android.settings.intelligence default
+com.android.sharedstoragebackup default
+com.android.shell default
+com.android.soundpicker default
+com.android.statementservice default
+com.android.systemui default
+com.android.tv.ota default
+com.android.tv.settings default
+com.android.tv.settings.gms.resoverlay default
+com.android.tv.settings.tpv default
+com.android.tv.tou default
+com.android.vending enabled
+com.android.vpndialogs default
+com.android.wallpaperbackup default
+com.android.wifi.resources default
+com.android.wifi.resources.rro default
+com.disney.disneyplus default
+com.google.android.apps.mediashell default
+com.google.android.backdrop default
+com.google.android.ext.services default
+com.google.android.ext.shared default
+com.google.android.feedback default
+com.google.android.gms default
+com.google.android.gsf default
+com.google.android.inputmethod.latin default
+com.google.android.katniss default
+com.google.android.marvin.talkback default
+com.google.android.modulemetadata default
+com.google.android.onetimeinitializer default
+com.google.android.overlay.modules.ext.services default
+com.google.android.overlay.modules.modulemetadata.forframework default
+com.google.android.overlay.modules.permissioncontroller default
+com.google.android.overlay.modules.permissioncontroller.forframework default
+com.google.android.packageinstaller default
+com.google.android.partnersetup default
+com.google.android.permissioncontroller default
+com.google.android.play.games default
+com.google.android.sss.authbridge default
+com.google.android.syncadapters.calendar default
+com.google.android.tts default
+com.google.android.tungsten.setupwraith default
+com.google.android.tv.frameworkpackagestubs default
+com.google.android.tv.remote.service default
+com.google.android.tvlauncher default
+com.google.android.tvrecommendations default
+com.google.android.videos enabled
+com.google.android.webview default
+com.google.android.youtube.tv default
+com.google.android.youtube.tvmusic disabled-user
+com.mediatek.android.boot.appsplashscreen default
+com.mediatek.android.leanbacklauncher.partnercustomizer default
+com.mediatek.network default
+com.mediatek.tv.factory default
+com.mediatek.tv.service default
+com.mediatek.tvinput default
+com.mediatek.wwtv.mediaplayer default
+com.mediatek.wwtv.setupwizard default
+com.mediatek.wwtv.tvcenter default
+com.mediatek.wwtv.webview default
+com.mstar.android.tv.disclaimercustomization default
+com.netflix.ninja default
+com.tpv.xmic.ots.cms.client default
+fusion.android.tv.demo default
+mediatek.factorymenu.ui default
+org.droidtv default
+org.droidtv.ambisvc default
+org.droidtv.android.fitness disabled-user
+org.droidtv.candeebug default
+org.droidtv.eum default
+org.droidtv.gel default
+org.droidtv.icp default
+org.droidtv.nettv.market default
+org.droidtv.nettvregistration default
+org.droidtv.tv.frameworklogger default
+org.droidtv.tv.packageinfo default
+org.droidtv.ui.strings default
+
+Other apps: 7 (not named)

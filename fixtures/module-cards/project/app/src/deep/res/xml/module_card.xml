@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<card spec="1" label="Deep XML">
+    <a>
+        <b>
+            <c>
+                <d />
+            </c>
+        </b>
+    </a>
+</card>

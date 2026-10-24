@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security problem (private)
+    url: https://github.com/udhaykumarbala/cleanyourtv-app/security/advisories/new
+    about: Please report vulnerabilities privately, never in a public issue.
+  - name: The TV launcher (home screen) itself
+    url: https://github.com/Gathin23/cleanyourtv/issues
+    about: Problems inside the Clean Your TV launcher on the TV belong to the upstream project.

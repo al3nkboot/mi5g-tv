@@ -1,0 +1,3 @@
+package:com.sonyliv
+package:in.startv.hotstar
+package:com.mxtech.videoplayer.television

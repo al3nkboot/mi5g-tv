@@ -1,0 +1,11 @@
+# Write the token file that defuses the watchdog
+op: ConfirmHome token=0123456789abcdef
+privilege: TAKEOVER
+timeout_ms: 30000
+stdout_cap: 65536
+line: 'touch' '/data/local/tmp/cleanyourtv/home-ok-0123456789abcdef'
+transfer: none
+verify: Read kind=SHA256_OF_FILE path=/data/local/tmp/cleanyourtv/home-ok-0123456789abcdef
+verify_line: 'sha256sum' '/data/local/tmp/cleanyourtv/home-ok-0123456789abcdef'
+prior: none
+inverse: none

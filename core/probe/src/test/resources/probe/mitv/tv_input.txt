@@ -1,0 +1,29 @@
+User Ids (Current user: 0):
+  0
+
+User State (0):
+  inputMap: inputId -> TvInputState
+    com.droidlogic.tvinput/.services.ADTVInputService/HW16: TvInputState{info=TvInputInfo{id=com.droidlogic.tvinput/.services.ADTVInputService/HW16, pkg=com.droidlogic.tvinput, service=com.droidlogic.tvinput.services.ADTVInputService}, state=0}
+    com.droidlogic.tvinput/.services.AV1InputService/HW1: TvInputState{info=TvInputInfo{id=com.droidlogic.tvinput/.services.AV1InputService/HW1, pkg=com.droidlogic.tvinput, service=com.droidlogic.tvinput.services.AV1InputService}, state=1}
+    com.droidlogic.tvinput/.services.Hdmi1InputService/HW5: TvInputState{info=TvInputInfo{id=com.droidlogic.tvinput/.services.Hdmi1InputService/HW5, pkg=com.droidlogic.tvinput, service=com.droidlogic.tvinput.services.Hdmi1InputService}, state=1}
+    com.droidlogic.tvinput/.services.Hdmi2InputService/HW6: TvInputState{info=TvInputInfo{id=com.droidlogic.tvinput/.services.Hdmi2InputService/HW6, pkg=com.droidlogic.tvinput, service=com.droidlogic.tvinput.services.Hdmi2InputService}, state=0}
+    com.droidlogic.tvinput/.services.Hdmi3InputService/HW7: TvInputState{info=TvInputInfo{id=com.droidlogic.tvinput/.services.Hdmi3InputService/HW7, pkg=com.droidlogic.tvinput, service=com.droidlogic.tvinput.services.Hdmi3InputService}, state=1}
+  packageSet:
+    com.droidlogic.tvinput
+  clientStateMap: ITvInputClient -> ClientState
+  mCallbacks:
+  mMainSessionToken: null
+
+TvInputHardwareManager:
+  mConnections: deviceId -> Connection
+    1: Connection{ mHardwareInfo: TvInputHardwareInfo {id=1, type=1001, audio_type=0, audio_addr=, cable_connection_status=0}, mInfo: TvInputInfo{id=com.droidlogic.tvinput/.services.AV1InputService/HW1, pkg=com.droidlogic.tvinput, service=com.droidlogic.tvinput.services.AV1InputService}, mCallingUid: null, mResourceClientProfile: null}
+    5: Connection{ mHardwareInfo: TvInputHardwareInfo {id=5, type=9, audio_type=0, audio_addr=, hdmi_port=1, cable_connection_status=0}, mInfo: TvInputInfo{id=com.droidlogic.tvinput/.services.Hdmi1InputService/HW5, pkg=com.droidlogic.tvinput, service=com.droidlogic.tvinput.services.Hdmi1InputService}, mCallingUid: null}
+    6: Connection{ mHardwareInfo: TvInputHardwareInfo {id=6, type=9, audio_type=0, audio_addr=, hdmi_port=2, cable_connection_status=1}, mInfo: TvInputInfo{id=com.droidlogic.tvinput/.services.Hdmi2InputService/HW6, pkg=com.droidlogic.tvinput, service=com.droidlogic.tvinput.services.Hdmi2InputService}, mCallingUid: null}
+    7: Connection{ mHardwareInfo: TvInputHardwareInfo {id=7, type=9, audio_type=0, audio_addr=, hdmi_port=3, cable_connection_status=0}, mInfo: TvInputInfo{id=com.droidlogic.tvinput/.services.Hdmi3InputService/HW7, pkg=com.droidlogic.tvinput, service=com.droidlogic.tvinput.services.Hdmi3InputService}, mCallingUid: null}
+    16: Connection{ mHardwareInfo: TvInputHardwareInfo {id=16, type=10, audio_type=0, audio_addr=, cable_connection_status=0}, mInfo: TvInputInfo{id=com.droidlogic.tvinput/.services.ADTVInputService/HW16, pkg=com.droidlogic.tvinput, service=com.droidlogic.tvinput.services.ADTVInputService}, mCallingUid: null}
+  mHardwareInputIdMap: deviceId -> inputId
+    1: com.droidlogic.tvinput/.services.AV1InputService/HW1
+    5: com.droidlogic.tvinput/.services.Hdmi1InputService/HW5
+    6: com.droidlogic.tvinput/.services.Hdmi2InputService/HW6
+    7: com.droidlogic.tvinput/.services.Hdmi3InputService/HW7
+    16: com.droidlogic.tvinput/.services.ADTVInputService/HW16

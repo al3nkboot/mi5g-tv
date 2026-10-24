@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Clean Your TV, :app. English source strings.
+  Every string that takes an argument is ICU MessageFormat with NAMED arguments in braces,
+  formatted by the app's message helper (android.icu.text.MessageFormat). App-level strings only;
+  screen strings live in the feature modules.
+-->
+<resources>
+    <string name="app_name">Mi5G TV</string>
+    <string name="app_channel_setup_name">Setting up a TV</string>
+    <string name="app_channel_setup_description">Shows progress while the phone changes things on your TV, and tells you when to look at the TV.</string>
+    <string name="app_restore_read_failed">Something went wrong reading the restore point</string>
+</resources>

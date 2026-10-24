@@ -1,0 +1,11 @@
+# Push over a file that existed before us: no undo in 0.1
+op: PushAsset src=cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc:1234:blobs/cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc dest=/sdcard/Android/data/com.gathin.tvhome/files/config.json sha256=cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+privilege: COMMUNITY
+timeout_ms: 600000
+stdout_cap: 65536
+line: none
+transfer: sync:/sdcard/Android/data/com.gathin.tvhome/files/config.json cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+verify: Read kind=SHA256_OF_FILE path=/sdcard/Android/data/com.gathin.tvhome/files/config.json
+verify_line: 'sha256sum' '/sdcard/Android/data/com.gathin.tvhome/files/config.json'
+prior: present=true
+inverse: none

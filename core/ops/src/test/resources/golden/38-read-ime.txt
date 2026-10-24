@@ -1,0 +1,10 @@
+# The active keyboard
+op: Read kind=IME
+privilege: READ
+timeout_ms: 30000
+stdout_cap: 65536
+line: 'settings' 'get' 'secure' 'default_input_method'
+transfer: none
+verify: none
+prior: none
+inverse: none

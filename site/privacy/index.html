@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy policy - Clean Your TV</title>
+<meta name="description" content="The Clean Your TV app collects no data. What it talks to, what stays on your phone, and when it contacts GitHub.">
+<meta name="theme-color" content="#050507">
+<link rel="icon" type="image/png" href="../assets/icon.png">
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="canonical" href="https://cleanyour.tv/app/android/privacy">
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="../"><img src="../assets/icon.png" alt="" width="36" height="36">Clean Your TV</a>
+    <nav class="top" aria-label="Main"><a href="https://cleanyour.tv/app/android">Home</a><a href="https://github.com/udhaykumarbala/cleanyourtv-app">GitHub</a></nav>
+  </header>
+  <main class="prose">
+    <h1 style="font-size:clamp(34px,6vw,52px)">Privacy policy</h1>
+    <p>Clean Your TV (the Android app, package <code>tv.cleanyour.app</code>) is a community-built phone app for <a href="https://github.com/Gathin23/cleanyourtv">Clean Your TV</a>. It is published as open source by udhaykumarbala at <a href="https://github.com/udhaykumarbala/cleanyourtv-app">github.com/udhaykumarbala/cleanyourtv-app</a>.</p>
+    <p>This page is a copy. The policy is published at <a href="https://cleanyour.tv/app/android/privacy">cleanyour.tv/app/android/privacy</a>.</p>
+    <p>Effective date: 2026-10-23.</p>
+
+    <h2>The short version</h2>
+    <ul>
+      <li>The app does not collect your data. It has no accounts, no analytics, no advertising and no crash reporting service.</li>
+      <li>Nothing about you, your phone or your TV is sent to us or to anyone else. We run no server for this app, so we could not receive it if it were.</li>
+      <li>Everything the app learns about your TV stays on your phone.</li>
+    </ul>
+
+    <h2>What the app talks to</h2>
+    <p><strong>Your TV, on your home network.</strong> To clean your TV the app connects to the TV you pick, over your Wi-Fi, using Android's debugging connection (ADB, port 5555), and it listens for TVs announcing themselves on the network (mDNS) so it can find yours. This traffic stays inside your home network. The app reads the list of apps and the model of your TV, and it changes settings and apps on the TV when you tell it to.</p>
+    <p><strong>GitHub, only in the GitHub and F-Droid versions, and only when you ask.</strong> The version you download from GitHub or F-Droid has three features that contact GitHub, and only when you use them: "Check for updates" makes one request for the latest release, opening Cards and modules fetches the signed list of add-ons, and an optional add-on downloads from its GitHub release when you add it. GitHub sees the usual details of any web request (your IP address, for example) under <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub's privacy statement</a>. The app sends no identifier of its own. The home screen launcher and the TV progress screen are inside the app, so a normal clean-up makes no internet request at all.</p>
+    <p><strong>The Google Play version makes no internet requests to GitHub.</strong> It has no update check and no add-on downloads, because Google Play updates the app. A normal clean-up needs the internet for nothing.</p>
+    <p>The app has no other internet connections: no advertising networks, analytics or tracking services.</p>
+
+    <h2>What stays on your phone</h2>
+    <ul>
+      <li><strong>The key your TV trusts.</strong> The first time you connect, the app makes a key that the TV remembers as "this phone". It lives in the Android Keystore on your phone and never leaves it.</li>
+      <li><strong>Restore points.</strong> Before the first change the app saves a note of what your TV looked like, so everything can be put back. It stays on your phone. It leaves your phone only if you choose "Save a copy" and send the file somewhere yourself.</li>
+      <li><strong>Your choices</strong>, such as the dock and the look you picked, and the TVs you have set up.</li>
+      <li><strong>The app's diagnostics log.</strong> A plain text record of what the app did (connecting, reading the TV, each step and how it went), with network addresses, serial numbers, keys and pairing codes removed. It stays on your phone. "Delete everything" in the app's Settings deletes it, and so does clearing the app's storage. It leaves your phone only if you share a report.</li>
+    </ul>
+    <p>You can delete all of this at any time from the app's Settings, or by clearing the app's storage or uninstalling it in Android's settings.</p>
+
+    <h2>Reports you choose to share</h2>
+    <p>"Report a problem" and "Help add this TV" are off until you use them, and the app sends nothing by itself. Each one shows you the whole report first, as plain text, and then does only what you tap:</p>
+    <ul>
+      <li><strong>Share</strong> opens Android's share sheet and you pick where it goes (a message, an email, a note).</li>
+      <li><strong>Open GitHub</strong> (or <strong>Copy and open GitHub</strong>) copies the report to your phone's clipboard and opens the GitHub form for it in your browser. When the report is short enough, it is also part of the form's link, so the form opens with it filled in; your browser sends that link to GitHub when it opens the page, and may keep it in its history. The app makes no request itself, and nothing is posted until you post the form. A GitHub issue is public.</li>
+    </ul>
+    <p>Or you close the screen and nothing happens. "Report a problem" holds the app's own log with network addresses, serial numbers, keys and pairing codes removed, and a short summary of the TV. The log can name the apps the app switched off or tried to switch off or back on, which can include an app you picked yourself in Customise. "Help add this TV" holds the TV's brand, model, Android version and build, how the app matched it, and the apps the TV came with. In that report and in the summary, apps you installed yourself are only counted, never named, and that includes a home screen app you installed. Both name the app version and your phone's model and Android version. Neither has the TV's serial number, its name or room, your network addresses or your Wi-Fi name. This is the same in the Google Play version.</p>
+
+    <h2>Permissions</h2>
+    <p>The app asks Android for: internet and network state (to reach the TV and, in the GitHub and F-Droid versions, GitHub), Wi-Fi multicast (to find the TV), a foreground service while it works on the TV, notifications (to tell you when it is done), and your screen lock (confirmed once before the first change, so a stranger holding your unlocked phone cannot change your TV). It does not ask for location, contacts, camera, microphone, photos or storage.</p>
+
+    <h2>Children</h2>
+    <p>The app is made for adults who set up their own or their family's TV. It does not knowingly collect anything from anyone, children included.</p>
+
+    <h2>Changes to this policy</h2>
+    <p>If the app ever starts to collect or send data, this page changes first and the change is noted in the <a href="https://github.com/udhaykumarbala/cleanyourtv-app/blob/main/CHANGELOG.md">changelog</a>. The history of this page is public in the repository.</p>
+
+    <h2>Contact</h2>
+    <p>Questions or concerns: <a href="https://github.com/udhaykumarbala/cleanyourtv-app/issues">open an issue</a> on GitHub. For a security problem, please follow <a href="https://github.com/udhaykumarbala/cleanyourtv-app/blob/main/SECURITY.md">SECURITY.md</a> instead.</p>
+  </main>
+  <footer>
+    <p><a href="https://cleanyour.tv/app/android">Home</a> &middot; <a href="https://github.com/udhaykumarbala/cleanyourtv-app">GitHub</a> &middot; MIT licence</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,12 @@
+# Disable a package whose state was the default
+op: Disable pkg=com.xiaomi.statistic
+privilege: PROFILE_STEP
+timeout_ms: 30000
+stdout_cap: 65536
+line: 'pm' 'disable-user' '--user' '0' 'com.xiaomi.statistic'
+transfer: none
+verify: Read kind=DISABLED
+verify_line: 'pm' 'list' 'packages' '-d'
+prior: packageState=DEFAULT
+inverse: DefaultState pkg=com.xiaomi.statistic
+inverse_line: 'pm' 'default-state' '--user' '0' 'com.xiaomi.statistic'

@@ -1,0 +1,3 @@
+Home screen launcher 2.5 and 42 more TV lists: 131 models from 46 brands.
+Stricter safety: the home screen switch is skipped on TVs where it could break casting, Wi-Fi or start-up, and nothing the TV inputs, accessibility or the remote need is switched off by default.
+New icon, and Settings now shows the version that is running.

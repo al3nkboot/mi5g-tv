@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Clean Your TV, :feature:backup. English source strings.
+  Every string that takes an argument is ICU MessageFormat with NAMED arguments in braces,
+  formatted by the app's message helper (android.icu.text.MessageFormat). No printf placeholders,
+  no Android plurals elements. Counts go through the plural selector.
+  Screens: M6 Restore point, the undo preview and confirmation (UX 4.13), export, before a factory reset.
+-->
+<resources>
+
+    <!-- Shared button words -->
+    <string name="action_back">Back</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_ok">OK</string>
+    <string name="action_done">Done</string>
+
+    <!-- Credential prompt (D17), raised by "Put everything back" -->
+    <string name="gate_title">Confirm it\'s you</string>
+    <string name="gate_subtitle">Before we change anything on {tv}</string>
+    <string name="gate_negative">Cancel</string>
+    <string name="gate_failed">We couldn\'t confirm it\'s you, so nothing was changed.</string>
+
+    <!-- M6 Restore point -->
+    <string name="restore_title">Restore point</string>
+    <string name="restore_current">Saved {date}</string>
+    <string name="restore_none">No restore point yet. One is saved before the first change.</string>
+    <string name="restore_read_failed">Something went wrong reading the restore point</string>
+    <string name="restore_row_undo">Undo everything</string>
+    <string name="restore_row_undo_sub">Put the TV back to how it was on {date}</string>
+    <string name="restore_row_save">Save a copy</string>
+    <string name="restore_row_save_sub">Saves a zip file to a place you choose.</string>
+    <string name="restore_row_factory">Before a factory reset</string>
+    <string name="restore_row_factory_sub">Switches the setup wizard back on, so the TV can start up properly after a reset.</string>
+
+    <!-- Undo everything: preview (UX 4.13) -->
+    <string name="restore_preview_title">This puts the TV back to how it was on {date}:</string>
+    <string name="restore_preview_things">{count, plural, one {Turn # thing back on} other {Turn # things back on}}</string>
+    <string name="restore_preview_home">Old home screen ({name}) back in charge</string>
+    <string name="restore_preview_wizard">Setup wizard back on</string>
+    <string name="restore_preview_screensaver">Clock screensaver back to the TV\'s own</string>
+    <string name="restore_preview_keyboard">Keyboard back to the TV\'s own</string>
+    <string name="restore_launcher_title">New home screen</string>
+    <string name="restore_launcher_keep">Keep it installed as an ordinary app</string>
+    <string name="restore_launcher_remove">Remove it from the TV</string>
+    <string name="restore_launcher_remove_note">Removing it also removes the answers module cards have given on the TV.</string>
+    <string name="restore_preview_button">Put everything back</string>
+
+    <!-- Undo everything: confirmation sheet -->
+    <string name="restore_confirm_title">Put everything back?</string>
+    <string name="restore_confirm_body">The adverts and tracking come back too. You can always run the clean-up again.</string>
+    <string name="restore_confirm_button">Put everything back</string>
+
+    <!-- Undo everything: narration and end -->
+    <string name="restore_working_title">Putting everything back</string>
+    <string name="restore_working_things">{total, plural, other {Turning things back on: {done} of #...}}</string>
+    <string name="restore_working_home">Putting the old home screen back...</string>
+    <string name="restore_working_wizard">Switching the setup wizard back on...</string>
+    <string name="restore_done_title">Everything is back</string>
+    <string name="restore_done_body">Your TV is as it was on {date}. The restore point is kept in case you change your mind.</string>
+    <string name="restore_clean_again">Clean it up again</string>
+
+    <!-- Before a factory reset -->
+    <string name="restore_factory_title">Before a factory reset</string>
+    <string name="restore_factory_body">A factory reset brings the TV\'s setup wizard back, so we switch it back on now and the TV can start up properly afterwards.</string>
+    <string name="restore_factory_button">Switch the wizard back on</string>
+    <string name="restore_factory_working">Switching the setup wizard back on...</string>
+    <string name="restore_factory_done">The setup wizard is back on. You can reset the TV now.</string>
+
+    <!-- Save a copy (export) -->
+    <string name="restore_export_saved">Saved a copy of the restore point.</string>
+    <string name="restore_export_failed">We couldn\'t save the copy. Try another place.</string>
+
+</resources>

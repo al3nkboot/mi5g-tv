@@ -1,0 +1,10 @@
+# sha256sum of a file of ours
+op: Read kind=SHA256_OF_FILE path=/data/local/tmp/cleanyourtv/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.apk
+privilege: READ
+timeout_ms: 30000
+stdout_cap: 65536
+line: 'sha256sum' '/data/local/tmp/cleanyourtv/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.apk'
+transfer: none
+verify: none
+prior: none
+inverse: none

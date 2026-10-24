@@ -1,0 +1,10 @@
+# The launcher's external files folder listing
+op: Read kind=LAUNCHER_DIR
+privilege: READ
+timeout_ms: 30000
+stdout_cap: 65536
+line: 'ls' '-l' '/sdcard/Android/data/com.gathin.tvhome/files'
+transfer: none
+verify: none
+prior: none
+inverse: none

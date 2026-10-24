@@ -1,0 +1,79 @@
+name: Help add my TV
+description: Your TV isn't listed yet, or the app was careful with it. Tell us about it and we'll make a list for it.
+title: "TV support: "
+labels: ["tv-profile"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for helping. Every TV someone reports makes the app better for the next person with the same TV.
+
+        **The app can fill this in for you.** In Clean Your TV, tap **Help add this TV**. You find it on the
+        "We found" screen while you set the TV up, and on the TV's Manage screen afterwards. Then tap
+        **Open GitHub**: this form opens with the model and the report filled in. A very long report doesn't fit
+        in the link; then the button says **Copy and open GitHub**, and you paste the report into the
+        "TV report" box below (long-press in the box and choose Paste).
+
+        The report has the TV's model, its Android version and the apps it came with. Apps you installed
+        yourself are only counted, never named. It never has the TV's serial number, your network addresses
+        or your Wi-Fi name, and nothing is public until you post this form. Please don't paste those yourself either.
+  - type: input
+    id: model
+    attributes:
+      label: TV brand and model
+      description: As printed on the TV or its box, for example "Hisense 55A6H". The app fills this in.
+    validations:
+      required: true
+  - type: input
+    id: android
+    attributes:
+      label: Android version and firmware build
+      description: Settings, About on the TV, for example "Android 11, RTM6.230109.155". The app fills this in.
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Home screen the TV came with
+      description: Google TV, Android TV (Leanback), Fire TV, the maker's own launcher, or not sure. The app fills in its best guess; change it if it's wrong.
+    validations:
+      required: false
+  - type: textarea
+    id: report
+    attributes:
+      label: TV report
+      description: The app fills this in. If the box is empty, long-press in it and choose Paste; the app copied the report for you.
+      placeholder: Paste the app's report here. No report from the app? Write "none" and paste the list from a computer in the package list box below.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: found
+    attributes:
+      label: What the app did
+      description: Optional. What did the "We found" screen say? What did you hope it would switch off?
+    validations:
+      required: false
+  - type: textarea
+    id: packages
+    attributes:
+      label: Package list from a computer (only without the app's report)
+      description: |
+        No app report? From a computer with adb, `adb shell pm list packages -s` lists the system apps. Paste
+        it here, or attach it as a file.
+      render: text
+    validations:
+      required: false
+  - type: checkboxes
+    id: offer
+    attributes:
+      label: Testing
+      options:
+        - label: I can try a list on this TV and live with it for a few days.
+  - type: markdown
+    attributes:
+      value: |
+        **What happens next.** We read every report. For a new TV we look at the apps it came with, make a list
+        of what is safe to switch off, and ask you to try it before anyone else gets it. Once it works, the list
+        also goes to the [Clean Your TV](https://github.com/Gathin23/cleanyourtv) project, so it helps people
+        without this app too. We reply here when the list is in a release.

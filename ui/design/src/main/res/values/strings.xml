@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="cyt_back">Back</string>
+    <string name="cyt_close">Close</string>
+    <string name="cyt_help">Help</string>
+    <string name="cyt_step_counter">%1$d of %2$d</string>
+    <string name="cyt_step_counter_extra">%1$d of %2$d · %3$s</string>
+
+    <string name="cyt_status_connected">Connected</string>
+    <string name="cyt_status_waiting">Waiting</string>
+    <string name="cyt_status_working">Working</string>
+    <string name="cyt_status_debugging_off">Debugging off</string>
+    <string name="cyt_status_offline">Offline</string>
+
+    <string name="cyt_pill_off">Off</string>
+    <string name="cyt_pill_kept">Kept</string>
+    <string name="cyt_action_keep">Keep it</string>
+    <string name="cyt_action_switch_off">Switch it off</string>
+    <string name="cyt_why">Why?</string>
+    <string name="cyt_close_group">Close group</string>
+    <plurals name="cyt_show_more">
+        <item quantity="one">Show %d more</item>
+        <item quantity="other">Show %d more</item>
+    </plurals>
+    <string name="cyt_group_count">%1$s · %2$d of %3$d</string>
+    <string name="cyt_count_of">%1$d of %2$d</string>
+
+    <string name="cyt_undo">Undo</string>
+    <!-- Under a confirming button after a tap was dropped because another app covers the window
+         (rejectObscuredTouches, SECURITY 4.3). -->
+    <string name="cyt_obscured_hint">Another app is covering the screen, so that tap didn\'t count. Pause or close it, then tap again.</string>
+
+    <string name="cyt_countdown_60">One minute left. Say yes or go back.</string>
+    <string name="cyt_countdown_30">30 seconds left.</string>
+    <string name="cyt_countdown_10">10 seconds left.</string>
+    <string name="cyt_countdown_left">%1$s left</string>
+
+    <plurals name="cyt_earlier_steps">
+        <item quantity="one">%d earlier step</item>
+        <item quantity="other">%d earlier steps</item>
+    </plurals>
+    <string name="cyt_state_done">Done</string>
+    <string name="cyt_state_doing">In progress</string>
+    <string name="cyt_state_upcoming">Next</string>
+    <string name="cyt_state_skipped">Skipped</string>
+    <string name="cyt_percent">%1$d%%</string>
+
+    <string name="cyt_live_from_tv">Live from the TV</string>
+    <string name="cyt_copy_as_commands">Copy as commands</string>
+
+    <string name="cyt_mirror_allow_title">Allow USB debugging?</string>
+    <string name="cyt_mirror_allow_body">The computer\'s RSA key fingerprint is:</string>
+    <string name="cyt_mirror_allow_always">Always allow from this computer</string>
+    <string name="cyt_mirror_cancel" tools:ignore="ButtonCase">CANCEL</string>
+    <string name="cyt_mirror_ok">OK</string>
+    <string name="cyt_mirror_card_title">New card from %1$s</string>
+    <string name="cyt_mirror_card_body">%1$s can show a card on your home screen. Keeping it hidden leaves the app\'s normal tile as it is.</string>
+    <string name="cyt_mirror_card_later">You can change this later: hold OK on Settings.</string>
+    <string name="cyt_mirror_card_key">%1$s, key %2$s</string>
+    <string name="cyt_mirror_keep_hidden">Keep hidden</string>
+    <string name="cyt_mirror_show_card">Show card</string>
+
+    <!-- The dock editor (S3b): the dock, then the rows under it on the TV's home screen -->
+    <string name="cyt_dock_row_dock">Dock</string>
+    <string name="cyt_dock_row_n">Row %1$d</string>
+    <string name="cyt_dock_item_dock_cd">%1$s, in the dock, place %2$d</string>
+    <string name="cyt_dock_item_row_cd">%1$s, in row %2$d, place %3$d</string>
+    <string name="cyt_dock_remove_cd">Take %1$s out</string>
+    <string name="cyt_dock_add_dock_cd">Add %1$s to the dock</string>
+    <string name="cyt_dock_add_row_cd">Add %1$s to row %2$d</string>
+    <string name="cyt_dock_item_out_cd">%1$s, not in the dock or its rows</string>
+    <string name="cyt_dock_action_up">Move up</string>
+    <string name="cyt_dock_action_down">Move down</string>
+    <string name="cyt_dock_action_to_dock">Move to the dock</string>
+    <string name="cyt_dock_action_to_row">Move to row %1$d</string>
+    <string name="cyt_dock_action_remove">Take out</string>
+    <string name="cyt_dock_add_row">Add a row under the dock</string>
+    <string name="cyt_dock_remove_row">Remove row</string>
+    <string name="cyt_dock_remove_row_cd">Remove row %1$d</string>
+    <string name="cyt_dock_row_removed">Row %1$d removed. Its apps are back under Other apps.</string>
+    <string name="cyt_dock_row_empty">Tap an app below to put it in this row.</string>
+    <string name="cyt_dock_full">The dock holds %1$d. Take one out, or add a row under it.</string>
+    <string name="cyt_dock_row_full">These rows are full. Take one out, or add another row.</string>
+    <string name="cyt_dock_all_full">The dock and the two rows under it are full. Take one out to add another.</string>
+    <string name="cyt_dock_gaps">Empty places on the TV show your other apps by name.</string>
+    <string name="cyt_dock_others">Other apps on the TV</string>
+</resources>

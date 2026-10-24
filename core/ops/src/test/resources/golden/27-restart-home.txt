@@ -1,0 +1,11 @@
+# Two lines, force-stop then start
+op: RestartHome component=com.gathin.tvhome/.MainActivity
+privilege: COMMUNITY
+timeout_ms: 30000
+stdout_cap: 65536
+line: 'am' 'force-stop' 'com.gathin.tvhome'
+line: 'am' 'start' '-n' 'com.gathin.tvhome/.MainActivity'
+transfer: none
+verify: none
+prior: none
+inverse: none

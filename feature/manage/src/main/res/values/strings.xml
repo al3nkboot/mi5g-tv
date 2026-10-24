@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Clean Your TV, :feature:manage. English source strings.
+  Every string that takes an argument is ICU MessageFormat with NAMED arguments in braces,
+  formatted by the app's message helper (android.icu.text.MessageFormat). No printf placeholders,
+  no Android plurals elements. Counts go through the plural selector.
+  Screens: M1, M1a, M4, M5, M7, M8 and the credential prompt for the actions raised from them.
+-->
+<resources>
+
+    <!-- Shared button words -->
+    <string name="action_back">Back</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_ok">OK</string>
+    <string name="action_done">Done</string>
+    <string name="action_undo">Undo</string>
+
+    <!-- Credential prompt (D17) -->
+    <string name="gate_title">Confirm it\'s you</string>
+    <string name="gate_subtitle">Before we change anything on {tv}</string>
+    <string name="gate_subtitle_reset_key">Before we reset this phone\'s key</string>
+    <string name="gate_subtitle_delete_all">Before we delete everything</string>
+    <string name="gate_negative">Cancel</string>
+    <string name="gate_failed">We couldn\'t confirm it\'s you, so nothing was changed.</string>
+
+    <!-- M1 Manage -->
+    <string name="manage_title">Clean Your TV</string>
+    <string name="manage_settings_cd">App settings</string>
+    <string name="manage_tv_title">{tv}, {room}</string>
+    <string name="manage_tv_title_noroom">{tv}</string>
+    <string name="manage_state_clean">Clean</string>
+    <string name="manage_state_original">Original</string>
+    <string name="manage_checked">Checked {date}</string>
+    <string name="manage_tv_card_cd">{tv}. {state}. {checked}</string>
+    <string name="manage_thumbnail_cd">The last picture from {tv}. Tap to refresh.</string>
+    <string name="manage_clean_again">Clean it up again</string>
+    <string name="manage_level_simple">Simple</string>
+    <string name="manage_level_custom">Custom</string>
+    <string name="manage_level_simple_note">Switches off the usual clutter and keeps everything else.</string>
+    <string name="manage_level_custom_note">Lets you choose each item, the dock and the look.</string>
+    <string name="manage_row_home">Home screen</string>
+    <string name="manage_row_home_own">The TV keeps its own. See why</string>
+    <string name="manage_row_cards">Cards and modules</string>
+    <string name="manage_row_cards_none">No cards yet</string>
+    <string name="manage_row_switched_off">{count, plural, other {Switched off (#)}}</string>
+    <string name="manage_row_switched_off_sub">Put any of them back</string>
+    <string name="manage_row_leftovers">Check for leftovers</string>
+    <string name="manage_row_leftovers_sub">After a TV software update</string>
+    <string name="manage_row_restore">Restore point</string>
+    <string name="manage_row_restore_sub">{date}. Undo everything from here.</string>
+    <string name="manage_row_tvsettings">TV settings</string>
+    <string name="manage_add_tv">+ Set up another TV</string>
+    <string name="manage_offline_banner">Lost the TV. Is it still on?</string>
+    <string name="manage_reconnect">Reconnect</string>
+    <string name="manage_reconnecting">Reconnecting...</string>
+
+    <!-- M1a Debugging step for a returning write (UX 4.3, returning) -->
+    <string name="debugstep_title">To change things on the TV, debugging needs to be on for a moment.</string>
+    <string name="debugstep_body">On the TV: Settings > Device Preferences > Developer options > USB debugging. We\'ll take it from there and switch it off again when we\'re done.</string>
+    <string name="debugstep_note">You won\'t need to press Build again. Developer options stays unlocked.</string>
+    <string name="debugstep_waiting">Waiting for the TV...</string>
+    <string name="debugstep_connecting">Connecting...</string>
+
+    <!-- A Manage write that paused and left its run open (R5-W8 O2) -->
+    <string name="openwrite_title">A change on {tv} didn\'t finish</string>
+    <string name="openwrite_body_lost">The TV stopped answering partway through. Carry on with the rest, or undo what we did. Until then nothing else can change on this TV.</string>
+    <string name="openwrite_body">We stopped partway through. Carry on with the rest, or undo what we did. Until then nothing else can change on this TV.</string>
+    <string name="openwrite_body_setup">The setup of {tv} didn\'t finish. Open it to carry on or undo what we did.</string>
+    <string name="openwrite_not_taken">The TV didn\'t answer. Check that it\'s on and on the same Wi-Fi as this phone, then try again.</string>
+    <string name="openwrite_busy">Working on it...</string>
+    <string name="openwrite_carry_on">Carry on</string>
+    <string name="openwrite_undo">Undo what we did</string>
+    <string name="openwrite_stop">Stop here</string>
+    <string name="openwrite_open_setup">Open the setup</string>
+    <string name="openwrite_later">Not now</string>
+    <string name="openwrite_report">Report a problem</string>
+
+    <!-- M4 Switched off -->
+    <string name="switchedoff_title">{count, plural, other {Switched off (#)}}</string>
+    <string name="switchedoff_intro">Each one can be put back. Nothing is deleted; \"off\" means asleep.</string>
+    <string name="switchedoff_group_ads">Adverts and sponsored rows</string>
+    <string name="switchedoff_group_tracking">Tracking and analytics</string>
+    <string name="switchedoff_group_nobody">Apps nobody asked for</string>
+    <string name="switchedoff_group_brand">{brand} extras</string>
+    <string name="switchedoff_group_shop">Shop and demo mode</string>
+    <string name="switchedoff_group_needed">Needed for the new home screen</string>
+    <string name="switchedoff_group_other">Chosen under Customise</string>
+    <string name="switchedoff_put_back">Put back</string>
+    <string name="switchedoff_put_back_cd">Put {name} back</string>
+    <string name="switchedoff_snackbar">{name} is back on.</string>
+    <string name="switchedoff_empty">Nothing is switched off right now.</string>
+    <string name="switchedoff_empty_sub">Everything on the TV is switched on.</string>
+
+    <!-- M5 Check for leftovers -->
+    <string name="leftovers_title">Check for leftovers</string>
+    <string name="leftovers_checking">Checking...</string>
+    <string name="leftovers_found">{count, plural, one {# thing came back after an update. Switch it off again?} other {# things came back after an update. Switch them off again?}}</string>
+    <string name="leftovers_switch_off">Switch off</string>
+    <string name="leftovers_not_now">Not now</string>
+    <string name="leftovers_none">Nothing came back. All as you left it.</string>
+    <string name="leftovers_done">Switched off again.</string>
+    <string name="leftovers_error">We couldn\'t check just now. Is the TV still on?</string>
+    <string name="leftovers_notice">{count, plural, one {# thing came back on the TV.} other {# things came back on the TV.}}</string>
+    <string name="leftovers_notice_action">Check</string>
+
+    <!-- M7 TV settings -->
+    <string name="tvsettings_title">TV settings</string>
+    <string name="tvsettings_name_room">Name and room</string>
+    <string name="tvsettings_name_label">Name</string>
+    <string name="tvsettings_room_label">Room</string>
+    <string name="tvsettings_level_label">Level</string>
+    <string name="tvsettings_level_simple">Simple</string>
+    <string name="tvsettings_level_custom">Custom</string>
+    <string name="tvsettings_level_note">Back to Simple hides the extra options. Your TV stays as it is.</string>
+    <string name="tvsettings_address">Address</string>
+    <string name="tvsettings_last_seen">Last seen {date}</string>
+    <string name="tvsettings_forget">Forget this TV</string>
+    <string name="tvsettings_forget_explain">This deletes the record of this TV, its journals and its restore points from this phone. The TV itself is not changed, but you won\'t be able to undo from this phone afterwards.</string>
+    <string name="tvsettings_forget_title">Forget {tv}?</string>
+    <string name="tvsettings_forget_confirm">Forget this TV</string>
+    <string name="tvsettings_forget_busy">Setup is still working on this TV. Wait for it to finish or stop it first.</string>
+
+    <!-- M8 App settings -->
+    <string name="appsettings_title">App settings</string>
+    <string name="appsettings_large_text">Large text follows system</string>
+    <string name="appsettings_large_text_note">Text size follows the size set in your phone\'s Settings.</string>
+    <string name="appsettings_haptics">Haptics</string>
+    <string name="appsettings_haptics_note">Small taps when something finishes or needs you.</string>
+    <string name="appsettings_about">About</string>
+    <string name="appsettings_version">Version {version}</string>
+    <string name="appsettings_launcher_pin_label">Bundled home screen app</string>
+    <string name="appsettings_launcher_pin_line" translatable="false">{package} {version} · sha256 {digest}</string>
+    <string name="appsettings_key_label">Phone key</string>
+    <string name="appsettings_key_strongbox">Kept in a dedicated security chip (StrongBox).</string>
+    <string name="appsettings_key_tee">Kept in the phone\'s secure hardware (TEE).</string>
+    <string name="appsettings_key_wrapped">Kept in software, wrapped with a key from the phone\'s secure storage. This phone can\'t hold it in hardware.</string>
+    <string name="appsettings_check_updates">Check for updates</string>
+    <string name="appsettings_checking">Checking...</string>
+    <string name="appsettings_update_available">{version} is available</string>
+    <string name="appsettings_update_open">Open the release page</string>
+    <string name="appsettings_up_to_date">You have the latest version</string>
+    <string name="appsettings_update_error">Couldn\'t check for updates</string>
+    <string name="appsettings_licences">Licences</string>
+    <string name="appsettings_licence_app">Clean Your TV: GPL-3.0-or-later</string>
+    <string name="appsettings_licence_font">Outfit typeface: SIL Open Font Licence 1.1</string>
+    <string name="appsettings_licence_apache">dadb and Shizuku code we adapted: Apache-2.0 notices</string>
+    <string name="appsettings_licence_bouncycastle">Bouncy Castle cryptography library: Bouncy Castle Licence</string>
+    <string name="appsettings_privacy">Privacy</string>
+    <string name="appsettings_privacy_text">Nothing leaves your network except downloads from github.com. GitHub sees your phone\'s address and a generic user agent. A report leaves the phone only when you copy, share or post it yourself.</string>
+    <string name="appsettings_privacy_text_offline">Nothing leaves your network. The app talks only to the TV you pick and makes no internet requests of its own. A report leaves the phone only when you copy, share or post it yourself.</string>
+    <string name="appsettings_report">Report a problem</string>
+    <string name="appsettings_report_note">See the report first, then share it or post it on GitHub</string>
+    <string name="appsettings_reset_key">Reset my key</string>
+    <string name="appsettings_reset_key_note">Every TV will ask to trust this phone again.</string>
+    <string name="appsettings_reset_key_title">Reset the key on this phone?</string>
+    <string name="appsettings_reset_key_confirm">Reset my key</string>
+    <string name="appsettings_delete_all">Delete everything</string>
+    <string name="appsettings_delete_all_note">Deletes every TV record, journal, restore point, the app\'s diagnostics log and the key from this phone. The TVs themselves are not changed, and you won\'t be able to undo from this phone afterwards.</string>
+    <string name="appsettings_delete_all_title">Delete everything on this phone?</string>
+    <string name="appsettings_delete_all_confirm">Delete everything</string>
+    <string name="appsettings_delete_all_busy">Setup is still working on {tv}. Wait for it to finish or stop it first.</string>
+
+
+    <!-- Stop and undo ask first (Confirmations): a question, one calm sentence, the verb and a way back -->
+    <string name="confirm_stop_title">Stop now?</string>
+    <string name="confirm_stop_body">We stop here and put back what we changed so far. Your TV stays safe.</string>
+    <string name="confirm_stop_button">Stop and undo</string>
+    <string name="confirm_keep_going">Keep going</string>
+    <string name="confirm_stop_here_title">Stop here?</string>
+    <string name="confirm_stop_here_body">We keep what is already done and change nothing else. Your TV stays safe.</string>
+    <string name="confirm_stop_here_button">Stop here</string>
+    <string name="confirm_undo_title">Undo the changes on the TV?</string>
+    <string name="confirm_undo_body">We put back everything this change did, so the TV is as it was before. Nothing is deleted.</string>
+    <string name="confirm_undo_button">Undo the changes</string>
+
+    <!-- 0.3.2 B1: an unlisted TV on Manage -->
+    <string name="manage_help_add_tv_banner">We haven\'t met this exact TV before, so we were careful with it. A short report from you helps us add it.</string>
+    <string name="manage_help_add_tv">Help add this TV</string>
+
+    <!-- 0.3.2 B1 and B2: the report preview -->
+    <string name="report_tv_title">Help add this TV</string>
+    <string name="report_tv_body">This report says what this TV is and which apps it came with, so we can make a list for it. Apps you installed yourself are only counted, never named.</string>
+    <string name="report_problem_title">Report a problem</string>
+    <string name="report_problem_body">This report has the steps we ran and a short summary of the TV, as plain text. Addresses, serial numbers, keys and codes are removed first. The steps can name apps we switched off or tried to.</string>
+    <string name="report_public">This is public if you post it on GitHub. The app sends nothing itself: you choose where it goes.</string>
+    <string name="report_preview_label">The report</string>
+    <string name="report_paste_hint">We copy the report, then open the form on GitHub. Paste it into the box that asks for it.</string>
+    <string name="report_copy_open">Copy and open GitHub</string>
+    <!-- 0.3.3 D1: the report fits in the link, so the form opens with it filled in -->
+    <string name="report_open">Open GitHub</string>
+    <string name="report_in_link_hint">The form on GitHub opens with this report already in it. Add a few words if you like, then post it. We copy the report too, in case the form opens without it.</string>
+    <string name="report_too_long">This report is too long to go into the form by itself, so we copy it for you. On GitHub, long-press the report box, choose Paste, then post it.</string>
+    <string name="report_share">Share</string>
+    <string name="report_loading">Making the report</string>
+    <string name="report_unavailable">We need to read this TV once before we can make its report. Set it up or connect to it, then try again.</string>
+</resources>

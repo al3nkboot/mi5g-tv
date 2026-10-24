@@ -1,0 +1,1 @@
+0.3.1 is a small update. Where add-ons are offered, each add-on's page now says plainly, before you add it, that add-ons come from their authors' GitHub releases, outside any app store. The store description now names every internet connection the app makes, and when. The app's page and privacy policy are now at https://cleanyour.tv/app/android. Nothing else changes.
