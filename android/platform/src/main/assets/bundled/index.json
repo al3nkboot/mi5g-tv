@@ -1,9 +1,177 @@
 {
   "schema": 1,
-  "sequence": 2,
-  "generated": "2026-10-20T16:44:56Z",
-  "expires": "2027-01-18T16:44:56Z",
+  "sequence": 3,
+  "generated": "2026-10-24T12:00:00Z",
+  "expires": "2027-01-22T12:00:00Z",
   "modules": [
+    {
+      "id": "adguard-dns",
+      "name": "مانع الإعلانات والـ DNS العائلي",
+      "one_line": "حجب الإعلانات والحماية العائلية على التلفاز",
+      "description": "يفعّل خادم AdGuard DNS المشفّر على التلفاز لحجب الإعلانات المزعجة والنوافذ المنبثقة ومتتبعات الخصوصية على مستوى النظام، مع إمكانية التبديل بضغطة زر بالريموت بين وضع حجب الإعلانات ووضع الحماية العائلية لحجب المحتوى غير اللائق.",
+      "package": "com.midroid.mi5gtv.dns",
+      "type": "card",
+      "tier": "verified",
+      "publisher": "al3nkboot",
+      "source": "https://github.com/al3nkboot/mi5g-tv",
+      "licence": "MIT",
+      "accent": "#14998E",
+      "artwork": null,
+      "versions": [
+        {
+          "version_code": 1,
+          "version_name": "1.0.0",
+          "released": "2026-10-24T12:00:00Z",
+          "apk": {
+            "url": "https://github.com/al3nkboot/mi5g-tv/releases/download/v1.2.0/mi5g-tv-dns.apk",
+            "size": 16650,
+            "sha256": "b372ebe9e378090cc6198657689966334cec9ea501734698775ef5bd8903c739",
+            "signer_sha256": "c1f317965f154fe5e79fe7483abd5dd5dec7df57d87f3a645a5fd12f39a5480c"
+          },
+          "permissions": [
+            {
+              "permission": "android.permission.INTERNET",
+              "plain_words": "يفحص زمن استجابة خادم DNS المختار للتأكد من عمله بنجاح."
+            }
+          ],
+          "network": "يتصل فقط بخادم DNS المشفّر الذي تختاره (AdGuard أو Cloudflare) لتصفية الإعلانات.",
+          "min_sdk": 26,
+          "abis": [
+            "armeabi-v7a",
+            "arm64-v8a",
+            "x86",
+            "x86_64"
+          ],
+          "post_install": []
+        }
+      ]
+    },
+    {
+      "id": "prayer-weather",
+      "name": "مواقيت الصلاة والطقس",
+      "one_line": "مواقيت الصلاة اليومية وحالة الطقس للمدن العربية",
+      "description": "بطاقة وتطبيق خفيف للتلفاز يعرض مواقيت الصلاة الخمس والشروق مع العد التنازلي للصلاة القادمة وحالة الطقس المباشرة لمدن الخليج والعالم العربي (مسقط، الرياض، مكة المكرمة، دبي، الدوحة، الكويت، المنامة، القاهرة، عمّان).",
+      "package": "com.midroid.mi5gtv.prayer",
+      "type": "card",
+      "tier": "verified",
+      "publisher": "al3nkboot",
+      "source": "https://github.com/al3nkboot/mi5g-tv",
+      "licence": "MIT",
+      "accent": "#2EC4B6",
+      "artwork": null,
+      "versions": [
+        {
+          "version_code": 1,
+          "version_name": "1.0.0",
+          "released": "2026-10-24T12:00:00Z",
+          "apk": {
+            "url": "https://github.com/al3nkboot/mi5g-tv/releases/download/v1.2.0/mi5g-tv-prayer.apk",
+            "size": 20746,
+            "sha256": "37a23d6e74544a280129ae82f0152c4baa5d38f9b0574ad04a34b04be0785f3d",
+            "signer_sha256": "c1f317965f154fe5e79fe7483abd5dd5dec7df57d87f3a645a5fd12f39a5480c"
+          },
+          "permissions": [
+            {
+              "permission": "android.permission.INTERNET",
+              "plain_words": "يجلب درجة الحرارة الحالية للمدينة المختارة عبر اتصال HTTPS."
+            }
+          ],
+          "network": "يحسب مواقيت الصلاة محليًا بدون إنترنت، ويجلب درجة الحرارة فقط من خدمة الطقس المفتوحة.",
+          "min_sdk": 26,
+          "abis": [
+            "armeabi-v7a",
+            "arm64-v8a",
+            "x86",
+            "x86_64"
+          ],
+          "post_install": []
+        }
+      ]
+    },
+    {
+      "id": "tv-speedtest",
+      "name": "قياس سرعة الإنترنت",
+      "one_line": "فحص سرعة التنزيل والبنق وجودة بث 4K على التلفاز",
+      "description": "أداة مصممة لشاشة التلفاز والريموت لقياس سرعة التنزيل الفعلية (Mbps) وزمن الاستجابة (Ping) واستقرار الشبكة (Jitter)، مع تقييم فوري لمدى جاهزية اتصال التلفاز لبث الفيديو بدقة 4K HDR والمباريات المباشرة.",
+      "package": "com.midroid.mi5gtv.speedtest",
+      "type": "card",
+      "tier": "verified",
+      "publisher": "al3nkboot",
+      "source": "https://github.com/al3nkboot/mi5g-tv",
+      "licence": "MIT",
+      "accent": "#3A86E8",
+      "artwork": null,
+      "versions": [
+        {
+          "version_code": 1,
+          "version_name": "1.0.0",
+          "released": "2026-10-24T12:00:00Z",
+          "apk": {
+            "url": "https://github.com/al3nkboot/mi5g-tv/releases/download/v1.2.0/mi5g-tv-speedtest.apk",
+            "size": 20746,
+            "sha256": "c33907f361dc60fdace8a0b49af7d44ad303d674de5e8c84c8b62905ca5de3f9",
+            "signer_sha256": "c1f317965f154fe5e79fe7483abd5dd5dec7df57d87f3a645a5fd12f39a5480c"
+          },
+          "permissions": [
+            {
+              "permission": "android.permission.INTERNET",
+              "plain_words": "يقيس سرعة التنزيل وزمن الاستجابة (Ping) عند الضغط على زر الفحص."
+            }
+          ],
+          "network": "يتصل بخوادم قياس السرعة عبر HTTPS فقط عندما تضغط على زر بدء الفحص.",
+          "min_sdk": 26,
+          "abis": [
+            "armeabi-v7a",
+            "arm64-v8a",
+            "x86",
+            "x86_64"
+          ],
+          "post_install": []
+        }
+      ]
+    },
+    {
+      "id": "tv-files",
+      "name": "مدير ملفات التلفاز",
+      "one_line": "تصفح مجلد التنزيلات والذاكرة وملفات USB بالريموت",
+      "description": "متصفح ملفات خفيف وسريع مصمم خصيصًا لريموت التلفاز بدون أي إعلانات. يعرض المساحة الحرة والمستخدمة على التلفاز ويتيح تصفح مجلد التنزيلات (Download) والأفلام والصور ووحدات تخزين USB بسهولة.",
+      "package": "com.midroid.mi5gtv.files",
+      "type": "card",
+      "tier": "verified",
+      "publisher": "al3nkboot",
+      "source": "https://github.com/al3nkboot/mi5g-tv",
+      "licence": "MIT",
+      "accent": "#9B6BFF",
+      "artwork": null,
+      "versions": [
+        {
+          "version_code": 1,
+          "version_name": "1.0.0",
+          "released": "2026-10-24T12:00:00Z",
+          "apk": {
+            "url": "https://github.com/al3nkboot/mi5g-tv/releases/download/v1.2.0/mi5g-tv-files.apk",
+            "size": 16650,
+            "sha256": "de281d4c0fd0c649e0e1534183e413015dbe29075f26f638d09afb9cc82efee8",
+            "signer_sha256": "c1f317965f154fe5e79fe7483abd5dd5dec7df57d87f3a645a5fd12f39a5480c"
+          },
+          "permissions": [
+            {
+              "permission": "android.permission.READ_EXTERNAL_STORAGE",
+              "plain_words": "يعرض الملفات والمجلدات الموجودة في ذاكرة التلفاز ومجلد التنزيلات."
+            }
+          ],
+          "network": "لا يتصل بالإنترنت إطلاقًا؛ يعمل محليًا بالكامل على التلفاز.",
+          "min_sdk": 26,
+          "abis": [
+            "armeabi-v7a",
+            "arm64-v8a",
+            "x86",
+            "x86_64"
+          ],
+          "post_install": []
+        }
+      ]
+    },
     {
       "id": "retro",
       "name": "Retro",

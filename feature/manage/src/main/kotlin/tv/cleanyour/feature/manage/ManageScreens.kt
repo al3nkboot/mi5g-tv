@@ -2,14 +2,31 @@
 
 package tv.cleanyour.feature.manage
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import tv.cleanyour.ui.design.component.rejectObscuredTouches
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -480,100 +497,185 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
         ScreenTitle(stringResource(R.string.tvtools_title), titleTop)
 
         SectionLabel(stringResource(R.string.tvtools_remote_section))
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                SmallGlassButton(
-                    stringResource(R.string.tvtools_btn_back),
-                    { onIntent(TvToolsIntent.PressKey(TvKeyEvent.BACK)) },
-                    Modifier.weight(1f),
-                    enabled = !sending,
-                )
-                SmallGlassButton(
-                    stringResource(R.string.tvtools_dpad_up),
-                    { onIntent(TvToolsIntent.PressKey(TvKeyEvent.DPAD_UP)) },
-                    Modifier.weight(1f),
-                    enabled = !sending,
-                )
-                SmallGlassButton(
-                    stringResource(R.string.tvtools_btn_home),
-                    { onIntent(TvToolsIntent.PressKey(TvKeyEvent.HOME)) },
-                    Modifier.weight(1f),
-                    enabled = !sending,
-                )
-            }
-            // Physical D-Pad direction stays Left on the left and Right on the right in both LTR and RTL.
-            val leftLabel = stringResource(R.string.tvtools_dpad_left)
-            val okLabel = stringResource(R.string.tvtools_dpad_ok)
-            val rightLabel = stringResource(R.string.tvtools_dpad_right)
+        val upLabel = stringResource(R.string.tvtools_dpad_up)
+        val downLabel = stringResource(R.string.tvtools_dpad_down)
+        val leftLabel = stringResource(R.string.tvtools_dpad_left)
+        val rightLabel = stringResource(R.string.tvtools_dpad_right)
+        val okLabel = stringResource(R.string.tvtools_dpad_ok)
+        val chassisShape = RoundedCornerShape(32.dp)
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .clip(chassisShape)
+                .background(CytTheme.colors.surface1)
+                .border(1.dp, CytTheme.colors.outline, chassisShape)
+                .padding(horizontal = 16.dp, vertical = 18.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(14.dp),
+        ) {
+            // Circular D-Pad ring: physical directions stay fixed in LTR (Left on left, Right on right).
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    SmallGlassButton(
-                        leftLabel,
-                        { onIntent(TvToolsIntent.PressKey(TvKeyEvent.DPAD_LEFT)) },
-                        Modifier.weight(1f),
+                Box(
+                    Modifier
+                        .size(204.dp)
+                        .clip(CircleShape)
+                        .background(CytTheme.colors.surface2)
+                        .border(1.5.dp, CytTheme.colors.outline, CircleShape),
+                ) {
+                    Box(
+                        Modifier
+                            .align(Alignment.Center)
+                            .size(140.dp)
+                            .border(1.dp, CytTheme.colors.outline.copy(alpha = 0.45f), CircleShape),
+                    )
+                    DpadSegmentButton(
+                        symbol = "▲",
+                        label = upLabel,
+                        onClick = { onIntent(TvToolsIntent.PressKey(TvKeyEvent.DPAD_UP)) },
+                        modifier = Modifier.align(Alignment.TopCenter).padding(top = 6.dp),
                         enabled = !sending,
                     )
-                    SmallGlassButton(
-                        okLabel,
-                        { onIntent(TvToolsIntent.PressKey(TvKeyEvent.DPAD_CENTER)) },
-                        Modifier.weight(1f),
+                    DpadSegmentButton(
+                        symbol = "▼",
+                        label = downLabel,
+                        onClick = { onIntent(TvToolsIntent.PressKey(TvKeyEvent.DPAD_DOWN)) },
+                        modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 6.dp),
                         enabled = !sending,
                     )
-                    SmallGlassButton(
-                        rightLabel,
-                        { onIntent(TvToolsIntent.PressKey(TvKeyEvent.DPAD_RIGHT)) },
-                        Modifier.weight(1f),
+                    DpadSegmentButton(
+                        symbol = "◀",
+                        label = leftLabel,
+                        onClick = { onIntent(TvToolsIntent.PressKey(TvKeyEvent.DPAD_LEFT)) },
+                        modifier = Modifier.align(Alignment.CenterStart).padding(start = 6.dp),
                         enabled = !sending,
                     )
+                    DpadSegmentButton(
+                        symbol = "▶",
+                        label = rightLabel,
+                        onClick = { onIntent(TvToolsIntent.PressKey(TvKeyEvent.DPAD_RIGHT)) },
+                        modifier = Modifier.align(Alignment.CenterEnd).padding(end = 6.dp),
+                        enabled = !sending,
+                    )
+                    Box(
+                        Modifier
+                            .align(Alignment.Center)
+                            .size(80.dp)
+                            .clip(CircleShape)
+                            .background(CytTheme.colors.accent.copy(alpha = 0.22f))
+                            .border(1.5.dp, CytTheme.colors.accent, CircleShape)
+                            .clickable(enabled = !sending, role = Role.Button) {
+                                onIntent(TvToolsIntent.PressKey(TvKeyEvent.DPAD_CENTER))
+                            }
+                            .rejectObscuredTouches(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = okLabel,
+                            color = if (!sending) CytTheme.colors.textPrimary else CytTheme.colors.textTertiary,
+                            style = CytTheme.type.labelLarge.copy(fontWeight = FontWeight.Bold),
+                            maxLines = 1,
+                        )
+                    }
                 }
             }
+
+            // Row 1: Back, Home (accented center button), Menu
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                SmallGlassButton(
-                    stringResource(R.string.tvtools_btn_menu),
-                    { onIntent(TvToolsIntent.PressKey(TvKeyEvent.MENU)) },
-                    Modifier.weight(1f),
+                RemoteActionKey(
+                    text = stringResource(R.string.tvtools_btn_back),
+                    onClick = { onIntent(TvToolsIntent.PressKey(TvKeyEvent.BACK)) },
+                    modifier = Modifier.weight(1f),
                     enabled = !sending,
                 )
-                SmallGlassButton(
-                    stringResource(R.string.tvtools_dpad_down),
-                    { onIntent(TvToolsIntent.PressKey(TvKeyEvent.DPAD_DOWN)) },
-                    Modifier.weight(1f),
+                RemoteActionKey(
+                    text = stringResource(R.string.tvtools_btn_home),
+                    onClick = { onIntent(TvToolsIntent.PressKey(TvKeyEvent.HOME)) },
+                    modifier = Modifier.weight(1f),
                     enabled = !sending,
+                    accented = true,
                 )
-                SmallGlassButton(
-                    stringResource(R.string.tvtools_btn_settings),
-                    { onIntent(TvToolsIntent.OpenTvSettings) },
-                    Modifier.weight(1f),
+                RemoteActionKey(
+                    text = stringResource(R.string.tvtools_btn_menu),
+                    onClick = { onIntent(TvToolsIntent.PressKey(TvKeyEvent.MENU)) },
+                    modifier = Modifier.weight(1f),
                     enabled = !sending,
                 )
             }
+
+            // Row 2: Settings, Play/Pause, Mute
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                SmallGlassButton(
-                    stringResource(R.string.tvtools_btn_vol_up),
-                    { onIntent(TvToolsIntent.PressKey(TvKeyEvent.VOLUME_UP)) },
-                    Modifier.weight(1f),
+                RemoteActionKey(
+                    text = stringResource(R.string.tvtools_btn_settings),
+                    onClick = { onIntent(TvToolsIntent.OpenTvSettings) },
+                    modifier = Modifier.weight(1f),
                     enabled = !sending,
                 )
-                SmallGlassButton(
-                    stringResource(R.string.tvtools_btn_mute),
-                    { onIntent(TvToolsIntent.PressKey(TvKeyEvent.VOLUME_MUTE)) },
-                    Modifier.weight(1f),
+                RemoteActionKey(
+                    text = stringResource(R.string.tvtools_btn_play_pause),
+                    onClick = { onIntent(TvToolsIntent.PressKey(TvKeyEvent.PLAY_PAUSE)) },
+                    modifier = Modifier.weight(1f),
                     enabled = !sending,
                 )
-                SmallGlassButton(
-                    stringResource(R.string.tvtools_btn_vol_down),
-                    { onIntent(TvToolsIntent.PressKey(TvKeyEvent.VOLUME_DOWN)) },
-                    Modifier.weight(1f),
+                RemoteActionKey(
+                    text = stringResource(R.string.tvtools_btn_mute),
+                    onClick = { onIntent(TvToolsIntent.PressKey(TvKeyEvent.VOLUME_MUTE)) },
+                    modifier = Modifier.weight(1f),
                     enabled = !sending,
                 )
             }
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                SmallGlassButton(
-                    stringResource(R.string.tvtools_btn_play_pause),
-                    { onIntent(TvToolsIntent.PressKey(TvKeyEvent.PLAY_PAUSE)) },
-                    Modifier.fillMaxWidth(),
-                    enabled = !sending,
-                )
+
+            // Row 3: Unified equal-height Volume Rocker Pill (never wraps onto 2 lines)
+            val rockerShape = RoundedCornerShape(999.dp)
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+                    .clip(rockerShape)
+                    .background(CytTheme.colors.surface2)
+                    .border(1.dp, CytTheme.colors.outline, rockerShape),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Box(
+                    Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .clickable(enabled = !sending, role = Role.Button) {
+                            onIntent(TvToolsIntent.PressKey(TvKeyEvent.VOLUME_UP))
+                        }
+                        .rejectObscuredTouches()
+                        .padding(horizontal = 12.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = stringResource(R.string.tvtools_btn_vol_up),
+                        color = if (!sending) CytTheme.colors.textPrimary else CytTheme.colors.textTertiary,
+                        style = CytTheme.type.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                        maxLines = 1,
+                        softWrap = false,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+                Box(Modifier.width(1.dp).height(24.dp).background(CytTheme.colors.outline))
+                Box(
+                    Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .clickable(enabled = !sending, role = Role.Button) {
+                            onIntent(TvToolsIntent.PressKey(TvKeyEvent.VOLUME_DOWN))
+                        }
+                        .rejectObscuredTouches()
+                        .padding(horizontal = 12.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = stringResource(R.string.tvtools_btn_vol_down),
+                        color = if (!sending) CytTheme.colors.textPrimary else CytTheme.colors.textTertiary,
+                        style = CytTheme.type.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                        maxLines = 1,
+                        softWrap = false,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
             }
         }
         when (state.remoteStatus) {
@@ -650,5 +752,72 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
             }
         }
         Gap(48.dp)
+    }
+}
+
+@Composable
+private fun DpadSegmentButton(
+    symbol: String,
+    label: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+) {
+    Column(
+        modifier
+            .minimumInteractiveComponentSize()
+            .clip(RoundedCornerShape(16.dp))
+            .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
+            .rejectObscuredTouches()
+            .padding(horizontal = 10.dp, vertical = 4.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Text(
+            text = symbol,
+            color = if (enabled) CytTheme.colors.accent else CytTheme.colors.textTertiary,
+            style = CytTheme.type.bodySmall,
+            maxLines = 1,
+        )
+        Text(
+            text = label,
+            color = if (enabled) CytTheme.colors.textPrimary else CytTheme.colors.textTertiary,
+            style = CytTheme.type.bodySmall,
+            maxLines = 1,
+        )
+    }
+}
+
+@Composable
+private fun RemoteActionKey(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    accented: Boolean = false,
+) {
+    val shape = RoundedCornerShape(999.dp)
+    val bg = if (accented) CytTheme.colors.accent.copy(alpha = 0.14f) else CytTheme.colors.surface2
+    val border = if (accented) CytTheme.colors.accent.copy(alpha = 0.6f) else CytTheme.colors.outline
+    Box(
+        modifier
+            .height(44.dp)
+            .clip(shape)
+            .background(bg)
+            .border(1.dp, border, shape)
+            .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
+            .rejectObscuredTouches()
+            .padding(horizontal = 8.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = text,
+            color = if (enabled) CytTheme.colors.textPrimary else CytTheme.colors.textTertiary,
+            style = CytTheme.type.labelMedium,
+            textAlign = TextAlign.Center,
+            maxLines = 1,
+            softWrap = false,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }

@@ -7,9 +7,9 @@ import tv.cleanyour.core.model.PackageName
 import tv.cleanyour.core.model.Sha256
 import tv.cleanyour.core.model.Tier
 
-// The files the app ships (android/platform/src/main/assets/bundled), signed by the real minisign
-// 0.12 tool with the release index keys (K2R): interop with the reference implementation, and release
-// checklist item 4 ("the seed index verifies against the shipped keys.json").
+// The files the app ships (android/platform/src/main/assets/bundled), signed by the release index
+// keys (K2R): interop with the reference implementation, and release checklist item 4
+// ("the seed index verifies against the shipped keys.json").
 class SeedIndexTest {
     private val index = Repo.bundled("index.json")
     private val indexSig = Repo.bundled("index.json.minisig")
@@ -19,8 +19,9 @@ class SeedIndexTest {
     @Test fun seedVerifiesAgainstTheCompiledRoot() {
         val verdict = TrustRoots.indexVerifier().verify(index, indexSig, keys, keysSig, null, MinisignIndexVerifier.VERIFY_IGNORING_EXPIRY)
         val ok = verdict as? IndexVerdict.Ok ?: error("seed does not verify: $verdict")
-        assertEquals(2, ok.index.sequence)
-        val retro = ok.index.modules.single()
+        assertEquals(3, ok.index.sequence)
+        assertEquals(listOf("adguard-dns", "prayer-weather", "tv-speedtest", "tv-files", "retro"), ok.index.modules.map { it.id })
+        val retro = ok.index.modules.first { it.id == "retro" }
         assertEquals("retro", retro.id)
         assertEquals(PackageName("io.github.udhaykumarbala.retro"), retro.pkg)
         assertEquals(Tier.COMMUNITY, retro.tier)

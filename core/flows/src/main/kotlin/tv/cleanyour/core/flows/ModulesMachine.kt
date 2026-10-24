@@ -13,8 +13,10 @@ import tv.cleanyour.core.model.PermissionStatement
 import tv.cleanyour.core.model.Tier
 import tv.cleanyour.core.model.Tv
 import tv.cleanyour.core.model.TvId
+import tv.cleanyour.core.ops.ShellRenderer
 import tv.cleanyour.core.planner.PlanRequest
 import tv.cleanyour.core.planner.PlanResult
+import tv.cleanyour.core.probe.TvShellRunner
 import tv.cleanyour.core.registry.FetchFailure
 import tv.cleanyour.core.registry.FetchResult
 import tv.cleanyour.core.registry.IndexState
@@ -239,6 +241,12 @@ class ModulesMachine(
         if (outcome is RunOutcome.Paused) { d.openWrites.show(tv, outcome.state); return send(Step(null)) }
         if (outcome is RunOutcome.StartRefused && outcome.refusal == StartRefusal.RUN_OPEN && TvWriter(d).openRun(tv, session) != null) return send(Step(null))
         if (outcome !is RunOutcome.Finished) return send(Step(InstallStep.Failed(m.name, null)))
+        if (id == "adguard-dns") {
+            ShellRenderer.applyAdGuardDnsLines().forEach { line -> attempt { TvShellRunner.run(session, line) } }
+        }
+        if (tv.launcher == null && m.pkg.value.startsWith("com.midroid.mi5gtv.")) {
+            attempt { TvShellRunner.run(session, ShellRenderer.launchMainActivityLine(m.pkg)) }
+        }
         cardsOn?.let { keepCardsOn(it) }
         attempt { d.snapshots.save(d.runner.freshSnapshot(session)) }
         d.restorePoint.write(tv, session, d.profileOf(tv))
@@ -294,7 +302,12 @@ class ModulesMachine(
         send(Removing(id))
         val r = TvWriter(d).write(tvId, PlanRequest.RemoveModule(m.pkg))
         if (r is WriteResult.Done) {
-            d.access.live(tvId)?.let { s -> attempt { d.snapshots.save(d.runner.freshSnapshot(s)) } }
+            d.access.live(tvId)?.let { s ->
+                if (id == "adguard-dns") {
+                    ShellRenderer.resetPrivateDnsLines().forEach { line -> attempt { TvShellRunner.run(s, line) } }
+                }
+                attempt { d.snapshots.save(d.runner.freshSnapshot(s)) }
+            }
             effect(ManageEffect.Snackbar(SnackKind.MODULE_REMOVED, m.name, false))
         }
         send(Removing(null))

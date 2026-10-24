@@ -69,9 +69,26 @@ class DiskBlobStore(
 
     override fun get(sha256: Sha256): BlobRef? = synchronized(lock) {
         val f = blobFile(sha256)
-        if (!f.isFile) return null
-        f.setLastModified(nowMs())
-        BlobRef(sha256, f.length(), f.absolutePath)
+        if (f.isFile) {
+            f.setLastModified(nowMs())
+            return BlobRef(sha256, f.length(), f.absolutePath)
+        }
+        val bundledMod = runCatching { bundledSource("mod-${sha256.hex.take(40)}.apk") }.getOrNull() ?: return null
+        return try {
+            ensureDir(dir)
+            val tmp = File(dir, ".tmp-${UUID.randomUUID()}")
+            try {
+                val (size, digest) = bundledMod.use { i -> FileOutputStream(tmp).use { out -> copyHashing(i, out, Long.MAX_VALUE).also { out.fd.sync() } } }
+                if (digest != sha256.hex) return null
+                if (!tmp.renameTo(f)) return null
+                f.setLastModified(nowMs())
+                BlobRef(sha256, size, f.absolutePath)
+            } finally {
+                tmp.delete()
+            }
+        } catch (e: Exception) {
+            null
+        }
     }
 
     override suspend fun delete(sha256: Sha256) = withContext(io) {

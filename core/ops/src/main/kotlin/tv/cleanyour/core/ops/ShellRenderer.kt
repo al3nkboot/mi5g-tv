@@ -386,6 +386,22 @@ class ShellRenderer(private val watchdogVariant: WatchdogVariant = WatchdogVaria
             require(apk.dir == RemoteDir.TMP) { "path must be in ${RemoteDir.TMP.path}" }
             return ShellLine(ShellTokens.line(listOf("rm", "-f", apk.absolute)))
         }
+
+        fun applyAdGuardDnsLines(): List<ShellLine> = listOf(
+            ShellLine(ShellTokens.line(listOf(PM, "grant", "com.midroid.mi5gtv.dns", "android.permission.WRITE_SECURE_SETTINGS"))),
+            ShellLine(ShellTokens.line(listOf(SETTINGS, "put", "global", "private_dns_mode", "hostname"))),
+            ShellLine(ShellTokens.line(listOf(SETTINGS, "put", "global", "private_dns_specifier", "dns.adguard-dns.com"))),
+        )
+
+        fun resetPrivateDnsLines(): List<ShellLine> = listOf(
+            ShellLine(ShellTokens.line(listOf(SETTINGS, "put", "global", "private_dns_mode", "opportunistic"))),
+            ShellLine(ShellTokens.line(listOf(SETTINGS, "delete", "global", "private_dns_specifier"))),
+        )
+
+        fun launchMainActivityLine(pkg: PackageName): ShellLine {
+            val comp = Component(pkg, ".MainActivity")
+            return ShellLine(ShellTokens.line(listOf(AM, "start", "-n", comp.flat)))
+        }
     }
 }
 

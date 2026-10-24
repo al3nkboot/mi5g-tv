@@ -182,5 +182,23 @@ class ArabicReleaseScreenshotsTest {
         }
         compose.waitForIdle()
         compose.onNodeWithTag("shot").captureRoboImage(File(outDir111, "03_tv_tools_scrolled_ar.png"))
+
+        val outDir120 = File("/workspace/apps/mi5g-tv-out/screens/1.2.0").apply { mkdirs() }
+        currentHeight = 1340.dp
+        currentScreen = {
+            TvToolsScreen(
+                TvToolsState(
+                    tvName = "AndroidTV",
+                    textInput = "Shahid VIP 4K",
+                    remoteStatus = RemoteStatus.Sent,
+                    screenshotStatus = ScreenshotStatus.Captured(shotBytes),
+                    sideloadStatus = SideloadStatus.Ready("shahid-tv-release.apk", fakeBlob.size, fakeBlob),
+                ),
+                {},
+                {},
+            )
+        }
+        compose.waitForIdle()
+        compose.onNodeWithTag("shot").captureRoboImage(File(outDir120, "01_tv_tools_realistic_remote_ar.png"))
     }
 }

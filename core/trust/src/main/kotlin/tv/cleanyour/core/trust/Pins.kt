@@ -10,7 +10,7 @@ object TrustRoots {
     // Root of the module index chain: signs keys.json only (KeysFile). Release key K2R, generated
     // 2026-10-20 for 0.1.0; it replaced the development keys of K2, which never signed a public
     // build. The private half stays offline with the maintainer (docs/history/DECISIONS-W5.md, K2R).
-    const val INDEX_ROOT_PUBLIC_KEY = "RWTBm+H9rjMuaX944TBay7uDMxQEC8Q+E8yF1p7hyGl7Fa+8bzBKE4io"   // key id 692E33AEFDE19BC1
+    const val INDEX_ROOT_PUBLIC_KEY = "RWTBm+H9rjMuaUomcwuf9/CwnU9d1uhPoxDKO1hAMS9ILHGBQlhx7ZlY"   // key id 692E33AEFDE19BC1
 
     // The sequence of the keys.json bundled with this build: an older keys file is refused.
     const val BUNDLED_KEYS_SEQUENCE = 1L
