@@ -19,7 +19,7 @@ class CopyTest {
     private val context = ApplicationProvider.getApplicationContext<android.app.Application>()
     private val sample = mapOf<String, Any>("tv" to "Mi TV 4A", "count" to 3, "done" to 2, "total" to 5, "name" to "PatchWall",
         "launcher" to "Projectivy", "percent" to 58, "date" to "19 Oct", "room" to "Living room", "step" to 2,
-        "size" to 4, "free" to 12, "needed" to 20, "rows" to 2, "seconds" to 5, "off" to 3)
+        "size" to 4, "free" to 12, "needed" to 20, "rows" to 2, "seconds" to 5, "off" to 3, "used" to "1.2")
 
     // Every machine-produced sentence resolves and formats (ICU) with the arguments the flows pass.
     @Test fun everyCopyKeyFormats() {

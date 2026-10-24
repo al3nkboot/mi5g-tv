@@ -33,17 +33,29 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
+import tv.cleanyour.core.flows.AnimationScaleStatus
+import tv.cleanyour.core.flows.CastMediaStatus
+import tv.cleanyour.core.flows.CastUrlStatus
 import tv.cleanyour.core.flows.ChipState
 import tv.cleanyour.core.flows.ManageState
 import tv.cleanyour.core.flows.RemoteStatus
 import tv.cleanyour.core.flows.ScreenshotStatus
 import tv.cleanyour.core.flows.SideloadStatus
+import tv.cleanyour.core.flows.SpeedBoostStatus
+import tv.cleanyour.core.flows.TvAppActionKind
+import tv.cleanyour.core.flows.TvAppActionStatus
+import tv.cleanyour.core.flows.TvAppFilter
+import tv.cleanyour.core.flows.TvAppManagerState
 import tv.cleanyour.core.flows.TvCard
+import tv.cleanyour.core.flows.TvInstalledApp
+import tv.cleanyour.core.flows.TvPerformanceStats
 import tv.cleanyour.core.flows.TvToolsState
 import tv.cleanyour.core.model.BlobRef
 import tv.cleanyour.core.model.DebugState
 import tv.cleanyour.core.model.Level
+import tv.cleanyour.core.model.PackageName
 import tv.cleanyour.core.model.Sha256
+import tv.cleanyour.core.model.TvAnimationScale
 import tv.cleanyour.testing.fixtures.Samples
 import tv.cleanyour.ui.design.theme.CytTheme
 
@@ -200,5 +212,76 @@ class ArabicReleaseScreenshotsTest {
         }
         compose.waitForIdle()
         compose.onNodeWithTag("shot").captureRoboImage(File(outDir120, "01_tv_tools_realistic_remote_ar.png"))
+
+        val outDir130 = File("/workspace/apps/mi5g-tv-out/screens/1.3.0").apply { mkdirs() }
+        currentHeight = 960.dp
+        currentScreen = {
+            ManageScreen(manageState, {})
+        }
+        compose.waitForIdle()
+        compose.onNodeWithTag("shot").captureRoboImage(File(outDir130, "01_manage_home_1_3_ar.png"))
+
+        currentHeight = 1380.dp
+        currentScreen = {
+            TvToolsScreen(
+                TvToolsState(
+                    tvName = "Mi TV 4A",
+                    performanceStats = TvPerformanceStats(
+                        ramUsedGb = "1.1",
+                        ramTotalGb = "2.0",
+                        ramFraction = 0.55f,
+                        storageFreeGb = "5.4",
+                        storageTotalGb = "8.0",
+                        storageUsedFraction = 0.32f,
+                    ),
+                    speedBoostStatus = SpeedBoostStatus.Boosted(4),
+                    animationScale = TvAnimationScale.FAST_0_5X,
+                    animationScaleStatus = AnimationScaleStatus.Applied(TvAnimationScale.FAST_0_5X),
+                    castUrlInput = "https://youtu.be/dQw4w9WgXcQ",
+                    castUrlStatus = CastUrlStatus.Opened("https://youtu.be/dQw4w9WgXcQ"),
+                    castMediaStatus = CastMediaStatus.CastDone("family_trip_4k.mp4"),
+                    remoteStatus = RemoteStatus.Sent,
+                ),
+                {},
+                {},
+            )
+        }
+        compose.waitForIdle()
+        compose.onNodeWithTag("shot").captureRoboImage(File(outDir130, "02_speed_boost_and_cast_ar.png"))
+
+        val sampleApps = listOf(
+            TvInstalledApp(PackageName("net.mbc.shahid.tv"), "شاهد (Shahid)", system = false, enabled = true),
+            TvInstalledApp(PackageName("tv.tod.android"), "TOD", system = false, enabled = true),
+            TvInstalledApp(PackageName("com.stctv.app"), "stc tv", system = false, enabled = true),
+            TvInstalledApp(PackageName("org.xbmc.kodi"), "Kodi", system = false, enabled = true),
+            TvInstalledApp(PackageName("org.videolan.vlc"), "VLC", system = false, enabled = true),
+        )
+        val selectedShahid = sampleApps.first()
+        val appMgrState = TvAppManagerState(
+            tvName = "Mi TV 4A",
+            loading = false,
+            searchQuery = "",
+            filter = TvAppFilter.USER,
+            apps = sampleApps,
+            selectedApp = null,
+            actionStatus = TvAppActionStatus.Done(selectedShahid.pkg, selectedShahid.name, TvAppActionKind.PULL_APK),
+        )
+        currentHeight = 980.dp
+        currentScreen = {
+            SheetOver(
+                screen = { TvAppManagerScreen(appMgrState, {}, {}) },
+                sheet = {
+                    TvAppActionsContent(
+                        app = selectedShahid,
+                        confirmingUninstall = false,
+                        actionStatus = TvAppActionStatus.Done(selectedShahid.pkg, selectedShahid.name, TvAppActionKind.PULL_APK),
+                        onIntent = {},
+                    )
+                },
+            )
+        }
+        compose.waitForIdle()
+        compose.onNodeWithTag("shot").captureRoboImage(File(outDir130, "03_app_manager_and_apk_pull_ar.png"))
     }
 }
+

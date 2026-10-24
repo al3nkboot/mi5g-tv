@@ -69,7 +69,8 @@ val miProfile = Profile(
 // Every fake wired the way the app wires the real things.
 class Harness(val clock: FakeClock = FakeClock(Samples.NOW_MS)) {
     val discovery = FakeDiscovery()
-    val session = FakeTvSession()
+    val blobs = MemoryBlobStore()
+    val session = FakeTvSession(blobs = { blobs.bytes(it) })
     val sessions = FakeSessionManager().apply { register(HOST, session) }
     val prober = FakeProber()
     val profiles = FakeProfileSource(listOf(miProfile))
@@ -83,7 +84,6 @@ class Harness(val clock: FakeClock = FakeClock(Samples.NOW_MS)) {
     val documents = MemoryDocumentStore()
     val journal = MemoryJournal()
     val ledger = RunLedger(documents, journal)
-    val blobs = MemoryBlobStore()
     val runner = PlanRunner(planner, engine, gate, ledger, facts, snapshots, prober)
     val restorePoint = RestorePointWriter(FakeTvRestoreFiles(), blobs, ledger, runner)
     val foreground = AppForeground(true)

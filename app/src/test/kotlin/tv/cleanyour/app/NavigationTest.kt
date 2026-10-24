@@ -70,4 +70,12 @@ class NavigationTest {
         assertTrue(applyRoute(stack, "back", noTvs = false))
         assertEquals(listOf<NavKey>(Dest.Manage("0123456789abcdef")), stack)
     }
+
+    @Test fun theAppsRouteOpensTvAppsOnTop() {
+        val stack = mutableListOf<NavKey>(Dest.Manage("0123456789abcdef"))
+        assertTrue(applyRoute(stack, "apps/0123456789abcdef", noTvs = false))
+        assertEquals(Dest.TvApps("0123456789abcdef"), stack.last())
+        assertTrue(applyRoute(stack, "back", noTvs = false))
+        assertEquals(listOf<NavKey>(Dest.Manage("0123456789abcdef")), stack)
+    }
 }

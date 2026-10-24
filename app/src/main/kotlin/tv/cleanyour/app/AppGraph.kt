@@ -59,6 +59,7 @@ import tv.cleanyour.core.flows.SetupStart
 import tv.cleanyour.core.flows.SwitchedOffMachine
 import tv.cleanyour.core.flows.TvAccess
 import tv.cleanyour.core.flows.TvSettingsMachine
+import tv.cleanyour.core.flows.TvAppManagerMachine
 import tv.cleanyour.core.flows.TvToolsMachine
 import tv.cleanyour.core.model.TvId
 import tv.cleanyour.core.ops.ConfigTransport
@@ -231,6 +232,7 @@ class AppGraph(context: Context, val appVersion: String = versionOf(context), va
     fun restorePoint(scope: CoroutineScope, tvId: TvId) = RestorePointMachine(manageDeps, scope, tvId)
     fun tvSettings(scope: CoroutineScope, tvId: TvId) = TvSettingsMachine(manageDeps, scope, tvId)
     fun tvTools(scope: CoroutineScope, tvId: TvId) = TvToolsMachine(manageDeps, scope, tvId)
+    fun tvApps(scope: CoroutineScope, tvId: TvId) = TvAppManagerMachine(manageDeps, scope, tvId)
     fun appSettings(scope: CoroutineScope) = AppSettingsMachine(manageDeps, scope)
     fun report(scope: CoroutineScope, kind: ReportKind, tvId: TvId?) = ReportMachine(manageDeps, scope, kind, tvId)
 

@@ -70,6 +70,7 @@ import tv.cleanyour.feature.manage.OpenWriteSheet
 import tv.cleanyour.feature.manage.ReportScreen
 import tv.cleanyour.feature.manage.SwitchedOffScreen
 import tv.cleanyour.feature.manage.TvSettingsScreen
+import tv.cleanyour.feature.manage.TvAppManagerScreen
 import tv.cleanyour.feature.manage.TvToolsScreen
 import tv.cleanyour.feature.modules.ModulesFlow
 import tv.cleanyour.feature.setup.SetupFlow
@@ -86,6 +87,7 @@ import tv.cleanyour.feature.setup.SetupFlow
     @Serializable data class Restore(val tvId: String) : Dest
     @Serializable data class TvSettings(val tvId: String) : Dest
     @Serializable data class TvTools(val tvId: String) : Dest
+    @Serializable data class TvApps(val tvId: String) : Dest
     @Serializable data object AppSettings : Dest
     // 0.3.2 B1, B2: the report preview; kind is ReportKind.key ("tv" or "problem").
     @Serializable data class Report(val kind: String, val tvId: String? = null) : Dest
@@ -118,6 +120,7 @@ internal fun applyRoute(stack: MutableList<NavKey>, route: String, noTvs: Boolea
         "restore" -> id?.let { Dest.Restore(it) }
         "tvsettings" -> id?.let { Dest.TvSettings(it) }
         "tools" -> id?.let { Dest.TvTools(it) }
+        "apps" -> id?.let { Dest.TvApps(it) }
         "appsettings" -> Dest.AppSettings
         "report" -> id?.let { k -> ReportKind.of(k) }?.let { k -> if (k == ReportKind.TV && parts.getOrNull(2) == null) null else Dest.Report(k.key, parts.getOrNull(2)) }
         "back" -> return if (stack.size > 1) { stack.removeAt(stack.lastIndex); true } else false
@@ -191,7 +194,13 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
         SetupEffect.RequestNotificationPermission -> if (Build.VERSION.SDK_INT >= 33) notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS) else Unit
     }
 
-    suspend fun onManageEffect(e: ManageEffect, onDocument: (String) -> Unit = {}, onUndo: (ManageEffect.Snackbar) -> Unit = {}, onPickApk: () -> Unit = {}) {
+    suspend fun onManageEffect(
+        e: ManageEffect,
+        onDocument: (String) -> Unit = {},
+        onUndo: (ManageEffect.Snackbar) -> Unit = {},
+        onPickApk: () -> Unit = {},
+        onPickCastMedia: () -> Unit = {},
+    ) {
         when (e) {
             is ManageEffect.Navigate -> go(e.key)
             is ManageEffect.Share -> share(e.text)
@@ -201,7 +210,9 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
             ManageEffect.HapticDouble -> haptic(HapticFeedbackConstants.LONG_PRESS)
             is ManageEffect.CreateDocument -> onDocument(e.suggestedName)
             ManageEffect.PickApk -> onPickApk()
+            ManageEffect.PickCastMedia -> onPickCastMedia()
             is ManageEffect.SharePng -> sharePng(context, e.png, e.fileName)
+            is ManageEffect.ShareApk -> shareApk(context, e.apkBytes, e.fileName)
             is ManageEffect.Snackbar -> {
                 val (id, args) = SnackText.of(e)
                 val r = snack.showSnackbar(ResourceFlowCopy.format(context, id, args), actionLabel = if (e.undo) undoLabel else null,
@@ -293,12 +304,28 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
                             if (picked != null) m.dispatch(picked)
                         }
                     }
+                    val pickCastMedia = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+                        if (uri != null) scope.launch {
+                            val picked = withContext(Dispatchers.IO) { readPickedCastMedia(context, graph, uri) }
+                            if (picked != null) m.dispatch(picked)
+                        }
+                    }
                     LaunchedEffect(m) {
                         m.effects.collect { e ->
-                            onManageEffect(e, onPickApk = { pickApk.launch(arrayOf("application/vnd.android.package-archive")) })
+                            onManageEffect(
+                                e,
+                                onPickApk = { pickApk.launch(arrayOf("application/vnd.android.package-archive")) },
+                                onPickCastMedia = { pickCastMedia.launch(arrayOf("image/*", "video/*")) },
+                            )
                         }
                     }
                     TvToolsScreen(state, m::dispatch, onBack = { go("back") })
+                }
+                entry<Dest.TvApps> { key ->
+                    val m = rememberMachine("apps:${key.tvId}") { graph.tvApps(it, TvId(key.tvId)) }
+                    val state by m.state.collectAsStateWithLifecycle()
+                    LaunchedEffect(m) { m.effects.collect { onManageEffect(it) } }
+                    TvAppManagerScreen(state, m::dispatch, onBack = { go("back") })
                 }
                 entry<Dest.Report> { key ->
                     val kind = ReportKind.of(key.kind) ?: ReportKind.PROBLEM
@@ -405,6 +432,79 @@ private fun sharePng(context: android.content.Context, png: ByteArray, fileName:
                 context.contentResolver.openOutputStream(uri)?.use { it.write(png) }
                 val send = Intent(Intent.ACTION_SEND)
                     .setType("image/png")
+                    .putExtra(Intent.EXTRA_STREAM, uri)
+                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                context.startActivity(Intent.createChooser(send, null))
+            }
+        }
+    }
+}
+
+private suspend fun readPickedCastMedia(context: android.content.Context, graph: AppGraph, uri: Uri): TvToolsIntent.MediaPicked? = runCatching {
+    val cr = context.contentResolver
+    var displayName = "media"
+    cr.query(uri, arrayOf(android.provider.OpenableColumns.DISPLAY_NAME), null, null, null)?.use { c ->
+        if (c.moveToFirst()) {
+            val idx = c.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME)
+            if (idx >= 0) c.getString(idx)?.takeIf { it.isNotBlank() }?.let { displayName = it }
+        }
+    }
+    val rawMime = cr.getType(uri)?.lowercase().orEmpty()
+    val isVideo = rawMime.startsWith("video/") || displayName.lowercase().endsWith(".mp4") || displayName.lowercase().endsWith(".mkv") || displayName.lowercase().endsWith(".webm")
+    val mimeType = when {
+        rawMime.matches(Regex("^(image|video)/[a-z0-9.+_-]{1,32}$")) -> rawMime
+        isVideo -> "video/mp4"
+        else -> "image/jpeg"
+    }
+    val ext = when {
+        displayName.lowercase().endsWith(".png") || mimeType == "image/png" -> "png"
+        displayName.lowercase().endsWith(".webp") || mimeType == "image/webp" -> "webp"
+        displayName.lowercase().endsWith(".mkv") -> "mkv"
+        displayName.lowercase().endsWith(".webm") || mimeType == "video/webm" -> "webm"
+        isVideo -> "mp4"
+        else -> "jpg"
+    }
+    val tmp = java.io.File.createTempFile("cast-", ".$ext", context.cacheDir)
+    try {
+        val md = java.security.MessageDigest.getInstance("SHA-256")
+        var total = 0L
+        cr.openInputStream(uri)?.use { input ->
+            tmp.outputStream().use { out ->
+                val buf = ByteArray(64 * 1024)
+                while (true) {
+                    val n = input.read(buf)
+                    if (n <= 0) break
+                    total += n
+                    if (total > tv.cleanyour.core.ops.ShellRenderer.MAX_CAST_BYTES) error("Cast file exceeds max size")
+                    md.update(buf, 0, n)
+                    out.write(buf, 0, n)
+                }
+            }
+        } ?: return@runCatching null
+        if (total <= 0L) return@runCatching null
+        val sha = tv.cleanyour.core.model.Sha256(md.digest().joinToString("") { "%02x".format(it) })
+        val blob = tmp.inputStream().use { graph.blobs.put(sha, it, total) }
+        TvToolsIntent.MediaPicked(displayName, mimeType, ext, blob.size, blob)
+    } finally {
+        tmp.delete()
+    }
+}.getOrNull()
+
+private fun shareApk(context: android.content.Context, apkBytes: ByteArray, fileName: String) {
+    runCatching {
+        val cacheDir = java.io.File(context.cacheDir, "apks").apply { mkdirs() }
+        java.io.File(cacheDir, fileName).writeBytes(apkBytes)
+        if (Build.VERSION.SDK_INT >= 29) {
+            val values = android.content.ContentValues().apply {
+                put(android.provider.MediaStore.Downloads.DISPLAY_NAME, fileName)
+                put(android.provider.MediaStore.Downloads.MIME_TYPE, "application/vnd.android.package-archive")
+                put(android.provider.MediaStore.Downloads.RELATIVE_PATH, "Download/Mi5G TV")
+            }
+            val uri = context.contentResolver.insert(android.provider.MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
+            if (uri != null) {
+                context.contentResolver.openOutputStream(uri)?.use { it.write(apkBytes) }
+                val send = Intent(Intent.ACTION_SEND)
+                    .setType("application/vnd.android.package-archive")
                     .putExtra(Intent.EXTRA_STREAM, uri)
                     .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 context.startActivity(Intent.createChooser(send, null))

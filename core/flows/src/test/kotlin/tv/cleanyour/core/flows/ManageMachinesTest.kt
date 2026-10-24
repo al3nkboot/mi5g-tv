@@ -29,6 +29,7 @@ import tv.cleanyour.core.model.PermissionStatement
 import tv.cleanyour.core.model.PlanId
 import tv.cleanyour.core.model.Tier
 import tv.cleanyour.core.model.Tv
+import tv.cleanyour.core.model.TvAnimationScale
 import tv.cleanyour.core.model.TvKeyEvent
 import tv.cleanyour.testing.fixtures.FakeTvSession
 import tv.cleanyour.core.model.WizardDraft
@@ -993,6 +994,128 @@ class ManageMachinesTest {
         assertNull(m.state.value.notOnTv, "after installation, notOnTv is null and Dock/Look are active")
         assertTrue(m.state.value.homeScreenOurs)
         assertNotNull(h.tvs.tvs.value.single { it.id == tv.id }.launcher)
+    }
+
+    @Test fun speedBoostQuickCastAndTvAppManagerWorkEndToEnd() = runTest(timeout = 30.seconds) {
+        val h = Harness()
+        val tv = h.knownTv()
+
+        // 1. SpeedBoost, RAM/Storage stats & Animation Scale 0.5x
+        h.session.recording.on(
+            "cat /proc/meminfo",
+            "MemTotal:        2097152 kB\nMemFree:          300000 kB\nMemAvailable:     838860 kB\n",
+        )
+        h.session.recording.on(
+            "df -k /data",
+            "Filesystem     1K-blocks    Used Available Use% Mounted on\n/dev/block/dm-0  8388608 4194304   4194304  50% /data\n",
+        )
+        h.session.recording.on("settings get global window_animation_scale", "1.0\n")
+        h.session.recording.on("pm trim-caches 999999999G", "")
+        h.session.recording.on("pm list packages -3", "package:org.xbmc.kodi\npackage:com.gathin.tvhome\n")
+        h.session.recording.on("am force-stop org.xbmc.kodi", "")
+        h.session.recording.on("am force-stop in.startv.hotstar", "")
+        h.session.recording.on("settings put global window_animation_scale 0.5", "")
+        h.session.recording.on("settings put global transition_animation_scale 0.5", "")
+        h.session.recording.on("settings put global animator_duration_scale 0.5", "")
+
+        val tools = TvToolsMachine(h.manageDeps(), backgroundScope, tv.id)
+        settle()
+        val perf = assertNotNull(tools.state.value.performanceStats)
+        assertEquals("1.2", perf.ramUsedGb)
+        assertEquals("2.0", perf.ramTotalGb)
+        assertEquals("4.0", perf.storageFreeGb)
+        assertEquals("8.0", perf.storageTotalGb)
+        assertEquals(TvAnimationScale.DEFAULT_1X, tools.state.value.animationScale)
+
+        tools.dispatch(TvToolsIntent.SetAnimationScale(TvAnimationScale.FAST_0_5X))
+        settle()
+        assertEquals(TvAnimationScale.FAST_0_5X, tools.state.value.animationScale)
+        assertEquals(AnimationScaleStatus.Applied(TvAnimationScale.FAST_0_5X), tools.state.value.animationScaleStatus)
+
+        tools.dispatch(TvToolsIntent.RunSpeedBoost)
+        settle()
+        val boosted = assertIs<SpeedBoostStatus.Boosted>(tools.state.value.speedBoostStatus)
+        assertEquals(2, boosted.stoppedApps)
+        assertTrue(h.session.execLines.none { "com.gathin.tvhome" in it && "force-stop" in it })
+
+        // 2. QuickCast (URL & Media to TV)
+        tools.dispatch(TvToolsIntent.UpdateCastUrl("not-a-url"))
+        tools.dispatch(TvToolsIntent.OpenUrlOnTv)
+        settle()
+        assertEquals(CastUrlStatus.InvalidUrl, tools.state.value.castUrlStatus)
+
+        val ytUrl = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+        h.session.recording.on("am start -a android.intent.action.VIEW -d $ytUrl", "Starting: Intent { act=android.intent.action.VIEW }\n")
+        tools.dispatch(TvToolsIntent.UpdateCastUrl(ytUrl))
+        tools.dispatch(TvToolsIntent.OpenUrlOnTv)
+        settle()
+        assertEquals(CastUrlStatus.Opened(ytUrl), tools.state.value.castUrlStatus)
+        assertEquals("", tools.state.value.castUrlInput)
+
+        tools.effects.test {
+            tools.dispatch(TvToolsIntent.PickCastMedia)
+            settle()
+            assertTrue(ManageEffect.PickCastMedia in drain())
+        }
+        h.session.recording.on("mkdir -p /sdcard/cleanyourtv", "")
+        h.session.recording.on("mkdir -p /sdcard/Download", "")
+        h.session.recording.on("cp /sdcard/cleanyourtv/mi5g_cast.jpg /sdcard/Download/mi5g_cast.jpg", "")
+        h.session.recording.on("am start -a android.intent.action.VIEW -d file:///sdcard/Download/mi5g_cast.jpg -t image/jpeg", "Starting: Intent\n")
+        h.session.recording.on("rm -f /sdcard/cleanyourtv/mi5g_cast.jpg", "")
+        val mediaBytes = "fake-jpeg-bytes".encodeToByteArray()
+        val mediaBlob = h.blobs.put(sha256Of(mediaBytes), mediaBytes.inputStream(), mediaBytes.size.toLong())
+        tools.dispatch(TvToolsIntent.MediaPicked("family_photo.jpg", "image/jpeg", "jpg", mediaBlob.size, mediaBlob))
+        settle()
+        assertEquals(CastMediaStatus.CastDone("family_photo.jpg"), tools.state.value.castMediaStatus)
+
+        // 3. TvAppManagerMachine (Launch, Force Stop, Clear Data, Pull APK, Uninstall)
+        h.session.recording.on("pm list packages -d", "")
+        val appMgr = TvAppManagerMachine(h.manageDeps(), backgroundScope, tv.id)
+        settle()
+        assertFalse(appMgr.state.value.loading)
+        assertTrue(appMgr.state.value.filteredApps.any { it.pkg.value == "org.xbmc.kodi" })
+
+        val kodiApp = appMgr.state.value.filteredApps.first { it.pkg.value == "org.xbmc.kodi" }
+        appMgr.dispatch(TvAppManagerIntent.SelectApp(kodiApp))
+        settle()
+        assertEquals(kodiApp.pkg, appMgr.state.value.selectedApp?.pkg)
+
+        h.session.recording.on("monkey -p org.xbmc.kodi -c android.intent.category.LAUNCHER 1", "Events injected: 1\n")
+        appMgr.dispatch(TvAppManagerIntent.LaunchApp(kodiApp.pkg))
+        settle()
+        assertEquals(TvAppActionStatus.Done(kodiApp.pkg, kodiApp.name, TvAppActionKind.LAUNCH), appMgr.state.value.actionStatus)
+
+        appMgr.dispatch(TvAppManagerIntent.ForceStopApp(kodiApp.pkg))
+        settle()
+        assertEquals(TvAppActionStatus.Done(kodiApp.pkg, kodiApp.name, TvAppActionKind.FORCE_STOP), appMgr.state.value.actionStatus)
+
+        h.session.recording.on("pm clear --user 0 org.xbmc.kodi", "Success\n")
+        appMgr.dispatch(TvAppManagerIntent.ClearAppData(kodiApp.pkg))
+        settle()
+        assertEquals(TvAppActionStatus.Done(kodiApp.pkg, kodiApp.name, TvAppActionKind.CLEAR_DATA), appMgr.state.value.actionStatus)
+
+        val fakeExtractedApk = "PK-extracted-kodi-apk".encodeToByteArray()
+        h.session.recording.on("pm path org.xbmc.kodi", "package:/data/app/org.xbmc.kodi-1/base.apk\n")
+        h.session.recording.on("mkdir -p /data/local/tmp/cleanyourtv", "")
+        h.session.recording.on("cp /data/app/org.xbmc.kodi-1/base.apk /data/local/tmp/cleanyourtv/pulled-app.apk", "")
+        h.session.recording.on("rm -f /data/local/tmp/cleanyourtv/pulled-app.apk", "")
+        h.session.files["/data/local/tmp/cleanyourtv/pulled-app.apk"] = fakeExtractedApk
+        appMgr.effects.test {
+            appMgr.dispatch(TvAppManagerIntent.PullApk(kodiApp.pkg))
+            settle()
+            val effs = drain()
+            assertTrue(effs.any { it is ManageEffect.ShareApk && (it as ManageEffect.ShareApk).fileName == "org.xbmc.kodi.apk" && it.apkBytes.contentEquals(fakeExtractedApk) })
+        }
+        assertEquals(TvAppActionStatus.Done(kodiApp.pkg, kodiApp.name, TvAppActionKind.PULL_APK), appMgr.state.value.actionStatus)
+
+        appMgr.dispatch(TvAppManagerIntent.AskUninstall)
+        settle()
+        assertTrue(appMgr.state.value.confirmingUninstall)
+        h.session.recording.on("pm uninstall --user 0 org.xbmc.kodi", "Success\n")
+        appMgr.dispatch(TvAppManagerIntent.UninstallApp(kodiApp.pkg))
+        settle()
+        assertFalse(appMgr.state.value.apps.any { it.pkg == kodiApp.pkg })
+        assertNull(appMgr.state.value.selectedApp)
     }
 }
 

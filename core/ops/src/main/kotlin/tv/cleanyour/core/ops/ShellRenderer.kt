@@ -19,6 +19,7 @@ import tv.cleanyour.core.model.SHA256_RE
 import tv.cleanyour.core.model.SettingKey
 import tv.cleanyour.core.model.Sha256
 import tv.cleanyour.core.model.ShellLine
+import tv.cleanyour.core.model.TvAnimationScale
 import tv.cleanyour.core.model.TvKeyEvent
 import java.security.MessageDigest
 
@@ -401,6 +402,149 @@ class ShellRenderer(private val watchdogVariant: WatchdogVariant = WatchdogVaria
         fun launchMainActivityLine(pkg: PackageName): ShellLine {
             val comp = Component(pkg, ".MainActivity")
             return ShellLine(ShellTokens.line(listOf(AM, "start", "-n", comp.flat)))
+        }
+
+        const val MAX_URL_LEN = 2048
+        const val MAX_CAST_BYTES = 200L * 1024 * 1024
+        private val CAST_EXT_RE = Regex("^[a-z0-9]{2,5}$")
+        private val CAST_MIME_RE = Regex("^(image|video)/[a-z0-9.+_-]{1,32}$")
+        private val REMOTE_APK_PATH_RE = Regex("^/[A-Za-z0-9._/+~=-]{4,512}\\.apk$")
+
+        fun memInfoLine(): ShellLine =
+            ShellLine(ShellTokens.line(listOf("cat", "/proc/meminfo")))
+
+        fun dfDataLine(): ShellLine =
+            ShellLine(ShellTokens.line(listOf("df", "-k", "/data")))
+
+        fun trimCachesLine(): ShellLine =
+            ShellLine(ShellTokens.line(listOf(PM, "trim-caches", "999999999G")))
+
+        fun listThirdPartyPackagesLine(): ShellLine =
+            ShellLine(ShellTokens.line(listOf(PM, "list", "packages", "-3")))
+
+        fun listDisabledPackagesLine(): ShellLine =
+            ShellLine(ShellTokens.line(listOf(PM, "list", "packages", "-d")))
+
+        fun getWindowAnimationScaleLine(): ShellLine =
+            ShellLine(ShellTokens.line(listOf(SETTINGS, "get", "global", "window_animation_scale")))
+
+        fun setAnimationScaleLines(scale: TvAnimationScale): List<ShellLine> = listOf(
+            ShellLine(ShellTokens.line(listOf(SETTINGS, "put", "global", "window_animation_scale", scale.scale))),
+            ShellLine(ShellTokens.line(listOf(SETTINGS, "put", "global", "transition_animation_scale", scale.scale))),
+            ShellLine(ShellTokens.line(listOf(SETTINGS, "put", "global", "animator_duration_scale", scale.scale))),
+        )
+
+        fun isForceStopProtected(pkg: PackageName): Boolean {
+            val v = pkg.value
+            if (v == Denylist.FRAMEWORK || v == "com.gathin.tvhome" || v == CURTAIN_PACKAGE) return true
+            if (v.startsWith("com.midroid.mi5gtv.")) return true
+            if (Denylist.exact.containsKey(v) || v in Denylist.setupWizards) return true
+            if (Denylist.prefixes.keys.any { v.startsWith(it) }) return true
+            return false
+        }
+
+        fun forceStopLine(pkg: PackageName): ShellLine {
+            require(PACKAGE_RE.matches(pkg.value) && !isForceStopProtected(pkg)) { "cannot force-stop protected package ${pkg.value}" }
+            return ShellLine(ShellTokens.line(listOf(AM, "force-stop", pkg.value)))
+        }
+
+        fun openUrlOnTvLine(rawUrl: String): ShellLine {
+            val trimmed = rawUrl.trim()
+            require(
+                trimmed.isNotEmpty() &&
+                    trimmed.length <= MAX_URL_LEN &&
+                    (trimmed.startsWith("http://", ignoreCase = true) || trimmed.startsWith("https://", ignoreCase = true)) &&
+                    ' ' !in trimmed &&
+                    '\t' !in trimmed &&
+                    ShellTokens.isSafeToken(trimmed),
+            ) { "URL must be a valid http:// or https:// address" }
+            return ShellLine(ShellTokens.line(listOf(AM, "start", "-a", "android.intent.action.VIEW", "-d", trimmed)))
+        }
+
+        fun mkdirRestoreLine(): ShellLine =
+            ShellLine(ShellTokens.line(listOf("mkdir", "-p", RemoteDir.RESTORE.path)))
+
+        fun mkdirDownloadLine(): ShellLine =
+            ShellLine(ShellTokens.line(listOf("mkdir", "-p", "/sdcard/Download")))
+
+        fun copyCastMediaToDownloadLine(src: RemotePath, ext: String): ShellLine {
+            val cleanExt = ext.lowercase()
+            require(src.dir == RemoteDir.RESTORE && CAST_EXT_RE.matches(cleanExt)) { "invalid cast media source or extension" }
+            return ShellLine(ShellTokens.line(listOf("cp", src.absolute, "/sdcard/Download/mi5g_cast.$cleanExt")))
+        }
+
+        fun removeRestoreLine(path: RemotePath): ShellLine {
+            require(path.dir == RemoteDir.RESTORE) { "path must be in ${RemoteDir.RESTORE.path}" }
+            return ShellLine(ShellTokens.line(listOf("rm", "-f", path.absolute)))
+        }
+
+        fun viewCastMediaLine(ext: String, mimeType: String): ShellLine {
+            val cleanExt = ext.lowercase()
+            val cleanMime = mimeType.lowercase()
+            require(CAST_EXT_RE.matches(cleanExt) && CAST_MIME_RE.matches(cleanMime)) { "invalid cast media extension or mimeType" }
+            return ShellLine(
+                ShellTokens.line(
+                    listOf(
+                        AM,
+                        "start",
+                        "-a",
+                        "android.intent.action.VIEW",
+                        "-d",
+                        "file:///sdcard/Download/mi5g_cast.$cleanExt",
+                        "-t",
+                        cleanMime,
+                    ),
+                ),
+            )
+        }
+
+        fun launchPackageLine(pkg: PackageName): ShellLine {
+            require(PACKAGE_RE.matches(pkg.value) && pkg.value != Denylist.FRAMEWORK) { "invalid package ${pkg.value}" }
+            return ShellLine(ShellTokens.line(listOf("monkey", "-p", pkg.value, "-c", "android.intent.category.LAUNCHER", "1")))
+        }
+
+        fun clearPackageDataLine(pkg: PackageName): ShellLine {
+            require(PACKAGE_RE.matches(pkg.value) && !isForceStopProtected(pkg) && Denylist.staticReason(pkg.value) == null) {
+                "cannot clear data of protected package ${pkg.value}"
+            }
+            return ShellLine(ShellTokens.line(listOf(PM, "clear", USER, "0", pkg.value)))
+        }
+
+        fun uninstallUserPackageLine(pkg: PackageName): ShellLine {
+            require(PACKAGE_RE.matches(pkg.value) && !isForceStopProtected(pkg) && Denylist.staticReason(pkg.value) == null) {
+                "cannot uninstall protected package ${pkg.value}"
+            }
+            return ShellLine(ShellTokens.line(listOf(PM, "uninstall", USER, "0", pkg.value)))
+        }
+
+        fun pmPathLine(pkg: PackageName): ShellLine {
+            require(PACKAGE_RE.matches(pkg.value) && pkg.value != Denylist.FRAMEWORK) { "invalid package ${pkg.value}" }
+            return ShellLine(ShellTokens.line(listOf(PM, "path", pkg.value)))
+        }
+
+        fun parsePmPathOutput(stdout: String): String? {
+            val candidates = stdout.lineSequence()
+                .map { it.trim() }
+                .filter { it.startsWith("package:") }
+                .map { it.removePrefix("package:").trim() }
+                .filter { REMOTE_APK_PATH_RE.matches(it) && !it.contains("..") && ShellTokens.isSafeToken(it) }
+                .toList()
+            return candidates.firstOrNull { it.endsWith("/base.apk") } ?: candidates.firstOrNull()
+        }
+
+        fun copyRemoteApkToTmpLine(remoteApkPath: String, dest: RemotePath): ShellLine {
+            require(
+                REMOTE_APK_PATH_RE.matches(remoteApkPath) &&
+                    !remoteApkPath.contains("..") &&
+                    dest.dir == RemoteDir.TMP &&
+                    dest.segments.last().endsWith(".apk"),
+            ) { "invalid remote APK path or destination" }
+            return ShellLine(ShellTokens.line(listOf("cp", remoteApkPath, dest.absolute)))
+        }
+
+        fun catRemoteApkLine(remoteApkPath: String): ShellLine {
+            require(REMOTE_APK_PATH_RE.matches(remoteApkPath) && !remoteApkPath.contains("..")) { "invalid remote APK path" }
+            return ShellLine(ShellTokens.line(listOf("cat", remoteApkPath)))
         }
     }
 }

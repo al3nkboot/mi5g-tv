@@ -70,3 +70,17 @@ enum class TvKeyEvent(val keyCode: Int) {
     VOLUME_DOWN(25),
     VOLUME_MUTE(164),
 }
+
+enum class TvAnimationScale(val scale: String) {
+    FAST_0_5X("0.5"),
+    OFF_0X("0.0"),
+    DEFAULT_1X("1.0");
+
+    companion object {
+        fun fromSetting(raw: String?): TvAnimationScale = when (raw?.trim()) {
+            "0.5", "0.50", ".5" -> FAST_0_5X
+            "0", "0.0", "0.00" -> OFF_0X
+            else -> DEFAULT_1X
+        }
+    }
+}

@@ -46,7 +46,9 @@ sealed interface ManageEffect {
     data object HapticLight : ManageEffect
     data object HapticDouble : ManageEffect
     data object PickApk : ManageEffect
+    data object PickCastMedia : ManageEffect
     data class SharePng(val png: ByteArray, val fileName: String) : ManageEffect
+    data class ShareApk(val apkBytes: ByteArray, val fileName: String) : ManageEffect
 }
 
 enum class SnackKind { PUT_BACK, SWITCHED_OFF, HOME_SAVED, MODULE_REMOVED, EXPORT_SAVED, EXPORT_FAILED, FAILED, HOME_UPDATED,

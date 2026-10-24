@@ -60,13 +60,26 @@ import tv.cleanyour.core.flows.Reach
 import tv.cleanyour.core.flows.SwitchedOffIntent
 import tv.cleanyour.core.flows.SwitchedOffState
 import tv.cleanyour.core.flows.TvSettingsIntent
+import tv.cleanyour.core.flows.AnimationScaleStatus
+import tv.cleanyour.core.flows.CastMediaStatus
+import tv.cleanyour.core.flows.CastUrlStatus
 import tv.cleanyour.core.flows.RemoteStatus
 import tv.cleanyour.core.flows.ScreenshotStatus
 import tv.cleanyour.core.flows.SideloadStatus
+import tv.cleanyour.core.flows.SpeedBoostStatus
+import tv.cleanyour.core.flows.TvAppActionKind
+import tv.cleanyour.core.flows.TvAppActionStatus
+import tv.cleanyour.core.flows.TvAppFilter
+import tv.cleanyour.core.flows.TvAppManagerIntent
+import tv.cleanyour.core.flows.TvAppManagerState
+import tv.cleanyour.core.flows.TvInstalledApp
 import tv.cleanyour.core.flows.TvSettingsState
 import tv.cleanyour.core.flows.TvToolsIntent
 import tv.cleanyour.core.flows.TvToolsState
+import tv.cleanyour.core.model.TvAnimationScale
 import tv.cleanyour.core.model.TvKeyEvent
+import tv.cleanyour.ui.design.component.AppTile
+import tv.cleanyour.ui.design.component.ConfirmQuestion
 import tv.cleanyour.core.flows.UpdateCheck
 import tv.cleanyour.core.model.Level
 import tv.cleanyour.core.model.PackageName
@@ -180,6 +193,9 @@ fun ManageScreen(state: ManageState, onIntent: (ManageIntent) -> Unit, modifier:
                 ListDivider()
                 ListRow(stringResource(R.string.manage_row_tools), subtitle = stringResource(R.string.manage_row_tools_sub),
                     onClick = { onIntent(ManageIntent.Open(ManageSection.TV_TOOLS)) })
+                ListDivider()
+                ListRow(stringResource(R.string.manage_row_apps), subtitle = stringResource(R.string.manage_row_apps_sub),
+                    onClick = { onIntent(ManageIntent.Open(ManageSection.TV_APPS)) })
                 ListDivider()
                 ListRow(stringResource(R.string.manage_row_tvsettings), onClick = { onIntent(ManageIntent.Open(ManageSection.TV_SETTINGS)) })
             }
@@ -489,12 +505,155 @@ internal fun ColumnScope.ConfirmContent(what: AppConfirm, working: Boolean, onIn
     }
 }
 
-// M9 TV remote and tools (v1.1.0): D-Pad and media remote, send text, TV screenshot, and APK sideloader.
+// M9 TV remote and tools (v1.1.0 / v1.3.0): Speed boost, Quick Cast, D-Pad remote, send text, screenshot, and APK sideloader.
 @Composable
 fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack: () -> Unit, modifier: Modifier = Modifier) {
     val sending = state.remoteStatus is RemoteStatus.Sending
+    val boosting = state.speedBoostStatus is SpeedBoostStatus.Boosting
+    val applyingScale = state.animationScaleStatus is AnimationScaleStatus.Applying
     ScreenScaffold(Glow.Tv, modifier, topBar = { CytTopBar(onBack = onBack) }) {
         ScreenTitle(stringResource(R.string.tvtools_title), titleTop)
+
+        SectionLabel(stringResource(R.string.tvtools_perf_section))
+        val perf = state.performanceStats
+        if (perf != null) {
+            ListGroup(Modifier.padding(bottom = 12.dp)) {
+                Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = msg(R.string.tvtools_ram_status, "used" to perf.ramUsedGb, "total" to perf.ramTotalGb),
+                        color = CytTheme.colors.textPrimary,
+                        style = CytTheme.type.bodyMedium.copy(fontWeight = FontWeight.Medium),
+                    )
+                    ProgressBar(perf.ramFraction)
+                    Gap(4.dp)
+                    Text(
+                        text = msg(R.string.tvtools_storage_status, "free" to perf.storageFreeGb, "total" to perf.storageTotalGb),
+                        color = CytTheme.colors.textPrimary,
+                        style = CytTheme.type.bodyMedium.copy(fontWeight = FontWeight.Medium),
+                    )
+                    ProgressBar(perf.storageUsedFraction)
+                }
+            }
+        }
+        PrimaryButton(
+            text = stringResource(R.string.tvtools_speed_boost_btn),
+            onClick = { onIntent(TvToolsIntent.RunSpeedBoost) },
+            enabled = !boosting,
+            loading = boosting,
+        )
+        when (val sb = state.speedBoostStatus) {
+            SpeedBoostStatus.Boosting -> LiveLine(stringResource(R.string.tvtools_speed_boosting))
+            is SpeedBoostStatus.Boosted -> CheckLine(
+                msg(R.string.tvtools_speed_boosted, "count" to sb.stoppedApps),
+                Modifier.padding(top = 8.dp, start = 4.dp),
+            )
+            SpeedBoostStatus.Failed -> Body(
+                stringResource(R.string.tvtools_speed_failed),
+                Modifier.padding(top = 8.dp, start = 4.dp),
+                color = CytTheme.colors.danger,
+            )
+            SpeedBoostStatus.Idle -> {}
+        }
+
+        Body(stringResource(R.string.tvtools_anim_label), Modifier.padding(top = 14.dp, bottom = 8.dp, start = 4.dp, end = 4.dp))
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            RemoteActionKey(
+                text = stringResource(R.string.tvtools_anim_fast),
+                onClick = { onIntent(TvToolsIntent.SetAnimationScale(TvAnimationScale.FAST_0_5X)) },
+                modifier = Modifier.weight(1f),
+                enabled = !applyingScale,
+                accented = state.animationScale == TvAnimationScale.FAST_0_5X,
+            )
+            RemoteActionKey(
+                text = stringResource(R.string.tvtools_anim_off),
+                onClick = { onIntent(TvToolsIntent.SetAnimationScale(TvAnimationScale.OFF_0X)) },
+                modifier = Modifier.weight(1f),
+                enabled = !applyingScale,
+                accented = state.animationScale == TvAnimationScale.OFF_0X,
+            )
+            RemoteActionKey(
+                text = stringResource(R.string.tvtools_anim_default),
+                onClick = { onIntent(TvToolsIntent.SetAnimationScale(TvAnimationScale.DEFAULT_1X)) },
+                modifier = Modifier.weight(1f),
+                enabled = !applyingScale,
+                accented = state.animationScale == TvAnimationScale.DEFAULT_1X,
+            )
+        }
+        when (state.animationScaleStatus) {
+            AnimationScaleStatus.Applying -> LiveLine(stringResource(R.string.tvtools_anim_applying))
+            is AnimationScaleStatus.Applied -> CheckLine(
+                stringResource(R.string.tvtools_anim_applied),
+                Modifier.padding(top = 8.dp, start = 4.dp),
+            )
+            AnimationScaleStatus.Failed -> Body(
+                stringResource(R.string.tvtools_anim_failed),
+                Modifier.padding(top = 8.dp, start = 4.dp),
+                color = CytTheme.colors.danger,
+            )
+            AnimationScaleStatus.Idle -> {}
+        }
+
+        SectionLabel(stringResource(R.string.tvtools_cast_section))
+        Body(stringResource(R.string.tvtools_cast_url_note), Modifier.padding(bottom = 8.dp, start = 4.dp, end = 4.dp))
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            CytTextField(
+                value = state.castUrlInput,
+                onValueChange = { onIntent(TvToolsIntent.UpdateCastUrl(it)) },
+                label = stringResource(R.string.tvtools_cast_url_label),
+                modifier = Modifier.weight(1f),
+            )
+            SmallGlassButton(
+                stringResource(R.string.tvtools_cast_url_open),
+                { onIntent(TvToolsIntent.OpenUrlOnTv) },
+                enabled = state.castUrlInput.isNotBlank() && state.castUrlStatus !is CastUrlStatus.Opening,
+            )
+        }
+        when (state.castUrlStatus) {
+            CastUrlStatus.Opening -> LiveLine(stringResource(R.string.tvtools_cast_url_opening))
+            is CastUrlStatus.Opened -> CheckLine(
+                stringResource(R.string.tvtools_cast_url_opened),
+                Modifier.padding(top = 8.dp, start = 4.dp),
+            )
+            CastUrlStatus.InvalidUrl -> Body(
+                stringResource(R.string.tvtools_cast_url_invalid),
+                Modifier.padding(top = 8.dp, start = 4.dp),
+                color = CytTheme.colors.danger,
+            )
+            CastUrlStatus.Failed -> Body(
+                stringResource(R.string.tvtools_cast_url_failed),
+                Modifier.padding(top = 8.dp, start = 4.dp),
+                color = CytTheme.colors.danger,
+            )
+            CastUrlStatus.Idle -> {}
+        }
+
+        Body(stringResource(R.string.tvtools_cast_media_title), Modifier.padding(top = 14.dp, bottom = 8.dp, start = 4.dp, end = 4.dp))
+        SecondaryButton(
+            stringResource(R.string.tvtools_cast_media_pick),
+            { onIntent(TvToolsIntent.PickCastMedia) },
+            enabled = state.castMediaStatus !is CastMediaStatus.Casting,
+            guardObscured = true,
+        )
+        when (val cm = state.castMediaStatus) {
+            is CastMediaStatus.Casting -> {
+                LiveLine(msg(R.string.tvtools_cast_media_casting, "name" to cm.fileName, "percent" to cm.percent))
+                ProgressBar(cm.percent / 100f, Modifier.padding(top = 12.dp))
+            }
+            is CastMediaStatus.CastDone -> CheckLine(
+                msg(R.string.tvtools_cast_media_done, "name" to cm.fileName),
+                Modifier.padding(top = 8.dp, start = 4.dp),
+            )
+            is CastMediaStatus.Failed -> Body(
+                msg(R.string.tvtools_cast_media_failed, "name" to cm.fileName),
+                Modifier.padding(top = 8.dp, start = 4.dp),
+                color = CytTheme.colors.danger,
+            )
+            CastMediaStatus.Idle -> {}
+        }
 
         SectionLabel(stringResource(R.string.tvtools_remote_section))
         val upLabel = stringResource(R.string.tvtools_dpad_up)
@@ -819,5 +978,190 @@ private fun RemoteActionKey(
             softWrap = false,
             overflow = TextOverflow.Ellipsis,
         )
+    }
+}
+
+
+// M10 Full TV App Manager and APK backup puller (v1.3.0).
+@Composable
+fun TvAppManagerScreen(
+    state: TvAppManagerState,
+    onIntent: (TvAppManagerIntent) -> Unit,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    ScreenScaffold(Glow.Tv, modifier, topBar = { CytTopBar(onBack = onBack) }) {
+        ScreenTitle(stringResource(R.string.tvapps_title), titleTop)
+
+        CytTextField(
+            value = state.searchQuery,
+            onValueChange = { onIntent(TvAppManagerIntent.UpdateSearch(it)) },
+            label = stringResource(R.string.tvapps_search_label),
+            modifier = Modifier.padding(top = 14.dp),
+        )
+
+        Row(
+            Modifier.fillMaxWidth().padding(top = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            RemoteActionKey(
+                text = stringResource(R.string.tvapps_filter_user),
+                onClick = { onIntent(TvAppManagerIntent.SetFilter(TvAppFilter.USER)) },
+                modifier = Modifier.weight(1f),
+                accented = state.filter == TvAppFilter.USER,
+            )
+            RemoteActionKey(
+                text = stringResource(R.string.tvapps_filter_all),
+                onClick = { onIntent(TvAppManagerIntent.SetFilter(TvAppFilter.ALL)) },
+                modifier = Modifier.weight(1f),
+                accented = state.filter == TvAppFilter.ALL,
+            )
+            RemoteActionKey(
+                text = stringResource(R.string.tvapps_refresh),
+                onClick = { onIntent(TvAppManagerIntent.Refresh) },
+                modifier = Modifier.weight(1f),
+                enabled = !state.loading,
+            )
+        }
+
+        AppActionFeedback(state.actionStatus)
+
+        if (state.loading) {
+            Box(Modifier.fillMaxWidth().padding(top = 32.dp), contentAlignment = Alignment.Center) {
+                Spinner(size = 24.dp)
+            }
+            return@ScreenScaffold
+        }
+
+        val visible = state.filteredApps
+        if (visible.isEmpty()) {
+            Lead(stringResource(R.string.tvapps_empty), Modifier.padding(top = 20.dp))
+        } else {
+            ListGroup(Modifier.padding(top = 16.dp)) {
+                visible.forEachIndexed { i, app ->
+                    if (i > 0) ListDivider()
+                    val statusText = stringResource(
+                        when {
+                            !app.system && app.enabled -> R.string.tvapps_status_user_active
+                            !app.system && !app.enabled -> R.string.tvapps_status_user_off
+                            app.system && app.enabled -> R.string.tvapps_status_system_active
+                            else -> R.string.tvapps_status_system_off
+                        },
+                    )
+                    ListRow(
+                        title = app.name,
+                        subtitle = "${app.pkg.value} · $statusText",
+                        leading = { AppTile(app.name) },
+                        onClick = { onIntent(TvAppManagerIntent.SelectApp(app)) },
+                    )
+                }
+            }
+        }
+        Gap(48.dp)
+    }
+
+    state.selectedApp?.let { selected ->
+        CytBottomSheet({ onIntent(TvAppManagerIntent.DismissApp) }) {
+            TvAppActionsContent(
+                app = selected,
+                confirmingUninstall = state.confirmingUninstall,
+                actionStatus = state.actionStatus,
+                onIntent = onIntent,
+            )
+        }
+    }
+}
+
+@Composable
+internal fun ColumnScope.TvAppActionsContent(
+    app: TvInstalledApp,
+    confirmingUninstall: Boolean,
+    actionStatus: TvAppActionStatus,
+    onIntent: (TvAppManagerIntent) -> Unit,
+) {
+    val working = actionStatus is TvAppActionStatus.Working
+    if (confirmingUninstall && !working) {
+        ConfirmQuestion(
+            title = msg(R.string.tvapps_uninstall_confirm_title, "name" to app.name),
+            body = msg(R.string.tvapps_uninstall_confirm_body, "name" to app.name),
+            confirmLabel = stringResource(R.string.tvapps_uninstall_confirm_btn),
+            onConfirm = { onIntent(TvAppManagerIntent.UninstallApp(app.pkg)) },
+            cancelLabel = stringResource(R.string.action_cancel),
+            onCancel = { onIntent(TvAppManagerIntent.CancelUninstall) },
+        )
+        return
+    }
+    SheetHeader(title = app.name, subtitle = app.pkg.value)
+    AppActionFeedback(actionStatus)
+    ActionColumn(Modifier.padding(top = 16.dp)) {
+        PrimaryButton(
+            text = stringResource(R.string.tvapps_action_launch),
+            onClick = { onIntent(TvAppManagerIntent.LaunchApp(app.pkg)) },
+            enabled = !working,
+        )
+        SecondaryButton(
+            text = stringResource(R.string.tvapps_action_pull_apk),
+            onClick = { onIntent(TvAppManagerIntent.PullApk(app.pkg)) },
+            enabled = !working,
+            guardObscured = true,
+        )
+        SecondaryButton(
+            text = stringResource(R.string.tvapps_action_force_stop),
+            onClick = { onIntent(TvAppManagerIntent.ForceStopApp(app.pkg)) },
+            enabled = !working && app.canForceStop,
+            guardObscured = true,
+        )
+        SecondaryButton(
+            text = stringResource(R.string.tvapps_action_clear_data),
+            onClick = { onIntent(TvAppManagerIntent.ClearAppData(app.pkg)) },
+            enabled = !working && app.canClearData,
+            guardObscured = true,
+        )
+        if (app.canUninstall) {
+            TertiaryButton(
+                text = stringResource(R.string.tvapps_action_uninstall),
+                onClick = { onIntent(TvAppManagerIntent.AskUninstall) },
+                enabled = !working,
+            )
+        }
+        TertiaryButton(
+            text = stringResource(R.string.action_cancel),
+            onClick = { onIntent(TvAppManagerIntent.DismissApp) },
+            quiet = true,
+        )
+    }
+}
+
+@Composable
+private fun AppActionFeedback(status: TvAppActionStatus) {
+    when (status) {
+        TvAppActionStatus.Idle -> {}
+        is TvAppActionStatus.Working -> {
+            val resId = when (status.kind) {
+                TvAppActionKind.LAUNCH -> R.string.tvapps_working_launch
+                TvAppActionKind.FORCE_STOP -> R.string.tvapps_working_force_stop
+                TvAppActionKind.CLEAR_DATA -> R.string.tvapps_working_clear_data
+                TvAppActionKind.UNINSTALL -> R.string.tvapps_working_uninstall
+                TvAppActionKind.PULL_APK -> R.string.tvapps_working_pull_apk
+            }
+            LiveLine(msg(resId, "name" to status.appName))
+        }
+        is TvAppActionStatus.Done -> {
+            val resId = when (status.kind) {
+                TvAppActionKind.LAUNCH -> R.string.tvapps_done_launch
+                TvAppActionKind.FORCE_STOP -> R.string.tvapps_done_force_stop
+                TvAppActionKind.CLEAR_DATA -> R.string.tvapps_done_clear_data
+                TvAppActionKind.UNINSTALL -> R.string.tvapps_done_uninstall
+                TvAppActionKind.PULL_APK -> R.string.tvapps_done_pull_apk
+            }
+            CheckLine(msg(resId, "name" to status.appName), Modifier.padding(top = 12.dp, start = 4.dp))
+        }
+        is TvAppActionStatus.Failed -> {
+            Body(
+                msg(R.string.tvapps_failed_action, "name" to status.appName),
+                Modifier.padding(top = 12.dp, start = 4.dp),
+                color = CytTheme.colors.danger,
+            )
+        }
     }
 }

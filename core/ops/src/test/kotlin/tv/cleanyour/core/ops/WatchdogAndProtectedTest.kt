@@ -216,4 +216,58 @@ class ProtectedTest {
         assertEquals(listOf("pm", "install", "-r", "--user", "0", "/data/local/tmp/cleanyourtv/sideload.apk"), ShellTokens.tokenize(ShellRenderer.pmInstallLine(apkPath).text))
         assertEquals(listOf("rm", "-f", "/data/local/tmp/cleanyourtv/sideload.apk"), ShellTokens.tokenize(ShellRenderer.removeTmpLine(apkPath).text))
     }
+
+    @Test fun speedBoostQuickCastAndAppManagerLinesAreSafe() {
+        assertEquals(listOf("cat", "/proc/meminfo"), ShellTokens.tokenize(ShellRenderer.memInfoLine().text))
+        assertEquals(listOf("df", "-k", "/data"), ShellTokens.tokenize(ShellRenderer.dfDataLine().text))
+        assertEquals(listOf("pm", "trim-caches", "999999999G"), ShellTokens.tokenize(ShellRenderer.trimCachesLine().text))
+        assertEquals(listOf("pm", "list", "packages", "-3"), ShellTokens.tokenize(ShellRenderer.listThirdPartyPackagesLine().text))
+        assertEquals(listOf("settings", "get", "global", "window_animation_scale"), ShellTokens.tokenize(ShellRenderer.getWindowAnimationScaleLine().text))
+
+        val animLines = ShellRenderer.setAnimationScaleLines(tv.cleanyour.core.model.TvAnimationScale.FAST_0_5X)
+        assertEquals(3, animLines.size)
+        assertEquals(listOf("settings", "put", "global", "window_animation_scale", "0.5"), ShellTokens.tokenize(animLines[0].text))
+        assertEquals(listOf("settings", "put", "global", "transition_animation_scale", "0.5"), ShellTokens.tokenize(animLines[1].text))
+        assertEquals(listOf("settings", "put", "global", "animator_duration_scale", "0.5"), ShellTokens.tokenize(animLines[2].text))
+
+        val kodi = PackageName("org.xbmc.kodi")
+        assertEquals(listOf("am", "force-stop", "org.xbmc.kodi"), ShellTokens.tokenize(ShellRenderer.forceStopLine(kodi).text))
+        for (prot in listOf("android", "com.android.systemui", "com.android.adbd", "com.gathin.tvhome", "com.midroid.mi5gtv.files")) {
+            assertFailsWith<IllegalArgumentException>(prot) { ShellRenderer.forceStopLine(PackageName(prot)) }
+        }
+
+        val urlLine = ShellRenderer.openUrlOnTvLine("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+        assertEquals(
+            listOf("am", "start", "-a", "android.intent.action.VIEW", "-d", "https://www.youtube.com/watch?v=dQw4w9WgXcQ"),
+            ShellTokens.tokenize(urlLine.text),
+        )
+        for (badUrl in listOf("", "ftp://example.com/a", "javascript:alert(1)", "https://example.com/a b", "https://example.com/a'b")) {
+            assertFailsWith<IllegalArgumentException>(badUrl) { ShellRenderer.openUrlOnTvLine(badUrl) }
+        }
+
+        val staging = tv.cleanyour.core.model.RemotePath(tv.cleanyour.core.model.RemoteDir.RESTORE, listOf("mi5g_cast.jpg"))
+        assertEquals(listOf("cp", "/sdcard/cleanyourtv/mi5g_cast.jpg", "/sdcard/Download/mi5g_cast.jpg"), ShellTokens.tokenize(ShellRenderer.copyCastMediaToDownloadLine(staging, "jpg").text))
+        assertEquals(
+            listOf("am", "start", "-a", "android.intent.action.VIEW", "-d", "file:///sdcard/Download/mi5g_cast.jpg", "-t", "image/jpeg"),
+            ShellTokens.tokenize(ShellRenderer.viewCastMediaLine("jpg", "image/jpeg").text),
+        )
+
+        assertEquals(listOf("monkey", "-p", "org.xbmc.kodi", "-c", "android.intent.category.LAUNCHER", "1"), ShellTokens.tokenize(ShellRenderer.launchPackageLine(kodi).text))
+        assertEquals(listOf("pm", "clear", "--user", "0", "org.xbmc.kodi"), ShellTokens.tokenize(ShellRenderer.clearPackageDataLine(kodi).text))
+        assertEquals(listOf("pm", "uninstall", "--user", "0", "org.xbmc.kodi"), ShellTokens.tokenize(ShellRenderer.uninstallUserPackageLine(kodi).text))
+        assertEquals(listOf("pm", "path", "org.xbmc.kodi"), ShellTokens.tokenize(ShellRenderer.pmPathLine(kodi).text))
+
+        val pmOut = "package:/data/app/~~AbCdEf==/org.xbmc.kodi-1234==/split_config.ar.apk\npackage:/data/app/~~AbCdEf==/org.xbmc.kodi-1234==/base.apk\n"
+        val parsedPath = ShellRenderer.parsePmPathOutput(pmOut)
+        assertEquals("/data/app/~~AbCdEf==/org.xbmc.kodi-1234==/base.apk", parsedPath)
+        val tmpApk = tv.cleanyour.core.model.RemotePath(tv.cleanyour.core.model.RemoteDir.TMP, listOf("pulled-app.apk"))
+        assertEquals(
+            listOf("cp", "/data/app/~~AbCdEf==/org.xbmc.kodi-1234==/base.apk", "/data/local/tmp/cleanyourtv/pulled-app.apk"),
+            ShellTokens.tokenize(ShellRenderer.copyRemoteApkToTmpLine(parsedPath!!, tmpApk).text),
+        )
+        assertEquals(
+            listOf("cat", "/data/app/~~AbCdEf==/org.xbmc.kodi-1234==/base.apk"),
+            ShellTokens.tokenize(ShellRenderer.catRemoteApkLine(parsedPath).text),
+        )
+    }
 }

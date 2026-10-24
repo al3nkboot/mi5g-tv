@@ -47,7 +47,7 @@ enum class Variant(val dark: Boolean, val fontScale: Float, val rtl: Boolean) {
     RTL(true, 1f, true),
 }
 
-class Shot(val name: String, val height: Dp = 780.dp, val content: @Composable () -> Unit) {
+class Shot(val name: String, val height: Dp = 860.dp, val content: @Composable () -> Unit) {
     override fun toString() = name
 }
 
