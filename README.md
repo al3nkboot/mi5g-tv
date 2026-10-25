@@ -10,9 +10,9 @@
 
 ---
 
-## 📥 التحميل المباشر (أحدث إصدار `v1.3.2`)
+## 📥 التحميل المباشر (أحدث إصدار `v1.4.0`)
 
-- **[تحميل تطبيق الهاتف Mi5G TV v1.3.2 (APK)](https://github.com/al3nkboot/mi5g-tv/releases/download/v1.3.2/mi5g-tv-1.3.2.apk)**
+- **[تحميل تطبيق الهاتف Mi5G TV v1.4.0 (APK)](https://github.com/al3nkboot/mi5g-tv/releases/download/v1.4.0/Mi5G-TV-v1.4.0.apk)**
 - **[صفحة جميع الإصدارات والوحدات الإضافية (Releases)](https://github.com/al3nkboot/mi5g-tv/releases/latest)**
 
 ---
@@ -46,7 +46,7 @@
    - يعرض لك التطبيق عدد عناصر الإعلانات والتتبع التي وجدها مع بقاء جميع تطبيقاتك الأساسية محمية.
    - اضغط **ابدأ التنظيف**، وسيحفظ التطبيق **نقطة استعادة تلقائية** أولاً ثم ينظف النظام ويثبّت الشاشة الرئيسية الهادئة.
 4. **استخدام الأدوات الذكية والإضافات:**
-   - من شاشة إدارة التلفاز يمكنك الدخول إلى **أدوات التحكم بالتلفاز** (لتسريع الرام وحركة القوائم، الريموت الدائري، وإرسال الروابط والصور والفيديو)، أو **مدير تطبيقات التلفاز** (لإدارة التطبيقات وسحب نسخ `APK` للهاتف)، أو **البطاقات والوحدات** (لتثبيت مانع الإعلانات ومواقيت الصلاة وقياس السرعة ومدير الملفات).
+   - من شاشة إدارة التلفاز يمكنك الدخول إلى **أدوات التحكم بالتلفاز** (لتسريع الرام وحركة القوائم، الريموت الدائري، وإرسال الروابط والصور والفيديو)، أو **مدير تطبيقات التلفاز** (لإدارة التطبيقات وسحب نسخ `APK` للهاتف)، أو **البطاقات والوحدات** (لتثبيت مانع الإعلانات ومواقيت الصلاة وقياس السرعة ومدير الملفات وبطاقة المباريات).
 
 ---
 
@@ -75,12 +75,13 @@
 - فتح أي تطبيق على التلفاز، إيقافه إجبارياً، مسح الكاش والبيانات، أو إلغاء تثبيته.
 - **سحب نسخة احتياطية (`Pull APK`):** استخراج ملف `APK` لأي تطبيق مثبت على التلفاز وحفظه مباشرة في ذاكرة هاتفك.
 
-### 6. 🧩 وحدات وتطبيقات عربية مدمجة للتلفاز (Modules)
+### 6. 🧩 وحدات وتطبيقات عربية مدمجة للتلفاز (5 Modules)
 تثبيت بضغطة زر واحدة من الهاتف بدون إنترنت:
 - **مانع الإعلانات والـ DNS العائلي (`AdGuard DNS`):** حجب الإعلانات والحماية العائلية على التلفاز.
 - **مواقيت الصلاة والطقس (`Prayer & Weather`):** مواقيت الصلاة اليومية وحالة الطقس للمدن العربية.
 - **قياس سرعة الإنترنت (`TV Speedtest`):** فحص سرعة التنزيل وزمن الاستجابة (`Ping`) وجودة بث `4K`.
 - **مدير ملفات التلفاز (`TV File Manager`):** تصفح مجلد التنزيلات والذاكرة وملفات `USB` بالريموت.
+- **بطاقة المباريات — فرقك المفضلة (`مباريات اليوم` / `tv-matches`):** نتائج ومواعيد مباريات اليوم والغد بالتوقيت المحلي مع فلترة الفرق والدوريات العربية والأوروبية المفضلة بالريموت.
 
 ---
 
@@ -106,6 +107,6 @@
 - **Debloat & Clean Home Screen:** Safely disables vendor bloatware and ad rows across 132+ verified TV profiles with a one-tap restore point.
 - **Speed Boost & Quick Cast:** Live RAM/storage monitor, cache trim + background force-stop, animation speed toggle (`0.5x` / `0x` / `1x`), URL/photo/video casting, and remote APK installer.
 - **Full TV App Manager:** Launch, Force Stop, Clear Cache/Data, Uninstall, and pull APK backups from TV to phone.
-- **Bundled TV Modules:** Built-in AdGuard DNS switcher, Prayer Times & Weather, TV Speedtest, and TV File Manager with full Android TV Leanback banner support.
+- **5 Bundled TV Modules:** Built-in AdGuard DNS switcher, Prayer Times & Weather, TV Speedtest, TV File Manager, and Today's Matches (`tv-matches`) with full Android TV Leanback banner support.
 
 See [LICENSE](LICENSE) and [THIRD-PARTY-NOTICES](THIRD-PARTY-NOTICES) for full license texts.

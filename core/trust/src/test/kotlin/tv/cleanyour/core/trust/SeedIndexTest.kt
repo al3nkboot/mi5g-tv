@@ -19,8 +19,8 @@ class SeedIndexTest {
     @Test fun seedVerifiesAgainstTheCompiledRoot() {
         val verdict = TrustRoots.indexVerifier().verify(index, indexSig, keys, keysSig, null, MinisignIndexVerifier.VERIFY_IGNORING_EXPIRY)
         val ok = verdict as? IndexVerdict.Ok ?: error("seed does not verify: $verdict")
-        assertEquals(4, ok.index.sequence)
-        assertEquals(listOf("adguard-dns", "prayer-weather", "tv-speedtest", "tv-files", "retro"), ok.index.modules.map { it.id })
+        assertEquals(5, ok.index.sequence)
+        assertEquals(listOf("adguard-dns", "prayer-weather", "tv-speedtest", "tv-files", "tv-matches", "retro"), ok.index.modules.map { it.id })
         val retro = ok.index.modules.first { it.id == "retro" }
         assertEquals("retro", retro.id)
         assertEquals(PackageName("io.github.udhaykumarbala.retro"), retro.pkg)

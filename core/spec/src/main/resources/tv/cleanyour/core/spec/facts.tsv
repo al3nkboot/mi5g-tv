@@ -472,6 +472,7 @@ com.mgmedia.androidApp	CHILI	Film rental and streaming app	streaming
 com.mi.bluetooth	Mi Bluetooth	Remote and Bluetooth pairing	system
 com.midroid.mi5gtv.dns	مانع الإعلانات	حجب الإعلانات والحماية العائلية على التلفاز	other
 com.midroid.mi5gtv.files	مدير الملفات	تصفح مجلد التنزيلات والذاكرة وملفات USB	other
+com.midroid.mi5gtv.matches	مباريات اليوم	نتائج ومواعيد مباريات اليوم والغد لفرقك المفضلة	other
 com.midroid.mi5gtv.prayer	الطقس والصلاة	مواقيت الصلاة وحالة الطقس للمدن العربية	other
 com.midroid.mi5gtv.speedtest	قياس السرعة	فحص سرعة الإنترنت وجودة بث 4K على التلفاز	other
 com.mitv.ABUpdateStatus	Update status	Shows the progress of a firmware update	updates

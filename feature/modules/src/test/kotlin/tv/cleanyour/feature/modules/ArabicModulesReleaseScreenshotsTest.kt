@@ -37,7 +37,7 @@ import tv.cleanyour.ui.design.theme.CytTheme
 
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-@Config(sdk = [35], qualifiers = "ar-rSA-ldrtl-w360dp-h1400dp-xhdpi")
+@Config(sdk = [35], qualifiers = "ar-rSA-ldrtl-w360dp-h1600dp-xhdpi")
 class ArabicModulesReleaseScreenshotsTest {
     @get:Rule val compose = createComposeRule()
     private var prevLocale: Locale = Locale.getDefault()
@@ -106,7 +106,7 @@ class ArabicModulesReleaseScreenshotsTest {
             compose.onNodeWithTag("shot").captureRoboImage(File(outDir, fileName))
         }
 
-        record("02_add_modules_catalog_ar.png", 1260.dp) {
+        record("02_add_modules_catalog_ar.png", 1460.dp) {
             AddScreen(state, {}, {})
         }
 

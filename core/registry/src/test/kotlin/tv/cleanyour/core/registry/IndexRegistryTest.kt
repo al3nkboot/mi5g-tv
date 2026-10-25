@@ -187,7 +187,7 @@ class IndexRegistryTest {
         val r = IndexRegistry(http, store, clock, seed, null, TrustRoots.indexVerifier())
         val s = r.restore() as IndexState.Ready
         assertEquals("io.github.udhaykumarbala.retro", r.module("retro")?.pkg?.value)
-        assertEquals(4, s.index.sequence)
-        assertEquals(5, s.index.modules.size)
+        assertEquals(5, s.index.sequence)
+        assertEquals(6, s.index.modules.size)
     }
 }

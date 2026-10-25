@@ -46,6 +46,7 @@ object AppNames {
         "com.midroid.mi5gtv.files" to "مدير الملفات",
         "com.midroid.mi5gtv.speedtest" to "قياس السرعة",
         "com.midroid.mi5gtv.dns" to "مانع الإعلانات",
+        "com.midroid.mi5gtv.matches" to "مباريات اليوم",
     )
 
     fun fromPackage(pkg: PackageName): String {

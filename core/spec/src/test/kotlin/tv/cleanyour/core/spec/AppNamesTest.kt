@@ -54,5 +54,6 @@ class AppNamesTest {
         assertEquals("مدير الملفات", name("com.midroid.mi5gtv.files"))
         assertEquals("قياس السرعة", name("com.midroid.mi5gtv.speedtest"))
         assertEquals("مانع الإعلانات", name("com.midroid.mi5gtv.dns"))
+        assertEquals("مباريات اليوم", name("com.midroid.mi5gtv.matches"))
     }
 }

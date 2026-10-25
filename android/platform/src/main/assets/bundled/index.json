@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "sequence": 4,
+  "sequence": 5,
   "generated": "2026-10-24T12:00:00Z",
   "expires": "2027-01-22T12:00:00Z",
   "modules": [
@@ -161,6 +161,48 @@
             }
           ],
           "network": "لا يتصل بالإنترنت إطلاقًا؛ يعمل محليًا بالكامل على التلفاز.",
+          "min_sdk": 26,
+          "abis": [
+            "armeabi-v7a",
+            "arm64-v8a",
+            "x86",
+            "x86_64"
+          ],
+          "post_install": []
+        }
+      ]
+    },
+    {
+      "id": "tv-matches",
+      "name": "بطاقة المباريات (فرقك المفضلة)",
+      "one_line": "نتائج ومواعيد مباريات اليوم والغد لفرقك ودورياتك المفضلة",
+      "description": "بطاقة وتطبيق رياضي مصمم لشاشة التلفاز والريموت يعرض نتائج ومواعيد مباريات اليوم والغد مباشرةً بالتوقيت المحلي، مع إمكانية اختيار فرقك ودورياتك المفضلة (دوري روشن السعودي، دوري أبطال أوروبا، الدوري الإنجليزي، الإسباني، الإيطالي، المصري، القطري، الإماراتي، ودوري أبطال آسيا) بضغطة زر.",
+      "package": "com.midroid.mi5gtv.matches",
+      "type": "card",
+      "tier": "verified",
+      "publisher": "al3nkboot",
+      "source": "https://github.com/al3nkboot/mi5g-tv",
+      "licence": "MIT",
+      "accent": "#10B981",
+      "artwork": null,
+      "versions": [
+        {
+          "version_code": 2,
+          "version_name": "1.1.0",
+          "released": "2026-10-25T10:30:00Z",
+          "apk": {
+            "url": "https://github.com/al3nkboot/mi5g-tv/releases/download/v1.4.0/tv-matches.apk",
+            "size": 90816,
+            "sha256": "a534d146c8222e38cbea184829ca364e4708385fead5fe520a5708c70e7c34af",
+            "signer_sha256": "c1f317965f154fe5e79fe7483abd5dd5dec7df57d87f3a645a5fd12f39a5480c"
+          },
+          "permissions": [
+            {
+              "permission": "android.permission.INTERNET",
+              "plain_words": "يجلب نتائج ومواعيد المباريات المباشرة للدوريات والفرق المختارة عبر اتصال HTTPS."
+            }
+          ],
+          "network": "يتصل بواجهة نتائج المباريات عبر HTTPS عند التحديث، ويعمل أيضًا بدون إنترنت عبر جدول محلي مدمج.",
           "min_sdk": 26,
           "abis": [
             "armeabi-v7a",
