@@ -140,6 +140,9 @@
     <string name="appsettings_update_open">Open the release page</string>
     <string name="appsettings_up_to_date">You have the latest version</string>
     <string name="appsettings_update_error">Couldn\'t check for updates</string>
+    <string name="appsettings_support_paypal">Support on PayPal (@Midroid5G)</string>
+    <string name="appsettings_support_paypal_note">paypal.me/Midroid5G · Support free, ad-free development</string>
+    <string name="appsettings_developer_x">Developer on X (@midroid5G)</string>
     <string name="appsettings_licences">Licences</string>
     <string name="appsettings_licence_app">Clean Your TV: GPL-3.0-or-later</string>
     <string name="appsettings_licence_font">Outfit typeface: SIL Open Font Licence 1.1</string>

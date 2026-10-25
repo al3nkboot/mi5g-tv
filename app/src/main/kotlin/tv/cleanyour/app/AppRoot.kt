@@ -339,8 +339,12 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
                     val state by m.state.collectAsStateWithLifecycle()
                     LaunchedEffect(m) { m.effects.collect { onManageEffect(it) } }
                     SecureWindow(state.confirm == AppConfirm.RESET_KEY)
-                    AppSettingsScreen(state, m::dispatch, onBack = { go("back") },
-                        onOpenRelease = { graph.store.releasePage?.let { url -> scope.launch { onManageEffect(ManageEffect.OpenUrl(url)) } } })
+                    AppSettingsScreen(
+                        state, m::dispatch, onBack = { go("back") },
+                        onOpenRelease = { graph.store.releasePage?.let { url -> scope.launch { onManageEffect(ManageEffect.OpenUrl(url)) } } },
+                        onSupportPayPal = { scope.launch { onManageEffect(ManageEffect.OpenUrl("https://paypal.me/Midroid5G")) } },
+                        onOpenDeveloper = { scope.launch { onManageEffect(ManageEffect.OpenUrl("https://x.com/midroid5G")) } },
+                    )
                 }
             },
         )

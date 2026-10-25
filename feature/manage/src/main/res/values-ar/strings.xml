@@ -135,6 +135,9 @@
     <string name="appsettings_update_open">فتح صفحة الإصدار</string>
     <string name="appsettings_up_to_date">لديك أحدث إصدار</string>
     <string name="appsettings_update_error">تعذّر التحقق من التحديثات</string>
+    <string name="appsettings_support_paypal">دعم المطور عبر PayPal</string>
+    <string name="appsettings_support_paypal_note">paypal.me/Midroid5G · للمساهمة في استمرار تطوير التطبيق مجانًا وبدون إعلانات</string>
+    <string name="appsettings_developer_x">حساب المطور على X (@midroid5G)</string>
     <string name="appsettings_licences">التراخيص</string>
     <string name="appsettings_licence_app">Mi5G TV (مبني على Clean Your TV): ترخيص MIT</string>
     <string name="appsettings_licence_font">خط Outfit: ترخيص SIL Open Font Licence 1.1</string>

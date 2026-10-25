@@ -5,6 +5,8 @@
 [![Latest Release](https://img.shields.io/github/v/release/al3nkboot/mi5g-tv?label=Release&color=14998E)](https://github.com/al3nkboot/mi5g-tv/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Android](https://img.shields.io/badge/Android-8.0%2B-3DDC84)](https://github.com/al3nkboot/mi5g-tv/releases/latest)
+[![PayPal Support](https://img.shields.io/badge/PayPal-Midroid5G-00457C?logo=paypal&logoColor=white)](https://paypal.me/Midroid5G)
+[![X @midroid5G](https://img.shields.io/badge/X-%40midroid5G-000000?logo=x&logoColor=white)](https://x.com/midroid5G)
 
 **Mi5G TV** (`com.midroid.mi5gtv`) هو تطبيق أندرويد متكامل باللغة العربية لتنظيف وتسريع شاشات وأجهزة **Android TV** و **Google TV** و **Fire TV** عبر شبكة الـ Wi-Fi من هاتفك مباشرةً بدون روت، مع ريموت تحكم متكامل، مدير تطبيقات، وإضافات ذكية مصممة للتلفاز.
 
@@ -91,6 +93,13 @@
 
 ---
 
+## 💙 دعم استمرارية تطوير التطبيق (Support Development)
+إذا أعجبك التطبيق واستفدت منه، يمكنك دعم المطور **أحمد الأسد (`@midroid5G`)** للمساهمة في استمرار تطوير التطبيق وتحديثه مجاناً وبدون إعلانات:
+- **PayPal:** [**paypal.me/Midroid5G**](https://paypal.me/Midroid5G) (`@Midroid5G`)
+- **حساب X (تويتر):** [**@midroid5G**](https://x.com/midroid5G)
+
+---
+
 ## 🙏 شكر وتقدير (Credits)
 هذا التطبيق مبني على المشروعين المفتوحي المصدر بترخيص MIT:
 - **[Clean Your TV (phone app)](https://github.com/udhaykumarbala/cleanyourtv-app)** من تطوير **udhaykumarbala** والمساهمين.
@@ -108,5 +117,7 @@
 - **Speed Boost & Quick Cast:** Live RAM/storage monitor, cache trim + background force-stop, animation speed toggle (`0.5x` / `0x` / `1x`), URL/photo/video casting, and remote APK installer.
 - **Full TV App Manager:** Launch, Force Stop, Clear Cache/Data, Uninstall, and pull APK backups from TV to phone.
 - **5 Bundled TV Modules:** Built-in AdGuard DNS switcher, Prayer Times & Weather, TV Speedtest, TV File Manager, and Today's Matches (`tv-matches`) with full Android TV Leanback banner support.
+
+- **Support Development:** [PayPal (@Midroid5G)](https://paypal.me/Midroid5G) · [@midroid5G on X](https://x.com/midroid5G)
 
 See [LICENSE](LICENSE) and [THIRD-PARTY-NOTICES](THIRD-PARTY-NOTICES) for full license texts.

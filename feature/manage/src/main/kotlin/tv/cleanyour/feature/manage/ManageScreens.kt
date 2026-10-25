@@ -408,7 +408,15 @@ internal fun ColumnScope.ForgetContent(tvName: String, onIntent: (TvSettingsInte
 
 // M8 App settings (D12, F2, F13). The Reset my key confirmation is FLAG_SECURE (D35, set by the app).
 @Composable
-fun AppSettingsScreen(state: AppSettingsState, onIntent: (AppSettingsIntent) -> Unit, onBack: () -> Unit, onOpenRelease: () -> Unit, modifier: Modifier = Modifier) {
+fun AppSettingsScreen(
+    state: AppSettingsState,
+    onIntent: (AppSettingsIntent) -> Unit,
+    onBack: () -> Unit,
+    onOpenRelease: () -> Unit,
+    modifier: Modifier = Modifier,
+    onSupportPayPal: (() -> Unit)? = null,
+    onOpenDeveloper: (() -> Unit)? = null,
+) {
     var licences by rememberSaveable { mutableStateOf(false) }
     var privacy by rememberSaveable { mutableStateOf(false) }
     ScreenScaffold(Glow.Tv, modifier, topBar = { CytTopBar(onBack = onBack) }) {
@@ -451,6 +459,22 @@ fun AppSettingsScreen(state: AppSettingsState, onIntent: (AppSettingsIntent) -> 
             }
         }
         ListGroup(Modifier.padding(top = 12.dp)) {
+            if (onSupportPayPal != null) {
+                ListRow(
+                    stringResource(R.string.appsettings_support_paypal),
+                    subtitle = stringResource(R.string.appsettings_support_paypal_note),
+                    onClick = onSupportPayPal,
+                )
+                ListDivider()
+            }
+            if (onOpenDeveloper != null) {
+                ListRow(
+                    stringResource(R.string.appsettings_developer_x),
+                    subtitle = "x.com/midroid5G",
+                    onClick = onOpenDeveloper,
+                )
+                ListDivider()
+            }
             ListRow(stringResource(R.string.appsettings_licences), onClick = { licences = true })
             ListDivider()
             ListRow(stringResource(R.string.appsettings_privacy), onClick = { privacy = true })
