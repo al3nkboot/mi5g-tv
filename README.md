@@ -1,25 +1,76 @@
 <div dir="rtl" align="right">
 
-# Mi5G TV (منظف التلفاز)
+# 📺 Mi5G TV — منظف وأدوات التحكم الذكية لأجهزة Android TV و Google TV
 
-تطبيق أندرويد باللغة العربية لتنظيف أجهزة Android TV و Google TV و Fire TV من الإعلانات والتطبيقات المزعجة، وتثبيت شاشة رئيسية هادئة ونظيفة خلال دقائق عبر شبكة Wi-Fi، مع حفظ نقطة استعادة كاملة للتراجع عن أي تغيير متى شئت.
+[![Latest Release](https://img.shields.io/github/v/release/al3nkboot/mi5g-tv?label=Release&color=14998E)](https://github.com/al3nkboot/mi5g-tv/releases/latest)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Android](https://img.shields.io/badge/Android-8.0%2B-3DDC84)](https://github.com/al3nkboot/mi5g-tv/releases/latest)
 
-- **الحزمة:** `com.midroid.mi5gtv`
-- **الإصدار الحالي:** `1.0.0` (`versionCode 1`)
-- **الترخيص:** MIT
-- **التحميل:** [أحدث إصدار من صفحة الإصدارات](https://github.com/al3nkboot/mi5g-tv/releases/latest)
+**Mi5G TV** (`com.midroid.mi5gtv`) هو تطبيق أندرويد متكامل باللغة العربية لتنظيف وتسريع شاشات وأجهزة **Android TV** و **Google TV** و **Fire TV** عبر شبكة الـ Wi-Fi من هاتفك مباشرةً بدون روت، مع ريموت تحكم متكامل، مدير تطبيقات، وإضافات ذكية مصممة للتلفاز.
 
-## المميزات الرئيسية
+---
 
-1. **واجهة عربية كاملة (RTL):** مصمم باللغة العربية افتراضيًا مع شرح واضح خطوة بخطوة لكل شاشة.
-2. **إيقاف الإعلانات والفوضى بأمان:** يعطّل تطبيقات الإعلانات والتتبع والعروض الترويجية للمصنّع دون حذف أي شيء، مع إبقاء جميع تطبيقاتك التي تستخدمها.
-3. **شاشة رئيسية نظيفة وهادئة:** يثبّت شاشة Clean Your TV الرئيسية المدمجة والموثقة رقميًا مع شريط تطبيقات سريع قابل للتخصيص.
-4. **نقطة استعادة تلقائية وحارس أمان:** يحفظ نسخة احتياطية قبل أي خطوة، ويعيد الشاشة القديمة تلقائيًا إذا لم تؤكد رؤيتها على التلفاز، مع إمكانية التراجع الكامل بضغطة واحدة من الهاتف.
-5. **خصوصية تامة:** يتصل التطبيق بتلفازك مباشرة عبر الشبكة المحلية (ADB over Wi-Fi) ولا يجمع أي بيانات أو تحليلات.
+## 📥 التحميل المباشر (أحدث إصدار `v1.3.2`)
 
-## شكر وتقدير
+- **[تحميل تطبيق الهاتف Mi5G TV v1.3.2 (APK)](https://github.com/al3nkboot/mi5g-tv/releases/download/v1.3.2/mi5g-tv-1.3.2.apk)**
+- **[صفحة جميع الإصدارات والوحدات الإضافية (Releases)](https://github.com/al3nkboot/mi5g-tv/releases/latest)**
 
-هذا التطبيق مبني على المشروعين المفتوحي المصدر التاليين بترخيص MIT:
+---
+
+## 📸 لقطات من التطبيق
+
+| الصفحة الرئيسية وإدارة التلفاز | تسريع التلفاز والريموت وإرسال الوسائط |
+| :---: | :---: |
+| <img src="docs/screenshots/01_manage_home.png" width="320" alt="الصفحة الرئيسية وإدارة التلفاز" /> | <img src="docs/screenshots/02_tools_and_remote.png" width="320" alt="أدوات التحكم بالتلفاز والريموت" /> |
+
+| مدير تطبيقات التلفاز وسحب APK | متجر البطاقات والوحدات المدمجة |
+| :---: | :---: |
+| <img src="docs/screenshots/03_app_manager.png" width="320" alt="مدير تطبيقات التلفاز" /> | <img src="docs/screenshots/04_modules_catalog.png" width="320" alt="البطاقات والوحدات" /> |
+
+---
+
+## ✨ أبرز المميزات
+
+### 1. 🧹 تنظيف التلفاز وإيقاف الإعلانات بأمان
+- إيقاف تطبيقات الإعلانات والتتبع والعروض الترويجية المدمجة في النظام بدون حذف أي بيانات، مع دعم أكثر من **132 ملف تعريف رسمي** لمختلف ماركات الشاشات (Sony, TCL, Xiaomi Mi TV, Hisense, Philips, Thomson/Kodak, Chromecast وغيرها).
+- **نقطة استعادة تلقائية:** يحفظ التطبيق نسخة احتياطية كاملة قبل أي تعديل، لتتمكن من استرجاع حالة المصنع بضغطة زر واحدة متى شئت.
+
+### 2. 🏠 شاشة رئيسية نظيفة ودعم منصات البث العربية
+- تثبيت شاشة رئيسية خفيفة وسريعة خالية من الإعلانات مع شريط تطبيقات قابل للتخصيص.
+- تعرف تلقائي وحماية كاملة لتطبيقات البث العربية والعالمية (**شاهد Shahid، TOD، stc tv، STARZPLAY، OSN+، WATCH IT، Yango Play، الأولى، أوان، أنغامي، beIN CONNECT، YouTube، Netflix**).
+
+### 3. ⚡ تسريع التلفاز وتنظيف الذاكرة (Speed Boost)
+- عرض استهلاك الذاكرة العشوائية (`RAM`) والمساحة التخزينية للتلفاز بشكل لحظي.
+- تنظيف الملفات المؤقتة (`Cache`) وإغلاق التطبيقات العالقة في الخلفية بضغطة واحدة.
+- التحكم بسرعة حركة القوائم في التلفاز (`سريع 0.5x`، `فوري 0x`، أو `افتراضي 1x`) لزيادة سلاسة التنقل بالريموت.
+
+### 4. 🎮 ريموت تحكم متكامل وإرسال الروابط والوسائط (Quick Cast)
+- **ريموت دائري واقعي (`D-Pad`):** تحكم كامل بالاتجاهات، الصوت، كتم الصوت، الطاقة، الإعدادات، وإرسال النصوص الطويلة من كيبورد الجوال إلى التلفاز فوراً.
+- **تصوير شاشة التلفاز:** التقاط صورة فورية لشاشة التلفاز وحفظها أو مشاركتها من الهاتف.
+- **إرسال الروابط والصور والفيديو:** فتح أي رابط على التلفاز أو عرض الصور والفيديوهات من جوالك على شاشة التلفاز مباشرة، مع إمكانية تثبيت ملفات `APK` عن بُعد.
+
+### 5. 📦 مدير تطبيقات التلفاز الكامل (TV App Manager)
+- استعراض جميع تطبيقات التلفاز مع البحث والفلترة (`تطبيقاتي` / `الكل`).
+- فتح أي تطبيق على التلفاز، إيقافه إجبارياً، مسح الكاش والبيانات، أو إلغاء تثبيته.
+- **سحب نسخة احتياطية (`Pull APK`):** استخراج ملف `APK` لأي تطبيق مثبت على التلفاز وحفظه مباشرة في ذاكرة هاتفك.
+
+### 6. 🧩 وحدات وتطبيقات عربية مدمجة للتلفاز (Modules)
+تثبيت بضغطة زر واحدة من الهاتف بدون إنترنت:
+- **مانع الإعلانات والـ DNS العائلي (`AdGuard DNS`):** حجب الإعلانات والحماية العائلية على التلفاز.
+- **مواقيت الصلاة والطقس (`Prayer & Weather`):** مواقيت الصلاة اليومية وحالة الطقس للمدن العربية.
+- **قياس سرعة الإنترنت (`TV Speedtest`):** فحص سرعة التنزيل وزمن الاستجابة (`Ping`) وجودة بث `4K`.
+- **مدير ملفات التلفاز (`TV File Manager`):** تصفح مجلد التنزيلات والذاكرة وملفات `USB` بالريموت.
+
+---
+
+## 🔒 الخصوصية والأمان
+- يتصل التطبيق بتلفازك محلياً عبر شبكة الـ Wi-Fi فقط (`ADB over Wi-Fi`).
+- لا يجمع أي بيانات شخصية، ولا يحتوي على أي إعلانات أو أدوات تتبع.
+
+---
+
+## 🙏 شكر وتقدير (Credits)
+هذا التطبيق مبني على المشروعين المفتوحي المصدر بترخيص MIT:
 - **[Clean Your TV (phone app)](https://github.com/udhaykumarbala/cleanyourtv-app)** من تطوير **udhaykumarbala** والمساهمين.
 - **[Clean Your TV](https://github.com/Gathin23/cleanyourtv)** (مشروع الشاشة الرئيسية وقوائم التنظيف المجتمعية) من تطوير **Gathin** والمساهمين.
 
@@ -27,14 +78,13 @@
 
 ---
 
-# Mi5G TV
+# Mi5G TV (English Overview)
 
-**Mi5G TV** (`com.midroid.mi5gtv`) is an Arabic-first Android phone app for cleaning up Android TV, Google TV, and Fire TV devices over Wi-Fi. It switches off vendor bloatware and ad rows, sets up a calm home screen, and keeps a full restore point so every change can be undone at any time.
+**Mi5G TV** (`com.midroid.mi5gtv`) is an Arabic-first Android TV & Google TV cleaner, remote toolkit, and app manager over Wi-Fi (ADB).
 
-## Credits & Attribution
-
-Mi5G TV is built on top of:
-- **[Clean Your TV (phone app)](https://github.com/udhaykumarbala/cleanyourtv-app)** by **udhaykumarbala** and contributors (MIT License).
-- **[Clean Your TV](https://github.com/Gathin23/cleanyourtv)** launcher and community debloat profiles by **Gathin** and contributors (MIT License).
+- **Debloat & Clean Home Screen:** Safely disables vendor bloatware and ad rows across 132+ verified TV profiles with a one-tap restore point.
+- **Speed Boost & Quick Cast:** Live RAM/storage monitor, cache trim + background force-stop, animation speed toggle (`0.5x` / `0x` / `1x`), URL/photo/video casting, and remote APK installer.
+- **Full TV App Manager:** Launch, Force Stop, Clear Cache/Data, Uninstall, and pull APK backups from TV to phone.
+- **Bundled TV Modules:** Built-in AdGuard DNS switcher, Prayer Times & Weather, TV Speedtest, and TV File Manager with full Android TV Leanback banner support.
 
 See [LICENSE](LICENSE) and [THIRD-PARTY-NOTICES](THIRD-PARTY-NOTICES) for full license texts.
