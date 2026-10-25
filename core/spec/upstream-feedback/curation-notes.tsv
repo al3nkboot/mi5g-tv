@@ -436,6 +436,7 @@ thomson-32he5800	(match)	a TCL-built UnionTV sold as Thomson; if the TV reports 
 thomson-32he5800	(match)	brand inferred, confirm with getprop: Thomson; a wrong guess fails closed (the profile never matches)
 thomson-32he5800	com.tcl.appmarket2	TCL's app store, carries a package installer service; ask row
 thomson-32he5800	com.tcl.tvweishi	the header says it has its own installer; ask row
+thomson-kodak-ledtvuhd	(match)	SPPL Thomson/Kodak PATH_UHDXANDROID (LEDTVUHD) on Android TV 9 (SDK 28); matches brand THOMSON_KODAK and fingerprint prefix THOMSON_KODAK/LEDTVUHD/LEDTVUHD:9/
 thomson-t32rtl6000	(header)	the kept remote, key and tuner packages and the FastCast Miracast receiver are in the curated never-disable list, with names as on sanyo-atv-r2
 thomson-t32rtl6000	(match)	SCBC Realtek platform reporting model ATV R1 and device R1; brand THOMSON and the build prefix from the fingerprint keep it to this firmware; thomson-32he5800 is a TCL UnionTV build with another device
 thomson-t32rtl6000	com.apps.authota	the updater's companion; updaters stay Software updates

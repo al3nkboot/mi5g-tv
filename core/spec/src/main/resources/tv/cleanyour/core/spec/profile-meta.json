@@ -2936,6 +2936,25 @@
         "com.google.android.speech.pumpkin": { "category": "voice", "ask": true }
       }
     },
+    "thomson-kodak-ledtvuhd": {
+      "match": { "models": ["PATH_UHDXANDROID"], "devices": ["LEDTVUHD"], "brand": "THOMSON_KODAK", "sdkMin": 28, "sdkMax": 28, "fingerprintPrefix": "THOMSON_KODAK/LEDTVUHD/LEDTVUHD:9/" },
+      "platform": "ANDROID_TV",
+      "stockLaunchers": ["com.google.android.tvlauncher", "com.google.android.leanbacklauncher"],
+      "liveTv": "com.android.tv",
+      "setupWraith": null,
+      "quirks": [],
+      "neverDisable": ["com.android.tv", "com.mediatek.wwtv.tvcenter", "com.google.android.leanbacklauncher.partnercustomizer"],
+      "suggestedDock": [],
+      "tested": { "by": "tabrezmulla81", "firmware": "PI/20210607", "daysLivedWith": null, "rebootTested": false },
+      "groups": {
+        "Content, ads and recommendation rows": { "category": "ads", "ask": false },
+        "Telemetry and analytics": { "category": "tracking", "ask": false },
+        "Preloaded apps": { "category": "preloads", "ask": false },
+        "Retail demo mode (optional)": { "category": "demo", "ask": true },
+        "Voice assistant (optional)": { "category": "voice", "ask": true }
+      },
+      "packages": {}
+    },
     "thomson-t32rtl6000": {
       "match": { "models": ["ATV R1"], "devices": ["R1"], "brand": "Thomson", "sdkMin": 28, "sdkMax": 28, "fingerprintPrefix": "THOMSON/THOMSON/R1:9/PTT1.210114.001/" },
       "platform": "ANDROID_TV",

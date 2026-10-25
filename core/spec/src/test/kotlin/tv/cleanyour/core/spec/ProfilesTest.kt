@@ -24,8 +24,8 @@ class ProfilesTest {
     private fun profile(folder: String) = DebloatTxtParser.parse(examples.first { it.folder == folder }.debloatTxt, folder)
 
     @Test fun everyConvertedUpstreamExampleParsesWithCuratedMetadata() {
-        assertEquals(147, upstream.size)
-        assertEquals(131, examples.size)
+        assertEquals(148, upstream.size)
+        assertEquals(132, examples.size)
         for (e in examples) {
             val profile = DebloatTxtParser.parse(e.debloatTxt, e.folder)
             assertEquals(e.folder, profile.id)
@@ -365,6 +365,20 @@ class ProfilesTest {
         assertEquals(ProfileResolution.None(KnownLaunchers.generic), other)
         // A wrong brand never takes another brand's exact profile.
         assertTrue(source.resolve(mi.copy(brand = "Acme", manufacturer = "Acme")) is ProfileResolution.None)
+
+        // Thomson/Kodak 4K Android TV (SPPL PATH_UHDXANDROID / LEDTVUHD, SDK 28) reported by @tabrezmulla81
+        val thomsonKodak = source.resolve(
+            mi.copy(
+                brand = "THOMSON_KODAK",
+                manufacturer = "SPPL",
+                model = "PATH_UHDXANDROID",
+                device = "LEDTVUHD",
+                sdk = 28,
+                release = "9",
+                fingerprint = "THOMSON_KODAK/LEDTVUHD/LEDTVUHD:9/PI/20210607:user/release-keys",
+            ),
+        )
+        assertTrue(thomsonKodak is ProfileResolution.Exact && thomsonKodak.profile.id == "thomson-kodak-ledtvuhd", thomsonKodak.toString())
     }
 
     @Test fun dockRanking() {

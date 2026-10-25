@@ -1,0 +1,29 @@
+# Thomson / Kodak 4K Android TV (manufacturer SPPL, model PATH_UHDXANDROID, device LEDTVUHD),
+# Android TV 9 (SDK 28), build PI/20210607.
+# Fingerprint: THOMSON_KODAK/LEDTVUHD/LEDTVUHD:9/PI/20210607:user/release-keys
+#
+# Stock launcher: com.google.android.tvlauncher / com.google.android.leanbacklauncher
+# Live TV app: com.android.tv / com.mediatek.wwtv.tvcenter
+# Kept on purpose: Google Play Services, Play Store, Chromecast (com.google.android.apps.mediashell),
+#   Live TV / HDMI input service, Bluetooth remote pairing, and system keyboard.
+
+# Content, ads and recommendation rows
+com.google.android.tvrecommendations                # Home screen recommendation ad service
+com.google.android.leanbacklauncher.recommendations # Leanback recommendation rows
+
+# Telemetry and analytics
+com.google.android.feedback                         # Google feedback agent
+com.google.android.tv.bugreportsender               # Bug report uploader
+com.google.android.partnersetup                     # Partner attribution service
+
+# Preloaded apps
+com.google.android.play.games                       # Google Play Games
+com.google.android.music                            # Google Play Music (discontinued)
+com.google.android.videos                           # Google Play Movies & TV
+
+# Retail demo mode (optional)
+fusion.android.tv.demo                              # In-store retail demo app
+
+# Voice assistant (optional)
+com.google.android.katniss                          # Google Assistant voice search
+com.google.android.speech.pumpkin                   # Voice command parser
