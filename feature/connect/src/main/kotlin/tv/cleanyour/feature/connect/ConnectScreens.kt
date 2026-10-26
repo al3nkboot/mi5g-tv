@@ -307,10 +307,38 @@ private fun StepsContent(state: SetupState.OpenDoor, actions: SetupActions, name
     if (stillWaiting) TertiaryButton(stringResource(R.string.door_still_waiting_show_me), { page = 1 })
     Body(note, Modifier.padding(start = 4.dp, top = 16.dp))
     Body(stringResource(R.string.door_same_wifi), Modifier.padding(start = 4.dp, top = 8.dp))
+    var showTizenGuide by rememberSaveable { mutableStateOf(false) }
+    var showChineseGuide by rememberSaveable { mutableStateOf(false) }
     TertiaryButton(
         if (name != null) msg(R.string.door_change_model, "model" to name) else stringResource(R.string.door_change_model_generic), onBrands,
         Modifier.padding(top = 4.dp),
     )
+    TertiaryButton(
+        stringResource(R.string.door_tizen_webos_btn),
+        { showTizenGuide = true },
+        Modifier.padding(top = 4.dp),
+    )
+    TertiaryButton(
+        stringResource(R.string.door_chinese_tv_btn),
+        { showChineseGuide = true },
+        Modifier.padding(top = 4.dp),
+    )
+    if (showTizenGuide) {
+        CytBottomSheet({ showTizenGuide = false }) {
+            SheetHeader(stringResource(R.string.door_tizen_webos_title))
+            Body(stringResource(R.string.door_tizen_webos_body), Modifier.padding(top = 12.dp))
+            MonospaceBlock(listOf("DNS 1: 94.140.14.14", "DNS 2: 94.140.15.15"), Modifier.padding(top = 12.dp))
+            PrimaryButton(stringResource(R.string.action_ok), { showTizenGuide = false }, Modifier.padding(top = 16.dp))
+        }
+    }
+    if (showChineseGuide) {
+        CytBottomSheet({ showChineseGuide = false }) {
+            SheetHeader(stringResource(R.string.door_chinese_tv_title))
+            Body(stringResource(R.string.door_chinese_tv_body), Modifier.padding(top = 12.dp))
+            MonospaceBlock(listOf("Menu + 2580", "Source + 2580", "Menu + 1147", "Home + 1999"), Modifier.padding(top = 12.dp))
+            PrimaryButton(stringResource(R.string.action_ok), { showChineseGuide = false }, Modifier.padding(top = 16.dp))
+        }
+    }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -380,18 +408,51 @@ internal fun NotSeenContent(retries: Int, onAsk: () -> Unit) {
     }
 }
 
-// S2x: the 0.1 dead end for pairing-only TVs (D9).
+// S2x: Interactive Wireless Debugging Pairing + quick ADB tcpip helper (v1.5.0).
 @Composable
 fun PairingScreen(state: SetupState.PairingNeeded, extras: SetupExtras, actions: SetupActions, modifier: Modifier = Modifier) {
     var steps by rememberSaveable { mutableStateOf(false) }
+    var pairPort by rememberSaveable(state.tv.host) { mutableStateOf("") }
+    var pairCode by rememberSaveable(state.tv.host) { mutableStateOf("") }
+    val host = state.tv.host.ifBlank { "192.168.1.50" }
+    val portDisplay = pairPort.ifBlank { "37123" }
+    val codeDisplay = pairCode.ifBlank { "123456" }
     ScreenScaffold(Glow.Tv, modifier, topBar = { CytTopBar(onBack = { actions.back() }) }) {
-        // "Show me" opens a sheet, "Back" goes back: neither acts on the TV, so neither is guarded.
         StopCard(
             stringResource(R.string.pairing_title), stringResource(R.string.pairing_body), Modifier.padding(top = 20.dp),
             primaryLabel = stringResource(R.string.pairing_show_steps), onPrimary = { steps = true },
             secondaryLabel = stringResource(R.string.action_back), onSecondary = { actions.back() },
             primaryGuarded = false,
         )
+        CytTextField(
+            value = pairPort,
+            onValueChange = { pairPort = it.filter(Char::isDigit).take(5) },
+            label = stringResource(R.string.pairing_port_label),
+            modifier = Modifier.padding(top = 16.dp),
+            keyboardType = KeyboardType.Number,
+        )
+        CytTextField(
+            value = pairCode,
+            onValueChange = { pairCode = it.filter(Char::isDigit).take(6) },
+            label = stringResource(R.string.pairing_code_label),
+            modifier = Modifier.padding(top = 12.dp),
+            keyboardType = KeyboardType.Number,
+        )
+        MonospaceBlock(
+            listOf(
+                "adb pair $host:$portDisplay $codeDisplay",
+                "adb connect $host:5555",
+                "adb tcpip 5555",
+            ),
+            Modifier.padding(top = 12.dp),
+        )
+        PrimaryButton(
+            stringResource(R.string.pairing_connect_now),
+            { actions.intent(SetupIntent.EnterAddress(host)) },
+            Modifier.padding(top = 16.dp),
+            guardObscured = false,
+        )
+        Gap(24.dp)
     }
     if (steps) CytBottomSheet({ steps = false }) { PairingStepsContent() }
 }

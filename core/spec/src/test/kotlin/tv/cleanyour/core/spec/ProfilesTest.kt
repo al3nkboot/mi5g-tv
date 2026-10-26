@@ -24,8 +24,8 @@ class ProfilesTest {
     private fun profile(folder: String) = DebloatTxtParser.parse(examples.first { it.folder == folder }.debloatTxt, folder)
 
     @Test fun everyConvertedUpstreamExampleParsesWithCuratedMetadata() {
-        assertEquals(148, upstream.size)
-        assertEquals(132, examples.size)
+        assertEquals(154, upstream.size)
+        assertEquals(138, examples.size)
         for (e in examples) {
             val profile = DebloatTxtParser.parse(e.debloatTxt, e.folder)
             assertEquals(e.folder, profile.id)

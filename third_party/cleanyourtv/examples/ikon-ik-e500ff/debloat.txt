@@ -1,0 +1,27 @@
+# Ikon Smart TV IK-E500FF (Android TV 9 / 11, SDK 28-30).
+# Fingerprint: IKON/ike500ff/ike500ff:9/PI/release-keys
+#
+# Stock launcher: com.google.android.tvlauncher / com.google.android.leanbacklauncher
+# Live TV app: com.android.tv
+# Kept on purpose: Google Play Services, Play Store, Chromecast, Live TV / HDMI input, Bluetooth remote.
+
+# Content, ads and recommendation rows
+com.google.android.tvrecommendations                # Home screen recommendation ad service
+com.google.android.leanbacklauncher.recommendations # Leanback recommendation rows
+
+# Telemetry and analytics
+com.google.android.feedback                         # Google feedback agent
+com.google.android.tv.bugreportsender               # Bug report uploader
+com.google.android.partnersetup                     # Partner attribution service
+
+# Preloaded apps
+com.google.android.play.games                       # Google Play Games
+com.google.android.music                            # Google Play Music (discontinued)
+com.google.android.videos                           # Google Play Movies & TV
+
+# Retail demo mode (optional)
+fusion.android.tv.demo                              # In-store retail demo app
+
+# Voice assistant (optional)
+com.google.android.katniss                          # Google Assistant voice search
+com.google.android.speech.pumpkin                   # Voice command parser

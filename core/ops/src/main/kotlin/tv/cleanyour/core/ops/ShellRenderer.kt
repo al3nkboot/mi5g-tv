@@ -546,6 +546,113 @@ class ShellRenderer(private val watchdogVariant: WatchdogVariant = WatchdogVaria
             require(REMOTE_APK_PATH_RE.matches(remoteApkPath) && !remoteApkPath.contains("..")) { "invalid remote APK path" }
             return ShellLine(ShellTokens.line(listOf("cat", remoteApkPath)))
         }
+
+        fun listSystemPackagesLine(): ShellLine =
+            ShellLine(ShellTokens.line(listOf(PM, "list", "packages", "-s")))
+
+        fun launchLeanbackPackageLine(pkg: PackageName): ShellLine {
+            require(PACKAGE_RE.matches(pkg.value) && pkg.value != Denylist.FRAMEWORK) { "invalid package ${pkg.value}" }
+            return ShellLine(ShellTokens.line(listOf("monkey", "-p", pkg.value, "-c", "android.intent.category.LEANBACK_LAUNCHER", "1")))
+        }
+
+        fun restrictBackgroundLines(pkg: PackageName): List<ShellLine> {
+            require(PACKAGE_RE.matches(pkg.value) && !isForceStopProtected(pkg)) {
+                "cannot restrict background of protected package ${pkg.value}"
+            }
+            return listOf(
+                ShellLine(ShellTokens.line(listOf(CMD, "appops", "set", pkg.value, "RUN_IN_BACKGROUND", "ignore"))),
+                ShellLine(ShellTokens.line(listOf(CMD, "appops", "set", pkg.value, "WAKE_LOCK", "ignore"))),
+                ShellLine(ShellTokens.line(listOf(CMD, "appops", "set", pkg.value, "RUN_ANY_IN_BACKGROUND", "ignore"))),
+            )
+        }
+
+        fun disableUserPackageLine(pkg: PackageName): ShellLine {
+            require(PACKAGE_RE.matches(pkg.value) && !isForceStopProtected(pkg) && Denylist.staticReason(pkg.value) == null) {
+                "cannot disable protected package ${pkg.value}"
+            }
+            return ShellLine(ShellTokens.line(listOf(PM, "disable-user", USER, "0", pkg.value)))
+        }
+
+        fun enableUserPackageLines(pkg: PackageName): List<ShellLine> {
+            require(PACKAGE_RE.matches(pkg.value) && pkg.value != Denylist.FRAMEWORK) { "invalid package ${pkg.value}" }
+            return listOf(
+                ShellLine(ShellTokens.line(listOf(CMD, "package", "install-existing", pkg.value))),
+                ShellLine(ShellTokens.line(listOf(PM, "enable", USER, "0", pkg.value))),
+            )
+        }
+
+        fun uninstallKeepDataUserPackageLine(pkg: PackageName): ShellLine {
+            require(PACKAGE_RE.matches(pkg.value) && !isForceStopProtected(pkg) && Denylist.staticReason(pkg.value) == null) {
+                "cannot uninstall protected package ${pkg.value}"
+            }
+            return ShellLine(ShellTokens.line(listOf(PM, "uninstall", "-k", USER, "0", pkg.value)))
+        }
+
+        fun forceLandscapeLines(): List<ShellLine> = listOf(
+            ShellLine(ShellTokens.line(listOf(SETTINGS, "put", "system", "accelerometer_rotation", "0"))),
+            ShellLine(ShellTokens.line(listOf(SETTINGS, "put", "system", "user_rotation", "1"))),
+            ShellLine(ShellTokens.line(listOf("wm", "set-fix-to-user-rotation", "enabled"))),
+        )
+
+        fun autoRotationLines(): List<ShellLine> = listOf(
+            ShellLine(ShellTokens.line(listOf("wm", "set-fix-to-user-rotation", "default"))),
+            ShellLine(ShellTokens.line(listOf(SETTINGS, "put", "system", "user_rotation", "0"))),
+            ShellLine(ShellTokens.line(listOf(SETTINGS, "put", "system", "accelerometer_rotation", "1"))),
+        )
+
+        fun startScreensaverLines(): List<ShellLine> = listOf(
+            ShellLine(ShellTokens.line(listOf(SETTINGS, "put", "secure", "screensaver_enabled", "1"))),
+            ShellLine(ShellTokens.line(listOf(CMD, "dreams", "start-dreaming"))),
+        )
+
+        fun quietNightVolumeLine(): ShellLine =
+            ShellLine(ShellTokens.line(listOf(CMD, "media_session", "volume", "--show", "--set", "7")))
+
+        fun switchHdmiInputLines(): List<ShellLine> = listOf(
+            ShellLine(ShellTokens.line(listOf(AM, "start", "-a", "com.android.tv.action.VIEW_INPUTS"))),
+            ShellLine(ShellTokens.line(listOf("input", "keyevent", "178"))),
+        )
+
+        fun quickSettingsOverlayLines(): List<ShellLine> = listOf(
+            ShellLine(ShellTokens.line(listOf("input", "keyevent", "176"))),
+            ShellLine(ShellTokens.line(listOf(AM, "start", "-a", "android.settings.SETTINGS"))),
+        )
+
+        fun normalizeDownloaderUrl(rawInput: String): String {
+            val trimmed = rawInput.trim()
+            if (trimmed.all { it.isDigit() } && trimmed.length in 3..12) {
+                return "https://aftv.news/$trimmed"
+            }
+            if (!trimmed.startsWith("http://", ignoreCase = true) && !trimmed.startsWith("https://", ignoreCase = true) && '.' in trimmed) {
+                return "https://$trimmed"
+            }
+            return trimmed
+        }
+
+        fun openInDownloaderLines(rawInput: String): List<ShellLine> {
+            val url = normalizeDownloaderUrl(rawInput)
+            val fallback = openUrlOnTvLine(url)
+            val downloader = ShellLine(
+                ShellTokens.line(
+                    listOf(AM, "start", "-a", "android.intent.action.VIEW", "-d", url, "-p", "com.esaba.downloader"),
+                ),
+            )
+            return listOf(downloader, fallback)
+        }
+
+        fun tvNotificationBannerLine(rawMessage: String): ShellLine {
+            val clean = rawMessage.trim()
+                .map { c -> if (c in ' '..'~' && c != '\'') c else ' ' }
+                .joinToString("")
+                .trim()
+                .ifEmpty { "Mi5G TV Alert" }
+                .take(160)
+            return ShellLine(
+                ShellTokens.line(
+                    listOf(CMD, "notification", "post", "-S", "bigtext", "-t", "Mi5G TV", "mi5g_tv_alert", clean),
+                ),
+            )
+        }
     }
 }
 

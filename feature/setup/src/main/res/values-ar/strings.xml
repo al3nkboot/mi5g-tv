@@ -12,8 +12,8 @@
     <string name="action_undo">تراجع</string>
 
     <!-- Credential prompt (D17) -->
-    <string name="gate_title">تأكيد هويتك</string>
-    <string name="gate_subtitle">قبل أن نغيّر أي شيء على {tv}</string>
+    <string name="gate_title">تأكيد قفل شاشة جوالك</string>
+    <string name="gate_subtitle">أدخل رمز قفل الجوال أو البصمة قبل التعديل على {tv}</string>
     <string name="gate_negative">إلغاء</string>
     <string name="gate_failed">تعذّر تأكيد هويتك، لذلك لم يتغير شيء.</string>
 

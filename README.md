@@ -12,9 +12,9 @@
 
 ---
 
-## 📥 التحميل المباشر (أحدث إصدار `v1.4.0`)
+## 📥 التحميل المباشر (أحدث إصدار `v1.5.0`)
 
-- **[تحميل تطبيق الهاتف Mi5G TV v1.4.0 (APK)](https://github.com/al3nkboot/mi5g-tv/releases/download/v1.4.0/Mi5G-TV-v1.4.0.apk)**
+- **[تحميل تطبيق الهاتف Mi5G TV v1.5.0 (APK)](https://github.com/al3nkboot/mi5g-tv/releases/download/v1.5.0/Mi5G-TV-v1.5.0.apk)**
 - **[صفحة جميع الإصدارات والوحدات الإضافية (Releases)](https://github.com/al3nkboot/mi5g-tv/releases/latest)**
 
 ---
@@ -55,7 +55,7 @@
 ## ✨ أبرز المميزات
 
 ### 1. 🧹 تنظيف التلفاز وإيقاف الإعلانات بأمان
-- إيقاف تطبيقات الإعلانات والتتبع والعروض الترويجية المدمجة في النظام بدون حذف أي بيانات، مع دعم أكثر من **132 ملف تعريف رسمي** لمختلف ماركات الشاشات (Sony, TCL, Xiaomi Mi TV, Hisense, Philips, Thomson/Kodak, Chromecast وغيرها).
+- إيقاف تطبيقات الإعلانات والتتبع والعروض الترويجية المدمجة في النظام بدون حذف أي بيانات، مع دعم أكثر من **138 ملف تعريف رسمي** لمختلف ماركات الشاشات (Sony, TCL, Xiaomi Mi TV, Hisense, Philips, Thomson/Kodak, Chromecast وغيرها).
 - **نقطة استعادة تلقائية:** يحفظ التطبيق نسخة احتياطية كاملة قبل أي تعديل، لتتمكن من استرجاع حالة المصنع بضغطة زر واحدة متى شئت.
 
 ### 2. 🏠 شاشة رئيسية نظيفة ودعم منصات البث العربية
@@ -72,10 +72,10 @@
 - **تصوير شاشة التلفاز:** التقاط صورة فورية لشاشة التلفاز وحفظها أو مشاركتها من الهاتف.
 - **إرسال الروابط والصور والفيديو:** فتح أي رابط على التلفاز أو عرض الصور والفيديوهات من جوالك على شاشة التلفاز مباشرة، مع إمكانية تثبيت ملفات `APK` عن بُعد.
 
-### 5. 📦 مدير تطبيقات التلفاز الكامل (TV App Manager)
-- استعراض جميع تطبيقات التلفاز مع البحث والفلترة (`تطبيقاتي` / `الكل`).
-- فتح أي تطبيق على التلفاز، إيقافه إجبارياً، مسح الكاش والبيانات، أو إلغاء تثبيته.
-- **سحب نسخة احتياطية (`Pull APK`):** استخراج ملف `APK` لأي تطبيق مثبت على التلفاز وحفظه مباشرة في ذاكرة هاتفك.
+### 5. 📦 مدير تطبيقات التلفاز المتقدم (7 أوامر كاملة + تطبيقات النظام)
+- استعراض جميع تطبيقات التلفاز مع مفتاح **إظهار تطبيقات النظام والمصنع (مثل Netflix و Prime)**.
+- 7 إجراءات لكل تطبيق: **فتح على التلفاز** (يدعم فتح بطاقات `Mi5G TV` مباشرة على `Xiaomi TV Stick`)، **إيقاف إجباري**، **منع العمل بالخلفية (توفير الرام)**، **تجميد / تعطيل**، **تفعيل / فك التجميد واستعادة التطبيق**، **حذف نهائي للمستخدم**، و**سحب نسخة احتياطية (`Pull APK`)** للهاتف.
+- **متجر Downloader وأكواد التحميل السريع (مثل `401740`) + `SmartTube`:** فتح الأكواد أو تثبيت يوتيوب بدون إعلانات وبدون Shorts مباشرة، مع تخصيص أزرار الريموت (`Button Mapper`) وإصلاح زر الإعدادات على شاومي وإجبار العرض الأفقي الكامل (`Force Landscape`) لكاميرات `DMSS` و`واتساب`.
 
 ### 6. 🧩 وحدات وتطبيقات عربية مدمجة للتلفاز (5 Modules)
 تثبيت بضغطة زر واحدة من الهاتف بدون إنترنت:
@@ -113,7 +113,7 @@
 
 **Mi5G TV** (`com.midroid.mi5gtv`) is an Arabic-first Android TV & Google TV cleaner, remote toolkit, and app manager over Wi-Fi (ADB).
 
-- **Debloat & Clean Home Screen:** Safely disables vendor bloatware and ad rows across 132+ verified TV profiles with a one-tap restore point.
+- **Debloat & Clean Home Screen:** Safely disables vendor bloatware and ad rows across 138+ verified TV profiles with a one-tap restore point.
 - **Speed Boost & Quick Cast:** Live RAM/storage monitor, cache trim + background force-stop, animation speed toggle (`0.5x` / `0x` / `1x`), URL/photo/video casting, and remote APK installer.
 - **Full TV App Manager:** Launch, Force Stop, Clear Cache/Data, Uninstall, and pull APK backups from TV to phone.
 - **5 Bundled TV Modules:** Built-in AdGuard DNS switcher, Prayer Times & Weather, TV Speedtest, TV File Manager, and Today's Matches (`tv-matches`) with full Android TV Leanback banner support.

@@ -87,6 +87,14 @@ object Denylist {
         "ae.dmi.awaan" to REASON_ARABIC_STREAMING,
         "com.anghami" to REASON_ARABIC_STREAMING,
         "com.bein.connect" to REASON_ARABIC_STREAMING,
+        "com.yacinetv.player" to REASON_ARABIC_STREAMING,
+        "tv.yacine.app" to REASON_ARABIC_STREAMING,
+        "com.yacine.tv" to REASON_ARABIC_STREAMING,
+        "com.ostora.tv" to REASON_ARABIC_STREAMING,
+        "com.teamsmart.videomanager.tv" to REASON_ARABIC_STREAMING,
+        "org.smarttube.beta" to REASON_ARABIC_STREAMING,
+        "com.liskovsoft.smarttubetv.beta" to REASON_ARABIC_STREAMING,
+        "com.liskovsoft.smarttubetv" to REASON_ARABIC_STREAMING,
     )
 
     fun staticReason(pkg: String): String? {

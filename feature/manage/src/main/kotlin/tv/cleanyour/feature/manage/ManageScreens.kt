@@ -15,7 +15,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -63,6 +67,7 @@ import tv.cleanyour.core.flows.TvSettingsIntent
 import tv.cleanyour.core.flows.AnimationScaleStatus
 import tv.cleanyour.core.flows.CastMediaStatus
 import tv.cleanyour.core.flows.CastUrlStatus
+import tv.cleanyour.core.flows.PowerToolStatus
 import tv.cleanyour.core.flows.RemoteStatus
 import tv.cleanyour.core.flows.ScreenshotStatus
 import tv.cleanyour.core.flows.SideloadStatus
@@ -97,6 +102,7 @@ import tv.cleanyour.ui.design.component.CytTopBar
 import tv.cleanyour.ui.design.component.DiffGroup
 import tv.cleanyour.ui.design.component.DiffGroupSection
 import tv.cleanyour.ui.design.component.DiffItem
+import tv.cleanyour.ui.design.component.GlassChip
 import tv.cleanyour.ui.design.component.Gap
 import tv.cleanyour.ui.design.component.Lead
 import tv.cleanyour.ui.design.component.LinkRow
@@ -239,7 +245,11 @@ internal fun ColumnScope.DebugStepContent(tvName: String, connecting: Boolean, o
 // resume card instead, which owns the home screen check.
 @Composable
 fun OpenWriteSheet(open: OpenWrite, onAction: (OpenWriteAction) -> Unit, onOpenSetup: () -> Unit, onDismiss: () -> Unit, onReport: () -> Unit = {}) {
-    CytBottomSheet(onDismiss) { OpenWriteContent(open, onAction, onOpenSetup, onDismiss, onReport = onReport) }
+    CytBottomSheet(onDismiss) {
+        Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
+            OpenWriteContent(open, onAction, onOpenSetup, onDismiss, onReport = onReport)
+        }
+    }
 }
 
 @Composable
@@ -459,6 +469,14 @@ fun AppSettingsScreen(
             }
         }
         ListGroup(Modifier.padding(top = 12.dp)) {
+            if (state.updateCheck) {
+                ListRow(
+                    stringResource(R.string.appsettings_download_github),
+                    subtitle = stringResource(R.string.appsettings_download_github_note),
+                    onClick = onOpenRelease,
+                )
+                ListDivider()
+            }
             if (onSupportPayPal != null) {
                 ListRow(
                     stringResource(R.string.appsettings_support_paypal),
@@ -529,14 +547,46 @@ internal fun ColumnScope.ConfirmContent(what: AppConfirm, working: Boolean, onIn
     }
 }
 
-// M9 TV remote and tools (v1.1.0 / v1.3.0): Speed boost, Quick Cast, D-Pad remote, send text, screenshot, and APK sideloader.
+// M9 TV remote and tools (v1.1.0 / v1.3.0 / v1.5.0): Bundled cards quick launch, Speed boost, Downloader codes & SmartTube, Button Mapper, Force Landscape, TV Banner, Quick Cast, D-Pad remote, screenshot, and APK sideloader.
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack: () -> Unit, modifier: Modifier = Modifier) {
     val sending = state.remoteStatus is RemoteStatus.Sending
     val boosting = state.speedBoostStatus is SpeedBoostStatus.Boosting
     val applyingScale = state.animationScaleStatus is AnimationScaleStatus.Applying
+    val powerWorking = state.powerToolStatus is PowerToolStatus.Working
     ScreenScaffold(Glow.Tv, modifier, topBar = { CytTopBar(onBack = onBack) }) {
         ScreenTitle(stringResource(R.string.tvtools_title), titleTop)
+
+        when (val ps = state.powerToolStatus) {
+            is PowerToolStatus.Working -> LiveLine(msg(R.string.tvtools_power_working, "name" to ps.label))
+            is PowerToolStatus.Done -> CheckLine(msg(R.string.tvtools_power_done, "name" to ps.label), Modifier.padding(top = 8.dp, start = 4.dp))
+            is PowerToolStatus.Failed -> Body(msg(R.string.tvtools_power_failed, "name" to ps.label), Modifier.padding(top = 8.dp, start = 4.dp), color = CytTheme.colors.danger)
+            PowerToolStatus.Idle -> {}
+        }
+
+        // Quick Launch Bundled Mi5G TV Cards (solves Xiaomi TV Stick / Stock Launcher)
+        SectionLabel(stringResource(R.string.tvtools_cards_section))
+        Body(stringResource(R.string.tvtools_cards_note), Modifier.padding(bottom = 8.dp, start = 4.dp, end = 4.dp))
+        val bundledCards = listOf(
+            Triple("tv-matches", "com.midroid.mi5gtv.matches", stringResource(R.string.tvtools_card_matches)),
+            Triple("prayer-weather", "com.midroid.mi5gtv.prayer", stringResource(R.string.tvtools_card_prayer)),
+            Triple("adguard-dns", "com.midroid.mi5gtv.dns", stringResource(R.string.tvtools_card_dns)),
+            Triple("tv-files", "com.midroid.mi5gtv.files", stringResource(R.string.tvtools_card_files)),
+            Triple("tv-speedtest", "com.midroid.mi5gtv.speedtest", stringResource(R.string.tvtools_card_speed)),
+        )
+        FlowRow(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            bundledCards.forEach { (modId, pkg, label) ->
+                GlassChip(
+                    text = label,
+                    onClick = { if (!powerWorking) onIntent(TvToolsIntent.LaunchBundledCard(modId, pkg, label)) },
+                )
+            }
+        }
 
         SectionLabel(stringResource(R.string.tvtools_perf_section))
         val perf = state.performanceStats
@@ -615,6 +665,146 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
                 color = CytTheme.colors.danger,
             )
             AnimationScaleStatus.Idle -> {}
+        }
+
+        // 1) Downloader Store, Quick Codes (401740) & SmartTube (Ad-Free YouTube without Shorts)
+        SectionLabel(stringResource(R.string.tvtools_downloader_section))
+        Body(stringResource(R.string.tvtools_downloader_note), Modifier.padding(bottom = 8.dp, start = 4.dp, end = 4.dp))
+        CytTextField(
+            value = state.downloaderInput,
+            onValueChange = { onIntent(TvToolsIntent.UpdateDownloaderInput(it)) },
+            label = stringResource(R.string.tvtools_downloader_label),
+        )
+        val downloaderPresets = listOf(
+            "كود 401740 (متجر هلا ويب)" to "401740",
+            "SmartTube (يوتيوب بدون إعلانات وبدون Shorts)" to "https://github.com/yuliskov/SmartTube/releases/latest/download/SmartTube_stable_arm64-v8a.apk",
+            "Downloader الرسمي" to "250931",
+            "Yacine TV (البث الرياضي)" to "401740",
+            "DMSS (كاميرات المراقبة)" to "https://play.google.com/store/apps/details?id=com.mm.android.DMSS",
+            "ProtonVPN" to "https://play.google.com/store/apps/details?id=ch.protonvpn.android",
+            "VLC Player" to "https://play.google.com/store/apps/details?id=org.videolan.vlc",
+            "MX Player" to "https://play.google.com/store/apps/details?id=com.mxtech.videoplayer.ad",
+        )
+        FlowRow(
+            Modifier.fillMaxWidth().padding(top = 10.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            downloaderPresets.forEach { (chipLabel, codeOrUrl) ->
+                GlassChip(
+                    text = chipLabel,
+                    onClick = { onIntent(TvToolsIntent.UpdateDownloaderInput(codeOrUrl)) },
+                )
+            }
+        }
+        ActionColumn(Modifier.padding(top = 12.dp)) {
+            PrimaryButton(
+                stringResource(R.string.tvtools_downloader_open_btn),
+                { onIntent(TvToolsIntent.OpenInDownloader()) },
+                enabled = state.downloaderInput.isNotBlank() && !powerWorking,
+            )
+            SecondaryButton(
+                stringResource(R.string.tvtools_downloader_install_btn),
+                {
+                    val target = state.downloaderInput.ifBlank { "https://github.com/yuliskov/SmartTube/releases/latest/download/SmartTube_stable_arm64-v8a.apk" }
+                    onIntent(TvToolsIntent.DownloadAndInstallUrlApk(target, "tv-app.apk"))
+                },
+                enabled = !powerWorking && state.sideloadStatus !is SideloadStatus.Installing,
+                guardObscured = true,
+            )
+        }
+        Banner(stringResource(R.string.tvtools_smarttube_tip), BannerTone.INFO, Modifier.padding(top = 12.dp))
+
+        // 2) Button Mapper + Xiaomi Settings Key Fix + Force Landscape + Screensaver & Quiet Hours
+        SectionLabel(stringResource(R.string.tvtools_mapper_section))
+        ActionColumn {
+            PrimaryButton(
+                stringResource(R.string.tvtools_mapper_settings_fix),
+                { onIntent(TvToolsIntent.QuickSettingsOverlay) },
+                enabled = !powerWorking,
+            )
+            SecondaryButton(
+                stringResource(R.string.tvtools_mapper_yt_smarttube),
+                { onIntent(TvToolsIntent.MapRemoteKey(190, "com.teamsmart.videomanager.tv", "تحويل زر يوتيوب إلى SmartTube")) },
+                enabled = !powerWorking,
+            )
+            SecondaryButton(
+                stringResource(R.string.tvtools_mapper_yt_official),
+                { onIntent(TvToolsIntent.MapRemoteKey(190, "com.google.android.youtube.tv", "تحويل زر يوتيوب إلى يوتيوب الرسمي")) },
+                enabled = !powerWorking,
+            )
+            SecondaryButton(
+                stringResource(R.string.tvtools_mapper_nf_shahid),
+                { onIntent(TvToolsIntent.MapRemoteKey(191, "net.mbc.shahid.tv", "تحويل زر نتفلكس إلى شاهد")) },
+                enabled = !powerWorking,
+            )
+            SecondaryButton(
+                stringResource(R.string.tvtools_mapper_nf_matches),
+                { onIntent(TvToolsIntent.MapRemoteKey(191, "com.midroid.mi5gtv.matches", "تحويل زر نتفلكس إلى مباريات اليوم")) },
+                enabled = !powerWorking,
+            )
+            SecondaryButton(
+                stringResource(R.string.tvtools_rotation_landscape),
+                { onIntent(TvToolsIntent.SetForceLandscape(true)) },
+                enabled = !powerWorking,
+            )
+            SecondaryButton(
+                stringResource(R.string.tvtools_rotation_auto),
+                { onIntent(TvToolsIntent.SetForceLandscape(false)) },
+                enabled = !powerWorking,
+            )
+            SecondaryButton(
+                stringResource(R.string.tvtools_screensaver_now),
+                { onIntent(TvToolsIntent.StartClockScreensaver) },
+                enabled = !powerWorking,
+            )
+            SecondaryButton(
+                stringResource(R.string.tvtools_quiet_night),
+                { onIntent(TvToolsIntent.ApplyQuietNightVolume) },
+                enabled = !powerWorking,
+            )
+            SecondaryButton(
+                stringResource(R.string.tvtools_hdmi_switch),
+                { onIntent(TvToolsIntent.SwitchHdmiInput) },
+                enabled = !powerWorking,
+            )
+        }
+
+        // 3) Instant TV Notification / Toast Banner
+        SectionLabel(stringResource(R.string.tvtools_banner_section))
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            CytTextField(
+                value = state.tvBannerInput,
+                onValueChange = { onIntent(TvToolsIntent.UpdateTvBannerInput(it)) },
+                label = stringResource(R.string.tvtools_banner_label),
+                modifier = Modifier.weight(1f),
+            )
+            SmallGlassButton(
+                stringResource(R.string.tvtools_banner_send),
+                { onIntent(TvToolsIntent.SendTvBanner()) },
+                enabled = state.tvBannerInput.isNotBlank() && !powerWorking,
+            )
+        }
+        val bannerPresets = listOf(
+            "🕌 Prayer Time Alert" to "Prayer time now - Hayya ala as-Salah",
+            "🍽️ Dinner is Ready" to "Dinner is ready",
+            "🔉 Lower TV Volume" to "Please lower the TV volume",
+        )
+        FlowRow(
+            Modifier.fillMaxWidth().padding(top = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            bannerPresets.forEach { (chipLabel, msgVal) ->
+                GlassChip(
+                    text = chipLabel,
+                    onClick = { if (!powerWorking) onIntent(TvToolsIntent.SendTvBanner(msgVal)) },
+                )
+            }
         }
 
         SectionLabel(stringResource(R.string.tvtools_cast_section))
@@ -1006,7 +1196,7 @@ private fun RemoteActionKey(
 }
 
 
-// M10 Full TV App Manager and APK backup puller (v1.3.0).
+// M10 Full TV App Manager and APK backup puller (v1.3.0 / v1.5.0: System bloatware toggle + 7 full actions).
 @Composable
 fun TvAppManagerScreen(
     state: TvAppManagerState,
@@ -1023,6 +1213,16 @@ fun TvAppManagerScreen(
             label = stringResource(R.string.tvapps_search_label),
             modifier = Modifier.padding(top = 14.dp),
         )
+
+        ListGroup(Modifier.padding(top = 12.dp)) {
+            SwitchRow(
+                title = stringResource(R.string.tvapps_filter_system_toggle),
+                checked = state.filter == TvAppFilter.ALL,
+                onCheckedChange = { showAll ->
+                    onIntent(TvAppManagerIntent.SetFilter(if (showAll) TvAppFilter.ALL else TvAppFilter.USER))
+                },
+            )
+        }
 
         Row(
             Modifier.fillMaxWidth().padding(top = 12.dp),
@@ -1086,12 +1286,14 @@ fun TvAppManagerScreen(
 
     state.selectedApp?.let { selected ->
         CytBottomSheet({ onIntent(TvAppManagerIntent.DismissApp) }) {
-            TvAppActionsContent(
-                app = selected,
-                confirmingUninstall = state.confirmingUninstall,
-                actionStatus = state.actionStatus,
-                onIntent = onIntent,
-            )
+            Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
+                TvAppActionsContent(
+                    app = selected,
+                    confirmingUninstall = state.confirmingUninstall,
+                    actionStatus = state.actionStatus,
+                    onIntent = onIntent,
+                )
+            }
         }
     }
 }
@@ -1118,29 +1320,57 @@ internal fun ColumnScope.TvAppActionsContent(
     SheetHeader(title = app.name, subtitle = app.pkg.value)
     AppActionFeedback(actionStatus)
     ActionColumn(Modifier.padding(top = 16.dp)) {
+        // 1. Launch on TV
         PrimaryButton(
             text = stringResource(R.string.tvapps_action_launch),
             onClick = { onIntent(TvAppManagerIntent.LaunchApp(app.pkg)) },
             enabled = !working,
         )
-        SecondaryButton(
-            text = stringResource(R.string.tvapps_action_pull_apk),
-            onClick = { onIntent(TvAppManagerIntent.PullApk(app.pkg)) },
-            enabled = !working,
-            guardObscured = true,
-        )
+        // 2. Force Stop
         SecondaryButton(
             text = stringResource(R.string.tvapps_action_force_stop),
             onClick = { onIntent(TvAppManagerIntent.ForceStopApp(app.pkg)) },
             enabled = !working && app.canForceStop,
             guardObscured = true,
         )
+        // 3. Restrict Background Work
+        SecondaryButton(
+            text = stringResource(R.string.tvapps_action_restrict_bg),
+            onClick = { onIntent(TvAppManagerIntent.RestrictBackgroundApp(app.pkg)) },
+            enabled = !working && app.canForceStop,
+            guardObscured = true,
+        )
+        // 4. Freeze / Disable
+        if (app.canDisable) {
+            SecondaryButton(
+                text = stringResource(R.string.tvapps_action_disable),
+                onClick = { onIntent(TvAppManagerIntent.DisableApp(app.pkg)) },
+                enabled = !working,
+                guardObscured = true,
+            )
+        }
+        // 5. Unfreeze / Enable & Restore
+        SecondaryButton(
+            text = stringResource(R.string.tvapps_action_enable),
+            onClick = { onIntent(TvAppManagerIntent.EnableApp(app.pkg)) },
+            enabled = !working,
+            guardObscured = true,
+        )
+        // 6. Pull APK Backup to Phone
+        SecondaryButton(
+            text = stringResource(R.string.tvapps_action_pull_apk),
+            onClick = { onIntent(TvAppManagerIntent.PullApk(app.pkg)) },
+            enabled = !working,
+            guardObscured = true,
+        )
+        // Extra: Clear Cache & Data
         SecondaryButton(
             text = stringResource(R.string.tvapps_action_clear_data),
             onClick = { onIntent(TvAppManagerIntent.ClearAppData(app.pkg)) },
             enabled = !working && app.canClearData,
             guardObscured = true,
         )
+        // 7. Permanent Uninstall for User (works for user apps and preloaded bloatware like Netflix/Prime)
         if (app.canUninstall) {
             TertiaryButton(
                 text = stringResource(R.string.tvapps_action_uninstall),
@@ -1164,6 +1394,9 @@ private fun AppActionFeedback(status: TvAppActionStatus) {
             val resId = when (status.kind) {
                 TvAppActionKind.LAUNCH -> R.string.tvapps_working_launch
                 TvAppActionKind.FORCE_STOP -> R.string.tvapps_working_force_stop
+                TvAppActionKind.RESTRICT_BG -> R.string.tvapps_working_restrict_bg
+                TvAppActionKind.DISABLE_APP -> R.string.tvapps_working_disable
+                TvAppActionKind.ENABLE_APP -> R.string.tvapps_working_enable
                 TvAppActionKind.CLEAR_DATA -> R.string.tvapps_working_clear_data
                 TvAppActionKind.UNINSTALL -> R.string.tvapps_working_uninstall
                 TvAppActionKind.PULL_APK -> R.string.tvapps_working_pull_apk
@@ -1174,6 +1407,9 @@ private fun AppActionFeedback(status: TvAppActionStatus) {
             val resId = when (status.kind) {
                 TvAppActionKind.LAUNCH -> R.string.tvapps_done_launch
                 TvAppActionKind.FORCE_STOP -> R.string.tvapps_done_force_stop
+                TvAppActionKind.RESTRICT_BG -> R.string.tvapps_done_restrict_bg
+                TvAppActionKind.DISABLE_APP -> R.string.tvapps_done_disable
+                TvAppActionKind.ENABLE_APP -> R.string.tvapps_done_enable
                 TvAppActionKind.CLEAR_DATA -> R.string.tvapps_done_clear_data
                 TvAppActionKind.UNINSTALL -> R.string.tvapps_done_uninstall
                 TvAppActionKind.PULL_APK -> R.string.tvapps_done_pull_apk

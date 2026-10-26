@@ -3,6 +3,7 @@ package tv.cleanyour.ui.design.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.Box
@@ -63,7 +64,7 @@ fun CytBottomSheet(
         scrimColor = c.scrim,
         dragHandle = { SheetDragHandle() },
     ) {
-        Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp).padding(bottom = 16.dp), content = content)
+        Column(Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal = 20.dp).padding(bottom = 16.dp), content = content)
     }
 }
 

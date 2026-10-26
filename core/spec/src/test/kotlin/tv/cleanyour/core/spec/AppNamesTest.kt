@@ -27,7 +27,7 @@ class AppNamesTest {
         assertEquals("Spotify", AppNames.fromPackage(PackageName("com.spotify.tv.android")))
         assertEquals("Settings", AppNames.fromPackage(PackageName("com.android.tv.settings")))
         assertEquals("Youtube", AppNames.fromPackage(PackageName("com.google.android.youtube.tv")))
-        assertEquals("Whatsapp", AppNames.fromPackage(PackageName("com.whatsapp")))
+        assertEquals("واتساب (WhatsApp)", AppNames.fromPackage(PackageName("com.whatsapp")))
         assertEquals("My Player", AppNames.fromPackage(PackageName("com.example.myPlayer")))
         assertEquals("Retro Arch", AppNames.fromPackage(PackageName("com.retro_arch")))
         assertEquals("Android", AppNames.fromPackage(PackageName("android")))

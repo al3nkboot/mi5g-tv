@@ -200,6 +200,7 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
         onUndo: (ManageEffect.Snackbar) -> Unit = {},
         onPickApk: () -> Unit = {},
         onPickCastMedia: () -> Unit = {},
+        onDownloadUrlApk: (String, String) -> Unit = { _, _ -> },
     ) {
         when (e) {
             is ManageEffect.Navigate -> go(e.key)
@@ -213,6 +214,7 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
             ManageEffect.PickCastMedia -> onPickCastMedia()
             is ManageEffect.SharePng -> sharePng(context, e.png, e.fileName)
             is ManageEffect.ShareApk -> shareApk(context, e.apkBytes, e.fileName)
+            is ManageEffect.DownloadUrlApk -> onDownloadUrlApk(e.url, e.fileName)
             is ManageEffect.Snackbar -> {
                 val (id, args) = SnackText.of(e)
                 val r = snack.showSnackbar(ResourceFlowCopy.format(context, id, args), actionLabel = if (e.undo) undoLabel else null,
@@ -316,6 +318,17 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
                                 e,
                                 onPickApk = { pickApk.launch(arrayOf("application/vnd.android.package-archive")) },
                                 onPickCastMedia = { pickCastMedia.launch(arrayOf("image/*", "video/*")) },
+                                onDownloadUrlApk = { url, fileName ->
+                                    scope.launch {
+                                        val downloaded = withContext(Dispatchers.IO) { downloadUrlApkToBlob(context, graph, url, fileName) }
+                                        if (downloaded != null) {
+                                            m.dispatch(downloaded)
+                                            m.dispatch(TvToolsIntent.InstallApk)
+                                        } else {
+                                            onManageEffect(ManageEffect.OpenUrl(url))
+                                        }
+                                    }
+                                },
                             )
                         }
                     }
@@ -516,3 +529,66 @@ private fun shareApk(context: android.content.Context, apkBytes: ByteArray, file
         }
     }
 }
+
+private suspend fun downloadUrlApkToBlob(
+    context: android.content.Context,
+    graph: AppGraph,
+    urlStr: String,
+    fileName: String,
+): TvToolsIntent.ApkPicked? = runCatching {
+    val tmp = java.io.File.createTempFile("dl-url-", ".apk", context.cacheDir)
+    try {
+        var currentUrl = urlStr
+        var redirects = 0
+        var conn: java.net.HttpURLConnection? = null
+        while (redirects < 6) {
+            val c = (java.net.URL(currentUrl).openConnection() as java.net.HttpURLConnection).apply {
+                instanceFollowRedirects = false
+                connectTimeout = 15_000
+                readTimeout = 60_000
+                setRequestProperty("User-Agent", "Mi5G-TV/1.5.0 (Android)")
+            }
+            val code = c.responseCode
+            if (code in 300..399) {
+                val loc = c.getHeaderField("Location") ?: break
+                currentUrl = java.net.URL(java.net.URL(currentUrl), loc).toString()
+                c.disconnect()
+                redirects++
+            } else {
+                conn = c
+                break
+            }
+        }
+        val active = conn ?: return@runCatching null
+        if (active.responseCode != 200) {
+            active.disconnect()
+            return@runCatching null
+        }
+        val md = java.security.MessageDigest.getInstance("SHA-256")
+        var total = 0L
+        active.inputStream.use { input ->
+            tmp.outputStream().use { out ->
+                val buf = ByteArray(64 * 1024)
+                while (true) {
+                    val n = input.read(buf)
+                    if (n <= 0) break
+                    total += n
+                    if (total > tv.cleanyour.core.ops.ShellRenderer.MAX_APK_BYTES) error("APK exceeds max size")
+                    md.update(buf, 0, n)
+                    out.write(buf, 0, n)
+                }
+            }
+        }
+        active.disconnect()
+        if (total < 4096L) return@runCatching null
+        // Verify PK zip magic header so we don't try to pm install an HTML page
+        val header = ByteArray(4)
+        tmp.inputStream().use { it.read(header) }
+        if (header[0] != 0x50.toByte() || header[1] != 0x4B.toByte()) return@runCatching null
+        val sha = tv.cleanyour.core.model.Sha256(md.digest().joinToString("") { "%02x".format(it) })
+        val blob = tmp.inputStream().use { graph.blobs.put(sha, it, total) }
+        TvToolsIntent.ApkPicked(fileName, blob.size, blob)
+    } finally {
+        tmp.delete()
+    }
+}.getOrNull()

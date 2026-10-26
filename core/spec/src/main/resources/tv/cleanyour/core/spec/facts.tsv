@@ -34,6 +34,7 @@ au.com.ninenow.ctv	9Now	Channel 9 catch-up TV (Australia)	streaming
 au.com.stan.and	Stan	Australian streaming service	streaming
 au.net.abc.iview	ABC iview	ABC catch-up TV (Australia)	streaming
 ca.cbc.mobile.android.cbcnewsandroidwebview	CBC News	Canadian news app	streaming
+ch.protonvpn.android	ProtonVPN	Encrypted VPN service for Android TV	streaming
 cm.aptoidetv.pt	Aptoide TV	Third-party app store	preloads
 cm.aptoidetv.pt.cvt_platform7	Aptoide TV	Third-party app store	preloads
 cn.cvte.tv.factory.autotest	CVTE factory test	Factory test tool	demo
@@ -253,6 +254,7 @@ com.canal.android.canal	Canal+	Canal+ streaming app	streaming
 com.cbs.ca	Paramount+ (Canada)	Paramount's streaming app	streaming
 com.cbs.ott	Paramount+	Streaming app	streaming
 com.cg.football	Football game	Preloaded football game	preloads
+com.cloudflare.onedotonedotonedotone	Cloudflare 1.1.1.1	Fast encrypted DNS and WARP VPN client	streaming
 com.cloudmosa.puffinTV	Puffin TV browser	Web browser for TVs	preloads
 com.cltv.fast	FAST channels	Free ad-supported TV channels	ads
 com.cltv.hybrid	CanaliTV Live TV	Live TV app for this set	system
@@ -291,6 +293,7 @@ com.duokan.factorytest	Xiaomi factory test	Factory test app that also claims Hom
 com.duokan.videodaily	Video Daily	Daily promoted video picks	ads
 com.ecloud.emedia	eMedia (DLNA)	DLNA receiver for media from phones	casting
 com.eros.mitv	Eros Now	Streaming app	streaming
+com.esaba.downloader	Downloader	AFTVnews file and APK downloader for Android TV	streaming
 com.espn.gtv	ESPN	Sports streaming app	streaming
 com.fancode.tv	FanCode	Sports streaming app	streaming
 com.fireos.arcus.proxy	Fire OS Arcus proxy	An Amazon background service	brand
@@ -367,6 +370,7 @@ com.heytap.tv.assistant.oneplus	OnePlus TV Assistant	OnePlus assistant app	brand
 com.heytap.tv.btspeaker	Bluetooth speaker mode	Plays TV sound on a Bluetooth speaker	brand
 com.heytap.tv.filebrowser	File Browser	Browse files on the TV	brand
 com.heytap.tv.livetv	OnePlus Live TV	Live TV, HDMI and tuner inputs	system
+com.hikvision.hikconnect	Hik-Connect	Hikvision security cameras viewer	streaming
 com.hisense.alexa	Hisense Alexa	Alexa voice assistant	voice
 com.hisense.app.logreport	Hisense log report	Uploads logs to Hisense	tracking
 com.hisense.ar.baike	Hisense AR encyclopedia	AR encyclopedia app	preloads
@@ -443,6 +447,8 @@ com.keylab.speech.view.vidaa	VIDAA voice and card home	Voice assistant screens, 
 com.kick.mobile	Kick	Live streaming app	streaming
 com.king.candycrushsaga	Candy Crush Saga	Preloaded game	preloads
 com.limelight	Moonlight	Game streaming from a PC	streaming
+com.liskovsoft.smarttubetv	SmartTube	Ad-free YouTube client for Android TV without Shorts	streaming
+com.liskovsoft.smarttubetv.beta	SmartTube Beta	Ad-free YouTube client for Android TV without Shorts	streaming
 com.mautilus.tvgames.portal.androidtv	TV games portal	Preloaded game portal	preloads
 com.mbc.shahid	شاهد (Shahid)	MBC Arabic series, films and live TV	streaming
 com.mediatek.AirplayAPK	AirPlay (MediaTek)	Receives AirPlay from Apple devices	casting
@@ -499,8 +505,12 @@ com.miui.analytics	MIUI analytics	Sends usage statistics to Xiaomi	tracking
 com.miui.misightservice	Xiaomi MiSight	Remote diagnostics and log upload to Xiaomi	tracking
 com.miui.tv.analytics	Xiaomi Analytics	Reports what you watch to Xiaomi	tracking
 com.mk.tv.meeting.service	Meeting service	Vendor video meeting service	brand
+com.mm.android.DMSS	DMSS Cameras	Dahua security cameras live monitoring app	streaming
+com.mm.android.direct.gdmssphone	gDMSS Cameras	Security cameras live monitoring app	streaming
 com.mstar.android.tv.disclaimercustomization	Vendor disclaimer	Disclaimer screen	other
 com.mstar.netflixobserver	Netflix button helper	Runs the remote's Netflix button; turns Netflix back on at startup	other
+com.mxtech.videoplayer.ad	MX Player	Local and network video player for TV	streaming
+com.mxtech.videoplayer.pro	MX Player Pro	Ad-free video player for Android TV	streaming
 com.mxtech.videoplayer.television	MX Player	Video player and streaming app	streaming
 com.nagra.ion.claroco	Claro TV	Operator TV app (Colombia)	streaming
 com.nbcuni.telemundostation.houston.firetv	Telemundo Houston	Local Telemundo station app	streaming
@@ -550,6 +560,7 @@ com.oneplus.tv.factory	OnePlus TV factory app	Factory test app, left alone	syste
 com.oneplus.tv.launcher	OnePlus launcher page	OnePlus content page	brand
 com.opera.sdk.example	Opera TV sample app	Opera TV SDK sample app	preloads
 com.osn.go	OSN+	Middle East series and film streaming app	streaming
+com.ostora.tv	الأسطورة (Ostora TV)	Arabic live sports and channels streaming app	streaming
 com.panasonic.demomode	Panasonic demo mode	Store demo mode	demo
 com.panasonic.ehelp	Panasonic eHelp	On-screen user manual	preloads
 com.panasonic.hotelmode	Panasonic hotel mode	Hotel mode settings	demo
@@ -780,6 +791,7 @@ com.tcl.waterfall.overseas	TCL content feed	Web content feed	ads
 com.tcl.weixin	WeChat for TV	WeChat app for the TV	preloads
 com.tcl.wholenetsearch	TCL global search	Searches across TCL content	brand
 com.tcl.xian.StartandroidService	TCL start service	TCL system service, needed	system
+com.teamsmart.videomanager.tv	SmartTube	Ad-free YouTube client for Android TV without Shorts	streaming
 com.teamviewer.quicksupport.market	TeamViewer QuickSupport	Remote support app	preloads
 com.ted.android.tv	TED	TED talks	streaming
 com.tianci.localmedia	Skyworth USB media player	Plays media from USB	system
@@ -824,6 +836,10 @@ com.watchit.android	WATCH IT	Arabic series and movies streaming app	streaming
 com.watchit.tv	WATCH IT	Arabic series and movies streaming app	streaming
 com.wbd.hbomax	Max (HBO Max)	HBO's streaming app	streaming
 com.wbd.stream	HBO Max	HBO series and films	streaming
+com.whatsapp	واتساب (WhatsApp)	WhatsApp messaging and calls	streaming
+com.whatsapp.w4b	WhatsApp Business	WhatsApp Business messaging app	streaming
+com.windscribe.vpn	Windscribe VPN	VPN and ad blocker for Android TV	streaming
+com.wireguard.android	WireGuard VPN	Fast modern VPN tunnel for Android TV	streaming
 com.witsoftware.ir.vodafonetv	Vodafone TV	Vodafone's TV app	streaming
 com.wrcplus.release	WRC rally app	Preloaded rally app (game or WRC+ video)	preloads
 com.xgimi.atmosphere	XGIMI ambient scenes	Animated screensaver	screensaver
@@ -879,6 +895,8 @@ com.xiaomi.wfdsinkhelperservice	Miracast helper	Xiaomi Miracast receiver helper	
 com.xiaomitv.sonyliv	Sony LIV (old Mi copy)	Old partner copy of the Sony LIV app	streaming
 com.xiaomo.tv.milegal	Xiaomi legal notices	Legal and privacy screens	other
 com.xm.webcontent	Xiaomi web promos	Promo web content	ads
+com.yacine.tv	ياسين تيفي (Yacine TV)	Arabic live football and sports streaming app	streaming
+com.yacinetv.player	ياسين تيفي (Yacine TV)	Arabic live football and sports streaming app	streaming
 com.yango.play	Yango Play	Movies, series and music streaming app	streaming
 com.yodo1.crossyroad	Crossy Road	Preloaded game	preloads
 com.youview.tv.servicehost	YouView services	Background service for YouView	streaming
@@ -954,7 +972,9 @@ org.droidtv.tv.frameworklogger	Philips reboot logger	Sends reboot reasons and up
 org.droidtv.usagelogger	Philips usage logger	Logs usage and device data	tracking
 org.liskovsoft.androidtv.rukeyboard	Russian keyboard	On-screen keyboard	system
 org.obs.mhegservice	MHEG interactive TV	UK red button services	preloads
+org.smarttube.beta	SmartTube Beta	Ad-free YouTube client for Android TV without Shorts	streaming
 org.videolan.vlc	VLC	Video player	streaming
+org.xbmc.kodi	Kodi	Open-source home theatre and media center	streaming
 paskov.biz.happyfruits	Happy Fruits	Preloaded game	preloads
 ro.pontes.forinaline	Four in a Line	Preloaded game	preloads
 rocks.funkykarts	Funky Karts	Preloaded game	preloads
@@ -976,5 +996,6 @@ tv.sweet.tvplayer	Sweet TV	Ukrainian TV streaming app	streaming
 tv.tod.android	TOD	beIN sports and entertainment streaming app	streaming
 tv.twitch.android.app	Twitch	Live game streaming app	streaming
 tv.wuaki.apptv	Rakuten TV	Film rental and streaming app	streaming
+tv.yacine.app	ياسين تيفي (Yacine TV)	Arabic live football and sports streaming app	streaming
 uk.co.bbc.iplayer	BBC iPlayer	BBC channels and programmes	streaming
 zeasn.open.technical.tv.store.stellamore.tv	Zeasn App Store	App store tile that shows Google ads	ads

@@ -1,14 +1,14 @@
 {
   "schema": 1,
-  "sequence": 5,
-  "generated": "2026-10-24T12:00:00Z",
-  "expires": "2027-01-22T12:00:00Z",
+  "sequence": 6,
+  "generated": "2026-10-26T10:00:00Z",
+  "expires": "2027-01-24T10:00:00Z",
   "modules": [
     {
       "id": "adguard-dns",
       "name": "مانع الإعلانات والـ DNS العائلي",
       "one_line": "حجب الإعلانات والحماية العائلية على التلفاز",
-      "description": "يفعّل خادم AdGuard DNS المشفّر على التلفاز لحجب الإعلانات المزعجة والنوافذ المنبثقة ومتتبعات الخصوصية على مستوى النظام، مع إمكانية التبديل بضغطة زر بالريموت بين وضع حجب الإعلانات ووضع الحماية العائلية لحجب المحتوى غير اللائق.",
+      "description": "يفعّل خادم AdGuard DNS أو Mullvad المشفّر على التلفاز لحجب الإعلانات المزعجة ومتتبعات الخصوصية وحماية العائلة، مع فحص ذكي لمنفذ 853 وإرجاع تلقائي فوري على شاشات شاومي في حال حظر الراوتر للمنفذ لمنع انقطاع الإنترنت.",
       "package": "com.midroid.mi5gtv.dns",
       "type": "card",
       "tier": "verified",
@@ -19,13 +19,13 @@
       "artwork": null,
       "versions": [
         {
-          "version_code": 2,
-          "version_name": "1.1.0",
-          "released": "2026-10-24T12:00:00Z",
+          "version_code": 3,
+          "version_name": "1.2.0",
+          "released": "2026-10-26T10:00:00Z",
           "apk": {
-            "url": "https://github.com/al3nkboot/mi5g-tv/releases/download/v1.3.1/mi5g-tv-dns.apk",
-            "size": 74432,
-            "sha256": "570a5a01f20a3ad8fa94a28e523a3c3519205f620c36bb0324713ec9eb18efa0",
+            "url": "https://github.com/al3nkboot/mi5g-tv/releases/download/v1.5.0/mi5g-tv-dns.apk",
+            "size": 74431,
+            "sha256": "64779a082c41d779f66ccc9188b519d79c83eeaeb022b3e96d983d4fc7e58106",
             "signer_sha256": "c1f317965f154fe5e79fe7483abd5dd5dec7df57d87f3a645a5fd12f39a5480c"
           },
           "permissions": [
@@ -50,7 +50,7 @@
       "id": "prayer-weather",
       "name": "مواقيت الصلاة والطقس",
       "one_line": "مواقيت الصلاة اليومية وحالة الطقس للمدن العربية",
-      "description": "بطاقة وتطبيق خفيف للتلفاز يعرض مواقيت الصلاة الخمس والشروق مع العد التنازلي للصلاة القادمة وحالة الطقس المباشرة لمدن الخليج والعالم العربي (مسقط، الرياض، مكة المكرمة، دبي، الدوحة، الكويت، المنامة، القاهرة، عمّان).",
+      "description": "بطاقة وتطبيق خفيف للتلفاز يعرض مواقيت الصلاة الخمس والشروق مع تنبيه صوتي ومرئي للأذان عند دخول وقت الصلاة وحالة الطقس المباشرة لمدن الخليج والعالم العربي.",
       "package": "com.midroid.mi5gtv.prayer",
       "type": "card",
       "tier": "verified",
@@ -61,13 +61,13 @@
       "artwork": null,
       "versions": [
         {
-          "version_code": 2,
-          "version_name": "1.1.0",
-          "released": "2026-10-24T12:00:00Z",
+          "version_code": 3,
+          "version_name": "1.2.0",
+          "released": "2026-10-26T10:00:00Z",
           "apk": {
-            "url": "https://github.com/al3nkboot/mi5g-tv/releases/download/v1.3.1/mi5g-tv-prayer.apk",
-            "size": 78527,
-            "sha256": "b1faebab37f7a7ed7046dcb140a93b75634572805efa3bb27a13b15eee22554c",
+            "url": "https://github.com/al3nkboot/mi5g-tv/releases/download/v1.5.0/mi5g-tv-prayer.apk",
+            "size": 82625,
+            "sha256": "00154e9edb438d2cf897c7594eb4e9a74afd84d490d82daee96e6419b938974f",
             "signer_sha256": "c1f317965f154fe5e79fe7483abd5dd5dec7df57d87f3a645a5fd12f39a5480c"
           },
           "permissions": [

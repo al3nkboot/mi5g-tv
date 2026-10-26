@@ -16,7 +16,16 @@ import tv.cleanyour.core.probe.TvShellRunner
 
 enum class TvAppFilter { USER, ALL }
 
-enum class TvAppActionKind { LAUNCH, FORCE_STOP, CLEAR_DATA, UNINSTALL, PULL_APK }
+enum class TvAppActionKind {
+    LAUNCH,
+    FORCE_STOP,
+    RESTRICT_BG,
+    DISABLE_APP,
+    ENABLE_APP,
+    CLEAR_DATA,
+    UNINSTALL,
+    PULL_APK,
+}
 
 data class TvInstalledApp(
     val pkg: PackageName,
@@ -25,7 +34,8 @@ data class TvInstalledApp(
     val enabled: Boolean = true,
     val canForceStop: Boolean = !ShellRenderer.isForceStopProtected(pkg),
     val canClearData: Boolean = !ShellRenderer.isForceStopProtected(pkg) && Denylist.staticReason(pkg.value) == null,
-    val canUninstall: Boolean = !system && !ShellRenderer.isForceStopProtected(pkg) && Denylist.staticReason(pkg.value) == null,
+    val canDisable: Boolean = !ShellRenderer.isForceStopProtected(pkg) && Denylist.staticReason(pkg.value) == null,
+    val canUninstall: Boolean = !ShellRenderer.isForceStopProtected(pkg) && Denylist.staticReason(pkg.value) == null,
 )
 
 sealed interface TvAppActionStatus {
@@ -62,6 +72,9 @@ sealed interface TvAppManagerIntent {
     data object DismissApp : TvAppManagerIntent
     data class LaunchApp(val pkg: PackageName) : TvAppManagerIntent
     data class ForceStopApp(val pkg: PackageName) : TvAppManagerIntent
+    data class RestrictBackgroundApp(val pkg: PackageName) : TvAppManagerIntent
+    data class DisableApp(val pkg: PackageName) : TvAppManagerIntent
+    data class EnableApp(val pkg: PackageName) : TvAppManagerIntent
     data class ClearAppData(val pkg: PackageName) : TvAppManagerIntent
     data object AskUninstall : TvAppManagerIntent
     data object CancelUninstall : TvAppManagerIntent
@@ -81,6 +94,7 @@ class TvAppManagerMachine(
     private data class ActionUpdate(
         val status: TvAppActionStatus,
         val removedPkg: PackageName? = null,
+        val toggledPkg: Pair<PackageName, Boolean>? = null,
         val closeSheet: Boolean = false,
     )
 
@@ -118,10 +132,20 @@ class TvAppManagerMachine(
         TvAppManagerIntent.AskUninstall -> state.copy(confirmingUninstall = true)
         TvAppManagerIntent.CancelUninstall -> state.copy(confirmingUninstall = false)
         is ActionUpdate -> {
-            val nextApps = if (event.removedPkg != null) state.apps.filterNot { it.pkg == event.removedPkg } else state.apps
+            var nextApps = if (event.removedPkg != null) state.apps.filterNot { it.pkg == event.removedPkg } else state.apps
+            if (event.toggledPkg != null) {
+                val (targetPkg, newEnabled) = event.toggledPkg
+                nextApps = nextApps.map { if (it.pkg == targetPkg) it.copy(enabled = newEnabled) else it }
+            }
+            val nextSelected = when {
+                event.closeSheet || event.removedPkg != null -> null
+                event.toggledPkg != null && state.selectedApp?.pkg == event.toggledPkg.first ->
+                    state.selectedApp.copy(enabled = event.toggledPkg.second)
+                else -> state.selectedApp
+            }
             state.copy(
                 apps = nextApps,
-                selectedApp = if (event.closeSheet || event.removedPkg != null) null else state.selectedApp,
+                selectedApp = nextSelected,
                 confirmingUninstall = false,
                 actionStatus = event.status,
             )
@@ -138,6 +162,9 @@ class TvAppManagerMachine(
             }
             is TvAppManagerIntent.LaunchApp -> if (!busy) scope.launch { launchApp(event.pkg) }
             is TvAppManagerIntent.ForceStopApp -> if (!busy) scope.launch { forceStopApp(event.pkg) }
+            is TvAppManagerIntent.RestrictBackgroundApp -> if (!busy) scope.launch { restrictBackgroundApp(event.pkg) }
+            is TvAppManagerIntent.DisableApp -> if (!busy) scope.launch { disableApp(event.pkg) }
+            is TvAppManagerIntent.EnableApp -> if (!busy) scope.launch { enableApp(event.pkg) }
             is TvAppManagerIntent.ClearAppData -> if (!busy) scope.launch { clearAppData(event.pkg) }
             is TvAppManagerIntent.UninstallApp -> if (!busy) scope.launch { uninstallApp(event.pkg) }
             is TvAppManagerIntent.PullApk -> if (!busy) scope.launch { pullApk(event.pkg) }
@@ -170,6 +197,7 @@ class TvAppManagerMachine(
         }
         if (session != null) {
             val thirdPartyRes = attempt { TvShellRunner.run(session, ShellRenderer.listThirdPartyPackagesLine()) }.getOrNull()
+            val systemRes = attempt { TvShellRunner.run(session, ShellRenderer.listSystemPackagesLine()) }.getOrNull()
             val disabledRes = attempt { TvShellRunner.run(session, ShellRenderer.listDisabledPackagesLine()) }.getOrNull()
             val disabledPkgs = if (disabledRes != null && disabledRes.exit == 0) {
                 disabledRes.stdout.lineSequence()
@@ -179,6 +207,23 @@ class TvAppManagerMachine(
                     .toSet()
             } else {
                 emptySet()
+            }
+            if (systemRes != null && systemRes.exit == 0) {
+                systemRes.stdout.lineSequence()
+                    .map { it.trim() }
+                    .filter { it.startsWith("package:") }
+                    .map { it.removePrefix("package:").trim() }
+                    .filter { PACKAGE_RE.matches(it) && it != Denylist.FRAMEWORK }
+                    .forEach { raw ->
+                        val pkg = PackageName(raw)
+                        val existing = byPkg[pkg]
+                        byPkg[pkg] = TvInstalledApp(
+                            pkg = pkg,
+                            name = existing?.name ?: d.nameOf(pkg),
+                            system = true,
+                            enabled = if (disabledPkgs.isNotEmpty()) raw !in disabledPkgs else (existing?.enabled ?: true),
+                        )
+                    }
             }
             if (thirdPartyRes != null && thirdPartyRes.exit == 0) {
                 thirdPartyRes.stdout.lineSequence()
@@ -215,8 +260,27 @@ class TvAppManagerMachine(
             send(ActionUpdate(TvAppActionStatus.Failed(pkg, name, TvAppActionKind.LAUNCH)))
             return
         }
+        // For bundled Mi5G TV modules or Leanback apps, try MainActivity / Leanback first, then standard LAUNCHER monkey
+        if (pkg.value.startsWith("com.midroid.mi5gtv.")) {
+            val mainLine = runCatching { ShellRenderer.launchMainActivityLine(pkg) }.getOrNull()
+            if (mainLine != null) {
+                val r0 = attempt { TvShellRunner.run(session, mainLine) }.getOrNull()
+                if (r0 != null && r0.exit == 0 && "Error:" !in (r0.stdout + r0.stderr)) {
+                    send(ActionUpdate(TvAppActionStatus.Done(pkg, name, TvAppActionKind.LAUNCH)))
+                    effect(ManageEffect.HapticLight)
+                    return
+                }
+            }
+        }
         val res = attempt { TvShellRunner.run(session, line) }.getOrNull()
-        if (res != null && res.exit == 0) {
+        if (res != null && res.exit == 0 && "No activities found" !in (res.stdout + res.stderr)) {
+            send(ActionUpdate(TvAppActionStatus.Done(pkg, name, TvAppActionKind.LAUNCH)))
+            effect(ManageEffect.HapticLight)
+            return
+        }
+        val leanbackLine = runCatching { ShellRenderer.launchLeanbackPackageLine(pkg) }.getOrNull()
+        val lbRes = if (leanbackLine != null) attempt { TvShellRunner.run(session, leanbackLine) }.getOrNull() else null
+        if (lbRes != null && lbRes.exit == 0) {
             send(ActionUpdate(TvAppActionStatus.Done(pkg, name, TvAppActionKind.LAUNCH)))
             effect(ManageEffect.HapticLight)
         } else {
@@ -243,6 +307,84 @@ class TvAppManagerMachine(
             effect(ManageEffect.HapticDouble)
         } else {
             send(ActionUpdate(TvAppActionStatus.Failed(pkg, name, TvAppActionKind.FORCE_STOP)))
+        }
+    }
+
+    private suspend fun restrictBackgroundApp(pkg: PackageName) {
+        val name = appNameOf(pkg)
+        val lines = runCatching { ShellRenderer.restrictBackgroundLines(pkg) }.getOrNull()
+        if (lines == null) {
+            send(ActionUpdate(TvAppActionStatus.Failed(pkg, name, TvAppActionKind.RESTRICT_BG)))
+            return
+        }
+        send(ActionUpdate(TvAppActionStatus.Working(pkg, name, TvAppActionKind.RESTRICT_BG)))
+        val session = (d.access.session(tvId) as? AccessResult.Ok)?.session
+        if (session == null) {
+            send(ActionUpdate(TvAppActionStatus.Failed(pkg, name, TvAppActionKind.RESTRICT_BG)))
+            return
+        }
+        var ok = false
+        for (l in lines) {
+            val r = attempt { TvShellRunner.run(session, l) }.getOrNull()
+            if (r != null && r.exit == 0) ok = true
+        }
+        runCatching { ShellRenderer.forceStopLine(pkg) }.getOrNull()?.let { fs ->
+            attempt { TvShellRunner.run(session, fs) }
+        }
+        if (ok) {
+            send(ActionUpdate(TvAppActionStatus.Done(pkg, name, TvAppActionKind.RESTRICT_BG)))
+            effect(ManageEffect.HapticDouble)
+        } else {
+            send(ActionUpdate(TvAppActionStatus.Failed(pkg, name, TvAppActionKind.RESTRICT_BG)))
+        }
+    }
+
+    private suspend fun disableApp(pkg: PackageName) {
+        val name = appNameOf(pkg)
+        val line = runCatching { ShellRenderer.disableUserPackageLine(pkg) }.getOrNull()
+        if (line == null) {
+            send(ActionUpdate(TvAppActionStatus.Failed(pkg, name, TvAppActionKind.DISABLE_APP)))
+            return
+        }
+        send(ActionUpdate(TvAppActionStatus.Working(pkg, name, TvAppActionKind.DISABLE_APP)))
+        val session = (d.access.session(tvId) as? AccessResult.Ok)?.session
+        if (session == null) {
+            send(ActionUpdate(TvAppActionStatus.Failed(pkg, name, TvAppActionKind.DISABLE_APP)))
+            return
+        }
+        val res = attempt { TvShellRunner.run(session, line) }.getOrNull()
+        val out = (res?.stdout.orEmpty() + "\n" + res?.stderr.orEmpty())
+        if (res != null && res.exit == 0 && "disabled" in out.lowercase()) {
+            send(ActionUpdate(TvAppActionStatus.Done(pkg, name, TvAppActionKind.DISABLE_APP), toggledPkg = pkg to false))
+            effect(ManageEffect.HapticDouble)
+        } else {
+            send(ActionUpdate(TvAppActionStatus.Failed(pkg, name, TvAppActionKind.DISABLE_APP)))
+        }
+    }
+
+    private suspend fun enableApp(pkg: PackageName) {
+        val name = appNameOf(pkg)
+        val lines = runCatching { ShellRenderer.enableUserPackageLines(pkg) }.getOrNull()
+        if (lines == null) {
+            send(ActionUpdate(TvAppActionStatus.Failed(pkg, name, TvAppActionKind.ENABLE_APP)))
+            return
+        }
+        send(ActionUpdate(TvAppActionStatus.Working(pkg, name, TvAppActionKind.ENABLE_APP)))
+        val session = (d.access.session(tvId) as? AccessResult.Ok)?.session
+        if (session == null) {
+            send(ActionUpdate(TvAppActionStatus.Failed(pkg, name, TvAppActionKind.ENABLE_APP)))
+            return
+        }
+        var ok = false
+        for (l in lines) {
+            val r = attempt { TvShellRunner.run(session, l) }.getOrNull()
+            if (r != null && r.exit == 0) ok = true
+        }
+        if (ok) {
+            send(ActionUpdate(TvAppActionStatus.Done(pkg, name, TvAppActionKind.ENABLE_APP), toggledPkg = pkg to true))
+            effect(ManageEffect.HapticDouble)
+        } else {
+            send(ActionUpdate(TvAppActionStatus.Failed(pkg, name, TvAppActionKind.ENABLE_APP)))
         }
     }
 
@@ -276,8 +418,9 @@ class TvAppManagerMachine(
             send(ActionUpdate(TvAppActionStatus.Failed(pkg, name, TvAppActionKind.UNINSTALL)))
             return
         }
-        val line = runCatching { ShellRenderer.uninstallUserPackageLine(pkg) }.getOrNull()
-        if (line == null) {
+        val stdLine = runCatching { ShellRenderer.uninstallUserPackageLine(pkg) }.getOrNull()
+        val keepLine = runCatching { ShellRenderer.uninstallKeepDataUserPackageLine(pkg) }.getOrNull()
+        if (stdLine == null || keepLine == null) {
             send(ActionUpdate(TvAppActionStatus.Failed(pkg, name, TvAppActionKind.UNINSTALL)))
             return
         }
@@ -287,8 +430,15 @@ class TvAppManagerMachine(
             send(ActionUpdate(TvAppActionStatus.Failed(pkg, name, TvAppActionKind.UNINSTALL)))
             return
         }
-        val res = attempt { TvShellRunner.run(session, line) }.getOrNull()
-        val out = (res?.stdout.orEmpty() + "\n" + res?.stderr.orEmpty())
+        // Try standard --user 0 uninstall first; for preloaded system apps fallback to -k --user 0
+        val primaryLine = if (app?.system == true) keepLine else stdLine
+        val fallbackLine = if (app?.system == true) stdLine else keepLine
+        var res = attempt { TvShellRunner.run(session, primaryLine) }.getOrNull()
+        var out = (res?.stdout.orEmpty() + "\n" + res?.stderr.orEmpty())
+        if (res == null || res.exit != 0 || "Success" !in out) {
+            res = attempt { TvShellRunner.run(session, fallbackLine) }.getOrNull()
+            out = (res?.stdout.orEmpty() + "\n" + res?.stderr.orEmpty())
+        }
         if (res != null && res.exit == 0 && "Success" in out) {
             send(ActionUpdate(TvAppActionStatus.Done(pkg, name, TvAppActionKind.UNINSTALL), removedPkg = pkg, closeSheet = true))
             effect(ManageEffect.HapticDouble)

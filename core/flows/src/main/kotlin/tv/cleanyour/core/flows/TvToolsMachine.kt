@@ -6,7 +6,9 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tv.cleanyour.core.model.BlobRef
+import tv.cleanyour.core.model.Component
 import tv.cleanyour.core.model.EnabledState
+import tv.cleanyour.core.model.Op
 import tv.cleanyour.core.model.PACKAGE_RE
 import tv.cleanyour.core.model.PackageName
 import tv.cleanyour.core.model.RemoteDir
@@ -18,6 +20,9 @@ import tv.cleanyour.core.ops.Denylist
 import tv.cleanyour.core.ops.ShellRenderer
 import tv.cleanyour.core.probe.TvShellRunner
 import tv.cleanyour.core.session.InstallOutcome
+import tv.cleanyour.core.spec.DecodeResult
+import tv.cleanyour.core.spec.LauncherConfigCodec
+import tv.cleanyour.core.spec.LauncherConfigDoc
 
 sealed interface RemoteStatus {
     data object Idle : RemoteStatus
@@ -113,6 +118,13 @@ sealed interface CastMediaStatus {
     data class Failed(val fileName: String) : CastMediaStatus
 }
 
+sealed interface PowerToolStatus {
+    data object Idle : PowerToolStatus
+    data class Working(val label: String) : PowerToolStatus
+    data class Done(val label: String) : PowerToolStatus
+    data class Failed(val label: String) : PowerToolStatus
+}
+
 data class TvToolsState(
     val tvName: String = "",
     val textInput: String = "",
@@ -126,6 +138,9 @@ data class TvToolsState(
     val castUrlInput: String = "",
     val castUrlStatus: CastUrlStatus = CastUrlStatus.Idle,
     val castMediaStatus: CastMediaStatus = CastMediaStatus.Idle,
+    val downloaderInput: String = "",
+    val tvBannerInput: String = "",
+    val powerToolStatus: PowerToolStatus = PowerToolStatus.Idle,
 )
 
 sealed interface TvToolsIntent {
@@ -153,6 +168,19 @@ sealed interface TvToolsIntent {
         val blob: BlobRef,
     ) : TvToolsIntent
     data object OpenAppManager : TvToolsIntent
+    // v1.5.0 Power Tools
+    data class LaunchBundledCard(val moduleId: String, val pkg: String, val label: String) : TvToolsIntent
+    data class UpdateDownloaderInput(val input: String) : TvToolsIntent
+    data class OpenInDownloader(val input: String? = null) : TvToolsIntent
+    data class DownloadAndInstallUrlApk(val url: String, val fileName: String) : TvToolsIntent
+    data object QuickSettingsOverlay : TvToolsIntent
+    data class MapRemoteKey(val keyCode: Int, val targetPkg: String, val label: String) : TvToolsIntent
+    data class SetForceLandscape(val landscape: Boolean) : TvToolsIntent
+    data object StartClockScreensaver : TvToolsIntent
+    data object ApplyQuietNightVolume : TvToolsIntent
+    data object SwitchHdmiInput : TvToolsIntent
+    data class UpdateTvBannerInput(val text: String) : TvToolsIntent
+    data class SendTvBanner(val text: String? = null) : TvToolsIntent
 }
 
 class TvToolsMachine(
@@ -170,6 +198,7 @@ class TvToolsMachine(
     private data class AnimationScaleUpdate(val scale: TvAnimationScale, val status: AnimationScaleStatus)
     private data class CastUrlUpdate(val status: CastUrlStatus, val clearInput: Boolean = false)
     private data class CastMediaUpdate(val status: CastMediaStatus)
+    private data class PowerToolUpdate(val status: PowerToolStatus, val clearBanner: Boolean = false)
 
     init {
         scope.launch {
@@ -211,6 +240,12 @@ class TvToolsMachine(
             castUrlInput = if (event.clearInput) "" else state.castUrlInput,
         )
         is CastMediaUpdate -> state.copy(castMediaStatus = event.status)
+        is TvToolsIntent.UpdateDownloaderInput -> state.copy(downloaderInput = event.input.take(ShellRenderer.MAX_URL_LEN))
+        is TvToolsIntent.UpdateTvBannerInput -> state.copy(tvBannerInput = event.text.take(160))
+        is PowerToolUpdate -> state.copy(
+            powerToolStatus = event.status,
+            tvBannerInput = if (event.clearBanner) "" else state.tvBannerInput,
+        )
         else -> state
     }
 
@@ -268,7 +303,235 @@ class TvToolsMachine(
             }
             is TvToolsIntent.MediaPicked -> scope.launch { castMedia(event) }
             TvToolsIntent.OpenAppManager -> effect(ManageEffect.Navigate("apps/${tvId.value}"))
+            is TvToolsIntent.LaunchBundledCard -> scope.launch {
+                launchOrInstallBundledCard(event.moduleId, event.pkg, event.label)
+            }
+            is TvToolsIntent.OpenInDownloader -> {
+                val raw = (event.input ?: before.downloaderInput).trim()
+                if (raw.isNotEmpty()) scope.launch { openInDownloader(raw) }
+            }
+            is TvToolsIntent.DownloadAndInstallUrlApk -> {
+                val rawUrl = ShellRenderer.normalizeDownloaderUrl(event.url)
+                if (rawUrl.isNotBlank()) {
+                    send(PowerToolUpdate(PowerToolStatus.Working(event.fileName)))
+                    effect(ManageEffect.DownloadUrlApk(rawUrl, event.fileName))
+                }
+            }
+            TvToolsIntent.QuickSettingsOverlay -> scope.launch {
+                runPowerLines(ShellRenderer.quickSettingsOverlayLines(), "فتح إعدادات التلفاز الفورية")
+            }
+            is TvToolsIntent.MapRemoteKey -> scope.launch {
+                mapRemoteKey(event.keyCode, event.targetPkg, event.label)
+            }
+            is TvToolsIntent.SetForceLandscape -> scope.launch {
+                val lines = if (event.landscape) ShellRenderer.forceLandscapeLines() else ShellRenderer.autoRotationLines()
+                val label = if (event.landscape) "إجبار العرض الأفقي الكامل (Landscape)" else "الوضع التلقائي لتدوير الشاشة"
+                runPowerLines(lines, label)
+            }
+            TvToolsIntent.StartClockScreensaver -> scope.launch {
+                runPowerLines(ShellRenderer.startScreensaverLines(), "تفعيل شاشة التوقف بالساعة")
+            }
+            TvToolsIntent.ApplyQuietNightVolume -> scope.launch {
+                runPowerLines(listOf(ShellRenderer.quietNightVolumeLine()), "وضع ساعات الهدوء الليلي")
+            }
+            TvToolsIntent.SwitchHdmiInput -> scope.launch {
+                runPowerLines(ShellRenderer.switchHdmiInputLines(), "فتح قائمة منافذ HDMI")
+            }
+            is TvToolsIntent.SendTvBanner -> {
+                val msgText = (event.text ?: before.tvBannerInput).trim()
+                if (msgText.isNotEmpty()) scope.launch {
+                    val line = runCatching { ShellRenderer.tvNotificationBannerLine(msgText) }.getOrNull()
+                    if (line != null) {
+                        runPowerLines(listOf(line), "إرسال الإشعار لشاشة التلفاز", clearBanner = true)
+                    } else {
+                        send(PowerToolUpdate(PowerToolStatus.Failed("إرسال الإشعار لشاشة التلفاز")))
+                    }
+                }
+            }
             else -> {}
+        }
+    }
+
+    private suspend fun runPowerLines(
+        lines: List<tv.cleanyour.core.model.ShellLine>,
+        label: String,
+        clearBanner: Boolean = false,
+    ) {
+        send(PowerToolUpdate(PowerToolStatus.Working(label)))
+        val session = (d.access.session(tvId) as? AccessResult.Ok)?.session
+        if (session == null) {
+            send(PowerToolUpdate(PowerToolStatus.Failed(label)))
+            return
+        }
+        var anyOk = false
+        for (line in lines) {
+            val r = attempt { TvShellRunner.run(session, line) }.getOrNull()
+            if (r != null && r.exit == 0) anyOk = true
+        }
+        if (anyOk) {
+            send(PowerToolUpdate(PowerToolStatus.Done(label), clearBanner = clearBanner))
+            effect(ManageEffect.HapticDouble)
+        } else {
+            send(PowerToolUpdate(PowerToolStatus.Failed(label)))
+        }
+    }
+
+    private suspend fun openInDownloader(rawInput: String) {
+        val label = "فتح $rawInput على التلفاز"
+        send(PowerToolUpdate(PowerToolStatus.Working(label)))
+        val lines = runCatching { ShellRenderer.openInDownloaderLines(rawInput) }.getOrNull()
+        if (lines == null) {
+            send(PowerToolUpdate(PowerToolStatus.Failed(label)))
+            return
+        }
+        val session = (d.access.session(tvId) as? AccessResult.Ok)?.session
+        if (session == null) {
+            send(PowerToolUpdate(PowerToolStatus.Failed(label)))
+            return
+        }
+        // Try Downloader package first; if not installed, open in TV browser
+        val r0 = attempt { TvShellRunner.run(session, lines[0]) }.getOrNull()
+        val out0 = (r0?.stdout.orEmpty() + "\n" + r0?.stderr.orEmpty())
+        if (r0 != null && r0.exit == 0 && "Error:" !in out0 && "unable to resolve" !in out0.lowercase()) {
+            send(PowerToolUpdate(PowerToolStatus.Done(label)))
+            effect(ManageEffect.HapticDouble)
+            return
+        }
+        val r1 = attempt { TvShellRunner.run(session, lines[1]) }.getOrNull()
+        val out1 = (r1?.stdout.orEmpty() + "\n" + r1?.stderr.orEmpty())
+        if (r1 != null && r1.exit == 0 && "Error:" !in out1) {
+            send(PowerToolUpdate(PowerToolStatus.Done(label)))
+            effect(ManageEffect.HapticDouble)
+        } else {
+            send(PowerToolUpdate(PowerToolStatus.Failed(label)))
+        }
+    }
+
+    private suspend fun launchOrInstallBundledCard(moduleId: String, pkgStr: String, label: String) {
+        send(PowerToolUpdate(PowerToolStatus.Working(label)))
+        val session = (d.access.session(tvId) as? AccessResult.Ok)?.session
+        val pkg = runCatching { PackageName(pkgStr) }.getOrNull()
+        if (session == null || pkg == null) {
+            send(PowerToolUpdate(PowerToolStatus.Failed(label)))
+            return
+        }
+        val launchLine = ShellRenderer.launchMainActivityLine(pkg)
+        val r0 = attempt { TvShellRunner.run(session, launchLine) }.getOrNull()
+        val out0 = (r0?.stdout.orEmpty() + "\n" + r0?.stderr.orEmpty())
+        if (r0 != null && r0.exit == 0 && "Error:" !in out0 && "does not exist" !in out0) {
+            if (pkgStr == "com.midroid.mi5gtv.dns") {
+                for (l in ShellRenderer.applyAdGuardDnsLines().take(1)) {
+                    attempt { TvShellRunner.run(session, l) }
+                }
+            }
+            send(PowerToolUpdate(PowerToolStatus.Done(label)))
+            effect(ManageEffect.HapticDouble)
+            return
+        }
+        // Not installed on TV yet: install from bundled asset and then launch!
+        val mod = d.registry.module(moduleId)
+        val ver = mod?.versions?.firstOrNull()
+        val bundledAssetName = ver?.let { "mod-${it.artifact.sha256.hex.take(40)}.apk" }
+        val blob = bundledAssetName?.let { name -> runCatching { d.blobs.bundled(name) }.getOrNull() }
+        if (blob != null) {
+            val installed = installBlobOnSession(session, blob)
+            if (installed) {
+                if (pkgStr == "com.midroid.mi5gtv.dns") {
+                    for (l in ShellRenderer.applyAdGuardDnsLines().take(1)) {
+                        attempt { TvShellRunner.run(session, l) }
+                    }
+                }
+                val r1 = attempt { TvShellRunner.run(session, launchLine) }.getOrNull()
+                if (r1 != null && r1.exit == 0) {
+                    send(PowerToolUpdate(PowerToolStatus.Done(label)))
+                    effect(ManageEffect.HapticDouble)
+                    return
+                }
+            }
+        }
+        send(PowerToolUpdate(PowerToolStatus.Failed(label)))
+    }
+
+    private suspend fun installBlobOnSession(session: tv.cleanyour.core.session.TvSession, blob: BlobRef): Boolean {
+        if ("cmd" in session.identity.features) {
+            val outcome = attempt { session.installStream(blob, blob.size) {} }.getOrNull()
+            if (outcome is InstallOutcome.Installed) return true
+        }
+        val remoteApk = RemotePath(RemoteDir.TMP, listOf(blob.sha256.hex.take(40) + ".apk"))
+        return try {
+            attempt { TvShellRunner.run(session, ShellRenderer.mkdirTmpLine()) }
+            val pushed = attempt { session.push(blob, remoteApk) {} }.getOrNull()
+            if (pushed == null) return false
+            val res = attempt { TvShellRunner.run(session, ShellRenderer.pmInstallLine(remoteApk), timeoutMs = ShellRenderer.T_INSTALL) }.getOrNull()
+            val out = (res?.stdout.orEmpty() + "\n" + res?.stderr.orEmpty())
+            res != null && res.exit == 0 && "Success" in out
+        } finally {
+            withContext(NonCancellable) {
+                attempt { TvShellRunner.run(session, ShellRenderer.removeTmpLine(remoteApk)) }
+            }
+        }
+    }
+
+    private suspend fun mapRemoteKey(keyCode: Int, targetPkg: String, label: String) {
+        send(PowerToolUpdate(PowerToolStatus.Working(label)))
+        val session = (d.access.session(tvId) as? AccessResult.Ok)?.session
+        if (session == null || !PACKAGE_RE.matches(targetPkg)) {
+            send(PowerToolUpdate(PowerToolStatus.Failed(label)))
+            return
+        }
+        val existingBytes = d.snapshots.latest(tvId)?.launcherOverlay
+        val baseDoc = existingBytes?.let { (LauncherConfigCodec.decode(it) as? DecodeResult.Ok)?.doc } ?: LauncherConfigDoc()
+        val currentKeys = baseDoc.appKeys.orEmpty().toMutableList()
+        val relatedCodes = when (keyCode) {
+            190 -> listOf(190, 4065)
+            191 -> listOf(191, 4062)
+            else -> listOf(keyCode)
+        }
+        currentKeys.removeAll { entry ->
+            val prefix = entry.substringBefore(':').trim().toIntOrNull()
+            prefix != null && prefix in relatedCodes
+        }
+        for (c in relatedCodes) {
+            currentKeys += "$c:$targetPkg"
+        }
+        val updatedSettingsKeys = ((baseDoc.settingsKeyKeycodes ?: emptyList()) + 176).distinct()
+        val updatedDoc = baseDoc.copy(
+            settingsKeyKeycodes = updatedSettingsKeys,
+            settingsKeyPanel = true,
+            appKeys = currentKeys,
+        )
+        val encoded = runCatching { d.encoder.encode(updatedDoc) }.getOrNull()
+        if (encoded == null) {
+            send(PowerToolUpdate(PowerToolStatus.Failed(label)))
+            return
+        }
+        val blob = d.blobs.putBytes(encoded)
+        try {
+            val ops = d.configTransport.writePlanSteps(blob, null)
+            for (op in ops) {
+                when (op) {
+                    is Op.PushAsset -> attempt { session.push(op.src, op.dest) {} }
+                    else -> {
+                        val rendered = runCatching { ShellRenderer().render(op) }.getOrNull()
+                        if (rendered != null) {
+                            for (line in rendered.lines) {
+                                attempt { TvShellRunner.run(session, line) }
+                            }
+                        }
+                    }
+                }
+            }
+            if (keyCode == 176) {
+                for (l in ShellRenderer.quickSettingsOverlayLines()) {
+                    attempt { TvShellRunner.run(session, l) }
+                }
+            }
+            send(PowerToolUpdate(PowerToolStatus.Done(label)))
+            effect(ManageEffect.HapticDouble)
+        } finally {
+            withContext(NonCancellable) {
+                attempt { d.blobs.delete(blob.sha256) }
+            }
         }
     }
 

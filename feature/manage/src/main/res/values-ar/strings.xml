@@ -12,8 +12,8 @@
     <string name="action_undo">تراجع</string>
 
     <!-- Credential prompt (D17) -->
-    <string name="gate_title">تأكيد هويتك</string>
-    <string name="gate_subtitle">قبل أن نغيّر أي شيء على {tv}</string>
+    <string name="gate_title">تأكيد قفل شاشة جوالك</string>
+    <string name="gate_subtitle">أدخل رمز قفل الجوال أو البصمة قبل التعديل على {tv}</string>
     <string name="gate_subtitle_reset_key">قبل إعادة ضبط مفتاح هذا الهاتف</string>
     <string name="gate_subtitle_delete_all">قبل حذف كل شيء</string>
     <string name="gate_negative">إلغاء</string>
@@ -263,7 +263,7 @@
     <string name="tvapps_title">مدير تطبيقات التلفاز</string>
     <string name="tvapps_search_label">ابحث باسم التطبيق أو الحزمة</string>
     <string name="tvapps_filter_user">تطبيقاتي</string>
-    <string name="tvapps_filter_all">الكل</string>
+    <string name="tvapps_filter_all">الكل + تطبيقات النظام (Netflix/Prime)</string>
     <string name="tvapps_refresh">تحديث القائمة</string>
     <string name="tvapps_status_user_active">تطبيق مستخدم · نشط</string>
     <string name="tvapps_status_user_off">تطبيق مستخدم · متوقف</string>
@@ -274,7 +274,7 @@
     <string name="tvapps_action_pull_apk">حفظ نسخة APK في الهاتف</string>
     <string name="tvapps_action_force_stop">إيقاف إجباري</string>
     <string name="tvapps_action_clear_data">مسح الكاش والبيانات</string>
-    <string name="tvapps_action_uninstall">إلغاء التثبيت من التلفاز</string>
+    <string name="tvapps_action_uninstall">حذف نهائي للمستخدم (إزالة من التلفاز)</string>
     <string name="tvapps_uninstall_confirm_title">هل تريد إلغاء تثبيت {name}؟</string>
     <string name="tvapps_uninstall_confirm_body">سيؤدي هذا إلى إزالة {name} من التلفاز. يمكنك حفظ نسخة APK في هاتفك أولًا إذا أردت الاحتفاظ بها.</string>
     <string name="tvapps_uninstall_confirm_btn">تأكيد إلغاء التثبيت</string>
@@ -289,5 +289,48 @@
     <string name="tvapps_done_uninstall">تم إلغاء تثبيت {name} من التلفاز.</string>
     <string name="tvapps_done_pull_apk">تم سحب وحفظ نسخة APK لتطبيق {name} في الهاتف.</string>
     <string name="tvapps_failed_action">تعذّر تنفيذ الإجراء لتطبيق {name}.</string>
+    <!-- v1.5.0: TV App Manager 7 actions, Downloader codes, Button Mapper, Force Landscape, TV Banner, GitHub Update -->
+    <string name="appsettings_download_github">التحقق وتنزيل أحدث إصدار للتطبيق (GitHub)</string>
+    <string name="appsettings_download_github_note">تنزيل أحدث ملف APK مباشرة من صفحة الإصدارات الرسمية</string>
+    <string name="tvapps_filter_system_toggle">إظهار تطبيقات النظام والمصنع (مثل Netflix و Prime)</string>
+    <string name="tvapps_action_restrict_bg">منع العمل بالخلفية (توفير الرام والمعالج)</string>
+    <string name="tvapps_action_disable">تجميد / تعطيل التطبيق</string>
+    <string name="tvapps_action_enable">تفعيل / فك التجميد واستعادة التطبيق</string>
+    <string name="tvapps_working_restrict_bg">جارٍ منع العمل بالخلفية لتطبيق {name}...</string>
+    <string name="tvapps_working_disable">جارٍ تجميد وتعطيل {name}...</string>
+    <string name="tvapps_working_enable">جارٍ تفعيل واستعادة {name}...</string>
+    <string name="tvapps_done_restrict_bg">تم منع {name} من العمل في الخلفية واستهلاك الرام.</string>
+    <string name="tvapps_done_disable">تم تجميد وتعطيل {name} بنجاح.</string>
+    <string name="tvapps_done_enable">تم تفعيل واستعادة {name} بنجاح.</string>
+    <string name="tvtools_cards_section">فتح بطاقات Mi5G TV مباشرة على التلفاز (لدونجل Xiaomi Stick وكل الشاشات)</string>
+    <string name="tvtools_cards_note">اضغط على أي بطاقة لفتحها فورًا على شاشة التلفاز (أو تثبيتها تلقائيًا إذا لم تكن مثبتة بعد حتى لو لم تتغير الشاشة الرئيسية).</string>
+    <string name="tvtools_card_matches">⚽ مباريات اليوم</string>
+    <string name="tvtools_card_prayer">🕌 الصلاة والأذان والطقس</string>
+    <string name="tvtools_card_dns">🛡️ مانع الإعلانات DNS</string>
+    <string name="tvtools_card_files">📁 مدير الملفات</string>
+    <string name="tvtools_card_speed">🚀 قياس السرعة</string>
+    <string name="tvtools_downloader_section">متجر Downloader وأكواد التحميل السريع (مثل 401740) ويوتيوب بدون إعلانات</string>
+    <string name="tvtools_downloader_note">أدخل أي كود Downloader (مثل 401740) أو رابط APK مباشر، أو اختر من الاختصارات بالأسفل لفتحه أو تثبيته مباشرة على التلفاز.</string>
+    <string name="tvtools_downloader_label">كود Downloader (مثل 401740) أو رابط APK</string>
+    <string name="tvtools_downloader_open_btn">فتح الكود أو الرابط مباشرة على التلفاز</string>
+    <string name="tvtools_downloader_install_btn">تحميل وتثبيت APK على التلفاز مباشرة</string>
+    <string name="tvtools_smarttube_tip">💡 تعليمات إلغاء Shorts في يوتيوب التلفاز (SmartTube): افتح SmartTube &gt; الإعدادات (Settings) &gt; تصفح المحتوى (Content) &gt; إخفاء Shorts.</string>
+    <string name="tvtools_mapper_section">تخصيص أزرار الريموت وإصلاح زر الإعدادات وتدوير الشاشة وشاشة التوقف</string>
+    <string name="tvtools_mapper_settings_fix">⚙️ تفعيل وفتح زر الإعدادات من أي مكان (إصلاح شاومي و MX Player)</string>
+    <string name="tvtools_mapper_yt_smarttube">تحويل زر يوتيوب في الريموت إلى SmartTube (بدون إعلانات)</string>
+    <string name="tvtools_mapper_yt_official">تحويل زر يوتيوب في الريموت إلى يوتيوب الرسمي</string>
+    <string name="tvtools_mapper_nf_shahid">تحويل زر نتفلكس في الريموت إلى شاهد (Shahid)</string>
+    <string name="tvtools_mapper_nf_matches">تحويل زر نتفلكس في الريموت إلى بطاقة مباريات اليوم</string>
+    <string name="tvtools_rotation_landscape">📺 عرض كامل أفقي (Force Landscape لكاميرات DMSS وواتساب)</string>
+    <string name="tvtools_rotation_auto">🔄 الوضع التلقائي لتدوير الشاشة (Auto Rotation)</string>
+    <string name="tvtools_screensaver_now">🕒 تفعيل شاشة التوقف بالساعة الآن</string>
+    <string name="tvtools_quiet_night">🌙 وضع ساعات الهدوء الليلي (تخفيض سقف الصوت ليلاً)</string>
+    <string name="tvtools_hdmi_switch">🎮 التبديل السريع بين منافذ HDMI (PS5 / الرسيفر)</string>
+    <string name="tvtools_banner_section">إرسال إشعار أو رسالة فورية لشاشة التلفاز</string>
+    <string name="tvtools_banner_label">اكتب رسالة لتظهر فورًا على شاشة التلفاز</string>
+    <string name="tvtools_banner_send">إرسال للتلفاز</string>
+    <string name="tvtools_power_working">جارٍ التنفيذ على التلفاز: {name}...</string>
+    <string name="tvtools_power_done">تم التنفيذ بنجاح: {name}.</string>
+    <string name="tvtools_power_failed">تعذّر التنفيذ على التلفاز: {name}.</string>
 </resources>
 
