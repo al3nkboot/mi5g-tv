@@ -122,6 +122,8 @@
     <string name="appsettings_large_text_note">يتبع حجم النص الحجم المحدد في إعدادات هاتفك.</string>
     <string name="appsettings_haptics">الاهتزاز اللمسي</string>
     <string name="appsettings_haptics_note">اهتزازات خفيفة عند انتهاء خطوة أو عندما يحتاج التطبيق إلى انتباهك.</string>
+    <string name="appsettings_auto_updates">التحقق من التحديثات تلقائيًا</string>
+    <string name="appsettings_auto_updates_note">يفحص GitHub عند فتح التطبيق، مرة واحدة يوميًا كحد أقصى. يمكنك إيقافه.</string>
     <string name="appsettings_about">حول التطبيق</string>
     <string name="appsettings_version">الإصدار {version}</string>
     <string name="appsettings_launcher_pin_label">تطبيق الشاشة الرئيسية المدمج</string>
@@ -135,6 +137,31 @@
     <string name="appsettings_update_open">فتح صفحة الإصدار</string>
     <string name="appsettings_up_to_date">لديك أحدث إصدار</string>
     <string name="appsettings_update_error">تعذّر التحقق من التحديثات</string>
+    <string name="appsettings_update_title">تحديث Mi5G TV</string>
+    <string name="appsettings_update_current_new">المثبت {current} · المتاح {version}</string>
+    <string name="appsettings_update_date">تاريخ الإصدار {date}</string>
+    <string name="appsettings_update_size">حجم التنزيل: {size}</string>
+    <string name="appsettings_update_download">تنزيل التحديث</string>
+    <string name="appsettings_update_downloading">جارٍ التنزيل: {percent}٪</string>
+    <string name="appsettings_update_install">تثبيت التحديث</string>
+    <string name="appsettings_update_retry">إعادة المحاولة</string>
+    <string name="appsettings_update_later">تذكيري لاحقًا</string>
+    <string name="appsettings_update_changes">عرض التغييرات</string>
+    <string name="appsettings_update_no_apk">لا يحتوي هذا الإصدار على APK موثوق لهذا التطبيق.</string>
+    <string name="appsettings_update_no_checksum">لم ينشر GitHub بصمة SHA-256؛ لذلك لا يمكن التحقق من هذا الملف.</string>
+    <string name="appsettings_update_signature_mismatch">توقيع APK لا يطابق التطبيق المثبت. لم يُفتح الملف.</string>
+    <string name="appsettings_update_package_mismatch">ملف APK ليس تطبيق Mi5G TV. لم يُفتح الملف.</string>
+    <string name="appsettings_update_version_mismatch">إصدار APK لا يطابق الإصدار المنشور أو ليس أحدث. لم يُفتح الملف.</string>
+    <string name="appsettings_update_download_failed">فشل التنزيل. تحقق من الاتصال ثم أعد المحاولة.</string>
+    <string name="appsettings_update_network_failed">تعذر الوصول إلى GitHub. تحقق من اتصال الإنترنت ثم أعد المحاولة.</string>
+    <string name="appsettings_update_hash_mismatch">بصمة APK لا تطابق SHA-256 المنشورة من GitHub. حُذف الملف.</string>
+    <string name="appsettings_update_permission_note">يجب أن يسمح Android لـMi5G TV بتثبيت هذا التحديث. ستراجع التثبيت وتؤكده بنفسك في Android.</string>
+    <string name="appsettings_update_permission_button">فتح إعداد إذن التثبيت</string>
+    <string name="appsettings_update_notice">يتوفر إصدار جديد من Mi5G TV.</string>
+    <string name="appsettings_update_notice_action">عرض التحديث</string>
+    <string name="appsettings_update_notification_channel">تحديثات Mi5G TV</string>
+    <string name="appsettings_update_notification_title">يتوفر تحديث لـMi5G TV</string>
+    <string name="appsettings_update_notification_body">افتح التطبيق لمراجعة التحديث وتنزيله.</string>
     <string name="appsettings_support_paypal">دعم المطور عبر PayPal</string>
     <string name="appsettings_support_paypal_note">paypal.me/Midroid5G · للمساهمة في استمرار تطوير التطبيق مجانًا وبدون إعلانات</string>
     <string name="appsettings_developer_x">حساب المطور على X (@midroid5G)</string>
@@ -144,7 +171,7 @@
     <string name="appsettings_licence_apache">شيفرة dadb وShizuku المعدّلة: إشعارات Apache-2.0</string>
     <string name="appsettings_licence_bouncycastle">مكتبة التشفير Bouncy Castle: ترخيص Bouncy Castle</string>
     <string name="appsettings_privacy">الخصوصية</string>
-    <string name="appsettings_privacy_text">لا يغادر أي شيء شبكتك باستثناء التنزيلات من github.com. يرى GitHub عنوان هاتفك ومعرّف متصفح عامًا فقط. ولا يغادر أي تقرير هاتفك إلا عندما تنسخه أو تشاركه أو تنشره بنفسك.</string>
+    <string name="appsettings_privacy_text">في نسختَي GitHub وF-Droid، قد يفحص التطبيق GitHub تلقائيًا (مفعّل افتراضيًا) مرة واحدة يوميًا كحد أقصى عند توفر الإنترنت؛ يمكنك إيقافه من الإعدادات. يتصل الفحص اليدوي بـGitHub عند ضغطك عليه، ولا يُنزّل APK إلا بعد اختيارك «تنزيل». يرى GitHub عنوان IP مع كل طلب، ولا يرسل التطبيق معرّفًا خاصًا بك. لا يغادر أي تقرير هاتفك إلا عندما تشاركه.</string>
     <string name="appsettings_privacy_text_offline">لا يغادر أي شيء شبكتك. يتحدث التطبيق فقط مع التلفاز الذي تختاره ولا يجري أي اتصالات بالإنترنت من تلقاء نفسه. ولا يغادر أي تقرير هاتفك إلا عندما تنسخه أو تشاركه أو تنشره بنفسك.</string>
     <string name="appsettings_report">الإبلاغ عن مشكلة</string>
     <string name="appsettings_report_note">اطّلع على التقرير أولًا، ثم شاركه أو انشره على GitHub</string>
@@ -333,4 +360,3 @@
     <string name="tvtools_power_done">تم التنفيذ بنجاح: {name}.</string>
     <string name="tvtools_power_failed">تعذّر التنفيذ على التلفاز: {name}.</string>
 </resources>
-

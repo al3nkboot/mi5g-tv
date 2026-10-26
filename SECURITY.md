@@ -33,6 +33,14 @@ Problems in the launcher itself (the TV home screen) belong to the upstream proj
 
 ## Supported versions
 
-Only the latest release gets security fixes. Android refuses updates signed by another key, so
-updating in place is always safe; the release certificate SHA-256 is in
-[docs/release-signer.sha256](docs/release-signer.sha256).
+Only the latest release gets security fixes. Android requires a matching signing identity or a
+valid supported signing-certificate lineage for an in-place update. The in-app updater applies a
+stricter check: it refuses an APK whose signer differs from the installed app. The repository's
+release certificate SHA-256 is recorded in [docs/release-signer.sha256](docs/release-signer.sha256).
+
+In the GitHub and F-Droid builds, the in-app updater checks only stable releases. It downloads an
+APK only after the user asks, requires GitHub's published SHA-256, and checks the package name,
+version, and signing certificate against the installed app before opening Android's installer.
+Android still asks the user to confirm the installation; this app does not install silently. A
+build signed with a different key (including a differently signed F-Droid build) is refused.
+Google Play builds do not use this updater or request permission to install APKs from outside Play.

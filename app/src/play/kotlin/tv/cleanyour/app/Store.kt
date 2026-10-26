@@ -1,6 +1,7 @@
 package tv.cleanyour.app
 
 import tv.cleanyour.core.flows.StoreRules
+import tv.cleanyour.core.flows.AppUpdateReleaseSource
 import tv.cleanyour.core.flows.UpdateChecker
 import tv.cleanyour.core.model.ArtifactRef
 import tv.cleanyour.core.registry.ArtifactFetcher
@@ -21,6 +22,7 @@ object Store : StorePorts {
 
     // Never asked (Settings has no "Check for updates"); answers "couldn't check" without a request.
     override fun updateChecker(http: HttpFetcher) = UpdateChecker { null }
+    override fun updateReleaseSource(http: HttpFetcher) = AppUpdateReleaseSource { null }
 
     // The real fetcher is never built: nothing is downloaded, for any URL.
     override fun addOnFetcher(make: () -> ArtifactFetcher): ArtifactFetcher = NoAddOns

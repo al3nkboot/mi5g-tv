@@ -33,6 +33,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import tv.cleanyour.ui.design.component.rejectObscuredTouches
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -52,6 +53,8 @@ import tv.cleanyour.core.engine.PauseReason
 import tv.cleanyour.core.flows.AppConfirm
 import tv.cleanyour.core.flows.AppSettingsIntent
 import tv.cleanyour.core.flows.AppSettingsState
+import tv.cleanyour.core.flows.AppUpdateFailure
+import tv.cleanyour.core.flows.AppUpdateState
 import tv.cleanyour.core.flows.LeftoversIntent
 import tv.cleanyour.core.flows.LeftoversState
 import tv.cleanyour.core.flows.ManageIntent
@@ -426,9 +429,27 @@ fun AppSettingsScreen(
     modifier: Modifier = Modifier,
     onSupportPayPal: (() -> Unit)? = null,
     onOpenDeveloper: (() -> Unit)? = null,
+    onOpenUpdateRelease: (String) -> Unit = { onOpenRelease() },
+    updateStatus: AppUpdateState? = null,
+    onCheckUpdates: () -> Unit = { onIntent(AppSettingsIntent.CheckUpdates) },
+    onSetAutomaticUpdateChecks: (Boolean) -> Unit = { onIntent(AppSettingsIntent.SetAutomaticUpdateChecks(it)) },
+    onDownloadUpdate: () -> Unit = {},
+    onInstallUpdate: () -> Unit = {},
+    onOpenInstallPermission: () -> Unit = {},
+    onRemindLater: () -> Unit = {},
+    installPermissionNeeded: Boolean = false,
 ) {
     var licences by rememberSaveable { mutableStateOf(false) }
     var privacy by rememberSaveable { mutableStateOf(false) }
+    var updateDetails by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(updateStatus) {
+        val shouldPrompt = when (updateStatus) {
+            is AppUpdateState.Available -> updateStatus.showPrompt
+            is AppUpdateState.Failed -> updateStatus.showPrompt && updateStatus.release != null
+            else -> false
+        }
+        if (shouldPrompt) updateDetails = true
+    }
     ScreenScaffold(Glow.Tv, modifier, topBar = { CytTopBar(onBack = onBack) }) {
         ScreenTitle(stringResource(R.string.appsettings_title), titleTop)
         ListGroup(Modifier.padding(top = 20.dp)) {
@@ -437,6 +458,12 @@ fun AppSettingsScreen(
             ListDivider()
             SwitchRow(stringResource(R.string.appsettings_haptics), state.prefs.haptics, { onIntent(AppSettingsIntent.SetHaptics(it)) },
                 subtitle = stringResource(R.string.appsettings_haptics_note))
+            if (state.updateCheck) {
+                ListDivider()
+                SwitchRow(stringResource(R.string.appsettings_auto_updates), state.prefs.automaticUpdateChecks,
+                    onSetAutomaticUpdateChecks,
+                    subtitle = stringResource(R.string.appsettings_auto_updates_note))
+            }
         }
         SectionLabel(stringResource(R.string.appsettings_about))
         ListGroup {
@@ -457,15 +484,34 @@ fun AppSettingsScreen(
             // STORES-PLAN 1: the Play build is updated by Google Play and has no update check.
             if (state.updateCheck) {
                 ListDivider()
-                val update = state.update
-                ListRow(stringResource(R.string.appsettings_check_updates), subtitle = when (update) {
-                    UpdateCheck.Checking -> stringResource(R.string.appsettings_checking)
-                    is UpdateCheck.Available -> msg(R.string.appsettings_update_available, "version" to update.version)
-                    UpdateCheck.Latest -> stringResource(R.string.appsettings_up_to_date)
-                    UpdateCheck.Failed -> stringResource(R.string.appsettings_update_error)
-                    UpdateCheck.Idle -> null
-                }, trailing = if (update == UpdateCheck.Checking) ({ Spinner() }) else null,
-                    onClick = { if (update is UpdateCheck.Available) onOpenRelease() else onIntent(AppSettingsIntent.CheckUpdates) })
+                val legacy = state.update
+                val subtitle = when (val remote = updateStatus) {
+                    AppUpdateState.Checking -> stringResource(R.string.appsettings_checking)
+                    AppUpdateState.UpToDate -> stringResource(R.string.appsettings_up_to_date)
+                    is AppUpdateState.Available -> msg(R.string.appsettings_update_available, "version" to remote.release.version)
+                    is AppUpdateState.Downloading -> msg(R.string.appsettings_update_downloading,
+                        "percent" to progressPercent(remote.receivedBytes, remote.totalBytes))
+                    is AppUpdateState.ReadyToInstall -> msg(R.string.appsettings_update_available, "version" to remote.release.version)
+                    is AppUpdateState.Failed -> stringResource(R.string.appsettings_update_error)
+                    AppUpdateState.Idle, null -> when (legacy) {
+                        UpdateCheck.Checking -> stringResource(R.string.appsettings_checking)
+                        is UpdateCheck.Available -> msg(R.string.appsettings_update_available, "version" to legacy.version)
+                        UpdateCheck.Latest -> stringResource(R.string.appsettings_up_to_date)
+                        UpdateCheck.Failed -> stringResource(R.string.appsettings_update_error)
+                        UpdateCheck.Idle -> null
+                    }
+                }
+                val busy = updateStatus is AppUpdateState.Checking || updateStatus is AppUpdateState.Downloading ||
+                    (updateStatus == null && legacy == UpdateCheck.Checking)
+                ListRow(stringResource(R.string.appsettings_check_updates), subtitle = subtitle,
+                    trailing = if (busy) ({ Spinner() }) else null,
+                    onClick = {
+                        when (updateStatus) {
+                            is AppUpdateState.Available, is AppUpdateState.Downloading, is AppUpdateState.ReadyToInstall,
+                            is AppUpdateState.Failed -> updateDetails = true
+                            else -> if (legacy is UpdateCheck.Available && updateStatus == null) onOpenRelease() else onCheckUpdates()
+                        }
+                    })
             }
         }
         ListGroup(Modifier.padding(top = 12.dp)) {
@@ -509,10 +555,110 @@ fun AppSettingsScreen(
         }
     }
     if (licences) CytBottomSheet({ licences = false }) { LicencesContent() }
+    if (updateDetails && state.updateCheck && updateStatus != null) CytBottomSheet({ updateDetails = false }) {
+        UpdateDetailsContent(updateStatus, state.version, installPermissionNeeded, onCheckUpdates, onDownloadUpdate,
+            onInstallUpdate, onOpenInstallPermission, { onRemindLater(); updateDetails = false }, onOpenUpdateRelease)
+    }
     if (privacy) CytBottomSheet({ privacy = false }) { PrivacyContent(online = state.updateCheck || state.addOns) }
     state.confirm?.let { what ->
         CytBottomSheet({ onIntent(AppSettingsIntent.CancelConfirm) }) { ConfirmContent(what, state.working, onIntent) }
     }
+}
+
+@Composable
+private fun ColumnScope.UpdateDetailsContent(
+    status: AppUpdateState,
+    installedVersion: String,
+    installPermissionNeeded: Boolean,
+    onCheck: () -> Unit,
+    onDownload: () -> Unit,
+    onInstall: () -> Unit,
+    onOpenPermission: () -> Unit,
+    onRemindLater: () -> Unit,
+    onOpenRelease: (String) -> Unit,
+) {
+    val release = when (status) {
+        is AppUpdateState.Available -> status.release
+        is AppUpdateState.Downloading -> status.release
+        is AppUpdateState.ReadyToInstall -> status.release
+        is AppUpdateState.Failed -> status.release
+        else -> null
+    }
+    var notesExpanded by rememberSaveable(release?.version) { mutableStateOf(false) }
+    SheetHeader(stringResource(R.string.appsettings_update_title))
+    if (release != null) {
+        Body(msg(R.string.appsettings_update_current_new, "current" to installedVersion, "version" to release.version), Modifier.padding(top = 8.dp))
+        if (release.publishedAt.isNotBlank()) Body(msg(R.string.appsettings_update_date, "date" to release.publishedAt.take(10)), Modifier.padding(top = 4.dp))
+        release.asset?.let { Body(msg(R.string.appsettings_update_size, "size" to formatUpdateSize(it.sizeBytes)), Modifier.padding(top = 4.dp)) }
+    }
+    when (status) {
+        AppUpdateState.Idle -> Body(stringResource(R.string.appsettings_update_error), Modifier.padding(top = 8.dp))
+        AppUpdateState.Checking -> Row(Modifier.padding(top = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+            Spinner()
+            Body(stringResource(R.string.appsettings_checking), Modifier.padding(start = 12.dp))
+        }
+        AppUpdateState.UpToDate -> Body(stringResource(R.string.appsettings_up_to_date), Modifier.padding(top = 8.dp))
+        is AppUpdateState.Available -> {
+            ActionColumn(Modifier.padding(top = 16.dp)) {
+                PrimaryButton(stringResource(R.string.appsettings_update_download), onDownload)
+                TertiaryButton(stringResource(R.string.appsettings_update_later), onRemindLater, quiet = true)
+                if (!status.release.notes.isBlank()) {
+                    TertiaryButton(stringResource(R.string.appsettings_update_changes), { notesExpanded = !notesExpanded }, quiet = true)
+                }
+                TertiaryButton(stringResource(R.string.appsettings_update_open), { onOpenRelease(status.release.releaseUrl) }, quiet = true)
+            }
+            if (notesExpanded && !status.release.notes.isBlank()) Body(status.release.notes, Modifier.padding(top = 12.dp))
+        }
+        is AppUpdateState.Downloading -> {
+            val percent = progressPercent(status.receivedBytes, status.totalBytes)
+            Body(msg(R.string.appsettings_update_downloading, "percent" to percent), Modifier.padding(top = 16.dp))
+            ProgressBar(if (status.totalBytes <= 0L) 0f else status.receivedBytes.toFloat() / status.totalBytes.toFloat(), Modifier.padding(top = 8.dp))
+        }
+        is AppUpdateState.ReadyToInstall -> {
+            if (installPermissionNeeded) {
+                Body(stringResource(R.string.appsettings_update_permission_note), Modifier.padding(top = 12.dp))
+                ActionColumn(Modifier.padding(top = 16.dp)) {
+                    PrimaryButton(stringResource(R.string.appsettings_update_permission_button), onOpenPermission)
+                    TertiaryButton(stringResource(R.string.appsettings_update_install), onInstall, quiet = true)
+                }
+            } else {
+                PrimaryButton(stringResource(R.string.appsettings_update_install), onInstall, Modifier.padding(top = 16.dp))
+            }
+        }
+        is AppUpdateState.Failed -> {
+            val failedRelease = status.release
+            val message = when (status.reason) {
+                AppUpdateFailure.NETWORK -> R.string.appsettings_update_network_failed
+                AppUpdateFailure.INVALID_RELEASE -> R.string.appsettings_update_error
+                AppUpdateFailure.APK_NOT_PUBLISHED -> R.string.appsettings_update_no_apk
+                AppUpdateFailure.CHECKSUM_UNAVAILABLE -> R.string.appsettings_update_no_checksum
+                AppUpdateFailure.DOWNLOAD_FAILED -> R.string.appsettings_update_download_failed
+                AppUpdateFailure.CHECKSUM_MISMATCH -> R.string.appsettings_update_hash_mismatch
+                AppUpdateFailure.SIGNER_MISMATCH -> R.string.appsettings_update_signature_mismatch
+                AppUpdateFailure.PACKAGE_MISMATCH -> R.string.appsettings_update_package_mismatch
+                AppUpdateFailure.VERSION_MISMATCH -> R.string.appsettings_update_version_mismatch
+            }
+            Body(stringResource(message), Modifier.padding(top = 12.dp))
+            ActionColumn(Modifier.padding(top = 16.dp)) {
+                PrimaryButton(stringResource(R.string.appsettings_update_retry), if (failedRelease == null) onCheck else onDownload)
+                if (failedRelease != null) {
+                    if (!failedRelease.notes.isBlank()) {
+                        TertiaryButton(stringResource(R.string.appsettings_update_changes), { notesExpanded = !notesExpanded }, quiet = true)
+                    }
+                    TertiaryButton(stringResource(R.string.appsettings_update_open), { onOpenRelease(failedRelease.releaseUrl) }, quiet = true)
+                }
+            }
+            if (notesExpanded && failedRelease?.notes?.isNotBlank() == true) Body(failedRelease.notes, Modifier.padding(top = 12.dp))
+        }
+    }
+}
+
+private fun progressPercent(received: Long, total: Long): Int =
+    if (total <= 0L) 0 else ((received.coerceAtLeast(0L) * 100L) / total).toInt().coerceIn(0, 100)
+
+private fun formatUpdateSize(bytes: Long): String = when {
+    bytes >= 1024L * 1024L -> String.format(java.util.Locale.ROOT, "%.1f MB", bytes / (1024.0 * 1024.0))
+    else -> "${bytes / 1024L} KB"
 }
 
 @Composable

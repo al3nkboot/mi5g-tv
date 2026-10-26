@@ -126,6 +126,8 @@
     <string name="appsettings_large_text_note">Text size follows the size set in your phone\'s Settings.</string>
     <string name="appsettings_haptics">Haptics</string>
     <string name="appsettings_haptics_note">Small taps when something finishes or needs you.</string>
+    <string name="appsettings_auto_updates">Check for updates automatically</string>
+    <string name="appsettings_auto_updates_note">Check GitHub when the app opens, at most once a day. You can turn this off.</string>
     <string name="appsettings_about">About</string>
     <string name="appsettings_version">Version {version}</string>
     <string name="appsettings_launcher_pin_label">Bundled home screen app</string>
@@ -140,6 +142,31 @@
     <string name="appsettings_update_open">Open the release page</string>
     <string name="appsettings_up_to_date">You have the latest version</string>
     <string name="appsettings_update_error">Couldn\'t check for updates</string>
+    <string name="appsettings_update_title">Mi5G TV update</string>
+    <string name="appsettings_update_current_new">Installed {current} · Available {version}</string>
+    <string name="appsettings_update_date">Released {date}</string>
+    <string name="appsettings_update_size">Download size: {size}</string>
+    <string name="appsettings_update_download">Download update</string>
+    <string name="appsettings_update_downloading">Downloading: {percent}%</string>
+    <string name="appsettings_update_install">Install update</string>
+    <string name="appsettings_update_retry">Retry</string>
+    <string name="appsettings_update_later">Remind me later</string>
+    <string name="appsettings_update_changes">View changes</string>
+    <string name="appsettings_update_no_apk">This release has no verified APK for this app.</string>
+    <string name="appsettings_update_no_checksum">GitHub did not provide a SHA-256 checksum, so this APK cannot be verified.</string>
+    <string name="appsettings_update_signature_mismatch">The APK signer differs from the installed app. It was not opened.</string>
+    <string name="appsettings_update_package_mismatch">The downloaded APK is not the Mi5G TV app. It was not opened.</string>
+    <string name="appsettings_update_version_mismatch">The APK version does not match the release or is not newer. It was not opened.</string>
+    <string name="appsettings_update_download_failed">The download failed. Check your connection and try again.</string>
+    <string name="appsettings_update_network_failed">Could not reach GitHub. Check your internet connection and try again.</string>
+    <string name="appsettings_update_hash_mismatch">The APK checksum did not match GitHub\'s SHA-256. The file was discarded.</string>
+    <string name="appsettings_update_permission_note">Android must allow Mi5G TV to install this update. You will still review and confirm installation in Android.</string>
+    <string name="appsettings_update_permission_button">Open install permission settings</string>
+    <string name="appsettings_update_notice">A new Mi5G TV version is available.</string>
+    <string name="appsettings_update_notice_action">View update</string>
+    <string name="appsettings_update_notification_channel">Mi5G TV updates</string>
+    <string name="appsettings_update_notification_title">A Mi5G TV update is available</string>
+    <string name="appsettings_update_notification_body">Open the app to review and download it.</string>
     <string name="appsettings_support_paypal">Support on PayPal (@Midroid5G)</string>
     <string name="appsettings_support_paypal_note">paypal.me/Midroid5G · Support free, ad-free development</string>
     <string name="appsettings_developer_x">Developer on X (@midroid5G)</string>
@@ -149,7 +176,7 @@
     <string name="appsettings_licence_apache">dadb and Shizuku code we adapted: Apache-2.0 notices</string>
     <string name="appsettings_licence_bouncycastle">Bouncy Castle cryptography library: Bouncy Castle Licence</string>
     <string name="appsettings_privacy">Privacy</string>
-    <string name="appsettings_privacy_text">Nothing leaves your network except downloads from github.com. GitHub sees your phone\'s address and a generic user agent. A report leaves the phone only when you copy, share or post it yourself.</string>
+    <string name="appsettings_privacy_text">In the GitHub and F-Droid versions, automatic update checks (on by default) may contact GitHub at most once a day when the device is online; turn them off in Settings. Manual checks also contact GitHub when you tap. The APK downloads only after you choose Download. GitHub receives your IP with each request; the app sends no identifier. Reports leave only when you share them.</string>
     <string name="appsettings_privacy_text_offline">Nothing leaves your network. The app talks only to the TV you pick and makes no internet requests of its own. A report leaves the phone only when you copy, share or post it yourself.</string>
     <string name="appsettings_report">Report a problem</string>
     <string name="appsettings_report_note">See the report first, then share it or post it on GitHub</string>
@@ -340,4 +367,3 @@
     <string name="tvtools_power_done">Completed on TV: {name}.</string>
     <string name="tvtools_power_failed">Could not run on TV: {name}.</string>
 </resources>
-

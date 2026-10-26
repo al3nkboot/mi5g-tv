@@ -116,6 +116,7 @@ enum class AppConfirm { RESET_KEY, DELETE_EVERYTHING }
 sealed interface AppSettingsIntent {
     data class SetHaptics(val on: Boolean) : AppSettingsIntent
     data class SetLargeText(val on: Boolean) : AppSettingsIntent
+    data class SetAutomaticUpdateChecks(val on: Boolean) : AppSettingsIntent
     data object CheckUpdates : AppSettingsIntent
     data object ReportProblem : AppSettingsIntent     // 0.3.2 B2: the report preview, its own screen
     data class Ask(val what: AppConfirm) : AppSettingsIntent
@@ -162,6 +163,7 @@ class AppSettingsMachine(
         is Loaded -> event.s.copy(update = state.update, confirm = state.confirm)
         is AppSettingsIntent.SetHaptics -> state.copy(prefs = state.prefs.copy(haptics = event.on))
         is AppSettingsIntent.SetLargeText -> state.copy(prefs = state.prefs.copy(largeTextFollowsSystem = event.on))
+        is AppSettingsIntent.SetAutomaticUpdateChecks -> state.copy(prefs = state.prefs.copy(automaticUpdateChecks = event.on))
         AppSettingsIntent.CheckUpdates -> if (state.updateCheck) state.copy(update = UpdateCheck.Checking) else state
         is Update -> state.copy(update = event.u)
         is AppSettingsIntent.Ask -> state.copy(confirm = event.what)
@@ -172,7 +174,8 @@ class AppSettingsMachine(
 
     override fun handle(event: Any, before: AppSettingsState, after: AppSettingsState) {
         when (event) {
-            is AppSettingsIntent.SetHaptics, is AppSettingsIntent.SetLargeText -> scope.launch { d.appPrefs.save(after.prefs) }
+            is AppSettingsIntent.SetHaptics, is AppSettingsIntent.SetLargeText, is AppSettingsIntent.SetAutomaticUpdateChecks ->
+                scope.launch { d.appPrefs.save(after.prefs) }
             AppSettingsIntent.CheckUpdates -> if (d.store.updateCheck && before.update != UpdateCheck.Checking) scope.launch {
                 val v = attempt { d.updates.latestNewerThan(d.appVersion) }.getOrNull()
                 send(Update(when { v == null -> UpdateCheck.Failed; v.isEmpty() -> UpdateCheck.Latest; else -> UpdateCheck.Available(v) }))

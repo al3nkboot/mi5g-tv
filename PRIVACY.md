@@ -23,14 +23,15 @@ themselves on the network (mDNS) so it can find yours. This traffic stays inside
 network. The app reads the list of apps and the model of your TV, and it changes settings and
 apps on the TV when you tell it to.
 
-**GitHub, only in the GitHub and F-Droid versions, and only when you ask.** The version you
-download from GitHub or F-Droid has three features that contact GitHub, and only when you use
-them: "Check for updates" makes one request for the latest release, opening Cards and modules
-fetches the signed list of add-ons, and an optional add-on downloads from its GitHub release when
-you add it. GitHub sees the usual details of any web request (your IP
+**GitHub, only in the GitHub and F-Droid versions.** Automatic update checks are on by default and
+use Android's network-aware job scheduler to check for a stable release at most once per day while
+the device is online. You can turn them off in Settings; a manual check still runs only when you
+tap "Check for updates". The APK is downloaded only after you choose "Download update". Opening
+Cards and modules fetches the signed list of add-ons, and an optional add-on downloads from its
+GitHub release only when you add it. GitHub sees the usual details of each web request (your IP
 address, for example) under [GitHub's privacy statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement).
-The app sends no identifier of its own. The home screen launcher and the TV progress screen are
-inside the app, so a normal clean-up makes no internet request at all.
+The app sends no identifier of its own. The home screen launcher and TV progress screen are inside
+the app, so a normal clean-up makes no internet request at all.
 
 **The Google Play version makes no internet requests to GitHub.** It has no update check and no
 add-on downloads, because Google Play updates the app. A normal clean-up needs the internet for
@@ -81,9 +82,12 @@ Wi-Fi name. This is the same in the Google Play version.
 
 The app asks Android for: internet and network state (to reach the TV and, in the GitHub and
 F-Droid versions, GitHub), Wi-Fi multicast (to find the TV), a foreground service while it works
-on the TV, notifications (to tell you when it is done), and your screen lock (confirmed once
-before the first change, so a stranger holding your unlocked phone cannot change your TV). It
-does not ask for location, contacts, camera, microphone, photos or storage.
+on the TV, notifications (to tell you when work is done or a release is available), and your
+screen lock (confirmed once before the first change, so a stranger holding your unlocked phone
+cannot change your TV). The GitHub and F-Droid builds also declare Android's "Install unknown
+apps" capability; it is used only after you choose to install a downloaded update, and Android
+shows its own confirmation before installation. Google Play builds do not request it. The app does
+not ask for location, contacts, camera, microphone, photos or storage.
 
 ## Children
 

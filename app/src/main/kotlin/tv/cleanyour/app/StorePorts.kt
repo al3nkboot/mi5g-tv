@@ -1,6 +1,7 @@
 package tv.cleanyour.app
 
 import tv.cleanyour.core.flows.StoreRules
+import tv.cleanyour.core.flows.AppUpdateReleaseSource
 import tv.cleanyour.core.flows.UpdateChecker
 import tv.cleanyour.core.registry.ArtifactFetcher
 import tv.cleanyour.core.registry.HttpFetcher
@@ -26,6 +27,7 @@ interface StorePorts {
     // Where "an update is available" opens; null when there is no update check.
     val releasePage: String?
     fun updateChecker(http: HttpFetcher): UpdateChecker
+    fun updateReleaseSource(http: HttpFetcher): AppUpdateReleaseSource
     // The add-on fetcher: `make` builds the real one (InstallableOnlyFetcher over the resumable
     // fetcher); a build without add-ons returns one that never downloads.
     fun addOnFetcher(make: () -> ArtifactFetcher): ArtifactFetcher

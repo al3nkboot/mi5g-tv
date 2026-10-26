@@ -54,6 +54,11 @@ class CytApplication : Application() {
         CytLog.init(File(noBackupFilesDir, "logs"))
         graph = AppGraph(this)
         OperationService.Bus.channelName = getString(R.string.app_channel_setup_name)
+        graph.scope.launch {
+            val settings = runCatching { graph.appPrefs.load() }.getOrDefault(tv.cleanyour.core.flows.AppPrefsValue())
+            graph.scheduleUpdateChecks(settings.automaticUpdateChecks)
+            if (settings.automaticUpdateChecks) graph.appUpdateController.checkOnLaunch()
+        }
         watchRuns()
         graph.sessionEnd.watch(graph.scope)
     }

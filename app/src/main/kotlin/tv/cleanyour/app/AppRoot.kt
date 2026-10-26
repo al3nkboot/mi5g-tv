@@ -21,12 +21,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -39,12 +41,16 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import androidx.core.net.toUri
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import tv.cleanyour.core.flows.AppConfirm
+import tv.cleanyour.core.flows.AppSettingsIntent
+import tv.cleanyour.core.flows.AppUpdateInstallResult
+import tv.cleanyour.core.flows.AppUpdateState
 import tv.cleanyour.core.flows.DoorPhase
 import tv.cleanyour.core.flows.ManageEffect
 import tv.cleanyour.core.flows.ReportKind
@@ -165,14 +171,19 @@ fun SecureWindow(active: Boolean) {
 }
 
 @Composable
-fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
+fun AppRoot(graph: AppGraph, start: Dest, updateOpenRequest: Int = 0, onExit: () -> Unit) {
     val backStack = rememberNavBackStack(start)
     val snack = remember { SnackbarHostState() }
     val context = LocalContext.current
     val view = LocalView.current
     val scope = rememberCoroutineScope()
+    val updateStatus by graph.appUpdateController.state.collectAsStateWithLifecycle()
 
     fun go(route: String) { if (!applyRoute(backStack, route, noTvs = graph.tvs.tvs.value.isEmpty(), addOns = graph.store.rules.addOns)) onExit() }
+
+    LaunchedEffect(updateOpenRequest) {
+        if (updateOpenRequest > 0 && graph.store.rules.updateCheck) go("appsettings")
+    }
 
     fun haptic(kind: Int) { view.performHapticFeedback(kind) }
     fun share(text: String) {
@@ -205,7 +216,7 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
         when (e) {
             is ManageEffect.Navigate -> go(e.key)
             is ManageEffect.Share -> share(e.text)
-            is ManageEffect.OpenUrl -> runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(e.url))) }
+            is ManageEffect.OpenUrl -> runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, e.url.toUri())) }
             is ManageEffect.Copy -> copyText(context, e.text, label = "report")
             ManageEffect.HapticLight -> haptic(HapticFeedbackConstants.CLOCK_TICK)
             ManageEffect.HapticDouble -> haptic(HapticFeedbackConstants.LONG_PRESS)
@@ -222,6 +233,25 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
                 if (r == androidx.compose.material3.SnackbarResult.ActionPerformed) onUndo(e)
             }
         }
+    }
+
+    val updateNotice = stringResource(tv.cleanyour.feature.manage.R.string.appsettings_update_notice)
+    val updateNoticeAction = stringResource(tv.cleanyour.feature.manage.R.string.appsettings_update_notice_action)
+    LaunchedEffect(updateStatus) {
+        val currentUpdateStatus = updateStatus
+        val shouldPrompt = when (currentUpdateStatus) {
+            is AppUpdateState.Available -> currentUpdateStatus.showPrompt
+            is AppUpdateState.Failed -> currentUpdateStatus.showPrompt && currentUpdateStatus.release != null
+            else -> false
+        }
+        if (!shouldPrompt || !graph.store.rules.updateCheck) return@LaunchedEffect
+        val result = snack.showSnackbar(
+            message = updateNotice,
+            actionLabel = updateNoticeAction,
+            withDismissAction = true,
+            duration = androidx.compose.material3.SnackbarDuration.Long,
+        )
+        if (result == androidx.compose.material3.SnackbarResult.ActionPerformed) go("appsettings")
     }
 
     Box(Modifier.fillMaxSize()) {
@@ -350,6 +380,7 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
                 entry<Dest.AppSettings> {
                     val m = rememberMachine("appsettings") { graph.appSettings(it) }
                     val state by m.state.collectAsStateWithLifecycle()
+                    val installPermissionNeeded = remember { mutableStateOf(false) }
                     LaunchedEffect(m) { m.effects.collect { onManageEffect(it) } }
                     SecureWindow(state.confirm == AppConfirm.RESET_KEY)
                     AppSettingsScreen(
@@ -357,6 +388,25 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
                         onOpenRelease = { graph.store.releasePage?.let { url -> scope.launch { onManageEffect(ManageEffect.OpenUrl(url)) } } },
                         onSupportPayPal = { scope.launch { onManageEffect(ManageEffect.OpenUrl("https://paypal.me/Midroid5G")) } },
                         onOpenDeveloper = { scope.launch { onManageEffect(ManageEffect.OpenUrl("https://x.com/midroid5G")) } },
+                        onOpenUpdateRelease = { url -> scope.launch { onManageEffect(ManageEffect.OpenUrl(url)) } },
+                        updateStatus = updateStatus,
+                        onCheckUpdates = { graph.scope.launch { graph.appUpdateController.checkNow() } },
+                        onSetAutomaticUpdateChecks = { enabled ->
+                            m.dispatch(AppSettingsIntent.SetAutomaticUpdateChecks(enabled))
+                            graph.scheduleUpdateChecks(enabled)
+                        },
+                        onDownloadUpdate = { graph.scope.launch { graph.appUpdateController.download() } },
+                        onInstallUpdate = {
+                            graph.scope.launch {
+                                installPermissionNeeded.value = when (graph.appUpdateController.install()) {
+                                    AppUpdateInstallResult.PERMISSION_REQUIRED -> true
+                                    AppUpdateInstallResult.STARTED, AppUpdateInstallResult.FAILED -> false
+                                }
+                            }
+                        },
+                        onOpenInstallPermission = { graph.appUpdateController.openInstallPermissionSettings() },
+                        onRemindLater = { graph.appUpdateController.remindLater() },
+                        installPermissionNeeded = installPermissionNeeded.value,
                     )
                 }
             },

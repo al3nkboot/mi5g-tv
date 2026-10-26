@@ -17,6 +17,10 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import tv.cleanyour.core.engine.PauseReason
 import tv.cleanyour.core.flows.AppConfirm
+import tv.cleanyour.core.flows.AppUpdateAsset
+import tv.cleanyour.core.flows.AppUpdateFailure
+import tv.cleanyour.core.flows.AppUpdateRelease
+import tv.cleanyour.core.flows.AppUpdateState
 import tv.cleanyour.core.flows.AppPrefsValue
 import tv.cleanyour.core.flows.AppSettingsState
 import tv.cleanyour.core.flows.ChipState
@@ -36,6 +40,7 @@ import tv.cleanyour.core.model.DebugState
 import tv.cleanyour.core.model.Level
 import tv.cleanyour.core.model.PackageName
 import tv.cleanyour.core.model.PlanId
+import tv.cleanyour.core.model.Sha256
 import tv.cleanyour.core.model.TvId
 import tv.cleanyour.core.planner.PlanKind
 import tv.cleanyour.testing.fixtures.Samples
@@ -58,6 +63,19 @@ private const val NOW = Samples.NOW_MS
 private val tvId = Samples.miTvId()
 private val dockNames = listOf("Netflix", "YouTube", "Prime Video", "Live TV")
 private val shotPng by lazy { fakeShot() }
+private val appUpdateRelease = AppUpdateRelease(
+    version = "1.6.0",
+    title = "Mi5G TV 1.6.0",
+    publishedAt = "2026-10-27T00:00:00Z",
+    notes = "تحسينات الأداء وإصلاحات الأمان.",
+    releaseUrl = "https://github.com/al3nkboot/mi5g-tv/releases/tag/v1.6.0",
+    asset = AppUpdateAsset(
+        "Mi5G-TV-v1.6.0.apk",
+        "https://github.com/al3nkboot/mi5g-tv/releases/download/v1.6.0/Mi5G-TV-v1.6.0.apk",
+        12_345_678L,
+        Sha256("a".repeat(64)),
+    ),
+)
 
 private fun card(
     clean: Boolean = true, level: Level = Level.SIMPLE, chip: ChipState = ChipState.CONNECTED, thumbnail: Boolean = true,
@@ -249,6 +267,15 @@ object ManageShots {
         Shot("appsettings_update_available", tall) { AppSettingsScreen(appSettings(UpdateCheck.Available("0.2.0")), {}, {}, {}) },
         Shot("appsettings_up_to_date", tall) { AppSettingsScreen(appSettings(UpdateCheck.Latest), {}, {}, {}) },
         Shot("appsettings_update_failed", tall) { AppSettingsScreen(appSettings(UpdateCheck.Failed), {}, {}, {}) },
+        Shot("appsettings_release_available", tall) {
+            AppSettingsScreen(appSettings(), {}, {}, {}, updateStatus = AppUpdateState.Available(appUpdateRelease, showPrompt = true))
+        },
+        Shot("appsettings_release_downloading", tall) {
+            AppSettingsScreen(appSettings(), {}, {}, {}, updateStatus = AppUpdateState.Downloading(appUpdateRelease, 6_172_839L, 12_345_678L))
+        },
+        Shot("appsettings_release_failed", tall) {
+            AppSettingsScreen(appSettings(), {}, {}, {}, updateStatus = AppUpdateState.Failed(AppUpdateFailure.NETWORK, appUpdateRelease, showPrompt = true))
+        },
         Shot("appsettings_key_tee", tall) { AppSettingsScreen(appSettings(backing = "TEE"), {}, {}, {}) },
         Shot("appsettings_key_wrapped", tall) { AppSettingsScreen(appSettings(backing = "WRAPPED_SOFTWARE"), {}, {}, {}) },
         Shot("appsettings_licences") { SheetOver({ AppSettingsScreen(appSettings(), {}, {}, {}) }) { LicencesContent() } },

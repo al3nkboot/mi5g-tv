@@ -1,6 +1,7 @@
 package tv.cleanyour.app
 
 import android.app.Application
+import android.app.job.JobScheduler
 import android.os.Looper
 import androidx.navigation3.runtime.NavKey
 import androidx.test.core.app.ApplicationProvider
@@ -71,6 +72,7 @@ class PlayStoreTest {
     @Test fun thereIsNoUpdateCheck() = runBlocking {
         val http = RecordingHttp()
         assertNull(Store.updateChecker(http).latestNewerThan("0.3.0"))
+        assertNull(Store.updateReleaseSource(http).latest())
         assertTrue(http.urls.isEmpty())
         assertNull(Store.releasePage)
         // App settings neither shows nor runs it.
@@ -81,6 +83,13 @@ class PlayStoreTest {
         m.dispatch(AppSettingsIntent.CheckUpdates)
         idle()
         assertEquals(UpdateCheck.Idle, m.state.value.update)
+    }
+
+    @Test fun automaticUpdateJobIsNotScheduledInPlay() {
+        val g = graph()
+        g.scheduleUpdateChecks(true)
+        val scheduler = context.getSystemService(JobScheduler::class.java)
+        assertTrue(scheduler.allPendingJobs.none { it.service.className == AppUpdateJobService::class.java.name })
     }
 
     @Test fun thereIsNoAddOnFetcher() = runBlocking {

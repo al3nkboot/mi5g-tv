@@ -9,6 +9,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 // W8 definition of done: one exported component, the permissions exactly D16, no backup.
 // Robolectric reads the merged manifest, so library additions are covered too.
@@ -22,14 +23,12 @@ class ManifestTest {
         PackageManager.GET_ACTIVITIES or PackageManager.GET_SERVICES or PackageManager.GET_RECEIVERS or PackageManager.GET_PROVIDERS or PackageManager.GET_PERMISSIONS)
 
     @Test fun permissionsAreExactlyD16PlusTheBiometricPrompt() {
-        assertEquals(
-            setOf(
+        val expected = setOf(
                 "android.permission.INTERNET", "android.permission.ACCESS_NETWORK_STATE", "android.permission.CHANGE_WIFI_MULTICAST_STATE",
                 "android.permission.FOREGROUND_SERVICE", "android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE", "android.permission.POST_NOTIFICATIONS",
                 "android.permission.USE_BIOMETRIC",   // RFC-W8-7: required by D17's BiometricPrompt
-            ),
-            info.requestedPermissions.orEmpty().toSet(),
-        )
+            ) + if (Store.flavour == "full") setOf("android.permission.REQUEST_INSTALL_PACKAGES") else emptySet()
+        assertEquals(expected, info.requestedPermissions.orEmpty().toSet())
     }
 
     @Test fun exactlyOneExportedComponentAndItIsTheLauncherActivity() {
@@ -38,6 +37,16 @@ class ManifestTest {
             info.receivers.orEmpty().filter { it.exported }.map { it.name } +
             info.providers.orEmpty().filter { it.exported }.map { it.name }
         assertEquals(listOf("tv.cleanyour.app.MainActivity"), exported)
+        if (Store.flavour == "full") {
+            val provider = info.providers.orEmpty().single { it.name == "androidx.core.content.FileProvider" }
+            assertFalse(provider.exported)
+            assertTrue(provider.grantUriPermissions)
+            val updateJob = info.services.orEmpty().single { it.name == "tv.cleanyour.app.AppUpdateJobService" }
+            assertFalse(updateJob.exported)
+            assertEquals("android.permission.BIND_JOB_SERVICE", updateJob.permission)
+        } else {
+            assertFalse(info.services.orEmpty().any { it.name == "tv.cleanyour.app.AppUpdateJobService" })
+        }
         val main = info.activities!!.single { it.name == "tv.cleanyour.app.MainActivity" }
         assertEquals("", main.taskAffinity.orEmpty())
     }

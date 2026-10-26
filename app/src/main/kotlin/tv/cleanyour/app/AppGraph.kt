@@ -1,6 +1,9 @@
 package tv.cleanyour.app
 
 import android.content.Context
+import android.content.ComponentName
+import android.app.job.JobInfo
+import android.app.job.JobScheduler
 import java.io.File
 import java.time.ZoneId
 import kotlinx.coroutines.CoroutineScope
@@ -27,6 +30,7 @@ import tv.cleanyour.core.engine.Engine
 import tv.cleanyour.core.engine.FileJournal
 import tv.cleanyour.core.engine.FileOverlayTransport
 import tv.cleanyour.core.flows.AppForeground
+import tv.cleanyour.core.flows.AppUpdateController
 import tv.cleanyour.core.flows.AppAbout
 import tv.cleanyour.core.flows.AppPrefs
 import tv.cleanyour.core.flows.AppSettingsMachine
@@ -160,6 +164,12 @@ class AppGraph(context: Context, val appVersion: String = versionOf(context), va
     val fetcher = store.addOnFetcher {
         InstallableOnlyFetcher(ResumableArtifactFetcher(http, blobs, blobs, inspector, urlAllowed = hostAllowed)) { registry.installableIndex() }
     }
+    // App updates share the same HTTPS allowlist, resumable downloader, SHA-256 and APK signer inspector.
+    val appUpdateController: AppUpdateController = AndroidAppUpdateController(
+        app, store, store.updateReleaseSource(http), blobs,
+        ResumableArtifactFetcher(http, blobs, blobs, inspector, urlAllowed = hostAllowed, maxBytes = 100L * 1024 * 1024),
+        inspector, appVersion,
+    )
 
     val seams = Seams(
         sessions = sessions, keyInfo = keyInfo, prober = prober, profiles = profiles, facts = facts, themes = themes,
@@ -184,7 +194,8 @@ class AppGraph(context: Context, val appVersion: String = versionOf(context), va
     val homeDecisions = HomeDecisions(documents)
     val screenLock = ScreenLock { credentialGate.hasScreenLock() }
 
-    // D12: one GET on user action (Settings, "Check for updates"), in the full build only.
+    // Compatibility adapter for the original settings state machine; the update screen uses
+    // appUpdateController for checks, downloads, verification, notifications and installation.
     val updates = store.updateChecker(http)
 
     val setupDeps = SetupDeps(
@@ -236,6 +247,19 @@ class AppGraph(context: Context, val appVersion: String = versionOf(context), va
     fun appSettings(scope: CoroutineScope) = AppSettingsMachine(manageDeps, scope)
     fun report(scope: CoroutineScope, kind: ReportKind, tvId: TvId?) = ReportMachine(manageDeps, scope, kind, tvId)
 
+    fun scheduleUpdateChecks(enabled: Boolean) {
+        val scheduler = app.getSystemService(JobScheduler::class.java) ?: return
+        if (!enabled || !store.rules.updateCheck) {
+            scheduler.cancel(UPDATE_JOB_ID)
+            return
+        }
+        val job = JobInfo.Builder(UPDATE_JOB_ID, ComponentName(app, AppUpdateJobService::class.java))
+            .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+            .setPeriodic(UPDATE_JOB_INTERVAL_MS, UPDATE_JOB_FLEX_MS)
+            .build()
+        scheduler.schedule(job)
+    }
+
     // Tests only; the process owns the graph otherwise.
     fun close() {
         scope.cancel()
@@ -243,6 +267,9 @@ class AppGraph(context: Context, val appVersion: String = versionOf(context), va
     }
 
     companion object {
+        private const val UPDATE_JOB_ID = 51_305
+        private const val UPDATE_JOB_INTERVAL_MS = 24L * 60 * 60 * 1000
+        private const val UPDATE_JOB_FLEX_MS = 6L * 60 * 60 * 1000
         // The app's own versionName (app/build.gradle.kts sets it), so the diagnostics, the plans and
         // the update check never name an older release than the APK that runs.
         // "Samsung SM-S921B": the maker (capitalised) and the model, without the maker twice.

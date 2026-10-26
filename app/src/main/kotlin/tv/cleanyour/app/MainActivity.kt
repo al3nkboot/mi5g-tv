@@ -23,10 +23,12 @@ import tv.cleanyour.android.platform.AndroidCredentialGate
 import tv.cleanyour.core.flows.resolveStart
 import tv.cleanyour.ui.design.theme.CytTheme
 
-// The one exported component (SECURITY 4.2). It reads no extras and no data URI: every start
-// opens the destination decided from disk.
+// The one exported component (SECURITY 4.2). It ignores data URIs and all external payloads; the
+// only extra is a harmless request to open app settings from the update notification.
 class MainActivity : ComponentActivity() {
     private val graph get() = (application as CytApplication).graph
+    internal var updateOpenRequest by mutableStateOf(0)
+        private set
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(ArabicLocale.wrap(newBase))
@@ -49,14 +51,21 @@ class MainActivity : ComponentActivity() {
                     var start by remember { mutableStateOf<Dest?>(null) }
                     LaunchedEffect(Unit) {
                         graph.tvs.load()
-                        start = startKey(resolveStart(graph.tvs.tvs.value, graph.seams.journal))
+                        start = if (intent.getBooleanExtra(AndroidAppUpdateController.EXTRA_OPEN_UPDATES, false) && graph.store.rules.updateCheck)
+                            Dest.AppSettings else startKey(resolveStart(graph.tvs.tvs.value, graph.seams.journal))
                     }
                     val s = start
                     if (s == null) Box(Modifier.fillMaxSize().background(CytTheme.colors.bg))
-                    else AppRoot(graph, s, onExit = { finish() })
+                    else AppRoot(graph, s, updateOpenRequest = updateOpenRequest, onExit = { finish() })
                 }
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        if (intent.getBooleanExtra(AndroidAppUpdateController.EXTRA_OPEN_UPDATES, false)) updateOpenRequest++
     }
 
     override fun onStart() { super.onStart(); graph.foreground.set(true) }
