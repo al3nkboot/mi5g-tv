@@ -1,0 +1,64 @@
+@import "tailwindcss";
+@import "@fontsource/cairo/400.css";
+@import "@fontsource/cairo/600.css";
+@import "@fontsource/cairo/700.css";
+
+@theme {
+  --color-bg: #0c1416;
+  --color-surface: #152022;
+  --color-surface-2: #1c2b2e;
+  --color-fg: #e7f3f0;
+  --color-muted: #8aa39d;
+  --color-primary: #14998e;
+  --color-primary-fg: #04221f;
+  --color-accent: #e4c07a;
+  --color-accent-fg: #2a2112;
+  --color-border: #2a3c40;
+  --color-line: #243336;
+  --radius: 0.9rem;
+  --font-sans: "Cairo", "Noto Naskh Arabic", "Segoe UI", sans-serif;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    line-height: 1.5;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
