@@ -66,8 +66,8 @@
           "released": "2026-10-26T10:00:00Z",
           "apk": {
             "url": "https://github.com/al3nkboot/mi5g-tv/releases/download/v1.5.0/mi5g-tv-prayer.apk",
-            "size": 82625,
-            "sha256": "00154e9edb438d2cf897c7594eb4e9a74afd84d490d82daee96e6419b938974f",
+            "size": 1061709,
+            "sha256": "ebd75ba6c2629bbffbfede88e57ecceac658d50044c16f2d518a168dade579ff",
             "signer_sha256": "c1f317965f154fe5e79fe7483abd5dd5dec7df57d87f3a645a5fd12f39a5480c"
           },
           "permissions": [
