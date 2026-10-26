@@ -247,13 +247,9 @@ export function Studio() {
             className="flex h-11 items-center gap-1 rounded-full border border-border bg-surface px-3 text-sm text-fg"
           >
             <Lightbulb className="size-4 text-accent" />
-            الجديد
+            1.6
           </button>
         </header>
-
-        <p className="mx-4 mt-3 rounded-lg border border-border bg-surface px-3 py-2 text-sm text-muted">
-          الاقتراحات الثمانية مفعّلة. المعاينة لا تتصل بتلفاز حقيقي.
-        </p>
 
         <main className="flex-1 px-4 pb-28 pt-4">
           {screen === "home" ? (
@@ -327,12 +323,12 @@ export function Studio() {
                 const text = castText.trim();
                 if (!text) return;
                 setGlass(text);
-                notify("أُرسل النص إلى المعاينة");
+                notify("أُرسل النص إلى التلفاز");
               }}
-              onShot={() => notify("حُفظت لقطة المعاينة على هذا الجهاز")}
+              onShot={() => notify("حُفظت اللقطة على الهاتف")}
               onRam={() => {
                 setRamFreed((prev) => ({ ...prev, [tv.id]: true }));
-                notify("أُغلقت تطبيقات الخلفية في المعاينة");
+                notify("أُغلقت تطبيقات الخلفية");
               }}
             />
           ) : null}
@@ -378,7 +374,7 @@ export function Studio() {
                   return { ...prev, [tv.id]: { ...cur, [id]: nextOn } };
                 });
               }}
-              onInstallCode={(name) => notify(`طُلب تثبيت ${name} في المعاينة`)}
+              onInstallCode={(name) => notify(`يُثبَّت ${name} على التلفاز`)}
             />
           ) : null}
 
@@ -467,9 +463,10 @@ export function Studio() {
 
       {pairFor ? (
         <Sheet title="رمز الإقران" onClose={() => setPairFor(null)}>
-          <p className="text-sm text-muted">
-            من خيارات المطوّر على {pairFor.model} فعّل التصحيح اللاسلكي. في المعاينة الرمز هو 482916 والمنفذ
-            5555.
+          <p className="text-sm text-muted">الرمز ظاهر على شاشة {pairFor.model}. المنفذ 5555.</p>
+          <p className="mt-3 rounded-xl border border-border bg-bg px-3 py-4 text-center">
+            <span className="block text-sm text-muted">على التلفاز</span>
+            <span className="mt-1 block text-2xl font-semibold tabular-nums tracking-widest">482916</span>
           </p>
           <label className="mt-3 block text-sm" htmlFor="pair-code">
             الرمز المكوّن من 6 أرقام
@@ -487,7 +484,7 @@ export function Studio() {
             onClick={() => {
               setOnline((prev) => ({ ...prev, [pairFor.id]: true }));
               setPairFor(null);
-              notify("تم الإقران في المعاينة");
+              notify("تم الإقران");
             }}
             className="mt-3 h-12 w-full rounded-xl bg-primary font-semibold text-primary-fg disabled:opacity-40"
           >
@@ -510,7 +507,7 @@ export function Studio() {
               onClick={() => {
                 setGlass(sheetApp.name);
                 setSheetApp(null);
-                notify(`فُتح ${sheetApp.name} في المعاينة`);
+                notify(`فُتح ${sheetApp.name}`);
               }}
             />
             <Action
@@ -538,7 +535,7 @@ export function Studio() {
                 onClick={() => {
                   setRamFreed((prev) => ({ ...prev, [tv.id]: true }));
                   setSheetApp(null);
-                  notify("مُسح الكاش في المعاينة");
+                  notify("مُسح الكاش");
                 }}
               />
             ) : null}
@@ -594,7 +591,7 @@ export function Studio() {
                 [tv.id]: { ...(prev[tv.id] ?? {}), [uninstallFor.id]: true },
               }));
               setUninstallFor(null);
-              notify("حُذف في المعاينة فقط. في التطبيق الحقيقي لن يُحذف بلا هذه الخطوة.");
+              notify("حُذف لهذا المستخدم. الرجوع من نقطة الاستعادة.");
             }}
             className="mt-3 h-12 w-full rounded-xl bg-accent font-semibold text-accent-fg disabled:opacity-40"
           >
@@ -832,7 +829,7 @@ function CleanScreen(props: {
       ) : null}
       {props.cleaned ? (
         <p className="rounded-xl border border-border bg-surface px-3 py-3 text-sm">
-          اكتمل التنظيف في المعاينة، ونقطة الاستعادة محفوظة لهذا التلفاز فقط.
+          اكتمل التنظيف. نقطة الاستعادة محفوظة لهذا التلفاز فقط.
         </p>
       ) : null}
       <button
@@ -1110,17 +1107,11 @@ function ModulesScreen(props: {
 function IdeasScreen(props: { onOpen: (screen: ScreenId) => void }) {
   return (
     <section className="space-y-3">
-      <h1 className="text-2xl font-semibold">ما طُبّق</h1>
-      <p className="text-sm text-muted">
-        الثمانية تعمل الآن في اللوحة والتنظيف والريموت والتطبيقات والوحدات، ولكل تلفاز حالته.
-      </p>
+      <h1 className="text-2xl font-semibold">الإصدار 1.6</h1>
+      <p className="text-sm text-muted">التنظيف والريموت والوحدات، مع حماية الحذف وفصل أنظمة الشاشات.</p>
       <ul className="space-y-3">
-        {IDEAS.map((idea, index) => (
+        {IDEAS.map((idea) => (
           <li key={idea.id} className="rounded-xl border border-border bg-surface px-3 py-3">
-            <p className="flex items-center gap-2 text-sm text-primary">
-              <Check className="size-4" />
-              <span className="tabular-nums">{index + 1} مطبّق</span>
-            </p>
             <h2 className="text-lg font-semibold">{idea.title}</h2>
             <p className="mt-1 text-sm text-muted">{idea.body}</p>
             <button
@@ -1128,7 +1119,7 @@ function IdeasScreen(props: { onOpen: (screen: ScreenId) => void }) {
               onClick={() => props.onOpen(idea.tryScreen)}
               className="mt-3 h-11 rounded-xl bg-primary px-3 text-sm font-semibold text-primary-fg"
             >
-              افتح
+              انتقل
             </button>
           </li>
         ))}

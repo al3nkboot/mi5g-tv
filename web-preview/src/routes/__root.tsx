@@ -13,7 +13,7 @@ export const Route = createRootRoute({
       { title: APP_NAME },
       {
         name: "description",
-        content: "معاينة مقترحات الإصدار القادم من Mi5G TV: صحة التلفاز، تنظيف آمن، وريموت.",
+        content: "Mi5G TV: تنظيف آمن، ريموت، ومدير تطبيقات لتلفاز أندرويد.",
       },
       { name: "theme-color", content: "#0C1416" },
     ],
