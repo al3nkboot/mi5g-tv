@@ -53,6 +53,7 @@
     <string name="door_connecting">جارٍ الاتصال...</string>
     <string name="door_still_waiting">ما زلنا ننتظر. هل فعّلت تصحيح أخطاء USB؟ تحتاج بعض أجهزة التلفاز إلى تفعيل تصحيح أخطاء الشبكة أيضًا.</string>
     <string name="door_still_waiting_show_me">أرني الطريقة</string>
+    <string name="door_pairing_instead">لم تظهر نافذة السماح</string>
     <string name="door_change_model">أليس {model}؟ تغيير الطراز</string>
     <string name="door_change_model_generic">أليس هذا التلفاز؟ تغيير الطراز</string>
     <string name="door_not_this_tv">أليس هذا التلفاز؟ أدخل عنوان التلفاز</string>

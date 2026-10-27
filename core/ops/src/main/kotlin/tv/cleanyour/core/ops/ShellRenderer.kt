@@ -353,7 +353,7 @@ class ShellRenderer(private val watchdogVariant: WatchdogVariant = WatchdogVaria
             ShellLine(ShellTokens.line(listOf("input", "keyevent", key.keyCode.toString())))
 
         fun openSettingsLine(): ShellLine =
-            ShellLine(ShellTokens.line(listOf(AM, "start", "-a", "android.settings.SETTINGS")))
+            ShellLine(ShellTokens.line(listOf("input", "keyevent", "176")))
 
         fun escapeInputText(raw: String): String {
             val trimmed = raw.trim('\r', '\n')
@@ -403,6 +403,12 @@ class ShellRenderer(private val watchdogVariant: WatchdogVariant = WatchdogVaria
             val comp = Component(pkg, ".MainActivity")
             return ShellLine(ShellTokens.line(listOf(AM, "start", "-n", comp.flat)))
         }
+
+        fun launchLeanbackLine(pkg: PackageName): ShellLine =
+            ShellLine(ShellTokens.line(listOf(
+                AM, "start", "-a", "android.intent.action.MAIN",
+                "-c", "android.intent.category.LEANBACK_LAUNCHER", "-p", pkg.value,
+            )))
 
         const val MAX_URL_LEN = 2048
         const val MAX_CAST_BYTES = 200L * 1024 * 1024
@@ -609,13 +615,11 @@ class ShellRenderer(private val watchdogVariant: WatchdogVariant = WatchdogVaria
             ShellLine(ShellTokens.line(listOf(CMD, "media_session", "volume", "--show", "--set", "7")))
 
         fun switchHdmiInputLines(): List<ShellLine> = listOf(
-            ShellLine(ShellTokens.line(listOf(AM, "start", "-a", "com.android.tv.action.VIEW_INPUTS"))),
             ShellLine(ShellTokens.line(listOf("input", "keyevent", "178"))),
         )
 
         fun quickSettingsOverlayLines(): List<ShellLine> = listOf(
             ShellLine(ShellTokens.line(listOf("input", "keyevent", "176"))),
-            ShellLine(ShellTokens.line(listOf(AM, "start", "-a", "android.settings.SETTINGS"))),
         )
 
         fun normalizeDownloaderUrl(rawInput: String): String {

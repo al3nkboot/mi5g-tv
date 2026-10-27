@@ -68,6 +68,7 @@
     <!-- An empty dock: the row names the new home screen (UX 2 dock card title) instead of a blank list -->
     <string name="found_home_row_empty">Your new home screen</string>
     <string name="found_safety">A restore point is saved first, so everything can be put back.</string>
+    <string name="found_commands_before">These commands are sent only after you start. Nothing has been sent yet.</string>
     <string name="found_make_clean">Make it clean</string>
     <string name="found_customise">Customise</string>
     <!-- D36 (RF-LAUNCHER-240 F1): the plan replaces a home screen app signed with another key -->

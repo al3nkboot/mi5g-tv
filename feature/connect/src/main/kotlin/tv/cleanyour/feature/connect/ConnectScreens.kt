@@ -305,6 +305,9 @@ private fun StepsContent(state: SetupState.OpenDoor, actions: SetupActions, name
     }
     StatusLine(status, Modifier.padding(start = 4.dp, top = 12.dp))
     if (stillWaiting) TertiaryButton(stringResource(R.string.door_still_waiting_show_me), { page = 1 })
+    if (state.phase == DoorPhase.STEPS || state.phase == DoorPhase.CONNECTING) {
+        TertiaryButton(stringResource(R.string.door_pairing_instead), { actions.intent(SetupIntent.UsePairingCode) })
+    }
     Body(note, Modifier.padding(start = 4.dp, top = 16.dp))
     Body(stringResource(R.string.door_same_wifi), Modifier.padding(start = 4.dp, top = 8.dp))
     var showTizenGuide by rememberSaveable { mutableStateOf(false) }

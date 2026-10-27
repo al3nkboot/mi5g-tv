@@ -60,6 +60,7 @@
     <string name="found_home_change">تغيير</string>
     <string name="found_home_row_empty">شاشتك الرئيسية الجديدة</string>
     <string name="found_safety">تُحفظ نقطة استعادة أولًا، بحيث يمكن إعادة كل شيء كما كان.</string>
+    <string name="found_commands_before">هذه الأوامر تُرسل فقط بعد البدء. لم يُرسل شيء بعد.</string>
     <string name="found_make_clean">ابدأ التنظيف</string>
     <string name="found_customise">تخصيص</string>
     <string name="found_replaces_launcher">يستبدل تطبيق الشاشة الرئيسية الموجود حاليًا على هذا التلفاز. سيبدأ المظهر وترتيب التطبيقات والإعدادات واختيارات البطاقات من جديد.</string>

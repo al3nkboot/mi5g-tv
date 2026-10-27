@@ -416,14 +416,9 @@ class TvToolsMachine(
             return
         }
         val launchLine = ShellRenderer.launchMainActivityLine(pkg)
-        val r0 = attempt { TvShellRunner.run(session, launchLine) }.getOrNull()
-        val out0 = (r0?.stdout.orEmpty() + "\n" + r0?.stderr.orEmpty())
-        if (r0 != null && r0.exit == 0 && "Error:" !in out0 && "does not exist" !in out0) {
-            if (pkgStr == "com.midroid.mi5gtv.dns") {
-                for (l in ShellRenderer.applyAdGuardDnsLines().take(1)) {
-                    attempt { TvShellRunner.run(session, l) }
-                }
-            }
+        val iconLine = ShellRenderer.launchLeanbackLine(pkg)
+        if (launchOpened(session, launchLine) || launchOpened(session, iconLine)) {
+            applyBundledDns(session, pkgStr)
             send(PowerToolUpdate(PowerToolStatus.Done(label)))
             effect(ManageEffect.HapticDouble)
             return
@@ -436,13 +431,8 @@ class TvToolsMachine(
         if (blob != null) {
             val installed = installBlobOnSession(session, blob)
             if (installed) {
-                if (pkgStr == "com.midroid.mi5gtv.dns") {
-                    for (l in ShellRenderer.applyAdGuardDnsLines().take(1)) {
-                        attempt { TvShellRunner.run(session, l) }
-                    }
-                }
-                val r1 = attempt { TvShellRunner.run(session, launchLine) }.getOrNull()
-                if (r1 != null && r1.exit == 0) {
+                applyBundledDns(session, pkgStr)
+                if (launchOpened(session, launchLine) || launchOpened(session, iconLine)) {
                     send(PowerToolUpdate(PowerToolStatus.Done(label)))
                     effect(ManageEffect.HapticDouble)
                     return
@@ -450,6 +440,19 @@ class TvToolsMachine(
             }
         }
         send(PowerToolUpdate(PowerToolStatus.Failed(label)))
+    }
+
+    private suspend fun launchOpened(session: tv.cleanyour.core.session.TvSession, line: tv.cleanyour.core.model.ShellLine): Boolean {
+        val result = attempt { TvShellRunner.run(session, line) }.getOrNull() ?: return false
+        val out = result.stdout + "\n" + result.stderr
+        return result.exit == 0 && "Error:" !in out && "does not exist" !in out && "unable to resolve" !in out.lowercase()
+    }
+
+    private suspend fun applyBundledDns(session: tv.cleanyour.core.session.TvSession, pkgStr: String) {
+        if (pkgStr != "com.midroid.mi5gtv.dns") return
+        for (line in ShellRenderer.applyAdGuardDnsLines().take(1)) {
+            attempt { TvShellRunner.run(session, line) }
+        }
     }
 
     private suspend fun installBlobOnSession(session: tv.cleanyour.core.session.TvSession, blob: BlobRef): Boolean {

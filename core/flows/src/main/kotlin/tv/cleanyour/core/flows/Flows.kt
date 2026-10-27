@@ -56,6 +56,7 @@ sealed interface RestartState { data class Restarting(val sinceMs: Long) : Resta
     data class NotBack(val afterMs: Long) : RestartState }
 sealed interface SetupIntent { data object Start : SetupIntent; data class PickTv(val host: String) : SetupIntent; data class EnterAddress(val ip: String) : SetupIntent
     data class ChangeFamily(val family: String) : SetupIntent; data object AskTvAgain : SetupIntent; data object ConfirmIdentity : SetupIntent
+    data object UsePairingCode : SetupIntent
     data class Keep(val pkg: PackageName, val keep: Boolean) : SetupIntent; data class SetDock(val dock: List<PackageName>) : SetupIntent
     data class SetTheme(val id: String) : SetupIntent; data class KeepDebuggingOn(val on: Boolean) : SetupIntent; data class Open(val sheet: Sheet?) : SetupIntent
     data object MakeItClean : SetupIntent; data class CredentialPassed(val pass: GatePass) : SetupIntent; data object CredentialFailed : SetupIntent   // R0: 6

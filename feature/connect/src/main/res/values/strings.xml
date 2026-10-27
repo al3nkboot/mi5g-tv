@@ -58,6 +58,7 @@
     <string name="door_connecting">Connecting...</string>
     <string name="door_still_waiting">Still waiting. Did USB debugging turn on? Some TVs need Network debugging too.</string>
     <string name="door_still_waiting_show_me">Show me</string>
+    <string name="door_pairing_instead">The allow window did not appear</string>
     <string name="door_change_model">Not a {model}? Change model</string>
     <string name="door_change_model_generic">Not this TV? Change model</string>
     <!-- Round 3: the S1b tertiary's words, for a door Start opened on the one device found -->

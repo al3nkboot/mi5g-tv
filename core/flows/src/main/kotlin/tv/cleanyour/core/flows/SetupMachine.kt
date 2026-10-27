@@ -320,6 +320,7 @@ class SetupMachine(
             val f = if (event.family in Families.all) event.family else Families.ofBrand(event.family)
             state.copy(family = f, banner = bannerFor(f, state.tv))
         } else state
+        SetupIntent.UsePairingCode -> if (state is SetupState.OpenDoor) SetupState.PairingNeeded(state.tv) else state
         is Ev.Door -> door(event.tv)
         Ev.PortOpen -> if (state is SetupState.OpenDoor && state.phase == DoorPhase.STEPS) state.copy(phase = DoorPhase.CONNECTING, step = 2, waitedMs = 0) else state
         is Ev.Allow -> if (state is SetupState.OpenDoor) state.copy(phase = DoorPhase.ALLOW, step = 2, fingerprint = event.fingerprint, waitedMs = 0) else state

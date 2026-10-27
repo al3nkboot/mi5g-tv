@@ -196,7 +196,14 @@ class ProtectedTest {
         }
         val settingsLine = ShellRenderer.openSettingsLine()
         ShellTokens.assertLine(settingsLine.text)
-        assertEquals(listOf("am", "start", "-a", "android.settings.SETTINGS"), ShellTokens.tokenize(settingsLine.text))
+        assertEquals(listOf("input", "keyevent", "176"), ShellTokens.tokenize(settingsLine.text))
+        assertEquals(listOf("input", "keyevent", "178"), ShellTokens.tokenize(ShellRenderer.switchHdmiInputLines().single().text))
+        assertEquals(listOf("input", "keyevent", "176"), ShellTokens.tokenize(ShellRenderer.quickSettingsOverlayLines().single().text))
+        val leanback = ShellRenderer.launchLeanbackLine(tv.cleanyour.core.model.PackageName("com.midroid.mi5gtv.dns"))
+        assertEquals(
+            listOf("am", "start", "-a", "android.intent.action.MAIN", "-c", "android.intent.category.LEANBACK_LAUNCHER", "-p", "com.midroid.mi5gtv.dns"),
+            ShellTokens.tokenize(leanback.text),
+        )
 
         val textLine = ShellRenderer.inputTextLine("Shahid VIP 2026")
         ShellTokens.assertLine(textLine.text)

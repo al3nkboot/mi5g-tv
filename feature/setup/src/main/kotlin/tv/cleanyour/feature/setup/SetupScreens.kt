@@ -176,6 +176,10 @@ fun FoundScreen(
             // D36 (RF-LAUNCHER-240 F1): replacing a home screen app signed with another key erases what
             // it kept, so S3 says so right above the button; the credential prompt after it is the
             // confirmation. Pinned with the button, so it cannot be scrolled past unseen.
+            if (extras.commands.isNotEmpty()) {
+                Body(stringResource(R.string.found_commands_before), Modifier.padding(start = 4.dp, end = 4.dp, bottom = 8.dp))
+                MonospaceBlock(extras.commands.take(8), Modifier.padding(bottom = 12.dp))
+            }
             if (summary.replacesLauncher) Banner(stringResource(R.string.found_replaces_launcher), BannerTone.INFO, Modifier.padding(bottom = 12.dp))
             SafetyLine(stringResource(R.string.found_safety), Modifier.padding(start = 4.dp, end = 4.dp, bottom = 14.dp))
             ActionColumn {
