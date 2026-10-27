@@ -64,7 +64,8 @@ sealed interface SetupIntent { data object Start : SetupIntent; data class PickT
     data object Restart : SetupIntent; data object SaveRestoreNote : SetupIntent; data object AddCard : SetupIntent; data object Finish : SetupIntent
     data class StopAction(val action: tv.cleanyour.core.flows.StopAction) : SetupIntent; data object RejectIdentity : SetupIntent   // RFC-W8-1 (accepted)
     data class ShowOnTv(val on: Boolean) : SetupIntent   // RFC-CURTAIN-1: the Customise switch "Show the progress on the TV"
-    data class InstallHomeAnyway(val on: Boolean) : SetupIntent }   // v1.1.1: opt-in to install home screen when HOME_CHANGED / UNKNOWN_HOME
+    data class InstallHomeAnyway(val on: Boolean) : SetupIntent   // v1.1.1: opt-in to install home screen when HOME_CHANGED / UNKNOWN_HOME
+    data object SendDiagnostic : SetupIntent }
 // RFC-W8-1: a stop card button by position; the machine maps it per StopCase
 enum class StopAction { PRIMARY, SECONDARY, TERTIARY }
 sealed interface SetupEffect { data object HapticLight : SetupEffect; data object HapticDouble : SetupEffect; data object HapticFirm : SetupEffect
