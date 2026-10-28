@@ -96,6 +96,22 @@ class SessionManagerTest {
         assertEquals(AdbError.Auth.PendingTooLong, assertIs<OpenResult.Failed>(ignored.manager.open(ignored.endpoint, null, {})).error)
     }
 
+    // RFC-RECONNECT-1 (issue #1578): the signature-only open of a saved TV found at another address.
+    @Test fun openKnownNeverRaisesTheDialogAndOnlyOpensTheExpectedTv() = runTest {
+        val stranger = Rig(this, faults = Faults().apply { allow = AllowBehaviour.Allow(afterMs = 1_000) }, trusted = false)
+        val expected = TvId(stranger.tv.tvIdHex())
+        assertEquals(AdbError.Auth.Denied, assertIs<OpenResult.Failed>(stranger.manager.openKnown(stranger.endpoint, expected)).error)
+        assertEquals(0, stranger.adbd.prompts.get(), "no Allow dialog on a TV that never allowed this phone")
+        assertNull(stranger.manager.existing(expected))
+        val other = Rig(this)
+        val wrong = TvId(Personas.tclG05().tvIdHex())
+        assertIs<AdbError.Policy.WrongTv>(assertIs<OpenResult.Failed>(other.manager.openKnown(other.endpoint, wrong)).error)
+        val same = Rig(this)
+        val ok = assertIs<OpenResult.Ok>(same.manager.openKnown(same.endpoint, TvId(same.tv.tvIdHex())))
+        assertIs<ConnectionState.Connected>(ok.session.state.value)
+        assertEquals(0, same.adbd.prompts.get())
+    }
+
     @Test fun openingTheSameTvAgainAdoptsTheNewConnection() = runTest {
         val rig = Rig(this)
         val first = rig.open()

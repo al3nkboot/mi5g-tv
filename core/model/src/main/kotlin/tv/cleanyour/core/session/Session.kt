@@ -38,5 +38,10 @@ sealed interface OpenResult { data class Ok(val session: TvSession) : OpenResult
 interface SessionManager {
     val states: StateFlow<Map<TvId, ConnectionState>>
     suspend fun open(endpoint: Endpoint, expected: TvId?, onAwaitingAllow: suspend (fingerprint: String) -> Unit): OpenResult
+    // RFC-RECONNECT-1 (Clean Your TV 0.4.6.1, issue #1578): a TV this phone already knows, looked for at an
+    // address it was not saved at. The handshake signs with this phone's key and stops (Auth.Denied) where the
+    // TV does not take it, so a TV that never allowed this phone shows no Allow dialog. One that takes the key
+    // must be `expected` (Policy.WrongTv otherwise).
+    suspend fun openKnown(endpoint: Endpoint, expected: TvId): OpenResult
     fun existing(tvId: TvId): TvSession?
     suspend fun closeAll() }

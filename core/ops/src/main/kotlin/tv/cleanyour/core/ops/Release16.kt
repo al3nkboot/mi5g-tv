@@ -169,6 +169,59 @@ object Release16 {
         "Saved in the launcher settings and kept after reboot."
     }
 
+    // Explicit TCL button. Disables only the Google TV setup wizard that re-enables the stock
+    // launcher after reboot. Never the Google TV launcher itself.
+    const val TCL_SETUP_WRAITH = "com.google.android.tungsten.setupwraith"
+    const val GOOGLE_TV_LAUNCHER = "com.google.android.apps.tv.launcherx"
+    const val PROJECTIVY_PKG = "com.spocky.projengmenu"
+
+    fun isTcl(brand: String?, manufacturer: String?): Boolean {
+        fun token(raw: String?): Boolean {
+            val s = raw?.trim()?.lowercase() ?: return false
+            return s == "tcl" || s.startsWith("tcl ") || s.startsWith("tcl-") || s.contains(" tcl")
+        }
+        return token(brand) || token(manufacturer)
+    }
+
+    fun projectivyIsHome(resolveOutput: String): Boolean {
+        val component = resolveOutput.lineSequence()
+            .map { it.trim() }
+            .lastOrNull { '/' in it && !it.startsWith("priority") }
+            ?: return false
+        if (component.startsWith(GOOGLE_TV_LAUNCHER)) return false
+        return component.startsWith("$PROJECTIVY_PKG/")
+    }
+
+    enum class TclFail { NOT_TCL, NO_SESSION, NOT_PROJECTIVY_HOME, WIZARD_MISSING, COMMAND_FAILED }
+
+    fun tclActionName(enable: Boolean, arabic: Boolean): String = if (enable) {
+        if (arabic) "إعادة تفعيل معالج إعداد TCL" else "Restore the TCL setup wizard"
+    } else {
+        if (arabic) "إيقاف معالج إعداد TCL" else "Stop the TCL setup wizard"
+    }
+
+    fun tclDone(enable: Boolean, arabic: Boolean): String = if (enable) {
+        if (arabic) "أُعيد تفعيل معالج الإعداد فقط. مشغّل Google TV لم يُمس."
+        else "The setup wizard was switched back on. The Google TV launcher was not touched."
+    } else {
+        if (arabic) "أُوقف معالج الإعداد فقط. Projectivy يبقى الشاشة الرئيسية، ومشغّل Google TV لم يُعطَّل."
+        else "Only the setup wizard was switched off. Projectivy stays the home screen, and the Google TV launcher was not disabled."
+    }
+
+    fun tclMessage(fail: TclFail, arabic: Boolean): String = if (arabic) when (fail) {
+        TclFail.NOT_TCL -> "هذا الزر لتلفاز TCL فقط. لم يُرسل أي أمر."
+        TclFail.NO_SESSION -> "لا يوجد اتصال بالتلفزيون. أعد الربط ثم أعد المحاولة."
+        TclFail.NOT_PROJECTIVY_HOME -> "Projectivy ليس الشاشة الرئيسية الآن. عيّنه أولاً، ثم أوقف المعالج. لم يُعطَّل مشغّل Google TV."
+        TclFail.WIZARD_MISSING -> "معالج إعداد Google TV غير موجود على هذا التلفاز. أجهزة TCL بلا خدمات Google لا تحتوي هذه الحزمة. لم يُرسل أمر التعطيل."
+        TclFail.COMMAND_FAILED -> "الأمر لم ينجح. لم يُعطَّل مشغّل Google TV. يمكنك التراجع لاحقاً إن تغيّر شيء."
+    } else when (fail) {
+        TclFail.NOT_TCL -> "This button is for a TCL TV only. No command was sent."
+        TclFail.NO_SESSION -> "No TV connection. Connect again, then retry."
+        TclFail.NOT_PROJECTIVY_HOME -> "Projectivy is not the home screen yet. Set it as home, then stop the wizard. The Google TV launcher was not disabled."
+        TclFail.WIZARD_MISSING -> "The Google TV setup wizard is not on this TV. TCL sets without Google services do not have that package. The disable command was not sent."
+        TclFail.COMMAND_FAILED -> "The command did not succeed. The Google TV launcher was not disabled. You can undo later if anything changed."
+    }
+
     private fun arabicLink(failure: LinkFailure): String = when (failure) {
         LinkFailure.SAME_WIFI -> "الهاتف والتلفاز ليسا على شبكة الواي فاي نفسها. صلهما بالشبكة نفسها ثم أعد المحاولة."
         LinkFailure.PORT_CLOSED -> "منفذ الربط مغلق. فعّل تصحيح USB وتصحيح الشبكة، أو أدخل عنوان IP والمنفذ يدوياً."

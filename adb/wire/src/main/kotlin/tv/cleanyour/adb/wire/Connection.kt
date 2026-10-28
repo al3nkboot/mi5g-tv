@@ -231,10 +231,11 @@ internal class ConnectionCore private constructor(
             tls: TlsUpgrader?,
             onAwaitingAllow: suspend (String) -> Unit,
             firstAuthTimeoutMs: Long,
+            sendPublicKey: Boolean = true,
         ): ConnectionCore {
             var sock = socket
             try {
-                val (upgraded, banner) = handshake(sock, signer, tls, onAwaitingAllow, firstAuthTimeoutMs)
+                val (upgraded, banner) = handshake(sock, signer, tls, onAwaitingAllow, firstAuthTimeoutMs, sendPublicKey)
                 sock = upgraded
                 val parentContext = currentCoroutineContext()
                 val scope = CoroutineScope(parentContext.minusKey(Job) + SupervisorJob())
@@ -283,6 +284,7 @@ internal class ConnectionCore private constructor(
             tls: TlsUpgrader?,
             onAwaitingAllow: suspend (String) -> Unit,
             firstAuthTimeoutMs: Long,
+            sendPublicKey: Boolean,
         ): Pair<AdbSocket, Banner> {
             var socket = socket0
             writeFrame(socket, FrameCodec.encode(A_CNXN, AdbProtocol.VERSION, AdbProtocol.MAX_PAYLOAD, AdbProtocol.CONNECT_PAYLOAD))
@@ -306,6 +308,9 @@ internal class ConnectionCore private constructor(
                                 writeFrame(socket, FrameCodec.encode(A_AUTH, AdbProtocol.AUTH_SIGNATURE, 0, signature))
                                 signatureSent = true
                             }
+                            // RFC-RECONNECT-1: a TV that did not take the signature never allowed this phone. Without
+                            // the public key it shows no Allow dialog.
+                            !sendPublicKey -> throw AdbException(AdbError.Auth.Denied)
                             !publicKeySent -> {
                                 val line = signer.publicKeyLine.toByteArray(Charsets.US_ASCII)
                                 writeFrame(socket, FrameCodec.encode(A_AUTH, AdbProtocol.AUTH_RSAPUBLICKEY, 0, line.copyOf(line.size + 1)))

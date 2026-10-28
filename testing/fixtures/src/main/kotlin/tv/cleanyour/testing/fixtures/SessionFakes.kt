@@ -195,6 +195,18 @@ class FakeSessionManager : SessionManager {
         return OpenResult.Ok(s)
     }
 
+    // RFC-RECONNECT-1: a host in allowPromptFor has not allowed this phone, so the signature-only open stops there.
+    val knownOpens = CopyOnWriteArrayList<Endpoint>()
+    override suspend fun openKnown(endpoint: Endpoint, expected: TvId): OpenResult {
+        knownOpens += endpoint
+        val s = byHost[endpoint.host] ?: return OpenResult.Failed(AdbError.Transport.Unreachable)
+        if (allowPromptFor.containsKey(endpoint.host)) return OpenResult.Failed(AdbError.Auth.Denied)
+        if (expected != s.tvId) return OpenResult.Failed(AdbError.Policy.WrongTv(expected, s.tvId))
+        live[s.tvId] = s
+        mutableStates.update { it + (s.tvId to s.state.value) }
+        return OpenResult.Ok(s)
+    }
+
     override fun existing(tvId: TvId): TvSession? = live[tvId]
 
     override suspend fun closeAll() {

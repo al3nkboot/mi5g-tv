@@ -557,8 +557,13 @@ class SetupMachine(
                 val identity = result.session.identity
                 // D38: a TV that raised no Allow dialog and is new to this phone gets the "Is this your
                 // TV?" line with a screenshot before anything else happens.
-                val needsIdentity = !allowShown && known == null
-                deps.log.line("setup: connected (allow dialog ${if (allowShown) "shown" else "not shown"}, identity check ${if (needsIdentity) "needed" else "not needed"})")
+                // RFC-RECONNECT-1: a TV this phone already saved, found at a new address, is not new.
+                // Its TvId is one of ours and it took this phone's key without asking, so no identity check.
+                val movedTv = known == null && deps.tvs.tvs.value.any { it.id == identity.tvId }
+                if (movedTv) knownTv = deps.tvs.tvs.value.firstOrNull { it.id == identity.tvId }
+                val needsIdentity = !allowShown && known == null && !movedTv
+                deps.log.line("setup: connected (allow dialog ${if (allowShown) "shown" else "not shown"}, identity check ${if (needsIdentity) "needed" else "not needed"}" +
+                    "${if (movedTv) ", a saved TV at a new address" else ""})")
                 if (needsIdentity) {
                     val shot = attempt { deps.prober.screenshot(result.session) }.getOrNull()
                     mutableExtras.update { it.copy(identity = IdentityCheck(identity.model, identity.serialLast4, shot)) }

@@ -581,6 +581,20 @@ class ShellRenderer(private val watchdogVariant: WatchdogVariant = WatchdogVaria
             )
         }
 
+        // TCL only, and only this package. The Google TV launcher is never an argument, so a caller
+        // cannot aim this line at com.google.android.apps.tv.launcherx.
+        fun tclSetupWraithLine(enable: Boolean): ShellLine {
+            val pkg = Release16.TCL_SETUP_WRAITH
+            check(pkg == "com.google.android.tungsten.setupwraith")
+            check(pkg != Release16.GOOGLE_TV_LAUNCHER)
+            check(Release16.GOOGLE_TV_LAUNCHER !in pkg)
+            val verb = if (enable) "enable" else "disable-user"
+            val line = ShellLine(ShellTokens.line(listOf(PM, verb, USER, "0", pkg)))
+            check(Release16.GOOGLE_TV_LAUNCHER !in line.text)
+            check(pkg in line.text)
+            return line
+        }
+
         fun uninstallKeepDataUserPackageLine(pkg: PackageName): ShellLine {
             require(PACKAGE_RE.matches(pkg.value) && !isForceStopProtected(pkg) && Denylist.staticReason(pkg.value) == null) {
                 "cannot uninstall protected package ${pkg.value}"

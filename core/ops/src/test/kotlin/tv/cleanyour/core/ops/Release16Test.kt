@@ -57,4 +57,20 @@ class Release16Test {
         assertTrue(text.contains("غير مفعّل"))
         assertFalse(text.contains("تم بنجاح"))
     }
+
+    @Test fun tclButtonTargetsOnlySetupWraithAndOnlyAfterProjectivyIsHome() {
+        val off = ShellRenderer.tclSetupWraithLine(false).text
+        val on = ShellRenderer.tclSetupWraithLine(true).text
+        assertTrue(off.contains("disable-user"))
+        assertTrue(off.contains(Release16.TCL_SETUP_WRAITH))
+        assertTrue(on.contains("enable"))
+        assertTrue(on.contains(Release16.TCL_SETUP_WRAITH))
+        assertFalse(off.contains(Release16.GOOGLE_TV_LAUNCHER))
+        assertFalse(on.contains(Release16.GOOGLE_TV_LAUNCHER))
+        assertFalse(Release16.isTcl("Xiaomi", "Xiaomi"))
+        assertTrue(Release16.isTcl("TCL", "TCL"))
+        assertFalse(Release16.projectivyIsHome("com.google.android.apps.tv.launcherx/.HomeActivity"))
+        assertTrue(Release16.projectivyIsHome("priority=0 preferredOrder=0\ncom.spocky.projengmenu/.ui.home.MainActivity"))
+        assertTrue(Release16.tclMessage(Release16.TclFail.NOT_PROJECTIVY_HOME, true).contains("Projectivy"))
+    }
 }

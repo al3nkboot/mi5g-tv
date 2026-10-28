@@ -58,7 +58,12 @@ class AdbSessionManager(
     override suspend fun open(endpoint: Endpoint, expected: TvId?, onAwaitingAllow: suspend (fingerprint: String) -> Unit): OpenResult =
         withContext(dispatcher) { openOnDispatcher(endpoint, expected, onAwaitingAllow) }
 
-    private suspend fun openOnDispatcher(endpoint: Endpoint, expected: TvId?, onAwaitingAllow: suspend (fingerprint: String) -> Unit): OpenResult = openMutex.withLock {
+    // RFC-RECONNECT-1: the signature only, never the public key (no Allow dialog on a TV that never allowed us).
+    override suspend fun openKnown(endpoint: Endpoint, expected: TvId): OpenResult =
+        withContext(dispatcher) { openOnDispatcher(endpoint, expected, {}, sendPublicKey = false) }
+
+    private suspend fun openOnDispatcher(endpoint: Endpoint, expected: TvId?, onAwaitingAllow: suspend (fingerprint: String) -> Unit,
+                                         sendPublicKey: Boolean = true): OpenResult = openMutex.withLock {
         expected?.let { sessions[it] }?.takeIf { !it.isClosedForGood && it.state.value is ConnectionState.Connected }?.let { return@withLock OpenResult.Ok(it) }
         if (expected != null) publish(expected, ConnectionState.Connecting(endpoint, 1))
         val socket = try {
@@ -76,6 +81,7 @@ class AdbSessionManager(
                     onAwaitingAllow(fp)
                 },
                 firstAuthTimeoutMs = SessionConfig.FIRST_AUTH_TIMEOUT_MS,
+                sendPublicKey = sendPublicKey,
             )
         } catch (e: AdbException) {
             return@withLock failed(expected, e.error)

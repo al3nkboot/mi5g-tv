@@ -28,7 +28,10 @@ sealed interface AdbService {
     data object Ping : AdbService }                            // "exec:echo", the keepalive
 
 class AdbConnection private constructor(private val core: ConnectionCore) {   // sketch; W2 owns the shape inside :adb:wire
-    companion object { suspend fun open(socket: AdbSocket, signer: AdbSigner, tls: TlsUpgrader?, onAwaitingAllow: suspend (String) -> Unit, firstAuthTimeoutMs: Long = 120_000): AdbConnection = AdbConnection(ConnectionCore.open(socket, signer, tls, onAwaitingAllow, firstAuthTimeoutMs)) }
+    // RFC-RECONNECT-1: sendPublicKey false stops the handshake with Auth.Denied where the TV does not take the
+    // signature, before the public key goes (the key is what raises the TV's Allow dialog).
+    companion object { suspend fun open(socket: AdbSocket, signer: AdbSigner, tls: TlsUpgrader?, onAwaitingAllow: suspend (String) -> Unit, firstAuthTimeoutMs: Long = 120_000,
+        sendPublicKey: Boolean = true): AdbConnection = AdbConnection(ConnectionCore.open(socket, signer, tls, onAwaitingAllow, firstAuthTimeoutMs, sendPublicKey)) }
     val features: Set<String> get() = core.features
     val maxPayload: Int get() = core.maxPayload
     suspend fun openStream(service: AdbService): AdbStream = core.openStream(service)     // R0: 3

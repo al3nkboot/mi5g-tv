@@ -172,7 +172,7 @@ class AppGraph(context: Context, val appVersion: String = versionOf(context), va
     val ledger = RunLedger(documents, journal)
     val runner = PlanRunner(planner, engine, gate, ledger, facts, snapshots, prober)
     val restorePoint = RestorePointWriter(restoreFiles, blobs, ledger, runner)
-    val access = TvAccess(sessions, discovery, tvs, clock)
+    val access = TvAccess(sessions, discovery, tvs, clock, log = FlowLog { CytLog.i(it) })
     val sessionEnd = SessionEnd(sessions, discovery, tvs, runner, foreground)
     val homePrefs = HomePrefs(documents)
     val appPrefs = AppPrefs(documents)

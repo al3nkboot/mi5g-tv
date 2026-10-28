@@ -2,6 +2,11 @@
 
 All notable changes to the app. Versions follow [semantic versioning](https://semver.org/).
 
+## 1.6.0 (2026-10-28)
+
+- زر صريح لتلفاز TCL فقط: يوقف معالج إعداد Google TV (`com.google.android.tungsten.setupwraith`) بعد التأكد أن Projectivy هو الشاشة الرئيسية، حتى لا يعود المشغّل الأصلي بعد كل إعادة تشغيل. التراجع يعيد تفعيل المعالج نفسه. مشغّل Google TV لا يُمس.
+- إذا تغيّر عنوان التلفاز على الواي فاي، يُبحث عنه في الشبكة ويُحفظ العنوان الجديد فقط إذا عرّف التلفاز هذا الهاتف وكان المعرّف نفسه. لا نافذة سماح على تلفاز لم يثق بهذا الهاتف، ولا اتصال بتلفاز آخر. من [Clean Your TV 0.4.6.1](https://github.com/udhaykumarbala/cleanyourtv-app/releases/tag/v0.4.6.1).
+
 ## 1.5.0 (2026-10-26)
 
 ### الجديد في الإصدار 1.5.0

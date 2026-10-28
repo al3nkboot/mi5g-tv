@@ -144,6 +144,7 @@ data class TvToolsState(
     val downloaderInput: String = "",
     val tvBannerInput: String = "",
     val powerToolStatus: PowerToolStatus = PowerToolStatus.Idle,
+    val tclTools: Boolean = false,
 )
 
 sealed interface TvToolsIntent {
@@ -184,6 +185,9 @@ sealed interface TvToolsIntent {
     data object SwitchHdmiInput : TvToolsIntent
     data class UpdateTvBannerInput(val text: String) : TvToolsIntent
     data class SendTvBanner(val text: String? = null) : TvToolsIntent
+    // 1.6: explicit TCL button. Stops only setupwraith, and only after Projectivy is home.
+    data object StopTclSetupWraith : TvToolsIntent
+    data object RestoreTclSetupWraith : TvToolsIntent
 }
 
 class TvToolsMachine(
@@ -192,7 +196,7 @@ class TvToolsMachine(
     private val tvId: TvId,
 ) : Machine<TvToolsState, TvToolsIntent, ManageEffect>(TvToolsState(), scope) {
 
-    private data class Loaded(val tvName: String)
+    private data class Loaded(val tvName: String, val tcl: Boolean)
     private data class RemoteUpdate(val status: RemoteStatus, val clearText: Boolean = false)
     private data class ScreenshotUpdate(val status: ScreenshotStatus)
     private data class SideloadUpdate(val status: SideloadStatus)
@@ -206,14 +210,16 @@ class TvToolsMachine(
     init {
         scope.launch {
             d.tvs.tvs.collect { list ->
-                list.firstOrNull { it.id == tvId }?.let { tv -> send(Loaded(tv.nickname)) }
+                list.firstOrNull { it.id == tvId }?.let { tv ->
+                    send(Loaded(tv.nickname, Release16.isTcl(tv.facts.brand, tv.facts.manufacturer)))
+                }
             }
         }
         scope.launch { loadPerformance(liveOnly = true) }
     }
 
     override fun reduce(state: TvToolsState, event: Any): TvToolsState = when (event) {
-        is Loaded -> state.copy(tvName = event.tvName)
+        is Loaded -> state.copy(tvName = event.tvName, tclTools = event.tcl)
         is TvToolsIntent.UpdateText -> state.copy(textInput = event.text.take(ShellRenderer.MAX_INPUT_TEXT_LEN))
         is RemoteUpdate -> state.copy(
             remoteStatus = event.status,
@@ -340,6 +346,8 @@ class TvToolsMachine(
             TvToolsIntent.SwitchHdmiInput -> scope.launch {
                 runPowerLines(ShellRenderer.switchHdmiInputLines(), "فتح قائمة منافذ HDMI")
             }
+            TvToolsIntent.StopTclSetupWraith -> scope.launch { tclSetupWraith(enable = false) }
+            TvToolsIntent.RestoreTclSetupWraith -> scope.launch { tclSetupWraith(enable = true) }
             is TvToolsIntent.SendTvBanner -> {
                 val msgText = (event.text ?: before.tvBannerInput).trim()
                 if (msgText.isNotEmpty()) scope.launch {
@@ -476,6 +484,48 @@ class TvToolsMachine(
     }
 
     private fun toolArabic() = Locale.getDefault().language == "ar"
+
+    // Stops or restores only com.google.android.tungsten.setupwraith. The Google TV launcher is
+    // not a parameter of the command. Disable runs only when Projectivy is the current home.
+    private suspend fun tclSetupWraith(enable: Boolean) {
+        val arabic = toolArabic()
+        val label = Release16.tclActionName(enable, arabic)
+        send(PowerToolUpdate(PowerToolStatus.Working(label)))
+        val tv = d.tvs.tvs.value.firstOrNull { it.id == tvId }
+        if (tv == null || !Release16.isTcl(tv.facts.brand, tv.facts.manufacturer)) {
+            send(PowerToolUpdate(PowerToolStatus.Failed(label, Release16.tclMessage(Release16.TclFail.NOT_TCL, arabic))))
+            return
+        }
+        val session = (d.access.session(tvId) as? AccessResult.Ok)?.session
+        if (session == null) {
+            send(PowerToolUpdate(PowerToolStatus.Failed(label, Release16.tclMessage(Release16.TclFail.NO_SESSION, arabic))))
+            return
+        }
+        if (!enable) {
+            val homeLine = ShellRenderer().render(Op.Read(ProbeKind.HOME)).lines.single()
+            val home = attempt { TvShellRunner.run(session, homeLine) }.getOrNull()
+            if (home == null || home.exit != 0 || !Release16.projectivyIsHome(home.stdout)) {
+                send(PowerToolUpdate(PowerToolStatus.Failed(label, Release16.tclMessage(Release16.TclFail.NOT_PROJECTIVY_HOME, arabic))))
+                return
+            }
+        }
+        val wizard = PackageName(Release16.TCL_SETUP_WRAITH)
+        val path = attempt { TvShellRunner.run(session, ShellRenderer.pmPathLine(wizard)) }.getOrNull()
+        if (path == null || path.exit != 0 || "package:" !in path.stdout) {
+            send(PowerToolUpdate(PowerToolStatus.Failed(label, Release16.tclMessage(Release16.TclFail.WIZARD_MISSING, arabic))))
+            return
+        }
+        val line = ShellRenderer.tclSetupWraithLine(enable)
+        check(Release16.GOOGLE_TV_LAUNCHER !in line.text) { "refusing a line that names the Google TV launcher" }
+        val res = attempt { TvShellRunner.run(session, line) }.getOrNull()
+        val out = res?.stdout.orEmpty() + "\n" + res?.stderr.orEmpty()
+        if (res == null || res.exit != 0 || "Error" in out) {
+            send(PowerToolUpdate(PowerToolStatus.Failed(label, Release16.tclMessage(Release16.TclFail.COMMAND_FAILED, arabic))))
+            return
+        }
+        send(PowerToolUpdate(PowerToolStatus.Done(label, Release16.tclDone(enable, arabic))))
+        effect(ManageEffect.HapticDouble)
+    }
 
     private fun mapFail(label: String, fail: Release16.MapFail) {
         send(PowerToolUpdate(PowerToolStatus.Failed(label, Release16.mapMessage(fail, toolArabic()))))

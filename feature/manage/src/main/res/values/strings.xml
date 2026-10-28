@@ -322,6 +322,10 @@
     <string name="tvtools_downloader_open_btn">Open code or link on TV</string>
     <string name="tvtools_downloader_install_btn">Download and install APK on TV directly</string>
     <string name="tvtools_smarttube_tip">Tip to hide Shorts on TV YouTube (SmartTube): open SmartTube &gt; Settings &gt; Content &gt; Hide Shorts.</string>
+    <string name="tvtools_tcl_section">TCL: keep Projectivy after a restart</string>
+    <string name="tvtools_tcl_note">On TCL with Google TV, the setup wizard turns Projectivy off after every restart. This button stops that wizard only, and only after Projectivy is the home screen. It does not disable the Google TV launcher. Undo switches the wizard back on.</string>
+    <string name="tvtools_tcl_stop">Stop the TCL setup wizard</string>
+    <string name="tvtools_tcl_undo">Undo: turn the setup wizard back on</string>
     <string name="tvtools_mapper_section">Remote button mapper, Xiaomi Settings fix, rotation and screensaver</string>
     <string name="tvtools_mapper_settings_fix">Open TV Settings overlay now (Xiaomi and MX Player fix)</string>
     <string name="tvtools_mapper_yt_smarttube">Map YouTube key to SmartTube (Ad-Free)</string>

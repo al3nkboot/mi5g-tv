@@ -722,6 +722,25 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
         }
         Banner(stringResource(R.string.tvtools_smarttube_tip), BannerTone.INFO, Modifier.padding(top = 12.dp))
 
+        if (state.tclTools) {
+            SectionLabel(stringResource(R.string.tvtools_tcl_section))
+            Body(stringResource(R.string.tvtools_tcl_note), Modifier.padding(bottom = 8.dp, start = 4.dp, end = 4.dp))
+            ActionColumn {
+                PrimaryButton(
+                    stringResource(R.string.tvtools_tcl_stop),
+                    { onIntent(TvToolsIntent.StopTclSetupWraith) },
+                    enabled = !powerWorking,
+                    guardObscured = true,
+                )
+                SecondaryButton(
+                    stringResource(R.string.tvtools_tcl_undo),
+                    { onIntent(TvToolsIntent.RestoreTclSetupWraith) },
+                    enabled = !powerWorking,
+                    guardObscured = true,
+                )
+            }
+        }
+
         // 2) Button Mapper + Xiaomi Settings Key Fix + Force Landscape + Screensaver & Quiet Hours
         SectionLabel(stringResource(R.string.tvtools_mapper_section))
         ActionColumn {

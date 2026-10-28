@@ -48,6 +48,19 @@ class HandshakeTest {
         second.close()
     }
 
+    // RFC-RECONNECT-1: without the public key a TV that does not take the signature shows no dialog.
+    @Test fun signatureOnlyStopsBeforeThePublicKey() = runTest {
+        val tv = adbd(trusted = false)
+        var prompted = 0
+        val e = assertFailsWith<AdbException> { AdbConnection.open(tv.connect(), TestKeys.signer, null, { prompted++ }, sendPublicKey = false) }
+        assertEquals(AdbError.Auth.Denied, e.error)
+        assertEquals(0, prompted)
+        assertEquals(0, tv.prompts.get())
+        val known = adbd()
+        AdbConnection.open(known.connect(), TestKeys.signer, null, {}, sendPublicKey = false).close()
+        assertEquals(0, known.prompts.get())
+    }
+
     @Test fun allowWithoutAlwaysPromptsNextTime() = runTest {
         val tv = adbd(faults = Faults().apply { allow = AllowBehaviour.Allow(afterMs = 3_000, always = false) }, trusted = false)
         tv.open().close()

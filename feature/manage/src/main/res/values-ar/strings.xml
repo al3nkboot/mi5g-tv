@@ -315,6 +315,10 @@
     <string name="tvtools_downloader_open_btn">فتح الكود أو الرابط مباشرة على التلفاز</string>
     <string name="tvtools_downloader_install_btn">تحميل وتثبيت APK على التلفاز مباشرة</string>
     <string name="tvtools_smarttube_tip">💡 تعليمات إلغاء Shorts في يوتيوب التلفاز (SmartTube): افتح SmartTube &gt; الإعدادات (Settings) &gt; تصفح المحتوى (Content) &gt; إخفاء Shorts.</string>
+    <string name="tvtools_tcl_section">TCL: إبقاء Projectivy بعد إعادة التشغيل</string>
+    <string name="tvtools_tcl_note">على TCL مع Google TV، معالج الإعداد يعطّل Projectivy بعد كل إعادة تشغيل. هذا الزر يوقف ذلك المعالج فقط، وبعد التأكد أن Projectivy هو الشاشة الرئيسية. لا يعطّل مشغّل Google TV. التراجع يعيد تشغيل المعالج.</string>
+    <string name="tvtools_tcl_stop">إيقاف معالج إعداد TCL</string>
+    <string name="tvtools_tcl_undo">تراجع: إعادة تفعيل معالج الإعداد</string>
     <string name="tvtools_mapper_section">تخصيص أزرار الريموت وإصلاح زر الإعدادات وتدوير الشاشة وشاشة التوقف</string>
     <string name="tvtools_mapper_settings_fix">⚙️ تفعيل وفتح زر الإعدادات من أي مكان (إصلاح شاومي و MX Player)</string>
     <string name="tvtools_mapper_yt_smarttube">تحويل زر يوتيوب في الريموت إلى SmartTube (بدون إعلانات)</string>
