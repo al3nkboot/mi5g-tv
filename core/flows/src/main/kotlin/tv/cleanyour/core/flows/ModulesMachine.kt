@@ -44,7 +44,7 @@ sealed interface InstallStep {
     data class Asking(val name: String, val pkg: String, val key12: String) : InstallStep   // M3c
     data class Shown(val name: String) : InstallStep
     data class Hidden(val name: String) : InstallStep
-    data class Failed(val name: String, val fetch: FetchFailure?) : InstallStep
+    data class Failed(val name: String, val fetch: FetchFailure?, val httpCode: Int? = null) : InstallStep
 }
 
 data class UpdateConsent(val moduleId: String, val name: String, val version: String, val added: List<PermissionStatement>)
@@ -220,7 +220,7 @@ class ModulesMachine(
         val blob = when (val f = attempt { d.fetcher.fetch(v.artifact) { done, total -> send(Step(InstallStep.Downloading(done, total))) } }
             .getOrElse { FetchResult.Failed(FetchFailure.OFFLINE, null) }) {
             is FetchResult.Ok -> f.blob
-            is FetchResult.Failed -> return send(Step(InstallStep.Failed(m.name, f.failure)))
+            is FetchResult.Failed -> return send(Step(InstallStep.Failed(m.name, f.failure, f.httpCode)))
         }
         send(Step(InstallStep.Checking))
         val info = attempt { d.inspector.inspect(blob) }.getOrNull()

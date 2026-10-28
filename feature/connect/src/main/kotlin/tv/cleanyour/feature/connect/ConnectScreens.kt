@@ -247,6 +247,10 @@ fun DoorScreen(state: SetupState.OpenDoor, extras: SetupExtras, actions: SetupAc
                 NotThisTv(state, actions)
             }
         }
+        extras.linkNote?.let { note ->
+            Banner(note, BannerTone.WARNING, Modifier.padding(top = 12.dp))
+            TertiaryButton(stringResource(R.string.door_send_diagnostic), { actions.intent(SetupIntent.SendDiagnostic) }, Modifier.padding(top = 4.dp))
+        }
         InlineCard(extras, actions)
         Gap(16.dp)
     }

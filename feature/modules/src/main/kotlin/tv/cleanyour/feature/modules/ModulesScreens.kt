@@ -118,10 +118,10 @@ fun indexFailureText(f: IndexView.Failed): String = when {
 }
 
 @Composable
-fun fetchFailureText(f: FetchFailure): String = when (f) {
+fun fetchFailureText(f: FetchFailure, httpCode: Int? = null): String = when (f) {
     FetchFailure.OFFLINE -> stringResource(R.string.fetch_failure_offline)
     FetchFailure.HOST_NOT_ALLOWED -> stringResource(R.string.fetch_failure_host_not_allowed)
-    FetchFailure.HTTP_ERROR -> msg(R.string.fetch_failure_http_error, "code" to "")
+    FetchFailure.HTTP_ERROR -> msg(R.string.fetch_failure_http_error, "code" to (httpCode?.toString() ?: ""))
     FetchFailure.TOO_LARGE -> stringResource(R.string.fetch_failure_too_large)
     FetchFailure.HASH_MISMATCH -> stringResource(R.string.fetch_failure_hash_mismatch)
     FetchFailure.SIZE_MISMATCH -> stringResource(R.string.fetch_failure_size_mismatch)
@@ -355,7 +355,7 @@ internal fun InstallScreen(step: InstallStep, state: ModulesState, onIntent: (Mo
                 Banner(msg(R.string.cardprompt_hidden, "name" to step.name), BannerTone.NEUTRAL, Modifier.padding(top = 16.dp))
             }
             is InstallStep.Failed -> {
-                StopCard(msg(R.string.module_install_failed, "name" to step.name), step.fetch?.let { fetchFailureText(it) } ?: "", Modifier.padding(top = 20.dp),
+                StopCard(msg(R.string.module_install_failed, "name" to step.name), step.fetch?.let { fetchFailureText(it, step.httpCode) } ?: "", Modifier.padding(top = 20.dp),
                     primaryLabel = stringResource(R.string.action_ok), onPrimary = { onIntent(ModulesIntent.DismissInstall) }, primaryGuarded = false)
             }
         }

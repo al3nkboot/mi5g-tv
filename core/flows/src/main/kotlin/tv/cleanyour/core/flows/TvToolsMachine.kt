@@ -11,12 +11,15 @@ import tv.cleanyour.core.model.EnabledState
 import tv.cleanyour.core.model.Op
 import tv.cleanyour.core.model.PACKAGE_RE
 import tv.cleanyour.core.model.PackageName
+import tv.cleanyour.core.model.ProbeKind
+import tv.cleanyour.core.model.ReadArg
 import tv.cleanyour.core.model.RemoteDir
 import tv.cleanyour.core.model.RemotePath
 import tv.cleanyour.core.model.TvAnimationScale
 import tv.cleanyour.core.model.TvId
 import tv.cleanyour.core.model.TvKeyEvent
 import tv.cleanyour.core.ops.Denylist
+import tv.cleanyour.core.ops.Release16
 import tv.cleanyour.core.ops.ShellRenderer
 import tv.cleanyour.core.probe.TvShellRunner
 import tv.cleanyour.core.session.InstallOutcome
@@ -121,8 +124,8 @@ sealed interface CastMediaStatus {
 sealed interface PowerToolStatus {
     data object Idle : PowerToolStatus
     data class Working(val label: String) : PowerToolStatus
-    data class Done(val label: String) : PowerToolStatus
-    data class Failed(val label: String) : PowerToolStatus
+    data class Done(val label: String, val detail: String? = null) : PowerToolStatus
+    data class Failed(val label: String, val detail: String? = null) : PowerToolStatus
 }
 
 data class TvToolsState(
@@ -472,11 +475,33 @@ class TvToolsMachine(
         }
     }
 
+    private fun toolArabic() = Locale.getDefault().language == "ar"
+
+    private fun mapFail(label: String, fail: Release16.MapFail) {
+        send(PowerToolUpdate(PowerToolStatus.Failed(label, Release16.mapMessage(fail, toolArabic()))))
+    }
+
     private suspend fun mapRemoteKey(keyCode: Int, targetPkg: String, label: String) {
         send(PowerToolUpdate(PowerToolStatus.Working(label)))
         val session = (d.access.session(tvId) as? AccessResult.Ok)?.session
-        if (session == null || !PACKAGE_RE.matches(targetPkg)) {
-            send(PowerToolUpdate(PowerToolStatus.Failed(label)))
+        if (session == null) {
+            mapFail(label, Release16.MapFail.NO_SESSION)
+            return
+        }
+        if (!PACKAGE_RE.matches(targetPkg)) {
+            mapFail(label, Release16.MapFail.BAD_PACKAGE)
+            return
+        }
+        val pkg = PackageName(targetPkg)
+        val installed = attempt { TvShellRunner.run(session, ShellRenderer.pmPathLine(pkg)) }.getOrNull()
+        if (installed == null || installed.exit != 0 || "package:" !in installed.stdout) {
+            mapFail(label, Release16.MapFail.TARGET_MISSING)
+            return
+        }
+        val homeLine = ShellRenderer().render(Op.Read(ProbeKind.HOME)).lines.single()
+        val home = attempt { TvShellRunner.run(session, homeLine) }.getOrNull()
+        if (home == null || home.exit != 0 || Release16.LAUNCHER_PKG !in home.stdout) {
+            mapFail(label, Release16.MapFail.NOT_OUR_HOME)
             return
         }
         val existingBytes = d.snapshots.latest(tvId)?.launcherOverlay
@@ -502,32 +527,58 @@ class TvToolsMachine(
         )
         val encoded = runCatching { d.encoder.encode(updatedDoc) }.getOrNull()
         if (encoded == null) {
-            send(PowerToolUpdate(PowerToolStatus.Failed(label)))
+            mapFail(label, Release16.MapFail.WRITE_FAILED)
             return
         }
         val blob = d.blobs.putBytes(encoded)
+        var digestOk = false
+        var writeFailed = false
+        var restartFailed = false
         try {
             val ops = d.configTransport.writePlanSteps(blob, null)
             for (op in ops) {
                 when (op) {
-                    is Op.PushAsset -> attempt { session.push(op.src, op.dest) {} }
+                    is Op.PushAsset -> {
+                        val pushed = attempt { session.push(op.src, op.dest) {} }.getOrNull()
+                        if (pushed == null) {
+                            writeFailed = true
+                        } else {
+                            val verify = ShellRenderer().render(Op.Read(ProbeKind.SHA256_OF_FILE, ReadArg.Path(op.dest))).lines.single()
+                            val check = attempt { TvShellRunner.run(session, verify) }.getOrNull()
+                            val got = check?.stdout?.lineSequence()?.map { it.trim() }?.firstOrNull { it.isNotEmpty() }?.substringBefore(' ')
+                            if (check != null && check.exit == 0 && got == op.sha256.hex) digestOk = true else writeFailed = true
+                        }
+                    }
+                    is Op.RestartHome -> {
+                        val rendered = runCatching { ShellRenderer().render(op) }.getOrNull()
+                        if (rendered == null) restartFailed = true
+                        else for (line in rendered.lines) {
+                            val ran = attempt { TvShellRunner.run(session, line) }.getOrNull()
+                            if (ran == null || ran.exit != 0) restartFailed = true
+                        }
+                    }
                     else -> {
                         val rendered = runCatching { ShellRenderer().render(op) }.getOrNull()
-                        if (rendered != null) {
-                            for (line in rendered.lines) {
-                                attempt { TvShellRunner.run(session, line) }
-                            }
+                        if (rendered == null) writeFailed = true
+                        else for (line in rendered.lines) {
+                            val ran = attempt { TvShellRunner.run(session, line) }.getOrNull()
+                            if (ran == null || ran.exit != 0) writeFailed = true
                         }
                     }
                 }
             }
-            if (keyCode == 176) {
-                for (l in ShellRenderer.quickSettingsOverlayLines()) {
-                    attempt { TvShellRunner.run(session, l) }
-                }
+            val fail = when {
+                !digestOk && writeFailed -> Release16.MapFail.WRITE_FAILED
+                !digestOk -> Release16.MapFail.DIGEST_MISMATCH
+                restartFailed -> Release16.MapFail.FOREGROUND
+                else -> null
             }
-            send(PowerToolUpdate(PowerToolStatus.Done(label)))
-            effect(ManageEffect.HapticDouble)
+            if (fail != null) {
+                mapFail(label, fail)
+            } else {
+                send(PowerToolUpdate(PowerToolStatus.Done(label, Release16.mapSaved(toolArabic()))))
+                effect(ManageEffect.HapticDouble)
+            }
         } finally {
             withContext(NonCancellable) {
                 attempt { d.blobs.delete(blob.sha256) }

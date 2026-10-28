@@ -74,6 +74,7 @@ import tv.cleanyour.core.spec.ThemeSource
 import tv.cleanyour.core.store.BlobStore
 import tv.cleanyour.core.store.Clock
 import tv.cleanyour.core.store.GatePass
+import tv.cleanyour.core.ops.Release16
 import tv.cleanyour.core.ops.Transfer
 import tv.cleanyour.core.store.SnapshotStore
 import tv.cleanyour.core.store.TvRepository
@@ -143,6 +144,7 @@ data class SetupExtras(
     val addOns: Boolean = true,                  // STORES-PLAN 1: Done's "Add a card" (off in the Play build)
     val canForceHome: Boolean = false,           // v1.1.1: HOME_CHANGED / UNKNOWN_HOME can opt in to installing home screen
     val forceHome: Boolean = false,
+    val linkNote: String? = null,            // 1.6: why the last connect attempt stopped, plus one next step
 )
 
 class SetupDeps(
@@ -206,6 +208,7 @@ class SetupMachine(
     private var session: TvSession? = null
     private var tv: Tv? = null
     private var deviceFacts: DeviceFacts? = null
+    private var lastDiagnostic: String? = null
     private var resolution: ProfileResolution? = null
     private var snapshot: Snapshot? = null
     private var allowShown = false
@@ -386,6 +389,8 @@ class SetupMachine(
         // A new door (another TV, a typed address, a fresh start) clears the retry brakes.
         if (event is Ev.Door || event == SetupIntent.Start || event is SetupIntent.PickTv || event is SetupIntent.EnterAddress || event == Ev.Back || event == Ev.ToWelcome) {
             blocked = false; connectFailed = false
+            mutableExtras.update { it.copy(linkNote = null) }
+            lastDiagnostic = null
         }
         when (event) {
             is SetupIntent.EnterAddress -> {
@@ -410,6 +415,7 @@ class SetupMachine(
             }
             Ev.GoProbe -> scope.launch { probe() }
             is Ev.OpenFailed -> onOpenFailed(event.error)
+            SetupIntent.SendDiagnostic -> lastDiagnostic?.let { effect(SetupEffect.Share(it)) }
             is SetupIntent.Keep -> editDraft { d ->
                 if (event.keep) d.copy(kept = d.kept + event.pkg, extraOff = d.extraOff - event.pkg)
                 else if (event.pkg in d.kept) d.copy(kept = d.kept - event.pkg) else d.copy(extraOff = d.extraOff + event.pkg)
@@ -569,11 +575,21 @@ class SetupMachine(
     private fun onOpenFailed(error: AdbError) {
         connectFailed = true
         if (error is AdbError.Policy.WrongTv || error == AdbError.Transport.NoShellV2) { blocked = true; pollJob?.cancel(); pollJob = null }
+        val door = state.value as? SetupState.OpenDoor
+        val wireless = door?.tv?.let { it.pairingService != null || it.connectService != null } ?: false
+        val sdk = deviceFacts?.sdk
+        val arabic = java.util.Locale.getDefault().language == "ar"
+        val failure = Release16.classifyLink(error, sdk, deps.discovery.network().value.onWifi, wireless)
+        val note = if (failure == Release16.LinkFailure.TOO_OLD && sdk != null) Release16.tooOldMessage(sdk, arabic) else Release16.linkMessage(failure, arabic)
+        val facts = deviceFacts
+        lastDiagnostic = Release16.diagnostic(
+            facts?.brand, facts?.model ?: door?.tv?.model, facts?.release, sdk, "connect", error.toString(), arabic,
+        )
         when (error) {
-            is AdbError.Policy.WrongTv -> mutableExtras.update { it.copy(card = card(StopCase.IDENTITY_CHANGED, null, args = mapOf("name" to (knownTv?.nickname ?: "")))) }
-            AdbError.Transport.NoShellV2 -> mutableExtras.update { it.copy(card = card(StopCase.TV_NOT_SUPPORTED, null)) }
-            AdbError.Auth.Denied -> mutableExtras.update { it.copy(allowDenied = true) }
-            else -> {}
+            is AdbError.Policy.WrongTv -> mutableExtras.update { it.copy(card = card(StopCase.IDENTITY_CHANGED, null, args = mapOf("name" to (knownTv?.nickname ?: ""))), linkNote = note) }
+            AdbError.Transport.NoShellV2 -> mutableExtras.update { it.copy(card = card(StopCase.TV_NOT_SUPPORTED, null), linkNote = note) }
+            AdbError.Auth.Denied -> mutableExtras.update { it.copy(allowDenied = true, linkNote = note) }
+            else -> mutableExtras.update { it.copy(linkNote = note) }
         }
     }
 

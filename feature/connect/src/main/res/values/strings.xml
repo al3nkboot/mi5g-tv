@@ -190,4 +190,5 @@
     <string name="door_chinese_tv_body">If Developer Options or USB Debugging does not appear after pressing Build 7 times on Chinese TVs, Ikon (IK-E500FF), Haier, Nikai, or HY320 projectors:
 1. Secret factory menu codes on the remote: press Menu + 2580, or Source + 2580, or Menu + 1147, or Home + 1999, then enable ADB / UART debug.
 2. Or install Terminal / Bugjaeger or APK files directly from a FAT32 USB flash drive via the built-in Media / File Manager app.</string>
+    <string name="door_send_diagnostic">Send a diagnostic</string>
 </resources>
