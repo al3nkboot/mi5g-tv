@@ -43,7 +43,15 @@ sealed interface ScreenshotStatus {
 
 sealed interface SideloadStatus {
     data object Idle : SideloadStatus
-    data class Ready(val fileName: String, val sizeBytes: Long, val blob: BlobRef) : SideloadStatus
+    data class Ready(
+        val fileName: String,
+        val sizeBytes: Long,
+        val blob: BlobRef,
+        val packageName: String? = null,
+        val versionCode: Long? = null,
+        val parts: List<InstallPart> = emptyList(),
+    ) : SideloadStatus
+    data class NeedsConfirm(val ready: Ready, val detail: String, val older: Boolean) : SideloadStatus
     data class Installing(val fileName: String, val percent: Int) : SideloadStatus
     data class Installed(val fileName: String) : SideloadStatus
     data class Failed(val fileName: String, val detail: String? = null) : SideloadStatus
@@ -145,6 +153,18 @@ data class TvToolsState(
     val tvBannerInput: String = "",
     val powerToolStatus: PowerToolStatus = PowerToolStatus.Idle,
     val tclTools: Boolean = false,
+    val monitor: MonitorView? = null,
+    val filesFolder: String = "download",
+    val files: List<String> = emptyList(),
+    val filesNote: String? = null,
+    val dock: List<String> = emptyList(),
+    val dockInput: String = "",
+    val changes: List<ChangeView> = emptyList(),
+    val adbKeys: List<String> = emptyList(),
+    val adbNote: String? = null,
+    val screenNote: String? = null,
+    val extrasBusy: Boolean = false,
+    val confirmKeys: Boolean = false,
 )
 
 sealed interface TvToolsIntent {
@@ -155,7 +175,14 @@ sealed interface TvToolsIntent {
     data object TakeScreenshot : TvToolsIntent
     data object ShareScreenshot : TvToolsIntent
     data object PickApk : TvToolsIntent
-    data class ApkPicked(val fileName: String, val sizeBytes: Long, val blob: BlobRef) : TvToolsIntent
+    data class ApkPicked(
+        val fileName: String,
+        val sizeBytes: Long,
+        val blob: BlobRef,
+        val packageName: String? = null,
+        val versionCode: Long? = null,
+        val parts: List<InstallPart> = emptyList(),
+    ) : TvToolsIntent
     data object ClearApk : TvToolsIntent
     data object InstallApk : TvToolsIntent
     data object RefreshPerformance : TvToolsIntent
@@ -188,12 +215,33 @@ sealed interface TvToolsIntent {
     // 1.6: explicit TCL button. Stops only setupwraith, and only after Projectivy is home.
     data object StopTclSetupWraith : TvToolsIntent
     data object RestoreTclSetupWraith : TvToolsIntent
+    data object RefreshExtras : TvToolsIntent
+    data object RefreshMonitor : TvToolsIntent
+    data object RefreshFiles : TvToolsIntent
+    data class SetFilesFolder(val folder: String) : TvToolsIntent
+    data class PickSendFile(val folder: String) : TvToolsIntent
+    data class SendFile(val folder: String, val fileName: String, val sizeBytes: Long, val blob: BlobRef) : TvToolsIntent
+    data class PullSharedFile(val folder: String, val name: String) : TvToolsIntent
+    data class UpdateDockInput(val text: String) : TvToolsIntent
+    data class AddDock(val pkg: String) : TvToolsIntent
+    data class RemoveDock(val pkg: String) : TvToolsIntent
+    data class LaunchDock(val pkg: String) : TvToolsIntent
+    data object RestartTv : TvToolsIntent
+    data class SetPicture(val on: Boolean) : TvToolsIntent
+    data object RefreshKeys : TvToolsIntent
+    data object AskRemoveOtherKeys : TvToolsIntent
+    data object ConfirmRemoveOtherKeys : TvToolsIntent
+    data class UndoChange(val id: Long) : TvToolsIntent
+    data object RestoreOurChanges : TvToolsIntent
+    data object ConfirmInstall : TvToolsIntent
 }
 
 class TvToolsMachine(
     private val d: ManageDeps,
     scope: CoroutineScope,
     private val tvId: TvId,
+    private val phoneKeyLine: () -> String? = { null },
+    private val pictureOffJar: () -> ByteArray? = { null },
 ) : Machine<TvToolsState, TvToolsIntent, ManageEffect>(TvToolsState(), scope) {
 
     private data class Loaded(val tvName: String, val tcl: Boolean)
@@ -216,6 +264,7 @@ class TvToolsMachine(
             }
         }
         scope.launch { loadPerformance(liveOnly = true) }
+        scope.launch { TellyActions.loadSaved(d, tvId, ::send) }
     }
 
     override fun reduce(state: TvToolsState, event: Any): TvToolsState = when (event) {
@@ -227,7 +276,9 @@ class TvToolsMachine(
         )
         is ScreenshotUpdate -> state.copy(screenshotStatus = event.status)
         is TvToolsIntent.ApkPicked -> state.copy(
-            sideloadStatus = SideloadStatus.Ready(event.fileName, event.sizeBytes, event.blob),
+            sideloadStatus = SideloadStatus.Ready(
+                event.fileName, event.sizeBytes, event.blob, event.packageName, event.versionCode, event.parts,
+            ),
         )
         TvToolsIntent.ClearApk -> state.copy(sideloadStatus = SideloadStatus.Idle)
         is SideloadUpdate -> state.copy(sideloadStatus = event.status)
@@ -255,7 +306,7 @@ class TvToolsMachine(
             powerToolStatus = event.status,
             tvBannerInput = if (event.clearBanner) "" else state.tvBannerInput,
         )
-        else -> state
+        else -> reduceExtras(state, event) ?: state
     }
 
     override fun handle(event: Any, before: TvToolsState, after: TvToolsState) {
@@ -289,7 +340,15 @@ class TvToolsMachine(
             }
             TvToolsIntent.InstallApk -> {
                 val ready = before.sideloadStatus as? SideloadStatus.Ready
-                if (ready != null) scope.launch { installApk(ready) }
+                if (ready != null) scope.launch {
+                    if (ready.packageName == null || !TellyActions.reviewInstall(d, tvId, ready, ::send)) installApk(ready)
+                }
+            }
+            TvToolsIntent.ConfirmInstall -> {
+                val ask = before.sideloadStatus as? SideloadStatus.NeedsConfirm
+                if (ask != null) scope.launch {
+                    if (!TellyActions.installParts(d, tvId, ask.ready, ask.older, ::send, ::effect)) installApk(ask.ready)
+                }
             }
             TvToolsIntent.RefreshPerformance -> scope.launch { loadPerformance(liveOnly = false) }
             TvToolsIntent.RunSpeedBoost -> if (before.speedBoostStatus !is SpeedBoostStatus.Boosting) {
@@ -359,7 +418,9 @@ class TvToolsMachine(
                     }
                 }
             }
-            else -> {}
+            else -> if (TellyActions.wants(event)) {
+                TellyActions.launch(event, before, d, tvId, scope, phoneKeyLine, pictureOffJar, ::send, ::effect)
+            }
         }
     }
 

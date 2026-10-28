@@ -50,6 +50,8 @@ sealed interface ManageEffect {
     data class SharePng(val png: ByteArray, val fileName: String) : ManageEffect
     data class ShareApk(val apkBytes: ByteArray, val fileName: String) : ManageEffect
     data class DownloadUrlApk(val url: String, val fileName: String) : ManageEffect
+    data class PickSendFile(val folder: String) : ManageEffect
+    data class SaveFile(val bytes: ByteArray, val fileName: String, val mime: String) : ManageEffect
 }
 
 enum class SnackKind { PUT_BACK, SWITCHED_OFF, HOME_SAVED, MODULE_REMOVED, EXPORT_SAVED, EXPORT_FAILED, FAILED, HOME_UPDATED,

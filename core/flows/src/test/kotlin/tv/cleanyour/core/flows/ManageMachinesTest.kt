@@ -1111,7 +1111,7 @@ class ManageMachinesTest {
         appMgr.dispatch(TvAppManagerIntent.AskUninstall)
         settle()
         assertTrue(appMgr.state.value.confirmingUninstall)
-        h.session.recording.on("pm uninstall --user 0 org.xbmc.kodi", "Success\n")
+        h.session.recording.on("pm uninstall org.xbmc.kodi", "Success\n")
         appMgr.dispatch(TvAppManagerIntent.UninstallApp(kodiApp.pkg))
         settle()
         assertFalse(appMgr.state.value.apps.any { it.pkg == kodiApp.pkg })

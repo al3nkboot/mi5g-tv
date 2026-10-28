@@ -231,7 +231,7 @@ class AppGraph(context: Context, val appVersion: String = versionOf(context), va
     fun modules(scope: CoroutineScope, tvId: TvId) = ModulesMachine(manageDeps, scope, tvId)
     fun restorePoint(scope: CoroutineScope, tvId: TvId) = RestorePointMachine(manageDeps, scope, tvId)
     fun tvSettings(scope: CoroutineScope, tvId: TvId) = TvSettingsMachine(manageDeps, scope, tvId)
-    fun tvTools(scope: CoroutineScope, tvId: TvId) = TvToolsMachine(manageDeps, scope, tvId)
+    fun tvTools(scope: CoroutineScope, tvId: TvId) = TvToolsMachine(manageDeps, scope, tvId, phoneKeyLine = { runCatching { signer.publicKeyLine }.getOrNull() }, pictureOffJar = { pictureOffBytes(app) })
     fun tvApps(scope: CoroutineScope, tvId: TvId) = TvAppManagerMachine(manageDeps, scope, tvId)
     fun appSettings(scope: CoroutineScope) = AppSettingsMachine(manageDeps, scope)
     fun report(scope: CoroutineScope, kind: ReportKind, tvId: TvId?) = ReportMachine(manageDeps, scope, kind, tvId)
@@ -256,3 +256,8 @@ class AppGraph(context: Context, val appVersion: String = versionOf(context), va
             runCatching { context.packageManager.getPackageInfo(context.packageName, 0).versionName }.getOrNull() ?: "unknown"
     }
 }
+
+
+private fun pictureOffBytes(context: android.content.Context): ByteArray? = runCatching {
+    context.assets.open("picture-off.jar").use { it.readBytes() }
+}.getOrNull()

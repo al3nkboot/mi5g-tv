@@ -12,6 +12,7 @@ import tv.cleanyour.core.model.RemotePath
 import tv.cleanyour.core.model.TvId
 import tv.cleanyour.core.ops.Denylist
 import tv.cleanyour.core.ops.ShellRenderer
+import tv.cleanyour.core.ops.TellyFeatures
 import tv.cleanyour.core.probe.TvShellRunner
 
 enum class TvAppFilter { USER, ALL }
@@ -35,7 +36,7 @@ data class TvInstalledApp(
     val canForceStop: Boolean = !ShellRenderer.isForceStopProtected(pkg),
     val canClearData: Boolean = !ShellRenderer.isForceStopProtected(pkg) && Denylist.staticReason(pkg.value) == null,
     val canDisable: Boolean = !ShellRenderer.isForceStopProtected(pkg) && Denylist.staticReason(pkg.value) == null,
-    val canUninstall: Boolean = !ShellRenderer.isForceStopProtected(pkg) && Denylist.staticReason(pkg.value) == null,
+    val canUninstall: Boolean = !system && !ShellRenderer.isForceStopProtected(pkg) && Denylist.staticReason(pkg.value) == null,
 )
 
 sealed interface TvAppActionStatus {
@@ -355,6 +356,7 @@ class TvAppManagerMachine(
         val res = attempt { TvShellRunner.run(session, line) }.getOrNull()
         val out = (res?.stdout.orEmpty() + "\n" + res?.stderr.orEmpty())
         if (res != null && res.exit == 0 && "disabled" in out.lowercase()) {
+            TellyActions.noteChange(d, tvId, session, disable = true, pkg, name)
             send(ActionUpdate(TvAppActionStatus.Done(pkg, name, TvAppActionKind.DISABLE_APP), toggledPkg = pkg to false))
             effect(ManageEffect.HapticDouble)
         } else {
@@ -381,6 +383,7 @@ class TvAppManagerMachine(
             if (r != null && r.exit == 0) ok = true
         }
         if (ok) {
+            TellyActions.noteChange(d, tvId, session, disable = false, pkg, name)
             send(ActionUpdate(TvAppActionStatus.Done(pkg, name, TvAppActionKind.ENABLE_APP), toggledPkg = pkg to true))
             effect(ManageEffect.HapticDouble)
         } else {
@@ -414,13 +417,12 @@ class TvAppManagerMachine(
     private suspend fun uninstallApp(pkg: PackageName) {
         val app = state.value.apps.firstOrNull { it.pkg == pkg }
         val name = app?.name ?: d.nameOf(pkg)
-        if (app != null && !app.canUninstall) {
+        if (app == null || app.system || !app.canUninstall) {
             send(ActionUpdate(TvAppActionStatus.Failed(pkg, name, TvAppActionKind.UNINSTALL)))
             return
         }
         val stdLine = runCatching { ShellRenderer.uninstallUserPackageLine(pkg) }.getOrNull()
-        val keepLine = runCatching { ShellRenderer.uninstallKeepDataUserPackageLine(pkg) }.getOrNull()
-        if (stdLine == null || keepLine == null) {
+        if (stdLine == null || TellyFeatures.usesUserZeroUninstall(stdLine.text)) {
             send(ActionUpdate(TvAppActionStatus.Failed(pkg, name, TvAppActionKind.UNINSTALL)))
             return
         }
@@ -430,15 +432,8 @@ class TvAppManagerMachine(
             send(ActionUpdate(TvAppActionStatus.Failed(pkg, name, TvAppActionKind.UNINSTALL)))
             return
         }
-        // Try standard --user 0 uninstall first; for preloaded system apps fallback to -k --user 0
-        val primaryLine = if (app?.system == true) keepLine else stdLine
-        val fallbackLine = if (app?.system == true) stdLine else keepLine
-        var res = attempt { TvShellRunner.run(session, primaryLine) }.getOrNull()
-        var out = (res?.stdout.orEmpty() + "\n" + res?.stderr.orEmpty())
-        if (res == null || res.exit != 0 || "Success" !in out) {
-            res = attempt { TvShellRunner.run(session, fallbackLine) }.getOrNull()
-            out = (res?.stdout.orEmpty() + "\n" + res?.stderr.orEmpty())
-        }
+        val res = attempt { TvShellRunner.run(session, stdLine) }.getOrNull()
+        val out = (res?.stdout.orEmpty() + "\n" + res?.stderr.orEmpty())
         if (res != null && res.exit == 0 && "Success" in out) {
             send(ActionUpdate(TvAppActionStatus.Done(pkg, name, TvAppActionKind.UNINSTALL), removedPkg = pkg, closeSheet = true))
             effect(ManageEffect.HapticDouble)

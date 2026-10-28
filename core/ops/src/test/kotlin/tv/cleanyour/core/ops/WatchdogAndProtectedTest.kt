@@ -254,7 +254,7 @@ class ProtectedTest {
 
         assertEquals(listOf("monkey", "-p", "org.xbmc.kodi", "-c", "android.intent.category.LAUNCHER", "1"), ShellTokens.tokenize(ShellRenderer.launchPackageLine(kodi).text))
         assertEquals(listOf("pm", "clear", "--user", "0", "org.xbmc.kodi"), ShellTokens.tokenize(ShellRenderer.clearPackageDataLine(kodi).text))
-        assertEquals(listOf("pm", "uninstall", "--user", "0", "org.xbmc.kodi"), ShellTokens.tokenize(ShellRenderer.uninstallUserPackageLine(kodi).text))
+        assertEquals(listOf("pm", "uninstall", "org.xbmc.kodi"), ShellTokens.tokenize(ShellRenderer.uninstallUserPackageLine(kodi).text))
         assertEquals(listOf("pm", "path", "org.xbmc.kodi"), ShellTokens.tokenize(ShellRenderer.pmPathLine(kodi).text))
 
         val pmOut = "package:/data/app/~~AbCdEf==/org.xbmc.kodi-1234==/split_config.ar.apk\npackage:/data/app/~~AbCdEf==/org.xbmc.kodi-1234==/base.apk\n"

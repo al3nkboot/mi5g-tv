@@ -514,7 +514,7 @@ class ShellRenderer(private val watchdogVariant: WatchdogVariant = WatchdogVaria
             require(PACKAGE_RE.matches(pkg.value) && !isForceStopProtected(pkg) && Denylist.staticReason(pkg.value) == null) {
                 "cannot uninstall protected package ${pkg.value}"
             }
-            return ShellLine(ShellTokens.line(listOf(PM, "uninstall", USER, "0", pkg.value)))
+            return ShellLine(ShellTokens.line(listOf(PM, "uninstall", pkg.value)))
         }
 
         fun pmPathLine(pkg: PackageName): ShellLine {
@@ -599,7 +599,7 @@ class ShellRenderer(private val watchdogVariant: WatchdogVariant = WatchdogVaria
             require(PACKAGE_RE.matches(pkg.value) && !isForceStopProtected(pkg) && Denylist.staticReason(pkg.value) == null) {
                 "cannot uninstall protected package ${pkg.value}"
             }
-            return ShellLine(ShellTokens.line(listOf(PM, "uninstall", "-k", USER, "0", pkg.value)))
+            return ShellLine(ShellTokens.line(listOf(PM, "uninstall", "-k", pkg.value)))
         }
 
         fun forceLandscapeLines(): List<ShellLine> = listOf(

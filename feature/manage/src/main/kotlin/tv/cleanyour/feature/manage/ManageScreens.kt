@@ -675,6 +675,8 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
         }
 
         // 1) Downloader Store, Quick Codes (401740) & SmartTube (Ad-Free YouTube without Shorts)
+        TellyExtrasSections(state, onIntent)
+
         SectionLabel(stringResource(R.string.tvtools_downloader_section))
         Body(stringResource(R.string.tvtools_downloader_note), Modifier.padding(bottom = 8.dp, start = 4.dp, end = 4.dp))
         CytTextField(
@@ -1132,8 +1134,17 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
                 ListGroup {
                     ListRow(msg(R.string.tvtools_apk_selected, "name" to s.fileName, "size" to mb))
                 }
+                val extra = if (s.parts.size > 1) " · " + s.parts.size else ""
+                if (s.packageName != null) Body(s.packageName + extra, Modifier.padding(top = 8.dp, start = 4.dp))
                 ActionColumn(Modifier.padding(top = 12.dp)) {
                     PrimaryButton(stringResource(R.string.tvtools_apk_install), { onIntent(TvToolsIntent.InstallApk) })
+                    TertiaryButton(stringResource(R.string.tvtools_apk_change), { onIntent(TvToolsIntent.ClearApk) })
+                }
+            }
+            is SideloadStatus.NeedsConfirm -> {
+                Body(s.detail, Modifier.padding(top = 8.dp, start = 4.dp))
+                ActionColumn(Modifier.padding(top = 12.dp)) {
+                    PrimaryButton(stringResource(R.string.tvtools_apk_install), { onIntent(TvToolsIntent.ConfirmInstall) })
                     TertiaryButton(stringResource(R.string.tvtools_apk_change), { onIntent(TvToolsIntent.ClearApk) })
                 }
             }
