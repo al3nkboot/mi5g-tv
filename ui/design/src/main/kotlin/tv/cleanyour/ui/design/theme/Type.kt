@@ -23,6 +23,17 @@ val Outfit: FontFamily = FontFamily(
     Font(R.font.cyt_outfit, FontWeight.Medium, variationSettings = FontVariation.Settings(FontVariation.weight(500))),
 )
 
+// Mi5G TV 1.6: Cairo (SIL OFL 1.1), the web UI's font, covers Arabic and Latin. Licence text in
+// R.raw.cyt_cairo_ofl. Outfit stays for the launcher artwork (Illustrations, DialogMirror).
+@OptIn(ExperimentalTextApi::class)
+val Cairo: FontFamily = FontFamily(
+    Font(R.font.cyt_cairo, FontWeight.Light, variationSettings = FontVariation.Settings(FontVariation.weight(300))),
+    Font(R.font.cyt_cairo, FontWeight.Normal, variationSettings = FontVariation.Settings(FontVariation.weight(400))),
+    Font(R.font.cyt_cairo, FontWeight.Medium, variationSettings = FontVariation.Settings(FontVariation.weight(500))),
+    Font(R.font.cyt_cairo, FontWeight.SemiBold, variationSettings = FontVariation.Settings(FontVariation.weight(600))),
+    Font(R.font.cyt_cairo, FontWeight.Bold, variationSettings = FontVariation.Settings(FontVariation.weight(700))),
+)
+
 // DESIGN-SYSTEM 3. Weights 200 and 300 only at 22 sp and above. `overline` is ALL CAPS: use the
 // Overline composable, which upper-cases in the current locale. `numeral` uses tabular figures.
 @Immutable
@@ -44,7 +55,7 @@ data class CytType(
 private val Trim = LineHeightStyle(LineHeightStyle.Alignment.Center, LineHeightStyle.Trim.None)
 
 private fun outfit(size: Int, line: Int, weight: FontWeight, tracking: Double, tnum: Boolean = false, heading: Boolean = false) = TextStyle(
-    fontFamily = Outfit, fontSize = size.sp, lineHeight = line.sp, fontWeight = weight,
+    fontFamily = Cairo, fontSize = size.sp, lineHeight = line.sp, fontWeight = weight,
     letterSpacing = tracking.sp, lineHeightStyle = Trim,
     fontFeatureSettings = if (tnum) "tnum" else null,
     // Titles wrap into balanced lines ("things to / switch off"), never truncate.

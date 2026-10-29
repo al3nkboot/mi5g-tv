@@ -145,7 +145,7 @@
     <string name="appsettings_developer_x">Developer on X (@midroid5G)</string>
     <string name="appsettings_licences">Licences</string>
     <string name="appsettings_licence_app">Clean Your TV: GPL-3.0-or-later</string>
-    <string name="appsettings_licence_font">Outfit typeface: SIL Open Font Licence 1.1</string>
+    <string name="appsettings_licence_font">Cairo and Outfit typefaces: SIL Open Font Licence 1.1</string>
     <string name="appsettings_licence_apache">dadb and Shizuku code we adapted: Apache-2.0 notices</string>
     <string name="appsettings_licence_bouncycastle">Bouncy Castle cryptography library: Bouncy Castle Licence</string>
     <string name="appsettings_privacy">Privacy</string>

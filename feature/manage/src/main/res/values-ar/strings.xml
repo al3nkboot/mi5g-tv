@@ -140,7 +140,7 @@
     <string name="appsettings_developer_x">حساب المطور على X (@midroid5G)</string>
     <string name="appsettings_licences">التراخيص</string>
     <string name="appsettings_licence_app">Mi5G TV (مبني على Clean Your TV): ترخيص MIT</string>
-    <string name="appsettings_licence_font">خط Outfit: ترخيص SIL Open Font Licence 1.1</string>
+    <string name="appsettings_licence_font">خطا Cairo و Outfit: ترخيص SIL Open Font Licence 1.1</string>
     <string name="appsettings_licence_apache">شيفرة dadb وShizuku المعدّلة: إشعارات Apache-2.0</string>
     <string name="appsettings_licence_bouncycastle">مكتبة التشفير Bouncy Castle: ترخيص Bouncy Castle</string>
     <string name="appsettings_privacy">الخصوصية</string>

@@ -29,17 +29,18 @@ data class CytColors(
     val isDark: Boolean,
 )
 
+// Mi5G TV 1.6: dark palette from web-preview/src/styles.css (bg, surface, fg, muted, primary, accent gold).
 val DarkCytColors = CytColors(
-    bg = Color(0xFF000000), surface1 = Color(0xFF0E0E10), surface2 = Color(0xFF1C1C1E),
-    surface3 = Color(0xFF2A2A2E), rim = Color(0x33FFFFFF), outline = Color(0x1FFFFFFF),
-    outlineStrong = Color(0x5CFFFFFF), textPrimary = Color(0xFFF5F5F7),
-    textSecondary = Color(0xFFA1A1A6), textTertiary = Color(0xFF98989E),
-    primary = Color(0xFFF5F5F7), onPrimary = Color(0xFF000000), primaryPressed = Color(0xFFE2E2E6),
+    bg = Color(0xFF0C1416), surface1 = Color(0xFF152022), surface2 = Color(0xFF1C2B2E),
+    surface3 = Color(0xFF243336), rim = Color(0xFF2A3C40), outline = Color(0xFF2A3C40),
+    outlineStrong = Color(0x5CFFFFFF), textPrimary = Color(0xFFE7F3F0),
+    textSecondary = Color(0xFF8AA39D), textTertiary = Color(0xFF8AA39D),
+    primary = Color(0xFF14998E), onPrimary = Color(0xFF04221F), primaryPressed = Color(0xFF10847A),
     accent = Color(0xFF4FD8C4),
     glowBrand = Color(0xFF14998E), glowTv = Color(0xFFB9C2CC),
     success = Color(0xFF30D158), successContainer = Color(0xFF0D2A16),
-    onSuccessContainer = Color(0xFF5CE07E), warning = Color(0xFFFFB340),
-    warningContainer = Color(0xFF33240A), onWarningContainer = Color(0xFFFFC46B),
+    onSuccessContainer = Color(0xFF5CE07E), warning = Color(0xFFE4C07A),
+    warningContainer = Color(0xFF33240A), onWarningContainer = Color(0xFFE4C07A),
     danger = Color(0xFFFF6961), dangerFill = Color(0xFFFF453A), onDanger = Color(0xFF000000),
     dangerContainer = Color(0xFF3A1512), onDangerContainer = Color(0xFFFF8A80),
     scrim = Color(0xA3000000),
