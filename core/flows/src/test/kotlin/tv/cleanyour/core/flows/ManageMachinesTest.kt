@@ -1111,6 +1111,12 @@ class ManageMachinesTest {
         appMgr.dispatch(TvAppManagerIntent.AskUninstall)
         settle()
         assertTrue(appMgr.state.value.confirmingUninstall)
+        // 1.6 item 3: nothing happens until the word is typed (this TV has a restore point).
+        appMgr.dispatch(TvAppManagerIntent.UninstallApp(kodiApp.pkg))
+        settle()
+        assertTrue(appMgr.state.value.apps.any { it.pkg == kodiApp.pkg })
+        appMgr.dispatch(TvAppManagerIntent.UpdateUninstallWord(UNINSTALL_WORD))
+        settle()
         h.session.recording.on("pm uninstall --user 0 org.xbmc.kodi", "Success\n")
         appMgr.dispatch(TvAppManagerIntent.UninstallApp(kodiApp.pkg))
         settle()

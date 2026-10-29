@@ -14,7 +14,8 @@ import tv.cleanyour.core.ops.Denylist
 import tv.cleanyour.core.ops.ShellRenderer
 import tv.cleanyour.core.probe.TvShellRunner
 
-enum class TvAppFilter { USER, ALL }
+// 1.6 item 8: «تطبيقاتي» (installed by the user) and «المصنع» (factory/system) are separate lists.
+enum class TvAppFilter { USER, SYSTEM }
 
 enum class TvAppActionKind {
     LAUNCH,
@@ -32,10 +33,12 @@ data class TvInstalledApp(
     val name: String,
     val system: Boolean,
     val enabled: Boolean = true,
+    // 1.6 item 8: protected streaming apps (Shahid, TOD, stc tv, YouTube...) open and stop, never freeze or go.
+    val protectedStreaming: Boolean = ProtectedStreaming.isProtected(pkg),
     val canForceStop: Boolean = !ShellRenderer.isForceStopProtected(pkg),
     val canClearData: Boolean = !ShellRenderer.isForceStopProtected(pkg) && Denylist.staticReason(pkg.value) == null,
-    val canDisable: Boolean = !ShellRenderer.isForceStopProtected(pkg) && Denylist.staticReason(pkg.value) == null,
-    val canUninstall: Boolean = !ShellRenderer.isForceStopProtected(pkg) && Denylist.staticReason(pkg.value) == null,
+    val canDisable: Boolean = !protectedStreaming && !ShellRenderer.isForceStopProtected(pkg) && Denylist.staticReason(pkg.value) == null,
+    val canUninstall: Boolean = !protectedStreaming && !ShellRenderer.isForceStopProtected(pkg) && Denylist.staticReason(pkg.value) == null,
 )
 
 sealed interface TvAppActionStatus {
@@ -53,15 +56,19 @@ data class TvAppManagerState(
     val apps: List<TvInstalledApp> = emptyList(),
     val selectedApp: TvInstalledApp? = null,
     val confirmingUninstall: Boolean = false,
+    // 1.6 item 3: a permanent uninstall needs this TV's restore point and the typed word «احذف».
+    val uninstallWord: String = "",
+    val hasRestorePoint: Boolean = false,
     val actionStatus: TvAppActionStatus = TvAppActionStatus.Idle,
 ) {
     val filteredApps: List<TvInstalledApp>
         get() = apps.filter { app ->
-            (filter == TvAppFilter.ALL || !app.system) &&
+            (app.system == (filter == TvAppFilter.SYSTEM)) &&
                 (searchQuery.isBlank() ||
                     app.name.contains(searchQuery, ignoreCase = true) ||
                     app.pkg.value.contains(searchQuery, ignoreCase = true))
         }
+    val uninstallUnlocked: Boolean get() = uninstallUnlocked(uninstallWord, hasRestorePoint)
 }
 
 sealed interface TvAppManagerIntent {
@@ -78,6 +85,7 @@ sealed interface TvAppManagerIntent {
     data class ClearAppData(val pkg: PackageName) : TvAppManagerIntent
     data object AskUninstall : TvAppManagerIntent
     data object CancelUninstall : TvAppManagerIntent
+    data class UpdateUninstallWord(val word: String) : TvAppManagerIntent
     data class UninstallApp(val pkg: PackageName) : TvAppManagerIntent
     data class PullApk(val pkg: PackageName) : TvAppManagerIntent
 }
@@ -89,7 +97,7 @@ class TvAppManagerMachine(
 ) : Machine<TvAppManagerState, TvAppManagerIntent, ManageEffect>(TvAppManagerState(loading = true), scope) {
 
     private data class TvLoaded(val tvName: String)
-    private data class AppsLoaded(val apps: List<TvInstalledApp>)
+    private data class AppsLoaded(val apps: List<TvInstalledApp>, val hasRestorePoint: Boolean = false)
     private data object LoadingStarted
     private data class ActionUpdate(
         val status: TvAppActionStatus,
@@ -116,6 +124,7 @@ class TvAppManagerMachine(
                 loading = false,
                 apps = event.apps,
                 selectedApp = updatedSelected,
+                hasRestorePoint = event.hasRestorePoint,
             )
         }
         is TvAppManagerIntent.UpdateSearch -> state.copy(searchQuery = event.query.take(120))
@@ -129,8 +138,9 @@ class TvAppManagerMachine(
             selectedApp = null,
             confirmingUninstall = false,
         )
-        TvAppManagerIntent.AskUninstall -> state.copy(confirmingUninstall = true)
-        TvAppManagerIntent.CancelUninstall -> state.copy(confirmingUninstall = false)
+        TvAppManagerIntent.AskUninstall -> state.copy(confirmingUninstall = true, uninstallWord = "")
+        TvAppManagerIntent.CancelUninstall -> state.copy(confirmingUninstall = false, uninstallWord = "")
+        is TvAppManagerIntent.UpdateUninstallWord -> state.copy(uninstallWord = event.word.take(20))
         is ActionUpdate -> {
             var nextApps = if (event.removedPkg != null) state.apps.filterNot { it.pkg == event.removedPkg } else state.apps
             if (event.toggledPkg != null) {
@@ -163,10 +173,10 @@ class TvAppManagerMachine(
             is TvAppManagerIntent.LaunchApp -> if (!busy) scope.launch { launchApp(event.pkg) }
             is TvAppManagerIntent.ForceStopApp -> if (!busy) scope.launch { forceStopApp(event.pkg) }
             is TvAppManagerIntent.RestrictBackgroundApp -> if (!busy) scope.launch { restrictBackgroundApp(event.pkg) }
-            is TvAppManagerIntent.DisableApp -> if (!busy) scope.launch { disableApp(event.pkg) }
+            is TvAppManagerIntent.DisableApp -> if (!busy && !ProtectedStreaming.isProtected(event.pkg)) scope.launch { disableApp(event.pkg) }
             is TvAppManagerIntent.EnableApp -> if (!busy) scope.launch { enableApp(event.pkg) }
             is TvAppManagerIntent.ClearAppData -> if (!busy) scope.launch { clearAppData(event.pkg) }
-            is TvAppManagerIntent.UninstallApp -> if (!busy) scope.launch { uninstallApp(event.pkg) }
+            is TvAppManagerIntent.UninstallApp -> if (!busy && before.uninstallUnlocked) scope.launch { uninstallApp(event.pkg) }
             is TvAppManagerIntent.PullApk -> if (!busy) scope.launch { pullApk(event.pkg) }
             else -> {}
         }
@@ -248,7 +258,7 @@ class TvAppManagerMachine(
                 .thenBy { !it.enabled }
                 .thenBy { it.name.lowercase() },
         )
-        send(AppsLoaded(sorted))
+        send(AppsLoaded(sorted, hasRestorePoint = snap != null))
     }
 
     private suspend fun launchApp(pkg: PackageName) {
@@ -414,7 +424,7 @@ class TvAppManagerMachine(
     private suspend fun uninstallApp(pkg: PackageName) {
         val app = state.value.apps.firstOrNull { it.pkg == pkg }
         val name = app?.name ?: d.nameOf(pkg)
-        if (app != null && !app.canUninstall) {
+        if ((app != null && !app.canUninstall) || ProtectedStreaming.isProtected(pkg)) {
             send(ActionUpdate(TvAppActionStatus.Failed(pkg, name, TvAppActionKind.UNINSTALL)))
             return
         }
