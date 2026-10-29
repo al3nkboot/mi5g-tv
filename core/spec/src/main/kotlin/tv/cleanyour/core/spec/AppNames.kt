@@ -25,6 +25,7 @@ object AppNames {
     val ARABIC_LABELS: Map<String, String> = mapOf(
         "net.mbc.shahid" to "شاهد (Shahid)",
         "net.mbc.shahid.tv" to "شاهد (Shahid)",
+        "net.mbc.shahidTV" to "شاهد (Shahid)",
         "com.mbc.shahid" to "شاهد (Shahid)",
         "tv.tod.android" to "TOD",
         "com.todtv.tod" to "TOD",

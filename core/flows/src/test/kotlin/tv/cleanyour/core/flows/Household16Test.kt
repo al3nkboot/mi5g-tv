@@ -36,6 +36,10 @@ class Household16Test {
         assertTrue(shahid.protectedStreaming)
         assertFalse(shahid.canDisable)
         assertFalse(shahid.canUninstall)
+        assertTrue(ProtectedStreaming.isProtected(PackageName("net.mbc.shahidTV")))
+        assertTrue(ProtectedStreaming.isProtected(PackageName("com.intigral.jawwytv")))
+        assertFalse(ProtectedStreaming.isProtected(PackageName("com.example.today")))
+        assertFalse(ProtectedStreaming.isProtected(PackageName("com.netflix.ninja")))
         val prime = TvInstalledApp(PackageName("com.amazon.amazonvideo.livingroom"), "Prime Video", system = true)
         assertTrue(prime.canDisable)
     }

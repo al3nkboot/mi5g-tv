@@ -56,7 +56,7 @@ object DnsDecision {
 }
 
 /** 1.6 items 5 and 6: evening mode and DNS are kept per TV, beside the TV record. */
-data class TvPrefs16(val evening: Boolean = false, val dns: DnsMode = DnsMode.NONE, val ramFreed: Boolean = false)
+data class TvPrefs16(val evening: Boolean = false, val dns: DnsMode = DnsMode.NONE)
 
 class TvPrefs16Store(private val store: DocumentStore) {
     private fun path(id: TvId) = "tvs/${id.value}/v16.txt"
@@ -66,30 +66,36 @@ class TvPrefs16Store(private val store: DocumentStore) {
         TvPrefs16(
             evening = m["evening"] == "true",
             dns = DnsMode.entries.firstOrNull { it.name == m["dns"] } ?: DnsMode.NONE,
-            ramFreed = m["ram"] == "true",
         )
     } ?: TvPrefs16()
 
     suspend fun save(id: TvId, p: TvPrefs16) =
-        store.write(path(id), "evening=${p.evening}\ndns=${p.dns.name}\nram=${p.ramFreed}\n".encodeToByteArray())
+        store.write(path(id), "evening=${p.evening}\ndns=${p.dns.name}\n".encodeToByteArray())
 }
 
-/** 1.6 item 8: streaming apps people use daily. They can be opened or stopped, never frozen or removed. */
+/** 1.6 item 8: streaming apps people use daily. They can be opened or stopped, never frozen or removed.
+ *  Exact Android TV ids checked on Google Play / APKMirror (Shahid TV net.mbc.shahidTV, stc tv
+ *  com.intigral.jawwytv, STARZ ON com.parsifal.starz, YouTube TV com.google.android.youtube.tv);
+ *  the publisher prefixes cover their phone and TV variants without catching unrelated apps.
+ *  Netflix and Prime Video stay factory apps that can be frozen, as in the web UI. */
 object ProtectedStreaming {
     val PACKAGES = setOf(
-        "net.mbc.shahid.tv", "net.mbc.shahid", "net.mbc.shahid.android",
-        "com.tod.tv", "tv.tod.app", "com.bein.tod",
-        "com.stc.tv", "com.stc.jawwytv", "sa.com.stc.jawwy", "com.jawwy.tv",
-        "com.google.android.youtube.tv", "com.google.android.youtube",
-        "com.parsifal.starz", "com.parsifal.starzplay",
-        "com.osn.go", "com.osn.orion", "com.osnplus.tv",
-        "com.bein.beinconnect", "com.mena.beinconnect",
+        "com.google.android.youtube.tv", "com.google.android.youtube", "com.google.android.youtube.tvkids",
+        // the other ids the dock already knows for these services (DockRankingImpl.ARABIC_STREAMING)
+        "com.mbc.shahid", "tv.tod.android", "com.stctv.app", "tv.stc.android", "com.starzplay.arabia", "com.anghami.osnplus",
     )
-    private val KEYWORDS = listOf("shahid", "jawwy", "stctv", "starz", "osn", "beinconnect", ".tod")
+    val PREFIXES = listOf(
+        "net.mbc.shahid",          // Shahid (net.mbc.shahidTV, net.mbc.shahid)
+        "com.intigral.jawwy",      // stc tv (com.intigral.jawwytv)
+        "com.parsifal.starz",      // STARZPLAY / STARZ ON
+        "com.todtv.",              // TOD (beIN)
+        "com.osn.",                // OSN+
+        "com.bein.",               // beIN
+    )
 
     fun isProtected(pkg: PackageName): Boolean {
-        val v = pkg.value.lowercase()
-        return v in PACKAGES || KEYWORDS.any { it in v }
+        val v = pkg.value
+        return v in PACKAGES || PREFIXES.any { v.startsWith(it, ignoreCase = true) }
     }
 }
 
@@ -97,14 +103,3 @@ object ProtectedStreaming {
 const val UNINSTALL_WORD = "احذف"
 
 fun uninstallUnlocked(typed: String, hasRestorePoint: Boolean): Boolean = hasRestorePoint && typed.trim() == UNINSTALL_WORD
-
-/** 1.6 item 4: the Downloader catalog; free-form codes live under «متقدم». */
-data class CatalogEntry(val code: String, val name: String, val note: String)
-
-object DownloadCatalog {
-    val ENTRIES = listOf(
-        CatalogEntry("401740", "SmartTube", "يوتيوب بلا إعلانات وبلا Shorts"),
-        CatalogEntry("482910", "شاهد", "خارج المتجر الرسمي"),
-        CatalogEntry("310442", "TOD", "خارج المتجر الرسمي"),
-    )
-}

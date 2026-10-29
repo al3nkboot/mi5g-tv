@@ -81,7 +81,6 @@ import tv.cleanyour.core.flows.TvInstalledApp
 import tv.cleanyour.core.flows.TvSettingsState
 import tv.cleanyour.core.flows.TvToolsIntent
 import tv.cleanyour.core.flows.TvToolsState
-import tv.cleanyour.core.flows.DownloadCatalog
 import tv.cleanyour.core.model.TvAnimationScale
 import tv.cleanyour.core.model.TvKeyEvent
 import tv.cleanyour.ui.design.component.AppTile
@@ -428,6 +427,8 @@ fun AppSettingsScreen(
     modifier: Modifier = Modifier,
     onSupportPayPal: (() -> Unit)? = null,
     onOpenDeveloper: (() -> Unit)? = null,
+    language: String = "ar",
+    onLanguage: ((String) -> Unit)? = null,
 ) {
     var licences by rememberSaveable { mutableStateOf(false) }
     var privacy by rememberSaveable { mutableStateOf(false) }
@@ -439,6 +440,19 @@ fun AppSettingsScreen(
             ListDivider()
             SwitchRow(stringResource(R.string.appsettings_haptics), state.prefs.haptics, { onIntent(AppSettingsIntent.SetHaptics(it)) },
                 subtitle = stringResource(R.string.appsettings_haptics_note))
+        }
+        // 1.6: in-app language. Arabic by default; English as an extra choice.
+        if (onLanguage != null) {
+            SectionLabel(stringResource(R.string.appsettings_language))
+            ChoiceList(
+                listOf(
+                    ChoiceOption("ar", stringResource(R.string.appsettings_language_ar), icon = null),
+                    ChoiceOption("en", stringResource(R.string.appsettings_language_en), icon = null),
+                    ChoiceOption("system", stringResource(R.string.appsettings_language_system), icon = null),
+                ),
+                selectedKey = language,
+                onSelect = { onLanguage(it.key) },
+            )
         }
         SectionLabel(stringResource(R.string.appsettings_about))
         ListGroup {
@@ -561,9 +575,9 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
         ScreenTitle(stringResource(R.string.tvtools_title), titleTop)
 
         when (val ps = state.powerToolStatus) {
-            is PowerToolStatus.Working -> LiveLine(msg(R.string.tvtools_power_working, "name" to ps.label))
-            is PowerToolStatus.Done -> CheckLine(msg(R.string.tvtools_power_done, "name" to ps.label), Modifier.padding(top = 8.dp, start = 4.dp))
-            is PowerToolStatus.Failed -> Body(msg(R.string.tvtools_power_failed, "name" to ps.label), Modifier.padding(top = 8.dp, start = 4.dp), color = CytTheme.colors.danger)
+            is PowerToolStatus.Working -> LiveLine(msg(R.string.tvtools_power_working, "name" to powerLabel(ps.label)))
+            is PowerToolStatus.Done -> CheckLine(msg(R.string.tvtools_power_done, "name" to powerLabel(ps.label)), Modifier.padding(top = 8.dp, start = 4.dp))
+            is PowerToolStatus.Failed -> Body(msg(R.string.tvtools_power_failed, "name" to powerLabel(ps.label)), Modifier.padding(top = 8.dp, start = 4.dp), color = CytTheme.colors.danger)
             PowerToolStatus.Idle -> {}
         }
 
@@ -669,54 +683,15 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
             AnimationScaleStatus.Idle -> {}
         }
 
-        // 1.6 item 4: the Downloader catalog first; the free-form code or link sits under «متقدم».
-        SectionLabel(stringResource(R.string.v16_catalog_title))
-        Body(stringResource(R.string.v16_catalog_note), Modifier.padding(bottom = 8.dp, start = 4.dp, end = 4.dp))
-        ListGroup {
-            DownloadCatalog.ENTRIES.forEachIndexed { i, entry ->
-                if (i > 0) ListDivider()
-                Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Column(Modifier.weight(1f)) {
-                        Text(entry.name, color = CytTheme.colors.textPrimary, style = CytTheme.type.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
-                        Text("${entry.code} · ${entry.note}", color = CytTheme.colors.textSecondary, style = CytTheme.type.bodyMedium)
-                    }
-                    SmallGlassButton(stringResource(R.string.v16_catalog_install), { if (!powerWorking) onIntent(TvToolsIntent.OpenInDownloader(entry.code)) })
-                }
-            }
-        }
-        var advanced by rememberSaveable { mutableStateOf(false) }
-        TertiaryButton(
-            stringResource(if (advanced) R.string.v16_advanced_hide else R.string.v16_advanced_show),
-            { advanced = !advanced }, Modifier.padding(top = 8.dp),
-        )
-        if (advanced) {
+        // Downloader: the person types the code or APK link that suits them; no preset list.
+        // OpenInDownloader falls back to the TV browser when Downloader is not installed.
+        SectionLabel(stringResource(R.string.tvtools_downloader_section))
+        Body(stringResource(R.string.tvtools_downloader_note), Modifier.padding(bottom = 8.dp, start = 4.dp, end = 4.dp))
         CytTextField(
             value = state.downloaderInput,
             onValueChange = { onIntent(TvToolsIntent.UpdateDownloaderInput(it)) },
             label = stringResource(R.string.tvtools_downloader_label),
         )
-        val downloaderPresets = listOf(
-            "كود 401740 (متجر هلا ويب)" to "401740",
-            "SmartTube (يوتيوب بدون إعلانات وبدون Shorts)" to "https://github.com/yuliskov/SmartTube/releases/latest/download/SmartTube_stable_arm64-v8a.apk",
-            "Downloader الرسمي" to "250931",
-            "Yacine TV (البث الرياضي)" to "401740",
-            "DMSS (كاميرات المراقبة)" to "https://play.google.com/store/apps/details?id=com.mm.android.DMSS",
-            "ProtonVPN" to "https://play.google.com/store/apps/details?id=ch.protonvpn.android",
-            "VLC Player" to "https://play.google.com/store/apps/details?id=org.videolan.vlc",
-            "MX Player" to "https://play.google.com/store/apps/details?id=com.mxtech.videoplayer.ad",
-        )
-        FlowRow(
-            Modifier.fillMaxWidth().padding(top = 10.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            downloaderPresets.forEach { (chipLabel, codeOrUrl) ->
-                GlassChip(
-                    text = chipLabel,
-                    onClick = { onIntent(TvToolsIntent.UpdateDownloaderInput(codeOrUrl)) },
-                )
-            }
-        }
         ActionColumn(Modifier.padding(top = 12.dp)) {
             PrimaryButton(
                 stringResource(R.string.tvtools_downloader_open_btn),
@@ -725,18 +700,18 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
             )
             SecondaryButton(
                 stringResource(R.string.tvtools_downloader_install_btn),
-                {
-                    val target = state.downloaderInput.ifBlank { "https://github.com/yuliskov/SmartTube/releases/latest/download/SmartTube_stable_arm64-v8a.apk" }
-                    onIntent(TvToolsIntent.DownloadAndInstallUrlApk(target, "tv-app.apk"))
-                },
-                enabled = !powerWorking && state.sideloadStatus !is SideloadStatus.Installing,
+                { onIntent(TvToolsIntent.DownloadAndInstallUrlApk(state.downloaderInput.trim(), "tv-app.apk")) },
+                enabled = state.downloaderInput.isNotBlank() && !powerWorking && state.sideloadStatus !is SideloadStatus.Installing,
                 guardObscured = true,
             )
-        }
         }
         Banner(stringResource(R.string.tvtools_smarttube_tip), BannerTone.INFO, Modifier.padding(top = 12.dp))
 
         // 2) Button Mapper + Xiaomi Settings Key Fix + Force Landscape + Screensaver & Quiet Hours
+        val yt_smarttubeLabel = stringResource(R.string.tvtools_mapper_yt_smarttube)
+        val yt_officialLabel = stringResource(R.string.tvtools_mapper_yt_official)
+        val nf_shahidLabel = stringResource(R.string.tvtools_mapper_nf_shahid)
+        val nf_matchesLabel = stringResource(R.string.tvtools_mapper_nf_matches)
         SectionLabel(stringResource(R.string.tvtools_mapper_section))
         ActionColumn {
             PrimaryButton(
@@ -746,22 +721,22 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
             )
             SecondaryButton(
                 stringResource(R.string.tvtools_mapper_yt_smarttube),
-                { onIntent(TvToolsIntent.MapRemoteKey(190, "com.teamsmart.videomanager.tv", "تحويل زر يوتيوب إلى SmartTube")) },
+                { onIntent(TvToolsIntent.MapRemoteKey(190, "com.teamsmart.videomanager.tv", yt_smarttubeLabel)) },
                 enabled = !powerWorking,
             )
             SecondaryButton(
                 stringResource(R.string.tvtools_mapper_yt_official),
-                { onIntent(TvToolsIntent.MapRemoteKey(190, "com.google.android.youtube.tv", "تحويل زر يوتيوب إلى يوتيوب الرسمي")) },
+                { onIntent(TvToolsIntent.MapRemoteKey(190, "com.google.android.youtube.tv", yt_officialLabel)) },
                 enabled = !powerWorking,
             )
             SecondaryButton(
                 stringResource(R.string.tvtools_mapper_nf_shahid),
-                { onIntent(TvToolsIntent.MapRemoteKey(191, "net.mbc.shahid.tv", "تحويل زر نتفلكس إلى شاهد")) },
+                { onIntent(TvToolsIntent.MapRemoteKey(191, "net.mbc.shahidTV", nf_shahidLabel)) },
                 enabled = !powerWorking,
             )
             SecondaryButton(
                 stringResource(R.string.tvtools_mapper_nf_matches),
-                { onIntent(TvToolsIntent.MapRemoteKey(191, "com.midroid.mi5gtv.matches", "تحويل زر نتفلكس إلى مباريات اليوم")) },
+                { onIntent(TvToolsIntent.MapRemoteKey(191, "com.midroid.mi5gtv.matches", nf_matchesLabel)) },
                 enabled = !powerWorking,
             )
             SecondaryButton(
@@ -1466,4 +1441,18 @@ private fun AppActionFeedback(status: TvAppActionStatus) {
             )
         }
     }
+}
+
+// Power-tool labels from the machine: "@id" ids are localized here; anything else is shown as is.
+@Composable
+private fun powerLabel(raw: String): String = when {
+    raw == "@settings_overlay" -> stringResource(R.string.tvtools_label_settings_overlay)
+    raw == "@landscape" -> stringResource(R.string.tvtools_label_landscape)
+    raw == "@rotation_auto" -> stringResource(R.string.tvtools_label_rotation_auto)
+    raw == "@screensaver" -> stringResource(R.string.tvtools_label_screensaver)
+    raw == "@quiet_hours" -> stringResource(R.string.tvtools_label_quiet_hours)
+    raw == "@hdmi" -> stringResource(R.string.tvtools_label_hdmi)
+    raw == "@banner" -> stringResource(R.string.tvtools_label_banner)
+    raw.startsWith("@open:") -> msg(R.string.tvtools_label_open, "target" to raw.removePrefix("@open:"))
+    else -> raw
 }

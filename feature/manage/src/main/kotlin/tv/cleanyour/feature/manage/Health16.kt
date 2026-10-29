@@ -46,7 +46,7 @@ private val cardShape = RoundedCornerShape(16.dp)
 internal fun HealthDashboard(state: ManageState, tv: TvCard, onIntent: (ManageIntent) -> Unit) {
     val c = CytTheme.colors
     LaunchedEffect(tv.id) { onIntent(ManageIntent.CheckPort853) }
-    val score = tv.health ?: 0
+    val score = tv.health(state.stats) ?: 0
     Row(
         Modifier.fillMaxWidth().padding(top = 16.dp).border(1.dp, c.outline, cardShape).background(c.surface1, cardShape).padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,

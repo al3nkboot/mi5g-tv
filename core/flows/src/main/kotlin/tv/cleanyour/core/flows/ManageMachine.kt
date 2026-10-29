@@ -34,11 +34,12 @@ data class TvCard(
     val platform: TvPlatform = TvPlatform.ANDROID,
     val evening: Boolean = false,
     val dns: DnsMode = DnsMode.NONE,
-    val ramFreed: Boolean = false,
     val online: Boolean = false,
 ) {
-    // 1.6 item 1: one score for the dashboard ring.
-    val health: Int? get() = TvHealth.score(platform, clean, ramFreed, dns != DnsMode.NONE, evening, online)
+    // 1.6 item 1: one score for the dashboard ring. "Memory is light" comes from the live reading
+    // (under 70% used now), never from a past boost.
+    fun health(stats: TvPerformanceStats?): Int? =
+        TvHealth.score(platform, clean, stats?.let { it.ramFraction < 0.7f } ?: false, dns != DnsMode.NONE, evening, online)
 }
 
 data class ManageState(
@@ -108,7 +109,7 @@ class ManageMachine(
                         restorePointAtMs = latest?.takenAtMs, debugging = tv.debugging,
                         helpAddTv = tv.profileId == null && latest != null,
                         ownHome = tv.launcher == null && latest != null && Launcher.pkg !in latest.packages,
-                        evening = p16.evening, dns = p16.dns, ramFreed = p16.ramFreed,
+                        evening = p16.evening, dns = p16.dns,
                         online = d.access.live(tv.id) != null,
                     )
                 }
@@ -128,7 +129,7 @@ class ManageMachine(
         is ManageIntent.Select -> state.copy(selected = event.tvId, stats = null)
         is Port -> state.copy(port853 = event.result)
         is Stats -> if (event.tvId == state.current?.id) state.copy(stats = event.stats) else state
-        is Prefs -> state.copy(cards = state.cards.map { if (it.id == event.tvId) it.copy(evening = event.prefs.evening, dns = event.prefs.dns, ramFreed = event.prefs.ramFreed) else it })
+        is Prefs -> state.copy(cards = state.cards.map { if (it.id == event.tvId) it.copy(evening = event.prefs.evening, dns = event.prefs.dns) else it })
         is Busy -> state.copy(busy16 = event.on)
         is Thumb -> state.copy(cards = state.cards.map { if (it.id == event.tvId && event.png != null) it.copy(thumbnail = event.png) else it })
         Reconnecting -> state.copy(reconnecting = true)

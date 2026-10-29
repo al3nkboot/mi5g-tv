@@ -309,9 +309,9 @@
     <string name="tvtools_card_dns">🛡️ مانع الإعلانات DNS</string>
     <string name="tvtools_card_files">📁 مدير الملفات</string>
     <string name="tvtools_card_speed">🚀 قياس السرعة</string>
-    <string name="tvtools_downloader_section">متجر Downloader وأكواد التحميل السريع (مثل 401740) ويوتيوب بدون إعلانات</string>
-    <string name="tvtools_downloader_note">أدخل أي كود Downloader (مثل 401740) أو رابط APK مباشر، أو اختر من الاختصارات بالأسفل لفتحه أو تثبيته مباشرة على التلفاز.</string>
-    <string name="tvtools_downloader_label">كود Downloader (مثل 401740) أو رابط APK</string>
+    <string name="tvtools_downloader_section">Downloader: أدخل الكود الذي يناسبك</string>
+    <string name="tvtools_downloader_note">أدخل كود Downloader أو رابط APK مباشر، ثم افتحه أو ثبّته على التلفاز. إن لم يكن Downloader مثبتاً يُفتح في متصفح التلفاز.</string>
+    <string name="tvtools_downloader_label">أدخل كود Downloader أو رابط APK</string>
     <string name="tvtools_downloader_open_btn">فتح الكود أو الرابط مباشرة على التلفاز</string>
     <string name="tvtools_downloader_install_btn">تحميل وتثبيت APK على التلفاز مباشرة</string>
     <string name="tvtools_smarttube_tip">💡 تعليمات إلغاء Shorts في يوتيوب التلفاز (SmartTube): افتح SmartTube &gt; الإعدادات (Settings) &gt; تصفح المحتوى (Content) &gt; إخفاء Shorts.</string>
@@ -349,13 +349,13 @@
     <string name="v16_clean_start">ابدأ التنظيف الآمن</string>
     <string name="v16_clean_review">مراجعة الخطة</string>
     <string name="v16_port_blocked_title">منفذ 853 محجوب على هذا الراوتر</string>
-    <string name="v16_port_blocked_body">تثبيت DNS المشفر قد يقطع النت على شاومي. الوضع الآمن يكتب 94.140.14.14 بلا منفذ 853.</string>
+    <string name="v16_port_blocked_body">تثبيت DNS المشفر قد يقطع النت على شاومي. الوضع الآمن يوقف DNS الخاص على التلفاز حتى لا ينقطع النت، ويمكنك ضبط 94.140.14.14 في الراوتر لحجب الإعلانات.</string>
     <string name="v16_port_blocked_btn">تطبيق الوضع الآمن</string>
     <string name="v16_port_open_title">منفذ 853 متاح</string>
     <string name="v16_port_open_body">التثبيت المشفر لن يُحوَّل إلى الوضع الآمن على هذا الراوتر.</string>
     <string name="v16_port_open_btn">تثبيت DNS المشفر</string>
     <string name="v16_port_checking">فحص منفذ 853 قبل أي تغيير…</string>
-    <string name="v16_dns_safe_on">DNS في الوضع الآمن. لن يُستخدم منفذ 853.</string>
+    <string name="v16_dns_safe_on">أُوقف DNS الخاص على التلفاز (منفذ 853 محجوب). لحجب الإعلانات اضبط 94.140.14.14 في الراوتر.</string>
     <string name="v16_dns_encrypted_on">DNS مشفر عبر منفذ 853.</string>
     <string name="v16_evening_title">وضع المساء</string>
     <string name="v16_evening_sub">قوائم 0.5× و DNS عائلي. بلا أذان إجباري.</string>
@@ -376,10 +376,17 @@
     <string name="v16_uninstall_field">اكتب احذف للتأكيد</string>
     <string name="v16_uninstall_confirm">تأكيد الحذف</string>
     <string name="v16_uninstall_need_restore">يلزم نقطة استعادة أولاً</string>
-    <string name="v16_catalog_title">كتالوج Downloader</string>
-    <string name="v16_catalog_note">خارج المتجر الرسمي. راجع المصدر قبل التثبيت. الكود الحر تحت «متقدم».</string>
-    <string name="v16_catalog_install">تثبيت</string>
-    <string name="v16_advanced_show">متقدم: كود حر</string>
-    <string name="v16_advanced_hide">إخفاء الكود الحر</string>
+    <string name="appsettings_language">لغة التطبيق</string>
+    <string name="appsettings_language_ar">العربية</string>
+    <string name="appsettings_language_en">English</string>
+    <string name="appsettings_language_system">لغة الهاتف</string>
+    <string name="tvtools_label_settings_overlay">فتح إعدادات التلفاز الفورية</string>
+    <string name="tvtools_label_landscape">إجبار العرض الأفقي الكامل</string>
+    <string name="tvtools_label_rotation_auto">الوضع التلقائي لتدوير الشاشة</string>
+    <string name="tvtools_label_screensaver">تفعيل شاشة التوقف بالساعة</string>
+    <string name="tvtools_label_quiet_hours">وضع ساعات الهدوء الليلي</string>
+    <string name="tvtools_label_hdmi">فتح قائمة منافذ HDMI</string>
+    <string name="tvtools_label_banner">إرسال الإشعار لشاشة التلفاز</string>
+    <string name="tvtools_label_open">فتح {target} على التلفاز</string>
 </resources>
 

@@ -316,9 +316,9 @@
     <string name="tvtools_card_dns">AdGuard DNS</string>
     <string name="tvtools_card_files">File Manager</string>
     <string name="tvtools_card_speed">Speedtest</string>
-    <string name="tvtools_downloader_section">Downloader store, quick codes (401740) and ad-free YouTube</string>
-    <string name="tvtools_downloader_note">Enter any Downloader code (such as 401740) or direct APK URL, or pick a preset below to open or install directly on the TV.</string>
-    <string name="tvtools_downloader_label">Downloader code (401740) or APK URL</string>
+    <string name="tvtools_downloader_section">Downloader: enter the code you want</string>
+    <string name="tvtools_downloader_note">Enter a Downloader code or a direct APK link, then open or install it on the TV. Without Downloader installed it opens in the TV browser.</string>
+    <string name="tvtools_downloader_label">Enter a Downloader code or APK link</string>
     <string name="tvtools_downloader_open_btn">Open code or link on TV</string>
     <string name="tvtools_downloader_install_btn">Download and install APK on TV directly</string>
     <string name="tvtools_smarttube_tip">Tip to hide Shorts on TV YouTube (SmartTube): open SmartTube &gt; Settings &gt; Content &gt; Hide Shorts.</string>
@@ -356,13 +356,13 @@
     <string name="v16_clean_start">Start safe cleaning</string>
     <string name="v16_clean_review">Review the plan</string>
     <string name="v16_port_blocked_title">Port 853 is blocked on this router</string>
-    <string name="v16_port_blocked_body">Encrypted DNS could cut the internet on Xiaomi. Safe mode uses 94.140.14.14 without port 853.</string>
+    <string name="v16_port_blocked_body">Encrypted DNS could cut the internet on Xiaomi. Safe mode turns Private DNS off on the TV so the internet keeps working; set 94.140.14.14 on your router to block ads.</string>
     <string name="v16_port_blocked_btn">Apply safe mode</string>
     <string name="v16_port_open_title">Port 853 is open</string>
     <string name="v16_port_open_body">Encrypted DNS will not fall back to safe mode on this router.</string>
     <string name="v16_port_open_btn">Set encrypted DNS</string>
     <string name="v16_port_checking">Checking port 853 before any change…</string>
-    <string name="v16_dns_safe_on">DNS in safe mode. Port 853 is not used.</string>
+    <string name="v16_dns_safe_on">Private DNS was turned off on the TV (port 853 is blocked). To block ads, set 94.140.14.14 on your router.</string>
     <string name="v16_dns_encrypted_on">Encrypted DNS over port 853.</string>
     <string name="v16_evening_title">Evening mode</string>
     <string name="v16_evening_sub">Menus at 0.5× and family DNS. No forced Adhan.</string>
@@ -383,10 +383,17 @@
     <string name="v16_uninstall_field">Type احذف to confirm</string>
     <string name="v16_uninstall_confirm">Confirm removal</string>
     <string name="v16_uninstall_need_restore">A restore point is needed first</string>
-    <string name="v16_catalog_title">Downloader catalog</string>
-    <string name="v16_catalog_note">Outside the official store. Check the source before installing. Free-form codes are under «Advanced».</string>
-    <string name="v16_catalog_install">Install</string>
-    <string name="v16_advanced_show">Advanced: free-form code</string>
-    <string name="v16_advanced_hide">Hide free-form code</string>
+    <string name="appsettings_language">App language</string>
+    <string name="appsettings_language_ar">العربية</string>
+    <string name="appsettings_language_en">English</string>
+    <string name="appsettings_language_system">Phone language</string>
+    <string name="tvtools_label_settings_overlay">Open the TV quick settings</string>
+    <string name="tvtools_label_landscape">Force full landscape</string>
+    <string name="tvtools_label_rotation_auto">Automatic screen rotation</string>
+    <string name="tvtools_label_screensaver">Start the clock screensaver</string>
+    <string name="tvtools_label_quiet_hours">Night quiet hours</string>
+    <string name="tvtools_label_hdmi">Open the HDMI inputs menu</string>
+    <string name="tvtools_label_banner">Send the notice to the TV screen</string>
+    <string name="tvtools_label_open">Open {target} on the TV</string>
 </resources>
 

@@ -119,7 +119,7 @@ sealed interface CastMediaStatus {
 }
 
 sealed interface PowerToolStatus {
-    data object Idle : PowerToolStatus
+    data object Idle : PowerToolStatus // labels starting with "@" are ids the screen localizes
     data class Working(val label: String) : PowerToolStatus
     data class Done(val label: String) : PowerToolStatus
     data class Failed(val label: String) : PowerToolStatus
@@ -318,33 +318,33 @@ class TvToolsMachine(
                 }
             }
             TvToolsIntent.QuickSettingsOverlay -> scope.launch {
-                runPowerLines(ShellRenderer.quickSettingsOverlayLines(), "فتح إعدادات التلفاز الفورية")
+                runPowerLines(ShellRenderer.quickSettingsOverlayLines(), "@settings_overlay")
             }
             is TvToolsIntent.MapRemoteKey -> scope.launch {
                 mapRemoteKey(event.keyCode, event.targetPkg, event.label)
             }
             is TvToolsIntent.SetForceLandscape -> scope.launch {
                 val lines = if (event.landscape) ShellRenderer.forceLandscapeLines() else ShellRenderer.autoRotationLines()
-                val label = if (event.landscape) "إجبار العرض الأفقي الكامل (Landscape)" else "الوضع التلقائي لتدوير الشاشة"
+                val label = if (event.landscape) "@landscape" else "@rotation_auto"
                 runPowerLines(lines, label)
             }
             TvToolsIntent.StartClockScreensaver -> scope.launch {
-                runPowerLines(ShellRenderer.startScreensaverLines(), "تفعيل شاشة التوقف بالساعة")
+                runPowerLines(ShellRenderer.startScreensaverLines(), "@screensaver")
             }
             TvToolsIntent.ApplyQuietNightVolume -> scope.launch {
-                runPowerLines(listOf(ShellRenderer.quietNightVolumeLine()), "وضع ساعات الهدوء الليلي")
+                runPowerLines(listOf(ShellRenderer.quietNightVolumeLine()), "@quiet_hours")
             }
             TvToolsIntent.SwitchHdmiInput -> scope.launch {
-                runPowerLines(ShellRenderer.switchHdmiInputLines(), "فتح قائمة منافذ HDMI")
+                runPowerLines(ShellRenderer.switchHdmiInputLines(), "@hdmi")
             }
             is TvToolsIntent.SendTvBanner -> {
                 val msgText = (event.text ?: before.tvBannerInput).trim()
                 if (msgText.isNotEmpty()) scope.launch {
                     val line = runCatching { ShellRenderer.tvNotificationBannerLine(msgText) }.getOrNull()
                     if (line != null) {
-                        runPowerLines(listOf(line), "إرسال الإشعار لشاشة التلفاز", clearBanner = true)
+                        runPowerLines(listOf(line), "@banner", clearBanner = true)
                     } else {
-                        send(PowerToolUpdate(PowerToolStatus.Failed("إرسال الإشعار لشاشة التلفاز")))
+                        send(PowerToolUpdate(PowerToolStatus.Failed("@banner")))
                     }
                 }
             }
@@ -377,7 +377,7 @@ class TvToolsMachine(
     }
 
     private suspend fun openInDownloader(rawInput: String) {
-        val label = "فتح $rawInput على التلفاز"
+        val label = "@open:$rawInput"
         send(PowerToolUpdate(PowerToolStatus.Working(label)))
         val lines = runCatching { ShellRenderer.openInDownloaderLines(rawInput) }.getOrNull()
         if (lines == null) {
@@ -600,7 +600,6 @@ class TvToolsMachine(
         }
         loadPerformance(liveOnly = true)
         send(SpeedBoostUpdate(SpeedBoostStatus.Boosted(stopped)))
-        attempt { d.prefs16.save(tvId, d.prefs16.load(tvId).copy(ramFreed = true)) }
         effect(ManageEffect.HapticDouble)
     }
 
