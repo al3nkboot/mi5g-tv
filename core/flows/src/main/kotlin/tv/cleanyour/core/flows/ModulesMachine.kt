@@ -44,8 +44,12 @@ sealed interface InstallStep {
     data class Asking(val name: String, val pkg: String, val key12: String) : InstallStep   // M3c
     data class Shown(val name: String) : InstallStep
     data class Hidden(val name: String) : InstallStep
-    data class Failed(val name: String, val fetch: FetchFailure?) : InstallStep
+    // `why` (1.6.1): every stop says its reason; before, a refused plan or a TV that could not be
+    // reached showed "couldn't be installed" with nothing after it, or nothing at all.
+    data class Failed(val name: String, val fetch: FetchFailure?, val why: InstallBlock? = null, val detail: String? = null) : InstallStep
 }
+
+enum class InstallBlock { NOT_COMPATIBLE, NO_TV, GATE, REFUSED, RUN_FAILED }
 
 data class UpdateConsent(val moduleId: String, val name: String, val version: String, val added: List<PermissionStatement>)
 
@@ -111,7 +115,8 @@ class ModulesMachine(
         is Rows -> state.copy(tvName = event.tvName, index = event.index, installed = event.installed, available = event.available, cardsOff = event.cardsOff,
             detail = state.detail?.let { det -> detailFor(det.module.id, event) ?: det })
         is ModulesIntent.Search -> state.copy(query = event.query)
-        is ModulesIntent.Open -> state.copy(detail = detailFor(event.id, null))
+        is ModulesIntent.Open -> detailFor(event.id, null)?.let { state.copy(detail = it) }
+            ?: incompatible(event.id)?.let { state.copy(install = it) } ?: state
         ModulesIntent.CloseDetail -> state.copy(detail = null)
         is Step -> state.copy(install = event.step)
         ModulesIntent.DismissInstall -> state.copy(install = null)
@@ -145,6 +150,14 @@ class ModulesMachine(
         val v = bestVersion(m, tv) ?: return null
         val installed = (rows?.installed ?: state.value.installed).any { it.id == id }
         return ModuleDetail(m, v, keyDigest12(v.artifact.signer), installed)
+    }
+
+    // A module the TV cannot run opened nothing before 1.6.1; now it says why.
+    private fun incompatible(id: String): InstallStep.Failed? {
+        val m = module(id) ?: return null
+        val tv = d.tv(tvId) ?: return null
+        val need = m.versions.minOfOrNull { it.minSdk }
+        return InstallStep.Failed(m.name, null, InstallBlock.NOT_COMPATIBLE, "Android SDK ${tv.facts.sdk} / ${tv.facts.abis.joinToString()} (needs SDK ${need ?: "?"})")
     }
 
     private fun bestVersion(m: Module, tv: Tv): ModuleVersion? = m.versions
@@ -211,11 +224,15 @@ class ModulesMachine(
     private suspend fun install(id: String) {
         val m = module(id) ?: return
         val tv = d.tv(tvId) ?: return
-        val v = bestVersion(m, tv) ?: return
-        val session = (d.access.session(tvId) as? AccessResult.Ok)?.session ?: return
+        val v = bestVersion(m, tv) ?: return send(Step(incompatible(id)))
+        val session = when (val a = attempt { d.access.session(tvId) }.getOrNull()) {
+            is AccessResult.Ok -> a.session
+            is AccessResult.Failed -> return send(Step(InstallStep.Failed(m.name, null, InstallBlock.NO_TV, a.error.toString())))
+            else -> return send(Step(InstallStep.Failed(m.name, null, InstallBlock.NO_TV)))
+        }
         // An earlier write left its run open: its card, not a download that could never install (O2).
         if (d.engine.runState(tvId).value is RunState.Paused) { TvWriter(d).openRun(tv, session); return }
-        val pass = d.gate.pass(tvId, tv.nickname) ?: return
+        val pass = d.gate.pass(tvId, tv.nickname) ?: return send(Step(InstallStep.Failed(m.name, null, InstallBlock.GATE)))
         send(Step(InstallStep.Downloading(0, v.artifact.size)))
         val blob = when (val f = attempt { d.fetcher.fetch(v.artifact) { done, total -> send(Step(InstallStep.Downloading(done, total))) } }
             .getOrElse { FetchResult.Failed(FetchFailure.OFFLINE, null) }) {
@@ -229,18 +246,23 @@ class ModulesMachine(
         }
         send(Step(InstallStep.Installing(0)))
         var cardsOn: Pair<Look, HomeChoice>? = null
+        var refused: List<String>? = null
         val outcome = attempt {
             val snapshot = d.runner.snapshotFor(tv, session)
             // RFC-CARDS-1: adding a card is the person asking for cards, so the same plan turns them on.
             cardsOn = cardsOnLook(snapshot.launcherOverlay)
             val request = PlanRequest.AddModule(m, v, blob, cardsOn?.first?.config, cardsOn?.first?.wallpaper)
-            val plan = (d.runner.plan(tv, request, snapshot) as? PlanResult.Ok)?.plan ?: return@attempt null
+            val plan = when (val r = d.runner.plan(tv, request, snapshot)) {
+                is PlanResult.Ok -> r.plan
+                is PlanResult.Refused -> { refused = r.reasons; return@attempt null }
+            }
             d.runner.run(tv, plan, session, pass, onStarted = { d.sessionEnd.touched(tvId) }) { s -> if (s is RunState.Running) send(Step(InstallStep.Installing(s.percent))) }
         }.getOrNull()
         // A paused install (or a run another write left open) is the OpenWrites card's to resolve (O2).
         if (outcome is RunOutcome.Paused) { d.openWrites.show(tv, outcome.state); return send(Step(null)) }
         if (outcome is RunOutcome.StartRefused && outcome.refusal == StartRefusal.RUN_OPEN && TvWriter(d).openRun(tv, session) != null) return send(Step(null))
-        if (outcome !is RunOutcome.Finished) return send(Step(InstallStep.Failed(m.name, null)))
+        if (outcome !is RunOutcome.Finished) return send(Step(refused?.let { InstallStep.Failed(m.name, null, InstallBlock.REFUSED, it.joinToString("; ")) }
+            ?: InstallStep.Failed(m.name, null, InstallBlock.RUN_FAILED, outcome?.toString()?.take(300))))
         if (id == "adguard-dns") {
             ShellRenderer.applyAdGuardDnsLines().forEach { line -> attempt { TvShellRunner.run(session, line) } }
         }

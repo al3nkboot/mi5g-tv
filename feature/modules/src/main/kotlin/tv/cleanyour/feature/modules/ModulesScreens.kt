@@ -25,6 +25,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import tv.cleanyour.core.flows.CardAnswer
 import tv.cleanyour.core.flows.IndexView
+import tv.cleanyour.core.flows.InstallBlock
 import tv.cleanyour.core.flows.InstallStep
 import tv.cleanyour.core.flows.ModuleDetail
 import tv.cleanyour.core.flows.ModuleRow
@@ -355,11 +356,25 @@ internal fun InstallScreen(step: InstallStep, state: ModulesState, onIntent: (Mo
                 Banner(msg(R.string.cardprompt_hidden, "name" to step.name), BannerTone.NEUTRAL, Modifier.padding(top = 16.dp))
             }
             is InstallStep.Failed -> {
-                StopCard(msg(R.string.module_install_failed, "name" to step.name), step.fetch?.let { fetchFailureText(it) } ?: "", Modifier.padding(top = 20.dp),
+                StopCard(msg(R.string.module_install_failed, "name" to step.name), installFailureText(step), Modifier.padding(top = 20.dp),
                     primaryLabel = stringResource(R.string.action_ok), onPrimary = { onIntent(ModulesIntent.DismissInstall) }, primaryGuarded = false)
             }
         }
     }
+}
+
+// 1.6.1: never an empty reason (the "couldn't add, don't know why" report).
+@Composable
+internal fun installFailureText(step: InstallStep.Failed): String {
+    step.fetch?.let { return fetchFailureText(it) }
+    val why = stringResource(when (step.why) {
+        InstallBlock.NOT_COMPATIBLE -> R.string.install_block_not_compatible
+        InstallBlock.NO_TV -> R.string.install_block_no_tv
+        InstallBlock.GATE -> R.string.install_block_gate
+        InstallBlock.REFUSED -> R.string.install_block_refused
+        InstallBlock.RUN_FAILED, null -> R.string.install_block_run_failed
+    })
+    return if (step.detail.isNullOrBlank()) why else why + "\n\n" + step.detail
 }
 
 @Composable

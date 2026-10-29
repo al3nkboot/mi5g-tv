@@ -454,6 +454,44 @@ class ManageMachinesTest {
         assertTrue(h.planner.requests.none { it is PlanRequest.AddModule })
     }
 
+    // 1.6.1 repro of "can't add a modules card, I don't know why": a refused AddModule plan showed
+    // InstallStep.Failed(name, null), i.e. "couldn't be installed" with an empty reason.
+    @Test fun aRefusedAddSaysWhy() = runTest(timeout = 30.seconds) {
+        val h = Harness()
+        val apk = "retro apk bytes".encodeToByteArray()
+        val signer = sha256Of("signer".encodeToByteArray())
+        val ref = ArtifactRef("https://github.com/x/retro.apk", apk.size.toLong(), sha256Of(apk), signer)
+        val version = ModuleVersion(1, "0.1.0", "2026-10-03", ref, emptyList(), "", 21, emptyList(), emptyList())
+        val retro = Module("retro", "Retro", "NES", "A card", PackageName("io.github.example.retro"), "card", Tier.COMMUNITY,
+            "example", "https://github.com/example/retro", "MIT", null, null, listOf(version))
+        h.registry.onRefresh = { IndexState.Ready(VerifiedIndex(1, Long.MAX_VALUE, listOf(retro), emptyList()), stale = false, fetchedAtMs = 0) }
+        h.inspector = FakeApkInspector(mapOf(sha256Of(apk) to ApkInfo(retro.pkg, 1, "0.1.0", signer, sha256Of(apk), apk.size.toLong(), "test")))
+        h.planner.respond = { _, _ -> PlanResult.Refused(listOf("Retro is already on the TV, installed with another key")) }
+        val tv = h.knownTv()
+        val m = ModulesMachine(h.manageDeps(FakeArtifactFetcher(h.blobs, mapOf(ref.url to apk))), backgroundScope, tv.id)
+        settle()
+        m.dispatch(ModulesIntent.Add("retro")); settle()
+        val failed = assertIs<InstallStep.Failed>(m.state.value.install)
+        assertEquals(InstallBlock.REFUSED, failed.why)
+        assertTrue(failed.detail!!.contains("another key"))
+    }
+
+    @Test fun aModuleTheTvCannotRunSaysWhyInsteadOfOpeningNothing() = runTest(timeout = 30.seconds) {
+        val h = Harness()
+        val ref = ArtifactRef("https://github.com/x/retro.apk", 3, sha256Of("abc".encodeToByteArray()), sha256Of("s".encodeToByteArray()))
+        val version = ModuleVersion(1, "0.1.0", "2026-10-03", ref, emptyList(), "", 99, emptyList(), emptyList())
+        val retro = Module("retro", "Retro", "NES", "A card", PackageName("io.github.example.retro"), "card", Tier.COMMUNITY,
+            "example", "https://github.com/example/retro", "MIT", null, null, listOf(version))
+        h.registry.onRefresh = { IndexState.Ready(VerifiedIndex(1, Long.MAX_VALUE, listOf(retro), emptyList()), stale = false, fetchedAtMs = 0) }
+        val tv = h.knownTv()
+        val m = ModulesMachine(h.manageDeps(), backgroundScope, tv.id)
+        settle()
+        m.dispatch(ModulesIntent.Open("retro")); settle()
+        assertEquals(InstallBlock.NOT_COMPATIBLE, assertIs<InstallStep.Failed>(m.state.value.install).why)
+        m.dispatch(ModulesIntent.Add("retro")); settle()
+        assertEquals(InstallBlock.NOT_COMPATIBLE, assertIs<InstallStep.Failed>(m.state.value.install).why)
+    }
+
     @Test fun gateKeeperCachesForTenMinutesPerTv() = runTest(timeout = 30.seconds) {
         val h = Harness()
         val id = Samples.miTvId()

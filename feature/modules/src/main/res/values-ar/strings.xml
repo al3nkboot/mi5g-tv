@@ -118,4 +118,9 @@
     <string name="fetch_failure_signer_mismatch">التطبيق موقّع من جهة أخرى غير المطوّر المذكور في القائمة، لذلك لم نثبّته.</string>
     <string name="fetch_failure_try_again">حاول مرة أخرى</string>
 
+    <string name="install_block_not_compatible">هذا التلفاز لا يدعم هذه الوحدة (إصدار أندرويد أو المعالج).</string>
+    <string name="install_block_no_tv">تعذّر على الهاتف الوصول إلى التلفاز. تأكد أنهما على نفس شبكة Wi-Fi وأن تصحيح الأخطاء اللاسلكي مسموح على التلفاز، ثم حاول مرة أخرى.</string>
+    <string name="install_block_gate">أُلغي التحقق من قفل الهاتف، لذلك لم يُثبَّت شيء.</string>
+    <string name="install_block_refused">رفض التلفاز هذه الإضافة. التفاصيل أدناه.</string>
+    <string name="install_block_run_failed">لم يكتمل التثبيت على التلفاز. أعد تشغيل التلفاز وحاول مرة أخرى؛ وإن تكرر، أبلغ عنه مع التفاصيل أدناه.</string>
 </resources>
