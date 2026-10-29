@@ -343,7 +343,7 @@
     <string name="v16_stat_storage">التخزين</string>
     <string name="v16_stat_off">الإيقاف</string>
     <string name="v16_stat_gb">{used} / {total} غ.ب</string>
-    <string name="v16_stat_unknown">—</string>
+    <string name="v16_stat_unknown">غير متصل</string>
     <string name="v16_stat_off_done">{count} أُوقف</string>
     <string name="v16_stat_off_pending">جاهز للإيقاف</string>
     <string name="v16_clean_start">ابدأ التنظيف الآمن</string>

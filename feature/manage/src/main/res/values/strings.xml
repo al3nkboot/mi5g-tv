@@ -350,7 +350,7 @@
     <string name="v16_stat_storage">Storage</string>
     <string name="v16_stat_off">Switched off</string>
     <string name="v16_stat_gb">{used} / {total} GB</string>
-    <string name="v16_stat_unknown">—</string>
+    <string name="v16_stat_unknown">Not connected</string>
     <string name="v16_stat_off_done">{count} off</string>
     <string name="v16_stat_off_pending">Ready to switch off</string>
     <string name="v16_clean_start">Start safe cleaning</string>
