@@ -42,7 +42,8 @@ import tv.cleanyour.ui.design.theme.CytTheme
 // activity's decor view, the path a touch takes on a device.
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-@Config(sdk = [35], qualifiers = "w360dp-h780dp-xhdpi")
+// 1.6: Cairo is taller than Outfit, so the five guarded controls need a taller window to all be on screen.
+@Config(sdk = [35], qualifiers = "w360dp-h1000dp-xhdpi")
 class ObscuredTouchTest {
 
     @get:Rule
