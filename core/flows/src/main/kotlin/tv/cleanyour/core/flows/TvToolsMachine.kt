@@ -600,6 +600,7 @@ class TvToolsMachine(
         }
         loadPerformance(liveOnly = true)
         send(SpeedBoostUpdate(SpeedBoostStatus.Boosted(stopped)))
+        attempt { d.prefs16.save(tvId, d.prefs16.load(tvId).copy(ramFreed = true)) }
         effect(ManageEffect.HapticDouble)
     }
 

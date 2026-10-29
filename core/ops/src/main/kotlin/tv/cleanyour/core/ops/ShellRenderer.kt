@@ -394,6 +394,16 @@ class ShellRenderer(private val watchdogVariant: WatchdogVariant = WatchdogVaria
             ShellLine(ShellTokens.line(listOf(SETTINGS, "put", "global", "private_dns_specifier", "dns.adguard-dns.com"))),
         )
 
+        // 1.6 item 7: family DNS chosen by the port 853 check. Encrypted = DoT to the family host;
+        // safe = private DNS off, so a router that blocks 853 never cuts the TV's internet.
+        fun familyDnsLines(encrypted: Boolean): List<ShellLine> = if (encrypted) listOf(
+            ShellLine(ShellTokens.line(listOf(SETTINGS, "put", "global", "private_dns_mode", "hostname"))),
+            ShellLine(ShellTokens.line(listOf(SETTINGS, "put", "global", "private_dns_specifier", "family.adguard-dns.com"))),
+        ) else listOf(
+            ShellLine(ShellTokens.line(listOf(SETTINGS, "put", "global", "private_dns_mode", "off"))),
+            ShellLine(ShellTokens.line(listOf(SETTINGS, "delete", "global", "private_dns_specifier"))),
+        )
+
         fun resetPrivateDnsLines(): List<ShellLine> = listOf(
             ShellLine(ShellTokens.line(listOf(SETTINGS, "put", "global", "private_dns_mode", "opportunistic"))),
             ShellLine(ShellTokens.line(listOf(SETTINGS, "delete", "global", "private_dns_specifier"))),

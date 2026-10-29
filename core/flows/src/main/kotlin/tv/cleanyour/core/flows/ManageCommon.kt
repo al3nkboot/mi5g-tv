@@ -105,6 +105,9 @@ class ManageDeps(
     // switch decision for each TV (SetupMachine keeps it).
     val about: AppAbout = AppAbout(appVersion, "full", "", ""),
     val homeDecisions: HomeDecisions = HomeDecisions(documents),
+    // 1.6: the port 853 check and the per-TV evening/DNS record.
+    val dotProbe: DotPortProbe = SocketDotPortProbe(),
+    val prefs16: TvPrefs16Store = TvPrefs16Store(documents),
 ) {
     fun tv(id: TvId): Tv? = tvs.tvs.value.firstOrNull { it.id == id }
 
