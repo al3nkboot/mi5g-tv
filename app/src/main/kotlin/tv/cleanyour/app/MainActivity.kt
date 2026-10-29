@@ -44,7 +44,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             // D-W8-27: 0.1 is always the dark, black-and-glass design (mockups, DESIGN-SYSTEM 2),
             // whatever the phone's own mode. The light tokens stay in :ui:design, unused.
-            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+            val dir = if (android.text.TextUtils.getLayoutDirectionFromLocale(ArabicLocale.locale(this)) == android.view.View.LAYOUT_DIRECTION_RTL) LayoutDirection.Rtl else LayoutDirection.Ltr
+            CompositionLocalProvider(LocalLayoutDirection provides dir) {
                 CytTheme(darkTheme = true) {
                     var start by remember { mutableStateOf<Dest?>(null) }
                     LaunchedEffect(Unit) {

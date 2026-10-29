@@ -14,23 +14,54 @@ import tv.cleanyour.android.work.OperationService
 import tv.cleanyour.core.flows.OperationNotices
 import tv.cleanyour.core.flows.planOrNull
 
+// 1.6: Arabic by default whatever the phone's language; English (or the phone's language) only when
+// the person picks it in Settings. The choice lives in no-backup prefs and, on API 33+, is mirrored
+// to the system per-app language (locales_config.xml) so Android's own settings agree.
 internal object ArabicLocale {
     val ARABIC: Locale = Locale.forLanguageTag("ar")
+    private const val PREFS = "cyt_language"
+    private const val KEY = "lang"
+
+    fun choice(context: Context): String {
+        // API 33+: a language picked in Android's own app-language settings wins.
+        if (android.os.Build.VERSION.SDK_INT >= 33) {
+            val set = context.getSystemService(android.app.LocaleManager::class.java)?.applicationLocales
+            if (set != null && !set.isEmpty) return if (set[0].language == "en") AppLanguage.ENGLISH else AppLanguage.ARABIC
+        }
+        return AppLanguage.normalize(context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY, null))
+    }
+
+    fun locale(context: Context): Locale = when (choice(context)) {
+        AppLanguage.ENGLISH -> Locale.ENGLISH
+        AppLanguage.SYSTEM -> android.content.res.Resources.getSystem().configuration.locales[0]
+        else -> ARABIC
+    }
+
+    fun save(context: Context, lang: String) {
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putString(KEY, AppLanguage.normalize(lang)).commit()
+        if (android.os.Build.VERSION.SDK_INT >= 33) {
+            val lm = context.getSystemService(android.app.LocaleManager::class.java)
+            lm?.applicationLocales = if (lang == AppLanguage.SYSTEM) android.os.LocaleList.getEmptyLocaleList()
+                else android.os.LocaleList.forLanguageTags(locale(context).toLanguageTag())
+        }
+    }
 
     fun apply(context: Context) {
+        val loc = locale(context)
         val res = context.resources
         val config = Configuration(res.configuration)
-        config.setLocale(ARABIC)
-        config.setLayoutDirection(ARABIC)
+        config.setLocale(loc)
+        config.setLayoutDirection(loc)
         @Suppress("DEPRECATION")
         res.updateConfiguration(config, res.displayMetrics)
     }
 
     fun wrap(base: Context): Context {
         apply(base)
+        val loc = locale(base)
         val config = Configuration(base.resources.configuration)
-        config.setLocale(ARABIC)
-        config.setLayoutDirection(ARABIC)
+        config.setLocale(loc)
+        config.setLayoutDirection(loc)
         return base.createConfigurationContext(config)
     }
 }

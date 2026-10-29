@@ -357,6 +357,14 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
                         onOpenRelease = { graph.store.releasePage?.let { url -> scope.launch { onManageEffect(ManageEffect.OpenUrl(url)) } } },
                         onSupportPayPal = { scope.launch { onManageEffect(ManageEffect.OpenUrl("https://paypal.me/Midroid5G")) } },
                         onOpenDeveloper = { scope.launch { onManageEffect(ManageEffect.OpenUrl("https://x.com/midroid5G")) } },
+                        language = ArabicLocale.choice(context),
+                        onLanguage = { lang ->
+                            if (lang != ArabicLocale.choice(context)) {
+                                ArabicLocale.save(context, lang)
+                                ArabicLocale.apply(context.applicationContext)
+                                (context as? android.app.Activity)?.recreate()
+                            }
+                        },
                     )
                 }
             },
