@@ -81,6 +81,7 @@ import tv.cleanyour.core.flows.TvInstalledApp
 import tv.cleanyour.core.flows.TvSettingsState
 import tv.cleanyour.core.flows.TvToolsIntent
 import tv.cleanyour.core.flows.TvToolsState
+import tv.cleanyour.core.flows.DownloadCatalog
 import tv.cleanyour.core.model.TvAnimationScale
 import tv.cleanyour.core.model.TvKeyEvent
 import tv.cleanyour.ui.design.component.AppTile
@@ -170,8 +171,9 @@ fun ManageScreen(state: ManageState, onIntent: (ManageIntent) -> Unit, modifier:
                 level = stringResource(if (tv.level == Level.CUSTOM) R.string.manage_level_custom else R.string.manage_level_simple),
                 onClick = { onIntent(ManageIntent.RefreshThumbnail) },
             )
-            // Navigation into the wizard, whose own "Make it clean" is the guarded action (R5-W8 O1).
-            if (!tv.clean) PrimaryButton(stringResource(R.string.manage_clean_again), { onIntent(ManageIntent.CleanAgain) }, Modifier.padding(top = 16.dp), guardObscured = false)
+            // 1.6 item 1: the health dashboard holds the single clean button (navigation into the
+            // wizard, whose own "Make it clean" is the guarded action, R5-W8 O1).
+            HealthDashboard(state, tv, onIntent)
             // 0.3.2 B1: an unlisted TV (no exact profile) invites the person to help add it.
             if (tv.helpAddTv) {
                 Banner(stringResource(R.string.manage_help_add_tv_banner), BannerTone.INFO, Modifier.padding(top = 16.dp),
@@ -667,9 +669,27 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
             AnimationScaleStatus.Idle -> {}
         }
 
-        // 1) Downloader Store, Quick Codes (401740) & SmartTube (Ad-Free YouTube without Shorts)
-        SectionLabel(stringResource(R.string.tvtools_downloader_section))
-        Body(stringResource(R.string.tvtools_downloader_note), Modifier.padding(bottom = 8.dp, start = 4.dp, end = 4.dp))
+        // 1.6 item 4: the Downloader catalog first; the free-form code or link sits under «متقدم».
+        SectionLabel(stringResource(R.string.v16_catalog_title))
+        Body(stringResource(R.string.v16_catalog_note), Modifier.padding(bottom = 8.dp, start = 4.dp, end = 4.dp))
+        ListGroup {
+            DownloadCatalog.ENTRIES.forEachIndexed { i, entry ->
+                if (i > 0) ListDivider()
+                Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Column(Modifier.weight(1f)) {
+                        Text(entry.name, color = CytTheme.colors.textPrimary, style = CytTheme.type.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
+                        Text("${entry.code} · ${entry.note}", color = CytTheme.colors.textSecondary, style = CytTheme.type.bodyMedium)
+                    }
+                    SmallGlassButton(stringResource(R.string.v16_catalog_install), { if (!powerWorking) onIntent(TvToolsIntent.OpenInDownloader(entry.code)) })
+                }
+            }
+        }
+        var advanced by rememberSaveable { mutableStateOf(false) }
+        TertiaryButton(
+            stringResource(if (advanced) R.string.v16_advanced_hide else R.string.v16_advanced_show),
+            { advanced = !advanced }, Modifier.padding(top = 8.dp),
+        )
+        if (advanced) {
         CytTextField(
             value = state.downloaderInput,
             onValueChange = { onIntent(TvToolsIntent.UpdateDownloaderInput(it)) },
@@ -712,6 +732,7 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
                 enabled = !powerWorking && state.sideloadStatus !is SideloadStatus.Installing,
                 guardObscured = true,
             )
+        }
         }
         Banner(stringResource(R.string.tvtools_smarttube_tip), BannerTone.INFO, Modifier.padding(top = 12.dp))
 
@@ -1214,31 +1235,22 @@ fun TvAppManagerScreen(
             modifier = Modifier.padding(top = 14.dp),
         )
 
-        ListGroup(Modifier.padding(top = 12.dp)) {
-            SwitchRow(
-                title = stringResource(R.string.tvapps_filter_system_toggle),
-                checked = state.filter == TvAppFilter.ALL,
-                onCheckedChange = { showAll ->
-                    onIntent(TvAppManagerIntent.SetFilter(if (showAll) TvAppFilter.ALL else TvAppFilter.USER))
-                },
-            )
-        }
-
         Row(
             Modifier.fillMaxWidth().padding(top = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
+            // 1.6 item 8: «تطبيقاتي» and «المصنع» are two lists.
             RemoteActionKey(
-                text = stringResource(R.string.tvapps_filter_user),
+                text = stringResource(R.string.v16_mine),
                 onClick = { onIntent(TvAppManagerIntent.SetFilter(TvAppFilter.USER)) },
                 modifier = Modifier.weight(1f),
                 accented = state.filter == TvAppFilter.USER,
             )
             RemoteActionKey(
-                text = stringResource(R.string.tvapps_filter_all),
-                onClick = { onIntent(TvAppManagerIntent.SetFilter(TvAppFilter.ALL)) },
+                text = stringResource(R.string.v16_factory),
+                onClick = { onIntent(TvAppManagerIntent.SetFilter(TvAppFilter.SYSTEM)) },
                 modifier = Modifier.weight(1f),
-                accented = state.filter == TvAppFilter.ALL,
+                accented = state.filter == TvAppFilter.SYSTEM,
             )
             RemoteActionKey(
                 text = stringResource(R.string.tvapps_refresh),
@@ -1247,6 +1259,8 @@ fun TvAppManagerScreen(
                 enabled = !state.loading,
             )
         }
+
+        Body(stringResource(if (state.filter == TvAppFilter.USER) R.string.v16_mine_hint else R.string.v16_factory_hint), Modifier.padding(top = 10.dp, start = 4.dp, end = 4.dp))
 
         AppActionFeedback(state.actionStatus)
 
@@ -1264,7 +1278,9 @@ fun TvAppManagerScreen(
             ListGroup(Modifier.padding(top = 16.dp)) {
                 visible.forEachIndexed { i, app ->
                     if (i > 0) ListDivider()
-                    val statusText = stringResource(
+                    val statusText = if (app.protectedStreaming) stringResource(R.string.v16_protected_detail)
+                        else if (app.system && !app.enabled) stringResource(R.string.v16_frozen)
+                        else stringResource(
                         when {
                             !app.system && app.enabled -> R.string.tvapps_status_user_active
                             !app.system && !app.enabled -> R.string.tvapps_status_user_off
@@ -1291,6 +1307,8 @@ fun TvAppManagerScreen(
                     app = selected,
                     confirmingUninstall = state.confirmingUninstall,
                     actionStatus = state.actionStatus,
+                    uninstallWord = state.uninstallWord,
+                    hasRestorePoint = state.hasRestorePoint,
                     onIntent = onIntent,
                 )
             }
@@ -1304,22 +1322,46 @@ internal fun ColumnScope.TvAppActionsContent(
     confirmingUninstall: Boolean,
     actionStatus: TvAppActionStatus,
     onIntent: (TvAppManagerIntent) -> Unit,
+    uninstallWord: String = "",
+    hasRestorePoint: Boolean = false,
 ) {
     val working = actionStatus is TvAppActionStatus.Working
     if (confirmingUninstall && !working) {
-        ConfirmQuestion(
-            title = msg(R.string.tvapps_uninstall_confirm_title, "name" to app.name),
-            body = msg(R.string.tvapps_uninstall_confirm_body, "name" to app.name),
-            confirmLabel = stringResource(R.string.tvapps_uninstall_confirm_btn),
-            onConfirm = { onIntent(TvAppManagerIntent.UninstallApp(app.pkg)) },
-            cancelLabel = stringResource(R.string.action_cancel),
-            onCancel = { onIntent(TvAppManagerIntent.CancelUninstall) },
+        // 1.6 item 3: permanent removal needs this TV's restore point and the typed word «احذف».
+        SheetHeader(title = msg(R.string.v16_uninstall_title, "name" to app.name), subtitle = app.pkg.value)
+        Body(
+            stringResource(R.string.v16_uninstall_body) + " " +
+                stringResource(if (hasRestorePoint) R.string.v16_uninstall_has_restore else R.string.v16_uninstall_no_restore),
+            Modifier.padding(top = 12.dp),
         )
+        CytTextField(
+            value = uninstallWord,
+            onValueChange = { onIntent(TvAppManagerIntent.UpdateUninstallWord(it)) },
+            label = stringResource(R.string.v16_uninstall_field),
+            modifier = Modifier.padding(top = 12.dp),
+        )
+        ActionColumn(Modifier.padding(top = 12.dp)) {
+            PrimaryButton(
+                stringResource(if (hasRestorePoint) R.string.v16_uninstall_confirm else R.string.v16_uninstall_need_restore),
+                { onIntent(TvAppManagerIntent.UninstallApp(app.pkg)) },
+                enabled = tv.cleanyour.core.flows.uninstallUnlocked(uninstallWord, hasRestorePoint),
+            )
+            TertiaryButton(stringResource(R.string.action_cancel), { onIntent(TvAppManagerIntent.CancelUninstall) }, quiet = true)
+        }
         return
     }
     SheetHeader(title = app.name, subtitle = app.pkg.value)
+    if (app.protectedStreaming) Banner(stringResource(R.string.v16_protected_note), BannerTone.INFO, Modifier.padding(top = 12.dp))
     AppActionFeedback(actionStatus)
     ActionColumn(Modifier.padding(top = 16.dp)) {
+        // 1.6 item 3: for factory apps, freezing is the default action, shown first.
+        if (app.system && app.canDisable) {
+            PrimaryButton(
+                text = stringResource(if (app.enabled) R.string.v16_freeze else R.string.v16_unfreeze),
+                onClick = { onIntent(if (app.enabled) TvAppManagerIntent.DisableApp(app.pkg) else TvAppManagerIntent.EnableApp(app.pkg)) },
+                enabled = !working,
+            )
+        }
         // 1. Launch on TV
         PrimaryButton(
             text = stringResource(R.string.tvapps_action_launch),
@@ -1340,8 +1382,8 @@ internal fun ColumnScope.TvAppActionsContent(
             enabled = !working && app.canForceStop,
             guardObscured = true,
         )
-        // 4. Freeze / Disable
-        if (app.canDisable) {
+        // 4. Freeze / Disable (user apps; factory apps have it first, above)
+        if (app.canDisable && !app.system) {
             SecondaryButton(
                 text = stringResource(R.string.tvapps_action_disable),
                 onClick = { onIntent(TvAppManagerIntent.DisableApp(app.pkg)) },
@@ -1350,7 +1392,7 @@ internal fun ColumnScope.TvAppActionsContent(
             )
         }
         // 5. Unfreeze / Enable & Restore
-        SecondaryButton(
+        if (!app.system) SecondaryButton(
             text = stringResource(R.string.tvapps_action_enable),
             onClick = { onIntent(TvAppManagerIntent.EnableApp(app.pkg)) },
             enabled = !working,
@@ -1373,7 +1415,7 @@ internal fun ColumnScope.TvAppActionsContent(
         // 7. Permanent Uninstall for User (works for user apps and preloaded bloatware like Netflix/Prime)
         if (app.canUninstall) {
             TertiaryButton(
-                text = stringResource(R.string.tvapps_action_uninstall),
+                text = stringResource(R.string.v16_uninstall_btn),
                 onClick = { onIntent(TvAppManagerIntent.AskUninstall) },
                 enabled = !working,
             )

@@ -182,7 +182,8 @@
     <string name="pairing_connect_now">Connect to TV now (port 5555)</string>
     <string name="door_tizen_webos_btn">Samsung Tizen and LG webOS ad block guide</string>
     <string name="door_tizen_webos_title">Samsung Tizen and LG webOS guide</string>
-    <string name="door_tizen_webos_body">Samsung (Tizen) and LG (webOS) do not use Android APK files, but you can block system and Smart Hub ads immediately using AdGuard DNS (94.140.14.14):
+    <string name="door_tizen_webos_body">Tizen and webOS do not accept ADB cleaning: this is a guide only, with no switch-off, removal or modules. If an Android device is on HDMI, add it as its own TV; its plan stays untouched.
+Samsung (Tizen) and LG (webOS) do not use Android APK files, but you can block system and Smart Hub ads immediately using AdGuard DNS (94.140.14.14):
 1. Samsung Tizen: Settings &gt; General &gt; Network &gt; Network Status &gt; IP Settings &gt; DNS Setting (Enter manually) &gt; enter 94.140.14.14, then in Terms and Privacy disable Interest-Based Advertisements.
 2. LG webOS: Settings &gt; Network &gt; Wi-Fi Connection &gt; Advanced Wi-Fi Settings &gt; Edit &gt; set DNS Server to 94.140.14.14, then in Additional Settings disable Live Plus and Home Promotion.</string>
     <string name="door_chinese_tv_btn">Chinese TVs, Ikon, Haier, Nikai and Projectors helper</string>
