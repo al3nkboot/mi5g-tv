@@ -12,9 +12,9 @@
 
 ---
 
-## 📥 التحميل المباشر (أحدث إصدار `v1.5.0`)
+## 📥 التحميل المباشر (أحدث إصدار `v1.6.0`)
 
-- **[تحميل تطبيق الهاتف Mi5G TV v1.5.0 (APK)](https://github.com/al3nkboot/mi5g-tv/releases/download/v1.5.0/Mi5G-TV-v1.5.0.apk)**
+- **[تحميل تطبيق الهاتف Mi5G TV v1.6.0 (APK)](https://github.com/al3nkboot/mi5g-tv/releases/download/v1.6.0/Mi5G-TV-v1.6.0.apk)**
 - **[صفحة جميع الإصدارات والوحدات الإضافية (Releases)](https://github.com/al3nkboot/mi5g-tv/releases/latest)**
 
 ---
