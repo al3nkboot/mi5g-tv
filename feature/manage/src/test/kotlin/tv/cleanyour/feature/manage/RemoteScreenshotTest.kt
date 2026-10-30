@@ -38,7 +38,7 @@ class RemoteScreenshotTest {
             Triple("01_remote_ar_dark.png", RemoteState(tvName = "Mi TV", connection = RemoteConnection.Connected), false),
             Triple("02_trackpad_ar.png", RemoteState(tvName = "Mi TV", connection = RemoteConnection.Connected, mode = RemoteMode.Trackpad), false),
             Triple("03_keyboard_ar.png", RemoteState(tvName = "Mi TV", connection = RemoteConnection.Connected, mode = RemoteMode.Keyboard, textInput = "Hello مرحبا", unicodeWarning = true), false),
-            Triple("04_apps_favorites_ar.png", RemoteState(tvName = "Mi TV", connection = RemoteConnection.Connected, tab = RemoteTab.Apps, installedApps = listOf(RemoteApp("com.netflix.ninja"), RemoteApp("com.google.android.youtube.tv"), RemoteApp("net.mbc.shahidTV")), favorites = setOf("com.netflix.ninja", "net.mbc.shahidTV")), false),
+            Triple("04_apps_favorites_ar.png", RemoteState(tvName = "Mi TV", connection = RemoteConnection.Connected, tab = RemoteTab.Apps, installedApps = listOf(RemoteApp("com.netflix.ninja", "Netflix"), RemoteApp("com.google.android.youtube.tv", "YouTube"), RemoteApp("net.mbc.shahidTV", "Shahid"), RemoteApp("com.teamsmart.videomanager.tv", "SmartTube"), RemoteApp("com.disney.disneyplus", "Disney+")), favorites = setOf("com.netflix.ninja", "net.mbc.shahidTV")), false),
             Triple("05_remote_en.png", RemoteState(tvName = "Mi TV", connection = RemoteConnection.Connected), true),
             Triple("06_more_sheet_ar.png", RemoteState(tvName = "Mi TV", connection = RemoteConnection.Connected, showMoreSheet = true), false),
             Triple("07_not_connected_ar.png", RemoteState(tvName = "Mi TV", connection = RemoteConnection.NotConnected), false),
@@ -47,8 +47,9 @@ class RemoteScreenshotTest {
         var english by mutableStateOf(false)
         compose.setContent {
             CytTheme(darkTheme = true, reducedMotion = true) {
-                val config = Configuration(LocalConfiguration.current).apply { setLocale(if (english) Locale.ENGLISH else Locale.forLanguageTag("ar")) }
-                CompositionLocalProvider(LocalConfiguration provides config, LocalLayoutDirection provides if (english) LayoutDirection.Ltr else LayoutDirection.Rtl) {
+                val config = Configuration(LocalConfiguration.current).apply { setLocale(if (english) Locale.ENGLISH else Locale.forLanguageTag("ar")); setLayoutDirection(if (english) Locale.ENGLISH else Locale.forLanguageTag("ar")) }
+                val ctx = androidx.compose.ui.platform.LocalContext.current.createConfigurationContext(config)
+                CompositionLocalProvider(androidx.compose.ui.platform.LocalContext provides ctx, LocalConfiguration provides config, LocalLayoutDirection provides if (english) LayoutDirection.Ltr else LayoutDirection.Rtl) {
                     Box(Modifier.testTag("remote-shot").size(411.dp, 891.dp)) { RemoteScreen(current, {}, {}) }
                 }
             }

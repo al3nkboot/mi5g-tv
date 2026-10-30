@@ -407,7 +407,7 @@
     <string name="remote_back">Back</string>
     <string name="remote_home">Home</string>
     <string name="remote_mute">Mute</string>
-    <string name="remote_play_pause">Play / Pause</string>
+    <string name="remote_play_pause">Play/Pause</string>
     <string name="remote_more">More</string>
     <string name="remote_menu">Menu</string>
     <string name="remote_settings">Settings</string>
@@ -441,5 +441,19 @@
     <string name="remote_favorite_add">Add to favorites</string>
     <string name="remote_favorite_remove">Remove from favorites</string>
     <string name="remote_ok">OK</string>
+    <string name="remote_up">Up</string>
+    <string name="remote_down">Down</string>
+    <string name="remote_left">Left</string>
+    <string name="remote_right">Right</string>
+    <string name="remote_connecting">Connecting…</string>
+    <string name="remote_favorites_header">Favorites</string>
+    <string name="remote_all_apps_header">Apps on the TV</string>
+    <string name="remote_apps_empty">No apps found yet. Connect the TV and refresh.</string>
+    <string name="remote_refresh">Refresh</string>
+    <string name="remote_backspace_desc">Delete one character</string>
+    <string name="remote_number_pad">Numbers</string>
+    <string name="remote_coming_soon_cast">Cast photos and videos from the phone to the TV.</string>
+    <string name="remote_coming_soon_settings">Remote settings will live here.</string>
+    <string name="remote_open">Open</string>
 </resources>
 

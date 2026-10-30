@@ -573,7 +573,6 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
     val powerWorking = state.powerToolStatus is PowerToolStatus.Working
     ScreenScaffold(Glow.Tv, modifier, topBar = { CytTopBar(onBack = onBack) }) {
         ScreenTitle(stringResource(R.string.tvtools_title), titleTop)
-        SecondaryButton(stringResource(R.string.remote_title), onRemote, Modifier.fillMaxWidth().padding(bottom = 8.dp))
 
         when (val ps = state.powerToolStatus) {
             is PowerToolStatus.Working -> LiveLine(msg(R.string.tvtools_power_working, "name" to powerLabel(ps.label)))
@@ -867,6 +866,7 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
         }
 
         SectionLabel(stringResource(R.string.tvtools_remote_section))
+        SecondaryButton(stringResource(R.string.remote_title), onRemote, Modifier.fillMaxWidth().padding(bottom = 8.dp))
         val upLabel = stringResource(R.string.tvtools_dpad_up)
         val downLabel = stringResource(R.string.tvtools_dpad_down)
         val leftLabel = stringResource(R.string.tvtools_dpad_left)

@@ -42,6 +42,7 @@ sealed interface RemoteIntent {
 class RemoteMachine(private val d: ManageDeps, scope: CoroutineScope, private val tvId: TvId, private val favoritesStore: RemoteFavoritesStore = InMemoryRemoteFavoritesStore()) : Machine<RemoteState, RemoteIntent, ManageEffect>(RemoteState(favorites = favoritesStore.load(tvId)), scope) {
     private val scopeRef = scope
     private val known = listOf("com.google.android.youtube.tv", "com.netflix.ninja", "net.mbc.shahidTV", "com.teamsmart.videomanager.tv", "com.amazon.amazonvideo.livingroom", "com.disney.disneyplus")
+    private val knownLabels = mapOf("com.google.android.youtube.tv" to "YouTube", "com.netflix.ninja" to "Netflix", "net.mbc.shahidTV" to "Shahid", "com.teamsmart.videomanager.tv" to "SmartTube", "com.amazon.amazonvideo.livingroom" to "Prime Video", "com.disney.disneyplus" to "Disney+")
     init {
         scope.launch { d.tvs.tvs.collect { tvs -> tvs.firstOrNull { it.id == tvId }?.let { send(NameUpdate(it.nickname)) } } }
         dispatch(RemoteIntent.Reconnect)
@@ -58,6 +59,7 @@ class RemoteMachine(private val d: ManageDeps, scope: CoroutineScope, private va
         is NameUpdate -> state.copy(tvName = event.name)
         is WarningUpdate -> state.copy(unicodeWarning = event.warning)
         is LoadingApps -> state.copy(appsLoading = true)
+        is TextSent -> state.copy(textInput = "", unicodeWarning = false)
         else -> state
     }
     override fun handle(event: Any, before: RemoteState, state: RemoteState) {
@@ -68,7 +70,7 @@ class RemoteMachine(private val d: ManageDeps, scope: CoroutineScope, private va
             RemoteIntent.SendText -> scopeRef.launch {
                 val plan = runCatching { sanitizeForTv(state.textInput) }.getOrNull() ?: return@launch
                 send(WarningUpdate(plan.droppedNonAscii))
-                plan.latinToken?.let { send(ShellRenderer.inputTextLine(state.textInput)) }
+                plan.latinToken?.let { send(ShellRenderer.inputTextLine(state.textInput)); send(TextSent) }
             }
             RemoteIntent.Reconnect -> probe()
             RemoteIntent.OpenPairing -> effect(ManageEffect.Navigate("setup/${tvId.value}"))
@@ -90,8 +92,8 @@ class RemoteMachine(private val d: ManageDeps, scope: CoroutineScope, private va
     private fun refreshApps() { scopeRef.launch {
         send(LoadingApps)
         val out = runCatching { var result = emptyList<String>(); accessRun { session -> result = ShellRenderer.parsePackageList(TvShellRunner.run(session, ShellRenderer.listThirdPartyPackagesLine()).stdout) }; result }.getOrDefault(emptyList()).toSet()
-        send(AppsUpdate((out + known.filter { it in out }).map { RemoteApp(it) }.sortedBy { it.pkg }))
+        send(AppsUpdate((out + known.filter { it in out }).map { RemoteApp(it, knownLabels[it] ?: it) }.sortedBy { it.label.lowercase() }))
     } }
     private data class ConnectionUpdate(val connection: RemoteConnection, val status: String?)
-    private data class AppsUpdate(val apps: List<RemoteApp>); private data object LoadingApps; private data class FavoritesUpdate(val values: Set<String>); private data class NameUpdate(val name: String); private data class WarningUpdate(val warning: Boolean)
+    private data class AppsUpdate(val apps: List<RemoteApp>); private data object LoadingApps; private data object TextSent; private data class FavoritesUpdate(val values: Set<String>); private data class NameUpdate(val name: String); private data class WarningUpdate(val warning: Boolean)
 }

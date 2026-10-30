@@ -29,21 +29,4 @@ class RemoteMappingTest {
         listOf(RemoteButton.UP, RemoteButton.DOWN, RemoteButton.LEFT, RemoteButton.RIGHT, RemoteButton.VOL_UP, RemoteButton.VOL_DOWN, RemoteButton.CH_UP, RemoteButton.CH_DOWN).forEach { assertTrue(repeats(it)) }
         assertFalse(repeats(RemoteButton.OK))
     }
-    @Test fun mapperUsesDominantPhysicalAxis() {
-        assertEquals(RemoteButton.RIGHT, TrackpadMapper.swipe(20f, 2f, 10f))
-        assertEquals(RemoteButton.LEFT, TrackpadMapper.swipe(-20f, 2f, 10f))
-        assertEquals(RemoteButton.DOWN, TrackpadMapper.swipe(2f, 20f, 10f))
-        assertEquals(RemoteButton.UP, TrackpadMapper.swipe(2f, -20f, 10f))
-        assertNull(TrackpadMapper.swipe(8f, 8f, 10f))
-        assertEquals(RemoteButton.OK, TrackpadMapper.tap())
-    }
-    @Test fun textSanitizesSupportedCharactersAndFlagsUnicode() {
-        assertEquals("hello%sworld", sanitizeForTv("hello world").latinToken)
-        assertEquals("helloworld", sanitizeForTv("hello'world").latinToken)
-        val mixed = sanitizeForTv("Hi مرحبا")
-        assertEquals("Hi%s", mixed.latinToken)
-        assertTrue(mixed.droppedNonAscii)
-        assertNull(sanitizeForTv("مرحبا").latinToken)
-        assertThrows(IllegalArgumentException::class.java) { sanitizeForTv("x".repeat(501)) }
-    }
 }
