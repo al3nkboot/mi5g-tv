@@ -72,6 +72,8 @@ import tv.cleanyour.feature.manage.SwitchedOffScreen
 import tv.cleanyour.feature.manage.TvSettingsScreen
 import tv.cleanyour.feature.manage.TvAppManagerScreen
 import tv.cleanyour.feature.manage.TvToolsScreen
+import tv.cleanyour.feature.manage.RemoteScreen
+import tv.cleanyour.core.flows.RemoteIntent
 import tv.cleanyour.feature.modules.ModulesFlow
 import tv.cleanyour.feature.setup.SetupFlow
 
@@ -87,6 +89,7 @@ import tv.cleanyour.feature.setup.SetupFlow
     @Serializable data class Restore(val tvId: String) : Dest
     @Serializable data class TvSettings(val tvId: String) : Dest
     @Serializable data class TvTools(val tvId: String) : Dest
+    @Serializable data class Remote(val tvId: String) : Dest
     @Serializable data class TvApps(val tvId: String) : Dest
     @Serializable data object AppSettings : Dest
     // 0.3.2 B1, B2: the report preview; kind is ReportKind.key ("tv" or "problem").
@@ -120,6 +123,7 @@ internal fun applyRoute(stack: MutableList<NavKey>, route: String, noTvs: Boolea
         "restore" -> id?.let { Dest.Restore(it) }
         "tvsettings" -> id?.let { Dest.TvSettings(it) }
         "tools" -> id?.let { Dest.TvTools(it) }
+        "remote" -> id?.let { Dest.Remote(it) }
         "apps" -> id?.let { Dest.TvApps(it) }
         "appsettings" -> Dest.AppSettings
         "report" -> id?.let { k -> ReportKind.of(k) }?.let { k -> if (k == ReportKind.TV && parts.getOrNull(2) == null) null else Dest.Report(k.key, parts.getOrNull(2)) }
@@ -332,7 +336,13 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
                             )
                         }
                     }
-                    TvToolsScreen(state, m::dispatch, onBack = { go("back") })
+                    TvToolsScreen(state, m::dispatch, onBack = { go("back") }, onRemote = { go("remote/${key.tvId}") })
+                }
+                entry<Dest.Remote> { key ->
+                    val m = rememberMachine("remote:${key.tvId}") { graph.remote(it, TvId(key.tvId)) }
+                    val state by m.state.collectAsStateWithLifecycle()
+                    LaunchedEffect(m) { m.effects.collect { onManageEffect(it) } }
+                    RemoteScreen(state, m::dispatch, onBack = { go("back") })
                 }
                 entry<Dest.TvApps> { key ->
                     val m = rememberMachine("apps:${key.tvId}") { graph.tvApps(it, TvId(key.tvId)) }

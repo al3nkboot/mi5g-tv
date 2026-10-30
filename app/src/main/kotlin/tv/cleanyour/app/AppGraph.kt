@@ -61,6 +61,7 @@ import tv.cleanyour.core.flows.TvAccess
 import tv.cleanyour.core.flows.TvSettingsMachine
 import tv.cleanyour.core.flows.TvAppManagerMachine
 import tv.cleanyour.core.flows.TvToolsMachine
+import tv.cleanyour.core.flows.RemoteMachine
 import tv.cleanyour.core.model.TvId
 import tv.cleanyour.core.ops.ConfigTransport
 import tv.cleanyour.core.ops.OpRenderer
@@ -93,6 +94,7 @@ import tv.cleanyour.core.trust.TrustRoots
 // off, and the rules the flows follow. Everything else is the same in both builds.
 class AppGraph(context: Context, val appVersion: String = versionOf(context), val store: StorePorts = Store) {
     private val app = context.applicationContext
+    private val remoteFavorites = DataStoreRemoteFavoritesStore(app)
 
     // UI-facing watchers run on the main thread. Sessions, the engine's runs and key creation run
     // on Default: AdbSessionManager runs its handshakes and pumps on its scope's dispatcher.
@@ -232,6 +234,7 @@ class AppGraph(context: Context, val appVersion: String = versionOf(context), va
     fun restorePoint(scope: CoroutineScope, tvId: TvId) = RestorePointMachine(manageDeps, scope, tvId)
     fun tvSettings(scope: CoroutineScope, tvId: TvId) = TvSettingsMachine(manageDeps, scope, tvId)
     fun tvTools(scope: CoroutineScope, tvId: TvId) = TvToolsMachine(manageDeps, scope, tvId)
+    fun remote(scope: CoroutineScope, tvId: TvId) = RemoteMachine(manageDeps, scope, tvId, remoteFavorites)
     fun tvApps(scope: CoroutineScope, tvId: TvId) = TvAppManagerMachine(manageDeps, scope, tvId)
     fun appSettings(scope: CoroutineScope) = AppSettingsMachine(manageDeps, scope)
     fun report(scope: CoroutineScope, kind: ReportKind, tvId: TvId?) = ReportMachine(manageDeps, scope, kind, tvId)

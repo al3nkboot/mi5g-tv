@@ -78,4 +78,12 @@ class NavigationTest {
         assertTrue(applyRoute(stack, "back", noTvs = false))
         assertEquals(listOf<NavKey>(Dest.Manage("0123456789abcdef")), stack)
     }
+
+    @Test fun theRemoteRouteOpensOnTopOfTools() {
+        val stack = mutableListOf<NavKey>(Dest.TvTools("0123456789abcdef"))
+        assertTrue(applyRoute(stack, "remote/0123456789abcdef", noTvs = false))
+        assertEquals(Dest.Remote("0123456789abcdef"), stack.last())
+        assertTrue(applyRoute(stack, "back", noTvs = false))
+        assertEquals(Dest.TvTools("0123456789abcdef"), stack.last())
+    }
 }

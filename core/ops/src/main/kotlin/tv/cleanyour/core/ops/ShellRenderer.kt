@@ -375,6 +375,16 @@ class ShellRenderer(private val watchdogVariant: WatchdogVariant = WatchdogVaria
         fun inputTextLine(raw: String): ShellLine =
             ShellLine(ShellTokens.line(listOf("input", "text", escapeInputText(raw))))
 
+        fun launchPackageLine(pkg: String): ShellLine {
+            require(PACKAGE_RE.matches(pkg)) { "invalid package name" }
+            return ShellLine(ShellTokens.line(listOf("monkey", "-p", pkg, "-c", "android.intent.category.LEANBACK_LAUNCHER", "1")))
+        }
+
+        fun parsePackageList(output: String): List<String> = output.lineSequence()
+            .map { it.trim().removePrefix("package:") }
+            .filter { PACKAGE_RE.matches(it) }
+            .distinct().toList()
+
         fun mkdirTmpLine(): ShellLine =
             ShellLine(ShellTokens.line(listOf("mkdir", "-p", RemoteDir.TMP.path)))
 

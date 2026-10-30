@@ -65,6 +65,7 @@ dependencies {
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.kotlinx.serialization.core)
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.androidx.datastore.preferences)
 
     testImplementation(project(":testing:fixtures"))
     testImplementation(project(":testing:fake-adbd"))

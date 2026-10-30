@@ -566,13 +566,14 @@ internal fun ColumnScope.ConfirmContent(what: AppConfirm, working: Boolean, onIn
 // M9 TV remote and tools (v1.1.0 / v1.3.0 / v1.5.0): Bundled cards quick launch, Speed boost, Downloader codes & SmartTube, Button Mapper, Force Landscape, TV Banner, Quick Cast, D-Pad remote, screenshot, and APK sideloader.
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack: () -> Unit, modifier: Modifier = Modifier) {
+fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack: () -> Unit, modifier: Modifier = Modifier, onRemote: () -> Unit = {}) {
     val sending = state.remoteStatus is RemoteStatus.Sending
     val boosting = state.speedBoostStatus is SpeedBoostStatus.Boosting
     val applyingScale = state.animationScaleStatus is AnimationScaleStatus.Applying
     val powerWorking = state.powerToolStatus is PowerToolStatus.Working
     ScreenScaffold(Glow.Tv, modifier, topBar = { CytTopBar(onBack = onBack) }) {
         ScreenTitle(stringResource(R.string.tvtools_title), titleTop)
+        SecondaryButton(stringResource(R.string.remote_title), onRemote, Modifier.fillMaxWidth().padding(bottom = 8.dp))
 
         when (val ps = state.powerToolStatus) {
             is PowerToolStatus.Working -> LiveLine(msg(R.string.tvtools_power_working, "name" to powerLabel(ps.label)))
