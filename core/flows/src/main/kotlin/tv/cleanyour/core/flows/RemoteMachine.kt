@@ -42,7 +42,7 @@ sealed interface RemoteIntent {
 class RemoteMachine(private val d: ManageDeps, scope: CoroutineScope, private val tvId: TvId, private val favoritesStore: RemoteFavoritesStore = InMemoryRemoteFavoritesStore()) : Machine<RemoteState, RemoteIntent, ManageEffect>(RemoteState(favorites = favoritesStore.load(tvId)), scope) {
     private val scopeRef = scope
     private val known = listOf("com.google.android.youtube.tv", "com.netflix.ninja", "net.mbc.shahidTV", "com.teamsmart.videomanager.tv", "com.amazon.amazonvideo.livingroom", "com.disney.disneyplus")
-    private val knownLabels = mapOf("com.google.android.youtube.tv" to "YouTube", "com.netflix.ninja" to "Netflix", "net.mbc.shahidTV" to "Shahid", "com.teamsmart.videomanager.tv" to "SmartTube", "com.amazon.amazonvideo.livingroom" to "Prime Video", "com.disney.disneyplus" to "Disney+")
+    private val knownLabels = mapOf("com.google.android.youtube.tv" to "YouTube", "com.netflix.ninja" to "Netflix", "net.mbc.shahidTV" to "Shahid", "com.teamsmart.videomanager.tv" to "SmartTube", "com.amazon.amazonvideo.livingroom" to "Prime Video", "com.disney.disneyplus" to "Disney Plus")
     init {
         scope.launch { d.tvs.tvs.collect { tvs -> tvs.firstOrNull { it.id == tvId }?.let { send(NameUpdate(it.nickname)) } } }
         dispatch(RemoteIntent.Reconnect)
