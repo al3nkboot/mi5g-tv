@@ -110,6 +110,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private AppAdapter adapter;
     private RecyclerView grid;
     private FrameLayout root;
+    private MediaPill mediaPill;
     private WallpaperPlayer wallpaperPlayer;
     private GlassView glass;
     private View ambient;
@@ -305,6 +306,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         sourcePanelAction = cfg.sourcePanelAction;
 
         root = findViewById(R.id.root);
+        mediaPill = new MediaPill(root);
         root.setBackgroundColor(cfg.backgroundColor);
         // root fills the window with an opaque colour (Config keeps background_color opaque), so the window's own
         // black under it is a second full-screen fill on every frame for nothing. The starting window still uses
@@ -355,6 +357,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         vpnApp = cfg.vpnApp;
         moduleCards = cfg.moduleCards;
         hiddenApps = new HashSet<>(cfg.hiddenApps);
+        hiddenApps.addAll(TileMenu.removed(this));
 
         grid = findViewById(R.id.grid);
         rtlAppGrid = getResources().getBoolean(R.bool.rtl_app_grid);
@@ -619,6 +622,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (showStats) startStats();
         sky.update();
         wallpaperPlayer.start();
+        mediaPill.start();
         handler.postDelayed(minuteTick, MINUTE_MS);
         if (festive && diya != null) {
             diya.start();
@@ -717,6 +721,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         super.onPause();
         endReorder();   // Home or another app while reordering keeps the order so far
         wallpaperPlayer.stop();
+        mediaPill.stop();
         stopAmbientAnimation();
         hero.animate().cancel();
         ambient.animate().cancel();
@@ -1044,7 +1049,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     @Override
     public void onBackPressed() {
-        // Home screen: Back goes nowhere.
+        // Home screen: Back goes nowhere, or (Mi5G 2.0, default on) to the burn-in safe clock.
+        if (openPopup == null && ClockActivity.backOpensClock(this)) {
+            startActivity(new Intent(this, ClockActivity.class));
+        }
+    }
+
+    @Override
+    public boolean onTileMenu(String pkg, String name) {
+        if (reordering) return false;
+        TileMenu.show(this, pkg, name, this::toggleReorder, this::recreate);
+        return true;
     }
 
     // ---- glass highlight -------------------------------------------------------------------------
@@ -2190,7 +2205,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                         String deviceLabel = name == null || name.length() == 0 ? label : name + " \u00B7 " + label;
                         final String deviceId = device.getId();
                         int state = hdmiStateBogus ? -1 : tim.getInputState(deviceId);
-                        addInputRow(rows, popup, R.drawable.ic_input, deviceLabel, state, () -> openInput(deviceId));
+                        addInputRow(rows, popup, R.drawable.ic_input, deviceLabel, state, () -> openInput(deviceId))
+                                .setOnLongClickListener(v -> pinWakeInput(popup, deviceId));
                     }
                     continue;
                 }
@@ -2199,7 +2215,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 final String id = info.getId();
                 int state = hdmi && hdmiStateBogus ? -1 : tim.getInputState(id);
                 addInputRow(rows, popup, hdmi ? R.drawable.ic_input : R.drawable.ic_av, label, state,
-                        () -> openInput(id));
+                        () -> openInput(id)).setOnLongClickListener(v -> pinWakeInput(popup, id));
             }
         }
         // Nothing to list where there is no TvInputManager: the TV's own source panel switches inputs.
@@ -2271,7 +2287,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         rows.addView(line, lp);
     }
 
-    private void addInputRow(LinearLayout rows, PopupWindow popup, int iconRes, String title, int state, Runnable action) {
+    /** Mi5G 2.0: hold OK on an input makes the TV open it on wake (item 16/17). */
+    private boolean pinWakeInput(PopupWindow popup, String inputId) {
+        popup.dismiss();
+        WakeTarget.set(this, "input:" + inputId);
+        Toast.makeText(this, R.string.mi5g_input_pin, Toast.LENGTH_LONG).show();
+        return true;
+    }
+
+    private View addInputRow(LinearLayout rows, PopupWindow popup, int iconRes, String title, int state, Runnable action) {
         View row = getLayoutInflater().inflate(R.layout.item_input, rows, false);
         ((ImageView) row.findViewById(R.id.icon)).setImageResource(iconRes);
         ((TextView) row.findViewById(R.id.title)).setText(title);
@@ -2294,6 +2318,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             action.run();
         });
         rows.addView(row);
+        return row;
     }
 
     // ---- launcher settings and module cards -------------------------------------------------------
@@ -2306,6 +2331,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         PopupWindow popup = glassPopup(panel, (int) (200 * density));
         addSettingsMenuRow(rows, popup, R.string.launcher_settings, () -> startActivityForResult(
                 new Intent(this, LauncherSettingsActivity.class), LAUNCHER_SETTINGS_REQUEST));
+        addSettingsMenuRow(rows, popup, R.string.mi5g_cc_title, () -> ControlCenterActivity.open(this));
+        addSettingsMenuRow(rows, popup, R.string.mi5g_settings, () -> startActivityForResult(
+                new Intent(this, Mi5gSettingsActivity.class), LAUNCHER_SETTINGS_REQUEST));
         if (moduleCards) addSettingsMenuRow(rows, popup, R.string.module_cards, this::showModuleCards);
         if (dockRow) addSettingsMenuRow(rows, popup, R.string.dock_edit, this::startDockEdit);
         addSettingsMenuRow(rows, popup, R.string.reorder, this::toggleReorder);
