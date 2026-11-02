@@ -49,6 +49,14 @@ object Fixtures {
             .sortedBy { it.name }
             .map { UpstreamExample(it.name, File(it, "debloat.txt").readText()) }
 
+    // M5: Mi5G's own debloat lists, kept out of the pinned upstream folder.
+    val mi5gExamplesDir: File get() = File(repoRoot, "core/spec/mi5g-examples")
+    fun mi5gExamples(): List<UpstreamExample> =
+        mi5gExamplesDir.listFiles().orEmpty()
+            .filter { File(it, "debloat.txt").isFile }
+            .sortedBy { it.name }
+            .map { UpstreamExample(it.name, File(it, "debloat.txt").readText()) }
+
     // Every upstream themes/<name>/config.json, with the wallpaper bytes when the theme has one.
     fun upstreamThemes(): List<UpstreamTheme> =
         File(upstream(), "themes").listFiles().orEmpty()
