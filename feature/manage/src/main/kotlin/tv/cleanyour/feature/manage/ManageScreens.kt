@@ -766,6 +766,22 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
             )
         }
 
+        // Items 25/26: lock Home to Mi5G, and the always-available way back.
+        SectionLabel(stringResource(R.string.tvtools_home_section))
+        Body(stringResource(R.string.tvtools_home_note), Modifier.padding(bottom = 8.dp, start = 4.dp, end = 4.dp))
+        ActionColumn {
+            PrimaryButton(
+                stringResource(R.string.tvtools_keep_home),
+                { onIntent(TvToolsIntent.KeepMi5gHome) },
+                enabled = !powerWorking,
+            )
+            SecondaryButton(
+                stringResource(R.string.tvtools_stock_home),
+                { onIntent(TvToolsIntent.ReturnToStockHome) },
+                enabled = !powerWorking,
+            )
+        }
+
         // 3) Instant TV Notification / Toast Banner
         SectionLabel(stringResource(R.string.tvtools_banner_section))
         Row(
@@ -1455,6 +1471,8 @@ private fun powerLabel(raw: String): String = when {
     raw == "@quiet_hours" -> stringResource(R.string.tvtools_label_quiet_hours)
     raw == "@hdmi" -> stringResource(R.string.tvtools_label_hdmi)
     raw == "@banner" -> stringResource(R.string.tvtools_label_banner)
+    raw == "@keep_home" -> stringResource(R.string.tvtools_label_keep_home)
+    raw == "@stock_home" -> stringResource(R.string.tvtools_label_stock_home)
     raw.startsWith("@open:") -> msg(R.string.tvtools_label_open, "target" to raw.removePrefix("@open:"))
     else -> raw
 }

@@ -463,5 +463,11 @@
     <string name="remote_open">Open</string>
     <string name="card_size_title">App and card size</string><string name="card_size_small">Small</string><string name="card_size_medium">Medium</string><string name="card_size_large">Large</string>
     <string name="quick_start_title">Quick start</string><string name="quick_start_step1">Connect your phone and TV to the same Wi-Fi.</string><string name="quick_start_step2">Enable Developer options and network or wireless debugging on the TV.</string><string name="quick_start_step3">Pair with the TV and allow the connection.</string><string name="quick_start_step4">Use the remote tab to control the TV.</string><string name="quick_start_step5">Install modules from the Modules screen.</string><string name="quick_start_video">Watch the video (2 minutes)</string>
+    <string name="tvtools_home_section">Mi5G home screen</string>
+    <string name="tvtools_home_note">Keeps Mi5G as Home after Home presses and restarts, turns on the remote buttons, Control Center and the media pill. Return to the TV launcher switches the original back on; nothing is uninstalled.</string>
+    <string name="tvtools_keep_home">Lock Home to Mi5G</string>
+    <string name="tvtools_stock_home">Return to the TV launcher</string>
+    <string name="tvtools_label_keep_home">Locking Home to Mi5G</string>
+    <string name="tvtools_label_stock_home">Returning to the TV launcher</string>
 </resources>
 

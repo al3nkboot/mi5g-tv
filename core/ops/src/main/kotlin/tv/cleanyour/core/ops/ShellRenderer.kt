@@ -643,6 +643,78 @@ class ShellRenderer(private val watchdogVariant: WatchdogVariant = WatchdogVaria
             ShellLine(ShellTokens.line(listOf(AM, "start", "-a", "android.settings.SETTINGS"))),
         )
 
+        // ---- Mi5G 2.0 home lock (item 25) and safe return (item 26) ----------------------------------
+        const val MI5G_HOME = "com.gathin.tvhome"
+        const val MI5G_HOME_ACTIVITY = "com.gathin.tvhome/.MainActivity"
+        val MI5G_ACCESSIBILITY = listOf("com.gathin.tvhome/.HomeKeyService", "com.gathin.tvhome/.InputKeyService")
+        const val MI5G_MEDIA_LISTENER = "com.gathin.tvhome/com.gathin.tvhome.MediaListener"
+        // Stock homes the lock may switch off and the safe return switches back on (never uninstalled).
+        val XIAOMI_HOMES = listOf("com.mitv.tvhome", "com.mitv.tvhome.atv")
+        val STOCK_HOMES = listOf(
+            "com.google.android.apps.tv.launcherx", "com.google.android.tvlauncher",
+            "com.google.android.leanbacklauncher", "com.mitv.tvhome", "com.mitv.tvhome.atv",
+        )
+
+        /** The `settings get` value with [add] present once and [remove] gone; order kept. */
+        fun mergeAccessibility(current: String?, add: List<String>, remove: List<String> = emptyList()): String {
+            val have = current.orEmpty().trim().takeUnless { it == "null" }.orEmpty()
+                .split(':').map { it.trim() }.filter { it.isNotEmpty() }
+            val kept = have.filter { it !in remove && it !in add }
+            return (kept + add).joinToString(":")
+        }
+
+        fun getSecureLine(key: String): ShellLine {
+            require(key.matches(Regex("[a-z_]{1,64}"))) { "invalid key" }
+            return ShellLine(ShellTokens.line(listOf(SETTINGS, "get", "secure", key)))
+        }
+
+        fun putAccessibilityLines(value: String): List<ShellLine> {
+            require(value.isEmpty() || value.split(':').all { it.matches(Regex("[A-Za-z0-9_.]+/[A-Za-z0-9_.$]+")) }) { "invalid services" }
+            val put = if (value.isEmpty()) listOf(SETTINGS, "delete", "secure", "enabled_accessibility_services")
+            else listOf(SETTINGS, "put", "secure", "enabled_accessibility_services", value)
+            return listOfNotNull(
+                ShellLine(ShellTokens.line(put)),
+                if (value.isEmpty()) null else ShellLine(ShellTokens.line(listOf(SETTINGS, "put", "secure", "accessibility_enabled", "1"))),
+            )
+        }
+
+        fun packagePathLine(pkg: String): ShellLine {
+            require(PACKAGE_RE.matches(pkg)) { "invalid package $pkg" }
+            return ShellLine(ShellTokens.line(listOf(PM, "path", pkg)))
+        }
+
+        /** Lock Home to Mi5G; only run after the launcher is confirmed installed. */
+        fun keepMi5gHomeLines(disableXiaomiHome: Boolean): List<ShellLine> = buildList {
+            add(ShellLine(ShellTokens.line(listOf(CMD, "package", "set-home-activity", MI5G_HOME_ACTIVITY))))
+            add(ShellLine(ShellTokens.line(listOf(CMD, "notification", "allow_listener", MI5G_MEDIA_LISTENER))))
+            add(ShellLine(ShellTokens.line(listOf(CMD, "appops", "set", MI5G_HOME, "RUN_IN_BACKGROUND", "allow"))))
+            add(ShellLine(ShellTokens.line(listOf(CMD, "deviceidle", "whitelist", "+$MI5G_HOME"))))
+            // PatchWall takes Home back at boot on Xiaomi TVs; pm enable (safe return) undoes this.
+            if (disableXiaomiHome) for (p in XIAOMI_HOMES) add(ShellLine(ShellTokens.line(listOf(PM, "disable-user", USER, "0", p))))
+            add(ShellLine(ShellTokens.line(listOf(AM, "start", "-a", "android.intent.action.MAIN", "-c", "android.intent.category.HOME", "-n", MI5G_HOME_ACTIVITY))))
+        }
+
+        /** Back to the TV's own launcher: re-enable it, make it Home, drop our services. Never uninstalls. */
+        fun returnToStockLines(installedStock: List<String>): List<ShellLine> = buildList {
+            for (p in installedStock) {
+                require(p in STOCK_HOMES) { "not a stock home $p" }
+                add(ShellLine(ShellTokens.line(listOf(PM, "enable", USER, "0", p))))
+            }
+            add(ShellLine(ShellTokens.line(listOf(CMD, "notification", "disallow_listener", MI5G_MEDIA_LISTENER))))
+            add(ShellLine(ShellTokens.line(listOf(CMD, "deviceidle", "whitelist", "-$MI5G_HOME"))))
+            installedStock.firstOrNull()?.let {
+                add(ShellLine(ShellTokens.line(listOf(CMD, "package", "resolve-activity", "--brief", "-a", "android.intent.action.MAIN", "-c", "android.intent.category.HOME", it))))
+            }
+        }
+
+        fun setHomeActivityLine(component: String): ShellLine {
+            require(component.matches(Regex("[A-Za-z0-9_.]+/[A-Za-z0-9_.$]+"))) { "invalid component" }
+            return ShellLine(ShellTokens.line(listOf(CMD, "package", "set-home-activity", component)))
+        }
+
+        fun startHomeLine(): ShellLine =
+            ShellLine(ShellTokens.line(listOf(AM, "start", "-a", "android.intent.action.MAIN", "-c", "android.intent.category.HOME")))
+
         fun normalizeDownloaderUrl(rawInput: String): String {
             val trimmed = rawInput.trim()
             if (trimmed.all { it.isDigit() } && trimmed.length in 3..12) {

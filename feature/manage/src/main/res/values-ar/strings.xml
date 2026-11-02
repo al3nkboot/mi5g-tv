@@ -456,5 +456,11 @@
     <string name="remote_open">فتح</string>
     <string name="card_size_title">حجم التطبيقات والبطاقات</string><string name="card_size_small">صغير</string><string name="card_size_medium">متوسط</string><string name="card_size_large">كبير</string>
     <string name="quick_start_title">دليل البدء السريع</string><string name="quick_start_step1">صِل الجوال والتلفاز بشبكة Wi-Fi نفسها.</string><string name="quick_start_step2">فعّل خيارات المطور وتصحيح الأخطاء عبر الشبكة أو لاسلكيًا على التلفاز.</string><string name="quick_start_step3">اقرن بالتلفاز واسمح بالاتصال.</string><string name="quick_start_step4">استخدم تبويب الريموت للتحكم بالتلفاز.</string><string name="quick_start_step5">ثبّت الوحدات من شاشة الوحدات.</string><string name="quick_start_video">شاهد الفيديو (دقيقتان)</string>
+    <string name="tvtools_home_section">شاشة Mi5G الرئيسية</string>
+    <string name="tvtools_home_note">تُبقي Mi5G الشاشة الرئيسية بعد ضغط زر الهوم وإعادة التشغيل، وتفعّل أزرار الريموت ومركز التحكم وشريط الوسائط. العودة لمشغّل التلفاز تعيد تشغيل المشغّل الأصلي، ولا يُحذف أي شيء.</string>
+    <string name="tvtools_keep_home">تثبيت Mi5G كشاشة رئيسية</string>
+    <string name="tvtools_stock_home">العودة لمشغّل التلفاز الأصلي</string>
+    <string name="tvtools_label_keep_home">تثبيت شاشة Mi5G الرئيسية</string>
+    <string name="tvtools_label_stock_home">العودة لمشغّل التلفاز الأصلي</string>
 </resources>
 

@@ -178,6 +178,8 @@ sealed interface TvToolsIntent {
     data class OpenInDownloader(val input: String? = null) : TvToolsIntent
     data class DownloadAndInstallUrlApk(val url: String, val fileName: String) : TvToolsIntent
     data object QuickSettingsOverlay : TvToolsIntent
+    data object KeepMi5gHome : TvToolsIntent
+    data object ReturnToStockHome : TvToolsIntent
     data class MapRemoteKey(val keyCode: Int, val targetPkg: String, val label: String) : TvToolsIntent
     data class SetForceLandscape(val landscape: Boolean) : TvToolsIntent
     data object StartClockScreensaver : TvToolsIntent
@@ -324,6 +326,8 @@ class TvToolsMachine(
             TvToolsIntent.QuickSettingsOverlay -> scope.launch {
                 runPowerLines(ShellRenderer.quickSettingsOverlayLines(), "@settings_overlay")
             }
+            TvToolsIntent.KeepMi5gHome -> scope.launch { keepMi5gHome() }
+            TvToolsIntent.ReturnToStockHome -> scope.launch { returnToStockHome() }
             is TvToolsIntent.MapRemoteKey -> scope.launch {
                 mapRemoteKey(event.keyCode, event.targetPkg, event.label)
             }
@@ -377,6 +381,84 @@ class TvToolsMachine(
             effect(ManageEffect.HapticDouble)
         } else {
             send(PowerToolUpdate(PowerToolStatus.Failed(label)))
+        }
+    }
+
+    private suspend fun installed(session: tv.cleanyour.core.session.TvSession, pkg: String): Boolean {
+        val r = attempt { TvShellRunner.run(session, ShellRenderer.packagePathLine(pkg)) }.getOrNull()
+        return r != null && r.exit == 0 && "package:" in r.stdout
+    }
+
+    // Item 25: Home, the remote services and media access for the Mi5G launcher, re-applied on demand.
+    // Every step persists across Home presses and reboots (default Home, secure settings, pm state).
+    private suspend fun keepMi5gHome() {
+        val label = "@keep_home"
+        send(PowerToolUpdate(PowerToolStatus.Working(label)))
+        val session = (d.access.session(tvId) as? AccessResult.Ok)?.session
+        if (session == null) {
+            send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.UNREACHABLE)))
+            return
+        }
+        // Without our launcher on the TV nothing may be switched off: the TV would have no Home.
+        if (!installed(session, ShellRenderer.MI5G_HOME)) {
+            send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.NO_APK)))
+            return
+        }
+        val current = attempt { TvShellRunner.run(session, ShellRenderer.getSecureLine("enabled_accessibility_services")) }
+            .getOrNull()?.stdout
+        val lines = ShellRenderer.putAccessibilityLines(ShellRenderer.mergeAccessibility(current, ShellRenderer.MI5G_ACCESSIBILITY)) +
+            ShellRenderer.keepMi5gHomeLines(disableXiaomiHome = ShellRenderer.XIAOMI_HOMES.any { installed(session, it) })
+        var ok = true
+        for (line in lines) {
+            val r = attempt { TvShellRunner.run(session, line) }.getOrNull()
+            if (r == null || r.exit != 0) ok = false
+        }
+        if (ok) {
+            send(PowerToolUpdate(PowerToolStatus.Done(label)))
+            effect(ManageEffect.HapticDouble)
+        } else {
+            send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.LAUNCH)))
+        }
+    }
+
+    // Item 26: back to the TV's own launcher. Re-enables, never uninstalls anything.
+    private suspend fun returnToStockHome() {
+        val label = "@stock_home"
+        send(PowerToolUpdate(PowerToolStatus.Working(label)))
+        val session = (d.access.session(tvId) as? AccessResult.Ok)?.session
+        if (session == null) {
+            send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.UNREACHABLE)))
+            return
+        }
+        val stock = ShellRenderer.STOCK_HOMES.filter { installed(session, it) }
+        if (stock.isEmpty()) {
+            send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.NO_APK)))
+            return
+        }
+        val current = attempt { TvShellRunner.run(session, ShellRenderer.getSecureLine("enabled_accessibility_services")) }
+            .getOrNull()?.stdout
+        var homeComponent: String? = null
+        for (line in ShellRenderer.returnToStockLines(stock)) {
+            val r = attempt { TvShellRunner.run(session, line) }.getOrNull() ?: continue
+            r.stdout.lines().map { it.trim() }.lastOrNull { it.startsWith(stock.first() + "/") }?.let { homeComponent = it }
+        }
+        val home = homeComponent ?: run {
+            send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.LAUNCH)))
+            return
+        }
+        val tail = listOf(ShellRenderer.setHomeActivityLine(home)) +
+            ShellRenderer.putAccessibilityLines(ShellRenderer.mergeAccessibility(current, emptyList(), ShellRenderer.MI5G_ACCESSIBILITY)) +
+            ShellRenderer.startHomeLine()
+        var ok = true
+        for (line in tail) {
+            val r = attempt { TvShellRunner.run(session, line) }.getOrNull()
+            if (r == null || r.exit != 0) ok = false
+        }
+        if (ok) {
+            send(PowerToolUpdate(PowerToolStatus.Done(label)))
+            effect(ManageEffect.HapticDouble)
+        } else {
+            send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.LAUNCH)))
         }
     }
 
