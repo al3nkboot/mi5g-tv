@@ -15,6 +15,7 @@ navigation3 = "1.2.0"
 profileinstaller = "1.4.1"
 okio = "3.18.2"
 bouncycastle = "1.86"
+conscrypt = "2.6.2"
 baselineprofile = "1.5.0"
 benchmark = "1.5.0"
 androidx-test-runner = "1.7.0"
@@ -51,6 +52,7 @@ androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", vers
 androidx-profileinstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "profileinstaller" }
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 bouncycastle-bcprov = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bouncycastle" }
+conscrypt-openjdk = { module = "org.conscrypt:conscrypt-openjdk-uber", version.ref = "conscrypt" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
 junit4 = { module = "junit:junit", version.ref = "junit4" }

@@ -46,6 +46,10 @@ work. The full licence texts are linked or included below.
    Parts of :adb:wire are derived from it; see adb/wire/NOTICE for the files and the full
    Apache License 2.0 text. No dadb binary is used.
 
+2a. Android Debug Bridge pairing protocol
+   Protocol reimplemented from Android Open Source Project adb (Apache License 2.0) and
+   BoringSSL SPAKE2 (ISC License). No source code is copied.
+
 3. Outfit typeface (the app's and the launcher's font)
    https://github.com/Outfitio/Outfit-Fonts, Copyright 2021 The Outfit Project Authors.
    Licence: SIL Open Font License 1.1, full text in
@@ -62,6 +66,7 @@ work. The full licence texts are linked or included below.
    - AndroidX: Activity Compose, Lifecycle, Navigation 3, ProfileInstaller, Core and their
      transitive AndroidX dependencies (Google)
    - Jetpack Compose: runtime, UI, foundation, Material 3 (Google)
+   - Conscrypt OpenJDK uber (TLS 1.3 interop tests only; Apache License 2.0).
    - Bouncy Castle Crypto APIs, bcprov-jdk18on (Ed25519 for the signed module index).
      Licence: Bouncy Castle Licence (MIT style), https://www.bouncycastle.org/licence.html
      Copyright (c) 2000 to 2026 The Legion of the Bouncy Castle Inc. (https://www.bouncycastle.org)

@@ -1,3 +1,10 @@
 plugins { id("cleanyourtv.jvm") }
 
-// 0.2 workstream (D9). Empty in 0.1.
+dependencies {
+    testImplementation(libs.junit4)
+    testImplementation(libs.conscrypt.openjdk)
+}
+
+tasks.withType<Test>().configureEach {
+    jvmArgs("--add-opens=java.base/java.net=ALL-UNNAMED")
+}
