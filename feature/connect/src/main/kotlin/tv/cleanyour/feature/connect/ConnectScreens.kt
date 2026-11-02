@@ -218,7 +218,7 @@ fun DoorScreen(state: SetupState.OpenDoor, extras: SetupExtras, actions: SetupAc
     var brandsOpen by rememberSaveable { mutableStateOf(state.family == Families.UNKNOWN) }
     var manualVisible by rememberSaveable(state.tv.host) { mutableStateOf(false) }
     LaunchedEffect(state.tv.host, state.phase, state.step) {
-        if (state.phase == DoorPhase.STEPS && state.step >= 2) { delay(8_000); manualVisible = true }
+        if (state.phase == DoorPhase.STEPS) { delay(MANUAL_ENTRY_AFTER_MS); manualVisible = true }
     }
     // S2c has no primary, only the way out; S2d asks the identity question with Yes and No.
     val allowBar: @Composable ColumnScope.() -> Unit = { SecondaryButton(stringResource(R.string.allow_dont_see), { showNotSeen = true }) }
@@ -276,6 +276,9 @@ private fun ManualAddressContent(onSubmit: (String, Int, String?) -> Unit) {
         PrimaryButton(stringResource(R.string.address_connect), { if (valid) onSubmit(ip.trim(), port.toInt(), code.ifBlank { null }) }, Modifier.padding(top = 8.dp), enabled = valid, guardObscured = false)
     }
 }
+
+// 2.0 item 2: offer typing the address once the TV has had a fair chance to show up.
+internal const val MANUAL_ENTRY_AFTER_MS = 8_000L
 
 internal fun validManualAddress(ip: String, port: String): Boolean {
     val octets = ip.trim().split('.')

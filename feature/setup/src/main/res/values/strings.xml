@@ -72,7 +72,7 @@
     <string name="found_customise">Customise</string>
     <!-- D36 (RF-LAUNCHER-240 F1): the plan replaces a home screen app signed with another key -->
     <string name="found_replaces_launcher">Replaces the home screen app already on this TV. Its look, app order, settings and card answers start fresh.</string>
-    <string name="found_lock_note">When you start, this phone asks for its own screen lock (PIN, pattern or fingerprint) to make sure it\'s you. That is your phone\'s lock, not a TV password; the TV has none.</string>
+    <string name="found_lock_note">This phone will ask for its own screen lock (PIN, pattern or fingerprint), not a TV password; the TV has none.</string>
     <string name="found_no_lock">No screen lock on this phone, so we can\'t double-check it\'s you.</string>
     <!-- Unknown model (no profile) -->
     <string name="found_unknown_title">{count, plural, =0 {We didn\'t find anything we\'re sure about} one {We found one thing we\'re sure about} other {We found # things we\'re sure about}}</string>

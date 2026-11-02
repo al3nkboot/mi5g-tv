@@ -560,7 +560,7 @@ internal fun QuickStartContent() {
         Body("${i + 1}. ${stringResource(line)}", Modifier.padding(top = 10.dp, start = 4.dp, end = 4.dp))
     }
     PrimaryButton(stringResource(R.string.quick_start_video), {
-        context.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(QUICK_START_VIDEO_URL)))
+        runCatching { context.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(QUICK_START_VIDEO_URL))) }   // no browser: nothing to open
     }, Modifier.padding(top = 16.dp), guardObscured = false)
 }
 

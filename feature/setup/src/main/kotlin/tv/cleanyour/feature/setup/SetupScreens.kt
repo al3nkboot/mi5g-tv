@@ -177,6 +177,8 @@ fun FoundScreen(
             // it kept, so S3 says so right above the button; the credential prompt after it is the
             // confirmation. Pinned with the button, so it cannot be scrolled past unseen.
             if (summary.replacesLauncher) Banner(stringResource(R.string.found_replaces_launcher), BannerTone.INFO, Modifier.padding(bottom = 12.dp))
+            // 2.0 item 4: pinned too, so nobody types a "TV password" into the phone's lock prompt.
+            if (!extras.noScreenLock) Body(stringResource(R.string.found_lock_note), Modifier.padding(start = 4.dp, end = 4.dp, bottom = 8.dp))
             SafetyLine(stringResource(R.string.found_safety), Modifier.padding(start = 4.dp, end = 4.dp, bottom = 14.dp))
             ActionColumn {
                 PrimaryButton(stringResource(R.string.found_make_clean), { actions.intent(SetupIntent.MakeItClean) }, loading = extras.starting)
@@ -249,7 +251,7 @@ fun FoundScreen(
                 )
             }
         }
-        Body(stringResource(if (extras.noScreenLock) R.string.found_no_lock else R.string.found_lock_note), Modifier.padding(start = 4.dp, top = 12.dp))
+        if (extras.noScreenLock) Body(stringResource(R.string.found_no_lock), Modifier.padding(start = 4.dp, top = 12.dp))
         Gap(8.dp)
     }
     when (state.sheet) {

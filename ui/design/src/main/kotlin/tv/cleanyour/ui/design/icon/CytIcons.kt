@@ -54,6 +54,8 @@ object CytIcons {
     val Grip: ImageVector by lazy { icon("Grip", dot(9f, 6.5f), dot(15f, 6.5f), dot(9f, 12f), dot(15f, 12f), dot(9f, 17.5f), dot(15f, 17.5f), width = 2f) }
     val Circle: ImageVector by lazy { icon("Circle", "M12 6a6 6 0 1 1 0 12a6 6 0 1 1 0-12z") }
     val Dash: ImageVector by lazy { icon("Dash", "M8 12h8", width = 2f) }
+    val Mute: ImageVector by lazy { icon("Mute", "M4 9.5h3.5L12 6v12l-4.5-3.5H4z", "M16 9.5l5 5M21 9.5l-5 5") }
+    val PlayPause: ImageVector by lazy { icon("PlayPause", "M4 6.5v11l7.5-5.5z", "M15.5 6.5v11M19.5 6.5v11", width = 1.8f) }
 
     val all: List<ImageVector>
         get() = listOf(

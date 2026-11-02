@@ -13,7 +13,7 @@
 
     <!-- Credential prompt (D17) -->
     <string name="gate_title">تأكيد قفل شاشة جوالك</string>
-    <string name="gate_subtitle">قبل أي تغيير على {tv}: أكّد بقفل شاشة هذا الجوال (رمز PIN أو النمط أو البصمة). هذا ليس رمزًا للتلفاز، فالتلفاز لا يحتاج كلمة مرور.</string>
+    <string name="gate_subtitle">قبل أي تغيير على {tv}: أكّد بقفل شاشة هذا الجوال (الرمز السري أو النمط أو البصمة). هذا ليس رمزًا للتلفاز، فالتلفاز لا يحتاج كلمة مرور.</string>
     <string name="gate_negative">إلغاء</string>
     <string name="gate_failed">تعذّر تأكيد هويتك، لذلك لم يتغير شيء.</string>
 
@@ -63,7 +63,7 @@
     <string name="found_make_clean">ابدأ التنظيف</string>
     <string name="found_customise">تخصيص</string>
     <string name="found_replaces_launcher">يستبدل تطبيق الشاشة الرئيسية الموجود حاليًا على هذا التلفاز. سيبدأ المظهر وترتيب التطبيقات والإعدادات واختيارات البطاقات من جديد.</string>
-    <string name="found_lock_note">عند البدء سيطلب الجوال قفل شاشته (رمز PIN أو النمط أو البصمة) للتأكد أنك أنت. هذا قفل جوالك وليس كلمة مرور للتلفاز، فالتلفاز لا يحتاج كلمة مرور.</string>
+    <string name="found_lock_note">سيطلب الجوال قفل شاشته (الرمز السري أو النمط أو البصمة) وليس كلمة مرور للتلفاز، فالتلفاز لا يحتاج كلمة مرور.</string>
     <string name="found_no_lock">لا يوجد قفل شاشة على هذا الهاتف، لذلك لا يمكننا التحقق الإضافي من هويتك.</string>
     <!-- Unknown model (no profile) -->
     <string name="found_unknown_title">{count, plural, =0 {لم نجد شيئًا متأكدين منه} one {وجدنا عنصرًا واحدًا متأكدين منه} two {وجدنا عنصرين متأكدين منهما} few {وجدنا # عناصر متأكدين منها} many {وجدنا # عنصرًا متأكدين منه} other {وجدنا # عنصر متأكدين منه}}</string>

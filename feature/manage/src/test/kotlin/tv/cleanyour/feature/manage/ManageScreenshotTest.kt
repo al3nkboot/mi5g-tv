@@ -39,6 +39,7 @@ import tv.cleanyour.core.model.PlanId
 import tv.cleanyour.core.model.TvId
 import tv.cleanyour.core.planner.PlanKind
 import tv.cleanyour.testing.fixtures.Samples
+import tv.cleanyour.ui.design.component.SheetSurface
 
 // Every section 4 state of :feature:manage (PRODUCT-SPEC 4: M1, M1a, the open-run card, M4, M5,
 // M7, M8 and their sheets), each in dark, light, 200% font and right to left, with ATF on.
@@ -245,6 +246,7 @@ object ManageShots {
 
         // M8 App settings
         Shot("appsettings_idle", tall) { AppSettingsScreen(appSettings(), {}, {}, {}) },
+        Shot("quick_start_guide") { SheetSurface { QuickStartContent() } },
         Shot("appsettings_checking", tall) { AppSettingsScreen(appSettings(UpdateCheck.Checking), {}, {}, {}) },
         Shot("appsettings_update_available", tall) { AppSettingsScreen(appSettings(UpdateCheck.Available("0.2.0")), {}, {}, {}) },
         Shot("appsettings_up_to_date", tall) { AppSettingsScreen(appSettings(UpdateCheck.Latest), {}, {}, {}) },

@@ -89,6 +89,7 @@ import tv.cleanyour.core.flows.TrackpadMapper
 import tv.cleanyour.core.flows.repeats
 import tv.cleanyour.ui.design.theme.CytTheme
 import tv.cleanyour.ui.design.theme.LocalCardScale
+import tv.cleanyour.ui.design.icon.CytIcons
 
 // 2.0 phone remote. Dark surface, Mi5G gold (theme `warning` token) as the single accent.
 // The D-pad and the trackpad are laid out LTR in every locale so Left always sends DPAD_LEFT.
@@ -176,12 +177,18 @@ private fun ModeSwitch(mode: RemoteMode, onIntent: (RemoteIntent) -> Unit) {
 @Composable
 private fun ColumnScope.ButtonsPane(press: (RemoteButton) -> Unit, onMore: () -> Unit) {
     BoxWithConstraints(Modifier.weight(1f).fillMaxWidth()) {
+    val ring = if (maxHeight > 560.dp) 236.dp else 196.dp
     Column(Modifier.fillMaxWidth().heightIn(min = maxHeight).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.SpaceEvenly, horizontalAlignment = Alignment.CenterHorizontally) {
         // Physical layout: VOL on the left, CH on the right, in every locale (like a real remote).
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            Rocker(R.string.remote_volume, RemoteButton.VOL_UP, RemoteButton.VOL_DOWN, press)
-            DpadRing(press)
-            Rocker(R.string.remote_channel, RemoteButton.CH_UP, RemoteButton.CH_DOWN, press)
+        val dir = LocalLayoutDirection.current
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                CompositionLocalProvider(LocalLayoutDirection provides dir) {
+                    Rocker(R.string.remote_volume, RemoteButton.VOL_UP, RemoteButton.VOL_DOWN, press)
+                    DpadRing(press, ring)
+                    Rocker(R.string.remote_channel, RemoteButton.CH_UP, RemoteButton.CH_DOWN, press)
+                }
+            }
         }
         Spacer(Modifier.height(8.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -197,8 +204,7 @@ private fun ColumnScope.ButtonsPane(press: (RemoteButton) -> Unit, onMore: () ->
 }
 
 @Composable
-private fun DpadRing(press: (RemoteButton) -> Unit) {
-    val ring = 196.dp
+private fun DpadRing(press: (RemoteButton) -> Unit, ring: androidx.compose.ui.unit.Dp) {
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) { Box(
         Modifier.size(ring).clip(CircleShape).background(CytTheme.colors.surface2).border(2.dp, Gold.copy(alpha = .55f), CircleShape),
         contentAlignment = Alignment.Center,
@@ -263,8 +269,9 @@ private fun RemoteKey(
     ) {
         if (small) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(when (button) { RemoteButton.BACK -> "←"; RemoteButton.HOME -> "⌂"; RemoteButton.MUTE -> "◖"; else -> "▶Ⅱ" }, color = fg, fontSize = 18.sp, lineHeight = 20.sp)
-                Text(text, color = fg, textAlign = TextAlign.Center, maxLines = 1, softWrap = false, style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp), modifier = Modifier.padding(horizontal = 2.dp))
+                androidx.compose.material3.Icon(when (button) { RemoteButton.BACK -> CytIcons.Back; RemoteButton.HOME -> CytIcons.Home; RemoteButton.MUTE -> CytIcons.Mute; else -> CytIcons.PlayPause }, null, tint = fg, modifier = Modifier.size(22.dp))
+                // One line, never ellipsized: the label shrinks a little before it would wrap («تشغيل/إيقاف»).
+                Text(text, color = fg, textAlign = TextAlign.Center, maxLines = 1, softWrap = false, style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp), modifier = Modifier.padding(top = 2.dp, start = 2.dp, end = 2.dp))
             }
         } else Text(
             text, color = fg, textAlign = TextAlign.Center, maxLines = 1, overflow = TextOverflow.Ellipsis,
