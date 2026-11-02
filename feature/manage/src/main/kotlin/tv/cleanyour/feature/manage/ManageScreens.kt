@@ -128,6 +128,8 @@ import tv.cleanyour.ui.design.component.TvStatusChip
 import tv.cleanyour.ui.design.icon.CytIcons
 import tv.cleanyour.ui.design.theme.CytTheme
 import tv.cleanyour.ui.design.theme.Glow
+import tv.cleanyour.ui.design.theme.LocalCardScale
+import tv.cleanyour.core.flows.PowerFailStep
 
 // Screens M1, M1a, M4, M5, M7 and M8 (PRODUCT-SPEC 4, UX 4.3, 4.11, 4.13, 6.1), built from the
 // :ui:design components (ui/design/API.md). Each sheet keeps its body in an internal *Content
@@ -143,6 +145,7 @@ private val titleTop = Modifier.padding(top = 20.dp)
 fun ManageScreen(state: ManageState, onIntent: (ManageIntent) -> Unit, modifier: Modifier = Modifier) {
     val tv = state.current
     val locale = LocalConfiguration.current.locales[0]
+    var showQuickStart by rememberSaveable { mutableStateOf(false) }
     ScreenScaffold(Glow.Tv, modifier, topBar = {
         CytTopBar(
             center = { if (tv != null) TvStatusChip(tv.name, tv.chip.toTvStatus()) },
@@ -150,10 +153,16 @@ fun ManageScreen(state: ManageState, onIntent: (ManageIntent) -> Unit, modifier:
         )
     }) {
         ScreenTitle(stringResource(R.string.manage_title), titleTop)
+        ListGroup(Modifier.padding(top = 12.dp)) {
+            ListRow(stringResource(R.string.quick_start_title), onClick = { showQuickStart = true })
+        }
         if (state.offline) {
-            Banner(
-                stringResource(R.string.manage_offline_banner), BannerTone.NEUTRAL, Modifier.padding(top = 16.dp), icon = CytIcons.WifiOff,
-                actionLabel = if (state.reconnecting) null else stringResource(R.string.manage_reconnect), onAction = { onIntent(ManageIntent.Reconnect) },
+            StopCard(
+                stringResource(R.string.manage_unreachable_title), stringResource(R.string.manage_unreachable_body), Modifier.padding(top = 16.dp),
+                icon = CytIcons.WifiOff,
+                primaryLabel = if (state.reconnecting) null else stringResource(R.string.manage_reconnect),
+                onPrimary = { onIntent(ManageIntent.Reconnect) }, primaryGuarded = false,
+                busyText = if (state.reconnecting) stringResource(R.string.manage_reconnecting) else null,
             )
             if (state.reconnecting) LiveLine(stringResource(R.string.manage_reconnecting))
         }
@@ -216,6 +225,7 @@ fun ManageScreen(state: ManageState, onIntent: (ManageIntent) -> Unit, modifier:
             LinkRow(stringResource(R.string.manage_add_tv), { onIntent(ManageIntent.SetUpAnother) }, chevron = false, minHeight = 56.dp)
         }
     }
+    if (showQuickStart) CytBottomSheet({ showQuickStart = false }) { QuickStartContent() }
 }
 
 // M1a: the debugging step for a returning write; it advances on its own when the port opens
@@ -600,7 +610,18 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
         when (val ps = state.powerToolStatus) {
             is PowerToolStatus.Working -> LiveLine(msg(R.string.tvtools_power_working, "name" to powerLabel(ps.label)))
             is PowerToolStatus.Done -> CheckLine(msg(R.string.tvtools_power_done, "name" to powerLabel(ps.label)), Modifier.padding(top = 8.dp, start = 4.dp))
-            is PowerToolStatus.Failed -> Body(msg(R.string.tvtools_power_failed, "name" to powerLabel(ps.label)), Modifier.padding(top = 8.dp, start = 4.dp), color = CytTheme.colors.danger)
+            is PowerToolStatus.Failed -> Column {
+                Body(msg(R.string.tvtools_power_failed, "name" to powerLabel(ps.label)), Modifier.padding(top = 8.dp, start = 4.dp), color = CytTheme.colors.danger)
+                ps.step?.let { step ->
+                    Body(stringResource(when (step) {
+                        PowerFailStep.UNREACHABLE -> R.string.manage_unreachable_body
+                        PowerFailStep.NO_APK -> R.string.tvtools_fail_no_apk
+                        PowerFailStep.INSTALL -> R.string.tvtools_fail_install
+                        PowerFailStep.LAUNCH -> R.string.tvtools_fail_launch
+                    }), Modifier.padding(top = 6.dp, start = 4.dp), color = CytTheme.colors.danger)
+                }
+                ps.tvSaid?.let { Body(stringResource(R.string.tvtools_fail_tv_said) + " " + it, Modifier.padding(top = 4.dp, start = 4.dp)) }
+            }
             PowerToolStatus.Idle -> {}
         }
 
@@ -1180,6 +1201,7 @@ fun TvAppManagerScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val cardScale = LocalCardScale.current
     ScreenScaffold(Glow.Tv, modifier, topBar = { CytTopBar(onBack = onBack) }) {
         ScreenTitle(stringResource(R.string.tvapps_title), titleTop)
 
@@ -1246,7 +1268,7 @@ fun TvAppManagerScreen(
                     ListRow(
                         title = app.name,
                         subtitle = "${app.pkg.value} · $statusText",
-                        leading = { AppTile(app.name) },
+                        leading = { AppTile(app.name, size = 40.dp * cardScale) },
                         onClick = { onIntent(TvAppManagerIntent.SelectApp(app)) },
                     )
                 }

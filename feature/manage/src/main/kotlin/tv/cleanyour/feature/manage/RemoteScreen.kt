@@ -88,6 +88,7 @@ import tv.cleanyour.core.flows.RemoteTab
 import tv.cleanyour.core.flows.TrackpadMapper
 import tv.cleanyour.core.flows.repeats
 import tv.cleanyour.ui.design.theme.CytTheme
+import tv.cleanyour.ui.design.theme.LocalCardScale
 
 // 2.0 phone remote. Dark surface, Mi5G gold (theme `warning` token) as the single accent.
 // The D-pad and the trackpad are laid out LTR in every locale so Left always sends DPAD_LEFT.
@@ -366,15 +367,16 @@ private fun ColumnScope.AppsPane(state: RemoteState, onIntent: (RemoteIntent) ->
 
 @Composable
 private fun AppRow(app: RemoteApp, favorite: Boolean, onIntent: (RemoteIntent) -> Unit) {
+    val scale = LocalCardScale.current
     val starDesc = stringResource(if (favorite) R.string.remote_favorite_remove else R.string.remote_favorite_add)
     val openDesc = stringResource(R.string.remote_open) + " " + app.label
     Row(
         Modifier.fillMaxWidth().padding(vertical = 4.dp).clip(RoundedCornerShape(16.dp)).background(CytTheme.colors.surface2)
             .clickable(role = Role.Button) { onIntent(RemoteIntent.LaunchApp(app.pkg)) }.semantics { contentDescription = openDesc }
-            .padding(start = 16.dp, end = 4.dp).heightIn(min = 64.dp),
+            .padding(start = 16.dp, end = 4.dp).heightIn(min = 64.dp * scale),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(Modifier.size(36.dp).background(Gold.copy(alpha = .18f), RoundedCornerShape(10.dp)), contentAlignment = Alignment.Center) {
+        Box(Modifier.size(36.dp * scale).background(Gold.copy(alpha = .18f), RoundedCornerShape(10.dp)), contentAlignment = Alignment.Center) {
             Text(app.label.substringAfterLast('.').take(1).uppercase(), color = Gold, fontWeight = FontWeight.Bold)
         }
         Text(app.label, Modifier.weight(1f).padding(horizontal = 12.dp), color = CytTheme.colors.textPrimary, maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodyLarge)

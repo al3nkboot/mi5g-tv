@@ -23,6 +23,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -56,6 +58,7 @@ import tv.cleanyour.core.flows.SnackKind
 import tv.cleanyour.core.flows.StartDestination
 import tv.cleanyour.core.flows.TvToolsIntent
 import tv.cleanyour.core.flows.TvWriter
+import tv.cleanyour.core.flows.CardSize
 import tv.cleanyour.core.model.PlanId
 import tv.cleanyour.core.model.TvId
 import tv.cleanyour.feature.backup.RestoreScreen
@@ -76,6 +79,7 @@ import tv.cleanyour.feature.manage.RemoteScreen
 import tv.cleanyour.core.flows.RemoteIntent
 import tv.cleanyour.feature.modules.ModulesFlow
 import tv.cleanyour.feature.setup.SetupFlow
+import tv.cleanyour.ui.design.theme.LocalCardScale
 
 // Navigation 3 keys (ARCHITECTURE 2.2): serializable, ids only, never payloads, so the back stack
 // itself survives process death and every screen rebuilds its state from disk.
@@ -175,6 +179,9 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
     val context = LocalContext.current
     val view = LocalView.current
     val scope = rememberCoroutineScope()
+    var cardScale by remember { mutableStateOf(CardSize.MEDIUM.scale) }
+    // Re-read on every navigation so a size picked in Settings applies when the person goes back.
+    LaunchedEffect(graph, backStack.size) { cardScale = graph.manageDeps.appPrefs.load().cardSize.scale }
 
     fun go(route: String) { if (!applyRoute(backStack, route, noTvs = graph.tvs.tvs.value.isEmpty(), addOns = graph.store.rules.addOns)) onExit() }
 
@@ -229,7 +236,7 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
     }
 
     Box(Modifier.fillMaxSize()) {
-        NavDisplay(
+        androidx.compose.runtime.CompositionLocalProvider(LocalCardScale provides cardScale) { NavDisplay(
             backStack = backStack,
             onBack = { if (backStack.size > 1) backStack.removeAt(backStack.lastIndex) else onExit() },
             entryDecorators = listOf(rememberSaveableStateHolderNavEntryDecorator(), rememberViewModelStoreNavEntryDecorator()),
@@ -378,7 +385,7 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
                     )
                 }
             },
-        )
+        ) }
         // R5-W8 O2: a Manage write that paused left its run open; carry on, undo or stop it here.
         val open by graph.manageDeps.openWrites.current.collectAsStateWithLifecycle()
         open?.let { w ->

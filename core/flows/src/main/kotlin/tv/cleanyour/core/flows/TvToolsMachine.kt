@@ -118,11 +118,15 @@ sealed interface CastMediaStatus {
     data class Failed(val fileName: String) : CastMediaStatus
 }
 
+enum class PowerFailStep { UNREACHABLE, NO_APK, INSTALL, LAUNCH;
+    companion object { fun of(apkFound: Boolean, installed: Boolean) = when { !apkFound -> NO_APK; !installed -> INSTALL; else -> LAUNCH } }
+}
+
 sealed interface PowerToolStatus {
     data object Idle : PowerToolStatus // labels starting with "@" are ids the screen localizes
     data class Working(val label: String) : PowerToolStatus
     data class Done(val label: String) : PowerToolStatus
-    data class Failed(val label: String) : PowerToolStatus
+    data class Failed(val label: String, val step: PowerFailStep? = null, val tvSaid: String? = null) : PowerToolStatus
 }
 
 data class TvToolsState(
@@ -412,7 +416,7 @@ class TvToolsMachine(
         val session = (d.access.session(tvId) as? AccessResult.Ok)?.session
         val pkg = runCatching { PackageName(pkgStr) }.getOrNull()
         if (session == null || pkg == null) {
-            send(PowerToolUpdate(PowerToolStatus.Failed(label)))
+            send(PowerToolUpdate(PowerToolStatus.Failed(label, if (session == null) PowerFailStep.UNREACHABLE else null)))
             return
         }
         val launchLine = ShellRenderer.launchMainActivityLine(pkg)
@@ -433,8 +437,10 @@ class TvToolsMachine(
         val ver = mod?.versions?.firstOrNull()
         val bundledAssetName = ver?.let { "mod-${it.artifact.sha256.hex.take(40)}.apk" }
         val blob = bundledAssetName?.let { name -> runCatching { d.blobs.bundled(name) }.getOrNull() }
+        var installed = false
+        var launchOut: String? = null
         if (blob != null) {
-            val installed = installBlobOnSession(session, blob)
+            installed = installBlobOnSession(session, blob)
             if (installed) {
                 if (pkgStr == "com.midroid.mi5gtv.dns") {
                     for (l in ShellRenderer.applyAdGuardDnsLines().take(1)) {
@@ -442,6 +448,7 @@ class TvToolsMachine(
                     }
                 }
                 val r1 = attempt { TvShellRunner.run(session, launchLine) }.getOrNull()
+                launchOut = r1?.let { it.stdout + "\n" + it.stderr }
                 if (r1 != null && r1.exit == 0) {
                     send(PowerToolUpdate(PowerToolStatus.Done(label)))
                     effect(ManageEffect.HapticDouble)
@@ -449,7 +456,8 @@ class TvToolsMachine(
                 }
             }
         }
-        send(PowerToolUpdate(PowerToolStatus.Failed(label)))
+        // 2.0 item 7: say which step failed ("paired but nothing installs") instead of failing silently.
+        send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.of(blob != null, installed), launchOut?.trim()?.take(240)?.ifBlank { null })))
     }
 
     private suspend fun installBlobOnSession(session: tv.cleanyour.core.session.TvSession, blob: BlobRef): Boolean {

@@ -53,6 +53,8 @@
     <string name="manage_offline_banner">Lost the TV. Is it still on?</string>
     <string name="manage_reconnect">Reconnect</string>
     <string name="manage_reconnecting">Reconnecting...</string>
+    <string name="manage_unreachable_title">Can’t reach the TV</string>
+    <string name="manage_unreachable_body">The TV may be off or asleep, the phone may be on a different Wi-Fi network, the TV’s IP may have changed, or debugging may be off. Check these and retry.</string>
 
     <!-- M1a Debugging step for a returning write (UX 4.3, returning) -->
     <string name="debugstep_title">To change things on the TV, debugging needs to be on for a moment.</string>
@@ -338,6 +340,10 @@
     <string name="tvtools_banner_send">Show on TV</string>
     <string name="tvtools_power_working">Running on TV: {name}...</string>
     <string name="tvtools_power_done">Completed on TV: {name}.</string>
+    <string name="tvtools_fail_no_apk">Stopped at: copying the app to the TV. This build doesn\'t carry the app file; update Mi5G TV and try again.</string>
+    <string name="tvtools_fail_install">Stopped at: installing on the TV. The TV refused the install (common on Chromecast and Google TV). On the TV open Settings › Privacy/Security › Install unknown apps, allow installs over USB/debugging if offered, then try again.</string>
+    <string name="tvtools_fail_launch">Stopped at: opening the app. It installed, but the TV didn\'t open it. Look for it in the TV\'s app list or try again.</string>
+    <string name="tvtools_fail_tv_said">The TV said:</string>
     <string name="tvtools_power_failed">Could not run on TV: {name}.</string>
     <!-- Mi5G TV 1.6 (web-preview is the source of truth for copy) -->
     <string name="v16_health_title">TV health</string>

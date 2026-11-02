@@ -49,6 +49,8 @@
     <string name="manage_offline_banner">انقطع الاتصال بالتلفاز. هل ما زال قيد التشغيل؟</string>
     <string name="manage_reconnect">إعادة الاتصال</string>
     <string name="manage_reconnecting">جارٍ إعادة الاتصال...</string>
+    <string name="manage_unreachable_title">لا يمكن الوصول إلى التلفاز</string>
+    <string name="manage_unreachable_body">قد يكون التلفاز مطفأً أو في وضع السكون، أو الهاتف على شبكة Wi-Fi مختلفة، أو تغيّر عنوان IP، أو أُوقف تصحيح الأخطاء. تحقق من هذه الأمور ثم أعد المحاولة.</string>
 
     <!-- M1a Debugging step for a returning write (UX 4.3, returning) -->
     <string name="debugstep_title">لإجراء تغييرات على التلفاز، يجب تفعيل تصحيح الأخطاء للحظات.</string>
@@ -331,6 +333,10 @@
     <string name="tvtools_banner_send">إرسال للتلفاز</string>
     <string name="tvtools_power_working">جارٍ التنفيذ على التلفاز: {name}...</string>
     <string name="tvtools_power_done">تم التنفيذ بنجاح: {name}.</string>
+    <string name="tvtools_fail_no_apk">الخطوة التي توقفت: نسخ التطبيق إلى التلفاز. ملف التطبيق غير موجود في هذه النسخة، حدّث Mi5G TV ثم أعد المحاولة.</string>
+    <string name="tvtools_fail_install">الخطوة التي توقفت: التثبيت على التلفاز. التلفاز رفض التثبيت (شائع في Chromecast وGoogle TV). افتح على التلفاز: الإعدادات ← الخصوصية/الأمان ← تثبيت تطبيقات غير معروفة، واسمح بالتثبيت عبر USB/التصحيح إن وُجد الخيار، ثم أعد المحاولة.</string>
+    <string name="tvtools_fail_launch">الخطوة التي توقفت: فتح التطبيق. تم التثبيت لكن التلفاز لم يفتح التطبيق. ابحث عنه في قائمة التطبيقات على التلفاز أو أعد المحاولة.</string>
+    <string name="tvtools_fail_tv_said">رسالة التلفاز:</string>
     <string name="tvtools_power_failed">تعذّر التنفيذ على التلفاز: {name}.</string>
     <!-- Mi5G TV 1.6 (web-preview is the source of truth for copy) -->
     <string name="v16_health_title">صحة التلفاز</string>

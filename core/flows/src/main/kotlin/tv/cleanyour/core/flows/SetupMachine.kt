@@ -209,6 +209,7 @@ class SetupMachine(
     private var resolution: ProfileResolution? = null
     private var snapshot: Snapshot? = null
     private var allowShown = false
+    private var manualPort = 5555
     private var doorTv: FoundTv? = null
     private var knownTv: Tv? = null
     private var connectFailed = false   // a failed connect waits one poll before probing again
@@ -315,6 +316,7 @@ class SetupMachine(
             else -> state
         }
         is SetupIntent.EnterAddress -> if (isHomeAddress(event.ip) && (state is SetupState.Welcome || state is SetupState.Picker || state is SetupState.OpenDoor || state is SetupState.PairingNeeded)) {
+            manualPort = event.port.coerceIn(1, 65535)
             if (!event.pairingCode.isNullOrBlank()) SetupState.PairingNeeded(manualTv(event.ip.trim()), event.port.toString(), event.pairingCode)
             else door(manualTv(event.ip.trim()))
         } else state
@@ -545,7 +547,7 @@ class SetupMachine(
         knownTv = known
         deps.log.line("setup: connect start (${if (known != null) "known TV" else "new TV"}, ${found.sources.joinToString("+") { it.name.lowercase() }.ifEmpty { "found" }})")
         val result = attempt {
-            deps.sessions.open(Endpoint.PlainTcp(found.host), known?.id) { fp -> allowShown = true; send(Ev.Allow(fp)) }
+            deps.sessions.open(Endpoint.PlainTcp(found.host, if (DiscoverySource.MANUAL in found.sources) manualPort else 5555), known?.id) { fp -> allowShown = true; send(Ev.Allow(fp)) }
         }.getOrElse { OpenResult.Failed(AdbError.Transport.Unreachable) }
         when (result) {
             is OpenResult.Ok -> {
