@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Mi5G Score on the TV (Mi5G 2.0, backlog 30): today's and tomorrow's matches, favourite clubs and
+     leagues, match events and statistics, league tables. Data: ESPN's public JSON endpoints. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-feature android:name="android.software.leanback" android:required="false" />
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+    <application
+        android:allowBackup="false"
+        android:icon="@drawable/ic_launcher"
+        android:banner="@drawable/ic_banner"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenLayout|screenSize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="com.gathin.tvhome.category.DOCK_CARD" />
+            </intent-filter>
+            <meta-data android:name="com.gathin.tvhome.card" android:resource="@xml/card" />
+            <meta-data android:name="cleanyourtv.card" android:resource="@xml/card" />
+        </activity>
+        <activity android:name=".MatchActivity" android:exported="false" />
+        <activity android:name=".StandingsActivity" android:exported="false" />
+    </application>
+</manifest>

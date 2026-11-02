@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<card
+    spec="1"
+    label="Mi5G Score"
+    caption="نتائج ومواعيد فرقك المفضلة"
+    accent="#2EC4B6"
+    icon="@drawable/ic_launcher"
+    banner="@drawable/ic_banner" />
