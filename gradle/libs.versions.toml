@@ -22,6 +22,7 @@ androidx-test-runner = "1.7.0"
 uiautomator = "2.4.0"
 androidx-test-ext-junit = "1.3.0"
 junit4 = "4.13.2"
+adhan = "1.2.1"
 robolectric = "4.17"
 roborazzi = "1.76.0"
 turbine = "1.2.1"
@@ -56,6 +57,7 @@ conscrypt-openjdk = { module = "org.conscrypt:conscrypt-openjdk-uber", version.r
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
 junit4 = { module = "junit:junit", version.ref = "junit4" }
+adhan = { module = "com.batoulapps.adhan:adhan", version.ref = "adhan" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = "roborazzi" }

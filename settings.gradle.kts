@@ -58,3 +58,5 @@ include(":benchmark")
 
 // The TV curtain (RFC-CURTAIN-1): a TV app of its own, bundled into :android:platform as a signed asset
 include(":tv:curtain")
+include(":tv:prayer")
+include(":tv:score")

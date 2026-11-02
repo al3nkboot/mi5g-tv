@@ -54,6 +54,9 @@ object ModuleRules {
         ":benchmark" to 10,
         // RFC-CURTAIN-1: a separate TV app, bundled as a signed asset, never a Gradle dependency (rule 7).
         ":tv:curtain" to 10,
+        // Mi5G 2.0 TV modules (backlog 27-30): separate TV apps bundled through the seed index.
+        ":tv:prayer" to 10,
+        ":tv:score" to 10,
     )
 
     // Rule 5: these may only be reached through test configurations.
@@ -105,6 +108,8 @@ object ModuleRules {
         ":app" to androidCommon,
         ":benchmark" to androidCommon,
         ":tv:curtain" to emptySet(),
+        ":tv:prayer" to setOf("com.batoulapps.adhan:adhan"),
+        ":tv:score" to emptySet(),
     )
 
     // Test configurations: test libraries only (section 7.2 of ARCHITECTURE).
