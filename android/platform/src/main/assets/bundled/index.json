@@ -2,7 +2,7 @@
   "schema": 1,
   "sequence": 8,
   "generated": "2026-11-03T00:00:00Z",
-  "expires": "2027-01-31T20:00:00Z",
+  "expires": "2027-02-01T00:00:00Z",
   "modules": [
     {
       "id": "adguard-dns",
