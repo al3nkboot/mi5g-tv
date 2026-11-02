@@ -414,7 +414,12 @@ class ShellRenderer(private val watchdogVariant: WatchdogVariant = WatchdogVaria
             ShellLine(ShellTokens.line(listOf(SETTINGS, "delete", "global", "private_dns_specifier"))),
         )
 
+        // 2.0 item 12: the DNS module keeps WRITE_SECURE_SETTINGS only while its feature is on.
+        fun revokeDnsSecureSettingsLine(): ShellLine =
+            ShellLine(ShellTokens.line(listOf(PM, "revoke", "com.midroid.mi5gtv.dns", "android.permission.WRITE_SECURE_SETTINGS")))
+
         fun resetPrivateDnsLines(): List<ShellLine> = listOf(
+            revokeDnsSecureSettingsLine(),
             ShellLine(ShellTokens.line(listOf(SETTINGS, "put", "global", "private_dns_mode", "opportunistic"))),
             ShellLine(ShellTokens.line(listOf(SETTINGS, "delete", "global", "private_dns_specifier"))),
         )

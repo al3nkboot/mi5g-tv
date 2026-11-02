@@ -322,6 +322,8 @@ class ModulesMachine(
     private suspend fun remove(id: String) {
         val m = module(id) ?: return
         send(Removing(id))
+        // Revoke first: if the uninstall is refused or kept, the grant must not outlive the feature.
+        if (id == "adguard-dns") d.access.live(tvId)?.let { s -> attempt { TvShellRunner.run(s, ShellRenderer.revokeDnsSecureSettingsLine()) } }
         val r = TvWriter(d).write(tvId, PlanRequest.RemoveModule(m.pkg))
         if (r is WriteResult.Done) {
             d.access.live(tvId)?.let { s ->
