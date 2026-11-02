@@ -9,8 +9,10 @@ work. The full licence texts are linked or included below.
 
 1. Clean Your TV launcher (bundled TV launcher APK, com.gathin.tvhome)
    https://github.com/Gathin23/cleanyourtv, tag v2.5.0, commit 9071ec8d2f41826778f6b4c7f5f42dadc22f5b22
-   (the third_party/cleanyourtv submodule). The APK in android/platform/src/main/assets/bundled is
-   built from that commit without changes and re-signed with this project's launcher key. The
+   (vendored in third_party/cleanyourtv). Since Mi5G TV 2.0 the APK in android/platform/src/main/assets/bundled
+   is built from that commit plus this project's own changes in third_party/cleanyourtv/launcher
+   (tile menu, Control Center, button mapper, media pill, clock, wake target; all marked "Mi5G 2.0"),
+   and signed with this project's release key. The Cairo typeface (3a below) is bundled in it too. The
    upstream repository's per TV clean-up lists, written by its community contributors, are
    converted into this app's TV profiles, and three of its themes (default, aurora with its
    wallpaper picture, six-columns) are bundled as they are. Licence: MIT. The aurora wallpaper
