@@ -141,8 +141,16 @@
     <string name="appsettings_support_paypal_note">paypal.me/Midroid5G · للمساهمة في استمرار تطوير التطبيق مجانًا وبدون إعلانات</string>
     <string name="appsettings_developer_x">حساب المطور على X (@midroid5G)</string>
     <string name="appsettings_licences">التراخيص</string>
-    <string name="appsettings_licence_app">Mi5G TV (مبني على Clean Your TV): ترخيص MIT</string>
+    <string name="appsettings_licence_app">Mi5G TV (مبني على Clean Your TV من Gathin): ترخيص MIT</string>
     <string name="appsettings_licence_font">خطا Cairo و Outfit: ترخيص SIL Open Font Licence 1.1</string>
+    <string name="appsettings_licence_launcher">مشغّل التلفاز com.gathin.tvhome من Clean Your TV v2.5.0 — Gathin: ترخيص MIT</string>
+    <string name="appsettings_licence_tvos">tvOS Launcher — techgenius: ترخيص Apache-2.0 مع ملف NOTICE</string>
+    <string name="appsettings_licence_omarchy">OmarchyTV — Marco Porro: ترخيص MIT</string>
+    <string name="appsettings_licence_talkies">talkies — TechPP: ترخيص MIT</string>
+    <string name="appsettings_licence_vibehack">tv-vibehack — Gathin: ترخيص MIT (مركز التحكم مقتبس منه)</string>
+    <string name="appsettings_licence_adhan">adhan-java — Batoul Apps: ترخيص MIT؛ إحداثيات المدن من GeoNames (CC BY 4.0)</string>
+    <string name="appsettings_licence_streams">إذاعات القرآن: بث عام من mp3quran.net؛ بيانات المباريات من ESPN (غير رسمية)</string>
+    <string name="appsettings_licence_full">النص الكامل للتراخيص والإشعارات في الملف THIRD-PARTY-NOTICES داخل مستودع المشروع</string>
     <string name="appsettings_licence_apache">شيفرة dadb وShizuku المعدّلة: إشعارات Apache-2.0</string>
     <string name="appsettings_licence_bouncycastle">مكتبة التشفير Bouncy Castle: ترخيص Bouncy Castle</string>
     <string name="appsettings_privacy">الخصوصية</string>
@@ -476,5 +484,15 @@
     <string name="tvtools_prayer_kahf">📖 تذكير الجمعة</string>
     <string name="tvtools_prayer_send">إرسال الإعدادات إلى التلفاز</string>
     <string name="tvtools_label_prayer">إعدادات مواقيتي</string>
+    <!-- M4 item 34: updates -->
+    <string name="appsettings_update_now">تحديث الآن إلى {version}</string>
+    <string name="appsettings_update_now_note">يُنزَّل ملف التحديث من صفحة الإصدار الرسمية، ثم اضغط «تثبيت». يقبله أندرويد فقط إن كان موقّعًا بنفس مفتاح التطبيق، وتبقى بياناتك.</string>
+    <string name="appsettings_update_how">كيف يتم التحديث؟</string>
+    <string name="appsettings_update_how_note">1. «التحقق من التحديثات». 2. «تحديث الآن» يُنزّل الملف. 3. افتح الملف واضغط «تثبيت» (اسمح للمتصفح بتثبيت التطبيقات مرة واحدة). وحدات التلفاز ومشغّله تتحدث من «البطاقات والوحدات».</string>
+    <!-- M4 item 35 -->
+    <string name="manage_row_resetup">🔄 إعادة الإعداد بعد تحديث النظام</string>
+    <string name="manage_row_resetup_sub">بضغطة واحدة: يفحص ما أعاده التحديث ويطفئه من جديد</string>
+    <string name="manage_row_fullrestore">↩️ استعادة كاملة</string>
+    <string name="manage_row_fullrestore_sub">بضغطة واحدة: يُرجع التلفاز كما كان قبل Mi5G بعد تأكيدك</string>
 </resources>
 

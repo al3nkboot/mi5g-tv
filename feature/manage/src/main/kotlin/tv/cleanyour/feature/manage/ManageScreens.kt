@@ -192,6 +192,14 @@ fun ManageScreen(state: ManageState, onIntent: (ManageIntent) -> Unit, modifier:
                 Banner(stringResource(R.string.manage_help_add_tv_banner), BannerTone.INFO, Modifier.padding(top = 16.dp),
                     actionLabel = stringResource(R.string.manage_help_add_tv), onAction = { onIntent(ManageIntent.HelpAddTv) })
             }
+            // M4 item 35: the two one-tap maintenance actions (each still shows what it will do and asks).
+            ListGroup(Modifier.padding(top = 16.dp)) {
+                ListRow(stringResource(R.string.manage_row_resetup), subtitle = stringResource(R.string.manage_row_resetup_sub),
+                    onClick = { onIntent(ManageIntent.ReSetupAfterUpdate) })
+                ListDivider()
+                ListRow(stringResource(R.string.manage_row_fullrestore), subtitle = stringResource(R.string.manage_row_fullrestore_sub),
+                    onClick = { onIntent(ManageIntent.FullRestore) })
+            }
             ListGroup(Modifier.padding(top = 16.dp)) {
                 // 0.3.3 D2: without the new home screen there is no dock to name; the row opens the reason.
                 ListRow(stringResource(R.string.manage_row_home),
@@ -444,6 +452,7 @@ fun AppSettingsScreen(
     onOpenDeveloper: (() -> Unit)? = null,
     language: String = "ar",
     onLanguage: ((String) -> Unit)? = null,
+    onUpdateNow: ((String) -> Unit)? = null,
 ) {
     var licences by rememberSaveable { mutableStateOf(false) }
     var privacy by rememberSaveable { mutableStateOf(false) }
@@ -505,6 +514,16 @@ fun AppSettingsScreen(
                     UpdateCheck.Idle -> null
                 }, trailing = if (update == UpdateCheck.Checking) ({ Spinner() }) else null,
                     onClick = { if (update is UpdateCheck.Available) onOpenRelease() else onIntent(AppSettingsIntent.CheckUpdates) })
+                // M4 item 34: the new APK straight from the release; Android installs it over this one
+                // only when it carries the same signature (the browser downloads it; the app holds no
+                // install permission, SECURITY 4.2).
+                if (update is UpdateCheck.Available && onUpdateNow != null) {
+                    ListDivider()
+                    ListRow(msg(R.string.appsettings_update_now, "version" to update.version),
+                        subtitle = stringResource(R.string.appsettings_update_now_note), onClick = { onUpdateNow(update.version) })
+                }
+                ListDivider()
+                ListRow(stringResource(R.string.appsettings_update_how), subtitle = stringResource(R.string.appsettings_update_how_note))
             }
         }
         ListGroup(Modifier.padding(top = 12.dp)) {
@@ -573,7 +592,12 @@ internal fun QuickStartContent() {
 internal fun ColumnScope.LicencesContent() {
     SheetHeader(stringResource(R.string.appsettings_licences))
     ListGroup(Modifier.padding(top = 16.dp)) {
-        listOf(R.string.appsettings_licence_app, R.string.appsettings_licence_font, R.string.appsettings_licence_apache, R.string.appsettings_licence_bouncycastle)
+        listOf(
+            R.string.appsettings_licence_app, R.string.appsettings_licence_launcher, R.string.appsettings_licence_tvos,
+            R.string.appsettings_licence_omarchy, R.string.appsettings_licence_talkies, R.string.appsettings_licence_vibehack,
+            R.string.appsettings_licence_adhan, R.string.appsettings_licence_streams, R.string.appsettings_licence_font,
+            R.string.appsettings_licence_apache, R.string.appsettings_licence_bouncycastle, R.string.appsettings_licence_full,
+        )
             .forEachIndexed { i, id ->
                 if (i > 0) ListDivider()
                 ListRow(stringResource(id))

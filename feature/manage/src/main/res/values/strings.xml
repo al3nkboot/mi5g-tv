@@ -146,8 +146,16 @@
     <string name="appsettings_support_paypal_note">paypal.me/Midroid5G · Support free, ad-free development</string>
     <string name="appsettings_developer_x">Developer on X (@midroid5G)</string>
     <string name="appsettings_licences">Licences</string>
-    <string name="appsettings_licence_app">Clean Your TV: GPL-3.0-or-later</string>
+    <string name="appsettings_licence_app">Mi5G TV (built on Clean Your TV by Gathin): MIT License</string>
     <string name="appsettings_licence_font">Cairo and Outfit typefaces: SIL Open Font Licence 1.1</string>
+    <string name="appsettings_licence_launcher">TV launcher com.gathin.tvhome from Clean Your TV v2.5.0, Gathin: MIT License</string>
+    <string name="appsettings_licence_tvos">tvOS Launcher, techgenius: Apache-2.0 with its NOTICE</string>
+    <string name="appsettings_licence_omarchy">OmarchyTV, Marco Porro: MIT License</string>
+    <string name="appsettings_licence_talkies">talkies, TechPP: MIT License</string>
+    <string name="appsettings_licence_vibehack">tv-vibehack, Gathin: MIT License (Control Center adapted from it)</string>
+    <string name="appsettings_licence_adhan">adhan-java, Batoul Apps: MIT; city coordinates from GeoNames (CC BY 4.0)</string>
+    <string name="appsettings_licence_streams">Quran radio: public mp3quran.net streams; match data from ESPN (unofficial)</string>
+    <string name="appsettings_licence_full">Full licence texts and notices: THIRD-PARTY-NOTICES in the project repository</string>
     <string name="appsettings_licence_apache">dadb and Shizuku code we adapted: Apache-2.0 notices</string>
     <string name="appsettings_licence_bouncycastle">Bouncy Castle cryptography library: Bouncy Castle Licence</string>
     <string name="appsettings_privacy">Privacy</string>
@@ -483,5 +491,15 @@
     <string name="tvtools_prayer_kahf">📖 Friday reminder</string>
     <string name="tvtools_prayer_send">Send settings to the TV</string>
     <string name="tvtools_label_prayer">Prayer settings</string>
+    <!-- M4 item 34: updates -->
+    <string name="appsettings_update_now">Update now to {version}</string>
+    <string name="appsettings_update_now_note">Downloads the update from the official release page; then tap Install. Android accepts it only with the same signature as this app, and your data stays.</string>
+    <string name="appsettings_update_how">How updating works</string>
+    <string name="appsettings_update_how_note">1. Check for updates. 2. Update now downloads the file. 3. Open it and tap Install (allow your browser to install apps once). The TV modules and launcher update from Cards and modules.</string>
+    <!-- M4 item 35 -->
+    <string name="manage_row_resetup">🔄 Re-set up after a system update</string>
+    <string name="manage_row_resetup_sub">One tap: finds what the update brought back and switches it off again</string>
+    <string name="manage_row_fullrestore">↩️ Full restore</string>
+    <string name="manage_row_fullrestore_sub">One tap: puts the TV back as it was before Mi5G, after you confirm</string>
 </resources>
 
