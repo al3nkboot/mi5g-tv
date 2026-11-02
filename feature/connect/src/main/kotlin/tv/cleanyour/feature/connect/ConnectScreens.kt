@@ -147,7 +147,7 @@ fun WelcomeScreen(state: SetupState.Welcome, extras: SetupExtras, actions: Setup
                 // the TV is found before the first tap"); pinned like S3's safety line (R4-W8 H1).
                 DiscoveryChip(line, found = found.isNotEmpty(), modifier = Modifier.padding(bottom = 14.dp))
                 ActionColumn {
-                    PrimaryButton(stringResource(R.string.welcome_start), { actions.intent(SetupIntent.Start) })
+                    PrimaryButton(stringResource(R.string.welcome_start), { actions.intent(SetupIntent.Start) }, guardObscured = false)   // navigation: Sony overlays blocked it
                     TertiaryButton(stringResource(R.string.welcome_returning), onReturning)
                 }
             },
@@ -185,7 +185,7 @@ fun PickerScreen(state: SetupState.Picker, extras: SetupExtras, actions: SetupAc
             ActionColumn {
                 PrimaryButton(
                     msg(R.string.picker_primary, "name" to (chosen?.let { displayName(it) } ?: "")),
-                    { chosen?.let { actions.intent(SetupIntent.PickTv(it.host)) } }, enabled = chosen != null,
+                    { chosen?.let { actions.intent(SetupIntent.PickTv(it.host)) } }, enabled = chosen != null, guardObscured = false,
                 )
                 TertiaryButton(stringResource(R.string.picker_tertiary), { actions.intent(SetupIntent.Open(Sheet.ADDRESS)) })
             }
@@ -219,7 +219,7 @@ fun DoorScreen(state: SetupState.OpenDoor, extras: SetupExtras, actions: SetupAc
     val allowBar: @Composable ColumnScope.() -> Unit = { SecondaryButton(stringResource(R.string.allow_dont_see), { showNotSeen = true }) }
     val identityBar: @Composable ColumnScope.() -> Unit = {
         ActionColumn {
-            PrimaryButton(stringResource(R.string.identity_yes), { actions.intent(SetupIntent.ConfirmIdentity) })
+            PrimaryButton(stringResource(R.string.identity_yes), { actions.intent(SetupIntent.ConfirmIdentity) }, guardObscured = false)
             SecondaryButton(stringResource(R.string.identity_no), { actions.intent(SetupIntent.RejectIdentity) })
         }
     }
@@ -328,7 +328,7 @@ private fun StepsContent(state: SetupState.OpenDoor, actions: SetupActions, name
             SheetHeader(stringResource(R.string.door_tizen_webos_title))
             Body(stringResource(R.string.door_tizen_webos_body), Modifier.padding(top = 12.dp))
             MonospaceBlock(listOf("DNS 1: 94.140.14.14", "DNS 2: 94.140.15.15"), Modifier.padding(top = 12.dp))
-            PrimaryButton(stringResource(R.string.action_ok), { showTizenGuide = false }, Modifier.padding(top = 16.dp))
+            PrimaryButton(stringResource(R.string.action_ok), { showTizenGuide = false }, Modifier.padding(top = 16.dp), guardObscured = false)
         }
     }
     if (showChineseGuide) {
@@ -336,7 +336,7 @@ private fun StepsContent(state: SetupState.OpenDoor, actions: SetupActions, name
             SheetHeader(stringResource(R.string.door_chinese_tv_title))
             Body(stringResource(R.string.door_chinese_tv_body), Modifier.padding(top = 12.dp))
             MonospaceBlock(listOf("Menu + 2580", "Source + 2580", "Menu + 1147", "Home + 1999"), Modifier.padding(top = 12.dp))
-            PrimaryButton(stringResource(R.string.action_ok), { showChineseGuide = false }, Modifier.padding(top = 16.dp))
+            PrimaryButton(stringResource(R.string.action_ok), { showChineseGuide = false }, Modifier.padding(top = 16.dp), guardObscured = false)
         }
     }
 }
@@ -399,12 +399,12 @@ internal fun NotSeenContent(retries: Int, onAsk: () -> Unit) {
     SheetHeader(stringResource(R.string.notseen_title))
     if (retries >= 3) {
         Body(stringResource(R.string.notseen_restart), Modifier.padding(top = 12.dp))
-        PrimaryButton(stringResource(R.string.notseen_restarted), onAsk, Modifier.padding(top = 20.dp))
+        PrimaryButton(stringResource(R.string.notseen_restarted), onAsk, Modifier.padding(top = 20.dp), guardObscured = false)
     } else {
         Body(stringResource(R.string.notseen_hidden), Modifier.padding(top = 12.dp))
         Body(stringResource(R.string.notseen_cancelled), Modifier.padding(top = 12.dp))
         Body(stringResource(R.string.notseen_greyed), Modifier.padding(top = 12.dp))
-        PrimaryButton(stringResource(R.string.notseen_ask_again), onAsk, Modifier.padding(top = 20.dp))
+        PrimaryButton(stringResource(R.string.notseen_ask_again), onAsk, Modifier.padding(top = 20.dp), guardObscured = false)
     }
 }
 
@@ -484,5 +484,5 @@ internal fun AddressContent(text: String, onText: (String) -> Unit, error: Boole
         text, onText, stringResource(R.string.address_field_label), Modifier.padding(top = 16.dp),
         error = if (error) stringResource(R.string.address_error) else null, keyboardType = KeyboardType.Decimal,
     )
-    PrimaryButton(stringResource(R.string.address_connect), onConnect, Modifier.padding(top = 16.dp), enabled = text.count { it == '.' } == 3)
+    PrimaryButton(stringResource(R.string.address_connect), onConnect, Modifier.padding(top = 16.dp), enabled = text.count { it == '.' } == 3, guardObscured = false)
 }

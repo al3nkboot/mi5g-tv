@@ -16,7 +16,7 @@
 
     <!-- Credential prompt (D17), raised by "Put everything back" -->
     <string name="gate_title">Confirm it\'s you</string>
-    <string name="gate_subtitle">Before we change anything on {tv}</string>
+    <string name="gate_subtitle">Before we change anything on {tv}: confirm with this phone’s screen lock (PIN, pattern or fingerprint). This is not a TV password; the TV has none.</string>
     <string name="gate_negative">Cancel</string>
     <string name="gate_failed">We couldn\'t confirm it\'s you, so nothing was changed.</string>
 

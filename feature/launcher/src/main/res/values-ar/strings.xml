@@ -12,7 +12,7 @@
 
     <!-- Credential prompt (D17) -->
     <string name="gate_title">تأكيد قفل شاشة جوالك</string>
-    <string name="gate_subtitle">أدخل رمز قفل الجوال أو البصمة قبل التعديل على {tv}</string>
+    <string name="gate_subtitle">قبل أي تغيير على {tv}: أكّد بقفل شاشة هذا الجوال (رمز PIN أو النمط أو البصمة). هذا ليس رمزًا للتلفاز، فالتلفاز لا يحتاج كلمة مرور.</string>
     <string name="gate_negative">إلغاء</string>
     <string name="gate_failed">تعذّر تأكيد هويتك، لذلك لم يتغير شيء.</string>
 

@@ -249,7 +249,7 @@ fun FoundScreen(
                 )
             }
         }
-        if (extras.noScreenLock) Body(stringResource(R.string.found_no_lock), Modifier.padding(start = 4.dp, top = 12.dp))
+        Body(stringResource(if (extras.noScreenLock) R.string.found_no_lock else R.string.found_lock_note), Modifier.padding(start = 4.dp, top = 12.dp))
         Gap(8.dp)
     }
     when (state.sheet) {

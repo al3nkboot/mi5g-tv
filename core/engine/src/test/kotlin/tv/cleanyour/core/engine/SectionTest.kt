@@ -26,6 +26,23 @@ import kotlin.test.assertTrue
 // verify failure, a lost connection and the resume that runs step R.
 class SectionTest {
 
+    @Test fun aRefusedStockLauncherDisableIsSkippedAndTakeoverContinues() = runTest(timeout = TEST_TIMEOUT) {
+        val h = Harness(this)
+        h.tv.refuse = { it == h.stock.pkg }
+        val engine = h.engine()
+        val plan = h.setupPlan()
+        val off = plan.steps.single { it.op == Op.Disable(h.stock.pkg) }
+        assertEquals(StartResult.Started, engine.start(plan, h.tv, plan.hash, h.pass()))
+        assertIs<RunState.AwaitingConfirm>(h.settle(engine))
+        assertEquals(h.launcher, h.tv.home)
+        assertEquals(EnabledState.ENABLED, h.tv.state(h.stock.pkg))
+        h.tv.focus = h.launcher
+        engine.confirmHome(h.tv.tvId)
+        val finished = assertIs<RunState.Finished>(h.settle(engine))
+        assertEquals(RunStatus.COMPLETED_WITH_SKIPS, finished.status)
+        assertTrue(finished.skipped.any { it.index == off.index })
+    }
+
     private suspend fun TestScope.openCheckScreen(h: Harness, engine: Engine, plan: Plan): RunState.AwaitingConfirm {
         assertEquals(StartResult.Started, engine.start(plan, h.tv, plan.hash, h.pass()))
         advanceTimeBy(20_000); runCurrent()
@@ -343,33 +360,25 @@ class SectionTest {
         assertEquals(listOf("section:ARMED", "section:ROLLED_BACK"), h.types(plan).filter { it.startsWith("section") })
     }
 
-    // Issue #2 (A3): undo is state-based. The TV refuses the switch-off of its own home screen and
-    // then the pm enable of step R too, though the package was never off and Home is still its own.
-    // The enable's target holds, so it is journaled done and verified, VerifyHome passes, and the
-    // section closes ROLLED_BACK: the run ends with the switch skipped, never a pause.
-    @Test fun aRefusedDisableAndARefusedEnableStillRollBackWhenHomeIsStock() = runTest(timeout = TEST_TIMEOUT) {
+    @Test fun aRefusedStockDisableStaysEnabledAndDoesNotLoopBackToOpenWrite() = runTest(timeout = TEST_TIMEOUT) {
         val h = Harness(this)
         h.tv.refuse = { it == h.stock.pkg }   // a protected package: pm disable-user and pm enable both refused
         val engine = h.engine()
         val plan = h.setupPlan()
-        val section = plan.sections.single()
         val off = plan.steps.single { it.op == Op.Disable(h.stock.pkg) }
         assertEquals(StartResult.Started, engine.start(plan, h.tv, plan.hash, h.pass()))
+        assertIs<RunState.AwaitingConfirm>(h.settle(engine))
+        assertEquals(h.launcher, h.tv.home)
+        assertEquals(EnabledState.ENABLED, h.tv.state(h.stock.pkg))
+        h.tv.focus = h.launcher
+        engine.confirmHome(h.tv.tvId)
         val fin = assertIs<RunState.Finished>(h.settle(engine))
         assertEquals(RunStatus.COMPLETED_WITH_SKIPS, fin.status)
-        assertEquals(HomeOutcome.VERIFY_FAILED, fin.home)
-        h.assertStockHomeIsBack(section.token.value)
-        assertEquals(1, h.tv.execs("pm enable --user 0 ${h.stock.pkg.value}"), "step R ran once")
+        assertTrue(fin.skipped.any { it.index == off.index })
+        assertEquals(0, h.tv.execs("pm enable --user 0 ${h.stock.pkg.value}"), "refused disable was skipped")
         val types = h.types(plan)
-        assertEquals(listOf("section:ARMED", "section:ROLLED_BACK"), types.filter { it.startsWith("section") })
-        assertTrue(types.none { it.startsWith("paused") }, "$types")
-        // The refused enable is journaled done and verified: its target holds.
-        val afterRollback = types.drop(types.indexOf("rollback${section.from}"))
-        assertTrue(afterRollback.containsAll(listOf("begin${off.index}", "done${off.index}")) && "failed${off.index}" !in afterRollback, "$afterRollback")
-        val done = h.records(plan).filterIsInstance<JournalRecord.Done>().last { it.i == off.index }
-        assertTrue(done.verified)
-        assertEquals(1, done.exit, "the refusal's exit code is kept")
-        assertTrue(ChangeRecords.fromJournal(h.records(plan)).none { it.op is Op.SetHome || (it.op as? Op.Disable)?.pkg == h.stock.pkg })
+        assertEquals(listOf("section:ARMED", "section:CONFIRMED"), types.filter { it.startsWith("section") })
+        assertTrue(types.contains("failed${off.index}"))
     }
 
     // A3: once VerifyHome shows the TV's own home screen, a step R enable that was refused and whose

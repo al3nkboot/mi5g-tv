@@ -73,7 +73,7 @@ class AndroidCredentialGate(
     private suspend fun prompt(ctx: Context, title: String, subtitle: String, configure: BiometricPrompt.Builder.() -> Unit): GateMethod? =
         suspendCancellableCoroutine { cont ->
             val signal = CancellationSignal()
-            val prompt = BiometricPrompt.Builder(ctx).setTitle(title).setSubtitle(subtitle).apply(configure).build()
+            val prompt = BiometricPrompt.Builder(ctx).setTitle(title).setDescription(subtitle)   // description wraps; the subtitle line is cut short.apply(configure).build()
             prompt.authenticate(signal, ctx.mainExecutor, object : BiometricPrompt.AuthenticationCallback() {
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                     val method = if (Build.VERSION.SDK_INT >= 30 && result.authenticationType == BiometricPrompt.AUTHENTICATION_RESULT_TYPE_DEVICE_CREDENTIAL)

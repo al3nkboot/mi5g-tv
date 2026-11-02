@@ -630,6 +630,7 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
             onClick = { onIntent(TvToolsIntent.RunSpeedBoost) },
             enabled = !boosting,
             loading = boosting,
+            guardObscured = false,
         )
         when (val sb = state.speedBoostStatus) {
             SpeedBoostStatus.Boosting -> LiveLine(stringResource(R.string.tvtools_speed_boosting))
@@ -707,53 +708,8 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
         }
         Banner(stringResource(R.string.tvtools_smarttube_tip), BannerTone.INFO, Modifier.padding(top = 12.dp))
 
-        // 2) Button Mapper + Xiaomi Settings Key Fix + Force Landscape + Screensaver & Quiet Hours
-        val yt_smarttubeLabel = stringResource(R.string.tvtools_mapper_yt_smarttube)
-        val yt_officialLabel = stringResource(R.string.tvtools_mapper_yt_official)
-        val nf_shahidLabel = stringResource(R.string.tvtools_mapper_nf_shahid)
-        val nf_matchesLabel = stringResource(R.string.tvtools_mapper_nf_matches)
-        SectionLabel(stringResource(R.string.tvtools_mapper_section))
+        // The mapper and screensaver actions remain available through their next home surfaces.
         ActionColumn {
-            PrimaryButton(
-                stringResource(R.string.tvtools_mapper_settings_fix),
-                { onIntent(TvToolsIntent.QuickSettingsOverlay) },
-                enabled = !powerWorking,
-            )
-            SecondaryButton(
-                stringResource(R.string.tvtools_mapper_yt_smarttube),
-                { onIntent(TvToolsIntent.MapRemoteKey(190, "com.teamsmart.videomanager.tv", yt_smarttubeLabel)) },
-                enabled = !powerWorking,
-            )
-            SecondaryButton(
-                stringResource(R.string.tvtools_mapper_yt_official),
-                { onIntent(TvToolsIntent.MapRemoteKey(190, "com.google.android.youtube.tv", yt_officialLabel)) },
-                enabled = !powerWorking,
-            )
-            SecondaryButton(
-                stringResource(R.string.tvtools_mapper_nf_shahid),
-                { onIntent(TvToolsIntent.MapRemoteKey(191, "net.mbc.shahidTV", nf_shahidLabel)) },
-                enabled = !powerWorking,
-            )
-            SecondaryButton(
-                stringResource(R.string.tvtools_mapper_nf_matches),
-                { onIntent(TvToolsIntent.MapRemoteKey(191, "com.midroid.mi5gtv.matches", nf_matchesLabel)) },
-                enabled = !powerWorking,
-            )
-            SecondaryButton(
-                stringResource(R.string.tvtools_rotation_landscape),
-                { onIntent(TvToolsIntent.SetForceLandscape(true)) },
-                enabled = !powerWorking,
-            )
-            SecondaryButton(
-                stringResource(R.string.tvtools_rotation_auto),
-                { onIntent(TvToolsIntent.SetForceLandscape(false)) },
-                enabled = !powerWorking,
-            )
-            SecondaryButton(
-                stringResource(R.string.tvtools_screensaver_now),
-                { onIntent(TvToolsIntent.StartClockScreensaver) },
-                enabled = !powerWorking,
-            )
             SecondaryButton(
                 stringResource(R.string.tvtools_quiet_night),
                 { onIntent(TvToolsIntent.ApplyQuietNightVolume) },

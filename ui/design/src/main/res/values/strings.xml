@@ -28,7 +28,7 @@
     <string name="cyt_undo">Undo</string>
     <!-- Under a confirming button after a tap was dropped because another app covers the window
          (rejectObscuredTouches, SECURITY 4.3). -->
-    <string name="cyt_obscured_hint">Another app is covering the screen, so that tap didn\'t count. Pause or close it, then tap again.</string>
+    <string name="cyt_obscured_hint">Another app is covering the screen, so that tap didn\'t count. It is usually a screen dimmer or blue-light filter, a floating chat bubble, a screen recorder, or an app allowed to draw over other apps. Pause it, then tap again.</string>
 
     <string name="cyt_countdown_60">One minute left. Say yes or go back.</string>
     <string name="cyt_countdown_30">30 seconds left.</string>

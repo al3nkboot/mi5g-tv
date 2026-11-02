@@ -14,6 +14,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -25,6 +26,9 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -94,7 +98,7 @@ private val Gold @Composable get() = CytTheme.colors.warning
 fun RemoteScreen(state: RemoteState, onIntent: (RemoteIntent) -> Unit, onBack: () -> Unit, modifier: Modifier = Modifier) {
     val press: (RemoteButton) -> Unit = { onIntent(RemoteIntent.Press(it)) }
     var moreOpen by remember(state.showMoreSheet) { mutableStateOf(state.showMoreSheet) }
-    Column(modifier.fillMaxSize().background(CytTheme.colors.bg)) {
+    Column(modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing).background(CytTheme.colors.bg)) {
         RemoteTopBar(state, onIntent, onBack)
         Column(Modifier.weight(1f).fillMaxWidth().padding(horizontal = 16.dp)) {
             if (state.connection == RemoteConnection.NotConnected) NotConnectedCard(onIntent)
@@ -170,29 +174,30 @@ private fun ModeSwitch(mode: RemoteMode, onIntent: (RemoteIntent) -> Unit) {
 
 @Composable
 private fun ColumnScope.ButtonsPane(press: (RemoteButton) -> Unit, onMore: () -> Unit) {
-    Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally) {
-        Spacer(Modifier.height(8.dp))
+    BoxWithConstraints(Modifier.weight(1f).fillMaxWidth()) {
+    Column(Modifier.fillMaxWidth().heightIn(min = maxHeight).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.SpaceEvenly, horizontalAlignment = Alignment.CenterHorizontally) {
         // Physical layout: VOL on the left, CH on the right, in every locale (like a real remote).
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             Rocker(R.string.remote_volume, RemoteButton.VOL_UP, RemoteButton.VOL_DOWN, press)
             DpadRing(press)
             Rocker(R.string.remote_channel, RemoteButton.CH_UP, RemoteButton.CH_DOWN, press)
         }
-        Spacer(Modifier.height(20.dp))
+        Spacer(Modifier.height(8.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             listOf(RemoteButton.BACK to R.string.remote_back, RemoteButton.HOME to R.string.remote_home, RemoteButton.MUTE to R.string.remote_mute, RemoteButton.PLAY_PAUSE to R.string.remote_play_pause).forEach { (b, l) ->
                 RemoteKey(stringResource(l), b, press, Modifier.weight(1f).height(64.dp), RoundedCornerShape(18.dp), small = true)
             }
         }
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(8.dp))
         GoldPill(stringResource(R.string.remote_more), filled = false, onClick = onMore)
         Spacer(Modifier.height(8.dp))
+    }
     }
 }
 
 @Composable
 private fun DpadRing(press: (RemoteButton) -> Unit) {
-    val ring = 236.dp
+    val ring = 196.dp
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) { Box(
         Modifier.size(ring).clip(CircleShape).background(CytTheme.colors.surface2).border(2.dp, Gold.copy(alpha = .55f), CircleShape),
         contentAlignment = Alignment.Center,
@@ -255,10 +260,15 @@ private fun RemoteKey(
             },
         contentAlignment = Alignment.Center,
     ) {
-        Text(
+        if (small) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(when (button) { RemoteButton.BACK -> "←"; RemoteButton.HOME -> "⌂"; RemoteButton.MUTE -> "◖"; else -> "▶Ⅱ" }, color = fg, fontSize = 18.sp, lineHeight = 20.sp)
+                Text(text, color = fg, textAlign = TextAlign.Center, maxLines = 1, softWrap = false, style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp), modifier = Modifier.padding(horizontal = 2.dp))
+            }
+        } else Text(
             text, color = fg, textAlign = TextAlign.Center, maxLines = 1, overflow = TextOverflow.Ellipsis,
             fontWeight = if (filled) FontWeight.Bold else FontWeight.Medium,
-            fontSize = if (small) 13.sp else if (filled) 18.sp else 20.sp,
+            fontSize = if (filled) 18.sp else 20.sp,
             modifier = Modifier.padding(horizontal = 4.dp),
         )
     }

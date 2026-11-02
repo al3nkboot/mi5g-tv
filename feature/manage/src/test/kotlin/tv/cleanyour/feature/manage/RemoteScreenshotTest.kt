@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
 import java.io.File
@@ -42,19 +43,28 @@ class RemoteScreenshotTest {
             Triple("05_remote_en.png", RemoteState(tvName = "Mi TV", connection = RemoteConnection.Connected), true),
             Triple("06_more_sheet_ar.png", RemoteState(tvName = "Mi TV", connection = RemoteConnection.Connected, showMoreSheet = true), false),
             Triple("07_not_connected_ar.png", RemoteState(tvName = "Mi TV", connection = RemoteConnection.NotConnected), false),
+            Triple("08_remote_ar_font130.png", RemoteState(tvName = "Mi TV", connection = RemoteConnection.Connected), false),
+            Triple("09_remote_ar_small.png", RemoteState(tvName = "Mi TV", connection = RemoteConnection.Connected), false),
         )
         var current by mutableStateOf(shots.first().second)
         var english by mutableStateOf(false)
+        var shotName by mutableStateOf(shots.first().first)
         compose.setContent {
             CytTheme(darkTheme = true, reducedMotion = true) {
                 val config = Configuration(LocalConfiguration.current).apply { setLocale(if (english) Locale.ENGLISH else Locale.forLanguageTag("ar")); setLayoutDirection(if (english) Locale.ENGLISH else Locale.forLanguageTag("ar")) }
                 val ctx = androidx.compose.ui.platform.LocalContext.current.createConfigurationContext(config)
                 CompositionLocalProvider(androidx.compose.ui.platform.LocalContext provides ctx, LocalConfiguration provides config, LocalLayoutDirection provides if (english) LayoutDirection.Ltr else LayoutDirection.Rtl) {
-                    Box(Modifier.testTag("remote-shot").size(411.dp, 891.dp)) { RemoteScreen(current, {}, {}) }
+                    val density = androidx.compose.ui.platform.LocalDensity.current
+                    val fontScale = if (shotName == "08_remote_ar_font130.png") 1.3f else density.fontScale
+                    CompositionLocalProvider(androidx.compose.ui.platform.LocalDensity provides Density(density.density, fontScale)) {
+                        val dimensions = if (shotName == "09_remote_ar_small.png") Modifier.size(360.dp, 640.dp) else if (shotName == "08_remote_ar_font130.png") Modifier.size(411.dp, 740.dp) else Modifier.size(411.dp, 891.dp)
+                        Box(Modifier.testTag("remote-shot").then(dimensions)) { RemoteScreen(current, {}, {}) }
+                    }
                 }
             }
         }
         shots.forEach { (name, state, useEnglish) ->
+            shotName = name
             current = state
             english = useEnglish
             compose.waitForIdle()
