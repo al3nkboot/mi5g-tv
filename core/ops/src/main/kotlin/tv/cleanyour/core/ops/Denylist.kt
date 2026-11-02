@@ -46,6 +46,11 @@ object Denylist {
         "com.google.android.gms" to "it is Google Play services",
         "com.google.android.gsf" to "it is Google Play services",
         "com.android.vending" to "it is the Play Store",
+        // Android 14 SDK Runtime: a TCL TV hung on the boot logo with it switched off.
+        "com.android.sdksandbox" to "it is the Android 14 SDK sandbox the TV needs to start",
+        "com.google.android.sdksandbox" to "it is the Android 14 SDK sandbox the TV needs to start",
+        "com.android.adservices.api" to "it is a core Android service the SDK sandbox needs",
+        "com.google.android.adservices.api" to "it is a core Android service the SDK sandbox needs",
     )
 
     val prefixes: Map<String, String> = linkedMapOf(
