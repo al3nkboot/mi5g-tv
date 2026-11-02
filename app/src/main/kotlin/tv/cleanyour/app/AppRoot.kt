@@ -75,6 +75,7 @@ import tv.cleanyour.feature.manage.SwitchedOffScreen
 import tv.cleanyour.feature.manage.TvSettingsScreen
 import tv.cleanyour.feature.manage.TvAppManagerScreen
 import tv.cleanyour.feature.manage.TvToolsScreen
+import tv.cleanyour.core.flows.Releases
 import tv.cleanyour.feature.manage.RemoteScreen
 import tv.cleanyour.core.flows.RemoteIntent
 import tv.cleanyour.feature.modules.ModulesFlow
@@ -87,10 +88,10 @@ import tv.cleanyour.ui.design.theme.LocalCardScale
     @Serializable data class Setup(val tvId: String? = null, val planId: String? = null) : Dest
     @Serializable data class Manage(val tvId: String? = null) : Dest
     @Serializable data class SwitchedOff(val tvId: String) : Dest
-    @Serializable data class Leftovers(val tvId: String) : Dest
+    @Serializable data class Leftovers(val tvId: String, val auto: Boolean = false) : Dest
     @Serializable data class Home(val tvId: String) : Dest
     @Serializable data class Modules(val tvId: String) : Dest
-    @Serializable data class Restore(val tvId: String) : Dest
+    @Serializable data class Restore(val tvId: String, val auto: Boolean = false) : Dest
     @Serializable data class TvSettings(val tvId: String) : Dest
     @Serializable data class TvTools(val tvId: String) : Dest
     @Serializable data class Remote(val tvId: String) : Dest
@@ -125,6 +126,8 @@ internal fun applyRoute(stack: MutableList<NavKey>, route: String, noTvs: Boolea
         "switchedoff" -> id?.let { Dest.SwitchedOff(it) }
         "leftovers" -> id?.let { Dest.Leftovers(it) }
         "restore" -> id?.let { Dest.Restore(it) }
+        "fullrestore" -> id?.let { Dest.Restore(it, auto = true) }
+        "resetup" -> id?.let { Dest.Leftovers(it, auto = true) }
         "tvsettings" -> id?.let { Dest.TvSettings(it) }
         "tools" -> id?.let { Dest.TvTools(it) }
         "remote" -> id?.let { Dest.Remote(it) }
@@ -272,7 +275,7 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
                     SwitchedOffScreen(state, m::dispatch, onBack = { go("back") })
                 }
                 entry<Dest.Leftovers> { key ->
-                    val m = rememberMachine("left:${key.tvId}") { graph.leftovers(it, TvId(key.tvId)) }
+                    val m = rememberMachine("left:${key.tvId}:${key.auto}") { graph.leftovers(it, TvId(key.tvId), key.auto) }
                     val state by m.state.collectAsStateWithLifecycle()
                     LaunchedEffect(m) { m.effects.collect { onManageEffect(it) } }
                     LeftoversScreen(state, m::dispatch, onBack = { go("back") })
@@ -290,7 +293,7 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
                     ModulesFlow(state, m::dispatch, onBack = { go("back") }, onOpenUrl = { url -> scope.launch { onManageEffect(ManageEffect.OpenUrl(url)) } })
                 }
                 entry<Dest.Restore> { key ->
-                    val m = rememberMachine("restore:${key.tvId}") { graph.restorePoint(it, TvId(key.tvId)) }
+                    val m = rememberMachine("restore:${key.tvId}:${key.auto}") { graph.restorePoint(it, TvId(key.tvId), key.auto) }
                     val state by m.state.collectAsStateWithLifecycle()
                     val create = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/zip")) { uri ->
                         if (uri != null) scope.launch {
@@ -374,6 +377,9 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
                         onOpenRelease = { graph.store.releasePage?.let { url -> scope.launch { onManageEffect(ManageEffect.OpenUrl(url)) } } },
                         onSupportPayPal = { scope.launch { onManageEffect(ManageEffect.OpenUrl("https://paypal.me/Midroid5G")) } },
                         onOpenDeveloper = { scope.launch { onManageEffect(ManageEffect.OpenUrl("https://x.com/midroid5G")) } },
+                        onUpdateNow = graph.store.releasePage?.let { _ ->
+                            { v: String -> scope.launch { onManageEffect(ManageEffect.OpenUrl(Releases.apkUrlFor(v))) } }
+                        },
                         language = ArabicLocale.choice(context),
                         onLanguage = { lang ->
                             if (lang != ArabicLocale.choice(context)) {

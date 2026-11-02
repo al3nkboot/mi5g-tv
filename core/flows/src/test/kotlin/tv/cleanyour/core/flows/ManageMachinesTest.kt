@@ -274,6 +274,29 @@ class ManageMachinesTest {
         assertFalse(undo.removeLauncher)
     }
 
+    @Test fun oneTapReSetupSwitchesOffWhatCameBackWithoutASecondTap() = runTest(timeout = 30.seconds) {
+        val h = Harness()
+        val tv = h.knownTv()
+        h.ranDisable(tv, listOf(adPkg))
+        h.respond(PlanKind.LEFTOVERS, listOf(Op.Disable(adPkg)))
+        val m = LeftoversMachine(h.manageDeps(), backgroundScope, tv.id, auto = true)
+        settle()
+        assertEquals(LeftoversState.Done(1), m.state.value)
+    }
+
+    @Test fun oneTapFullRestoreOpensOnTheConfirmationAndRunsOnlyAfterIt() = runTest(timeout = 30.seconds) {
+        val h = Harness()
+        val tv = h.knownTv()
+        h.ranDisable(tv, listOf(adPkg))
+        h.respond(PlanKind.UNDO_EVERYTHING, listOf(Op.Enable(adPkg)))
+        val m = RestorePointMachine(h.manageDeps(), backgroundScope, tv.id, auto = true)
+        settle()
+        assertTrue(assertIs<RestorePhase.Preview>(m.state.value.phase).confirming)
+        assertTrue(h.engine.calls.none { it is FakeEngine.Call.Start })
+        m.dispatch(RestorePointIntent.PutEverythingBack); settle()
+        assertIs<RestorePhase.Finished>(m.state.value.phase)
+    }
+
     @Test fun saveACopyAsksForADocumentAndWritesTheBundle() = runTest(timeout = 30.seconds) {
         val h = Harness()
         val tv = h.knownTv()

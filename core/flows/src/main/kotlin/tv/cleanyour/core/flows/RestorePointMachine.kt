@@ -47,14 +47,22 @@ class RestorePointMachine(
     private val d: ManageDeps,
     scope: CoroutineScope,
     private val tvId: TvId,
+    // M4 item 35: "one-tap full restore" opens straight on the confirmation of putting everything back.
+    private val auto: Boolean = false,
 ) : Machine<RestorePointState, RestorePointIntent, ManageEffect>(RestorePointState(), scope) {
 
     private val writer = TvWriter(d)
+    private var autoConfirm = false
     private data class Loaded(val name: String, val baseline: Long?, val latest: Long?, val google: Boolean)
     private data class Phase(val p: RestorePhase)
     private data class Exporting(val on: Boolean)
 
-    init { scope.launch { load() } }
+    init {
+        scope.launch {
+            load()
+            if (auto) { autoConfirm = true; send(RestorePointIntent.PreviewUndo) }
+        }
+    }
 
     override fun reduce(state: RestorePointState, event: Any): RestorePointState = when (event) {
         is Loaded -> state.copy(tvName = event.name, baselineAtMs = event.baseline, latestAtMs = event.latest, googleTv = event.google)
@@ -100,6 +108,7 @@ class RestorePointMachine(
         val back = plan.steps.count { it.op is Op.Enable || it.op is Op.DefaultState }
         val wizard = wraith != null && plan.steps.any { (it.op as? Op.Enable)?.pkg == wraith }
         send(Phase(RestorePhase.Preview(UndoPreview(plan, back, stock?.let { d.nameOf(it) }, wizard, removeLauncher), confirming = false)))
+        if (autoConfirm) { autoConfirm = false; send(RestorePointIntent.Confirm) }
     }
 
     private suspend fun undoEverything(p: UndoPreview) {

@@ -1,5 +1,6 @@
 package tv.cleanyour.app
 
+import tv.cleanyour.core.flows.Releases
 import tv.cleanyour.core.flows.StoreRules
 import tv.cleanyour.core.flows.UpdateChecker
 import tv.cleanyour.core.registry.ArtifactFetcher
@@ -21,8 +22,8 @@ object Store : StorePorts {
         val r = http.get(RELEASES_URL, null, null)
         if (r.code != 200) { r.body?.close(); null } else {
             val body = r.body?.use { it.readBytes().decodeToString() } ?: return@UpdateChecker null
-            val tag = Regex("\"tag_name\"\\s*:\\s*\"v?([0-9][0-9A-Za-z.]*)\"").find(body)?.groupValues?.get(1) ?: return@UpdateChecker null
-            if (tag != current) tag else ""
+            val tag = Releases.parse(body)?.version ?: return@UpdateChecker null
+            if (Releases.isNewer(tag, current)) tag else ""
         }
     }
 
