@@ -2,6 +2,64 @@
 
 All notable changes to the app. Versions follow [semantic versioning](https://semver.org/).
 
+## 2.0.0 (unreleased)
+
+### الجديد في الإصدار 2.0.0
+#### الهاتف والريموت
+- ريموت جديد بالكامل: حلقة اتجاهات ذهبية، أزرار الصوت والقنوات، لوحة لمس، لوحة مفاتيح، وتطبيقات مفضلة.
+- إقران لاسلكي مدمج لأجهزة Android 11 إلى 14 (رمز الإقران والمنفذ) بدون كمبيوتر، مع إدخال يدوي للعنوان والمنفذ.
+- رسائل أوضح: الخطوة التي فشلت عند التثبيت، وبطاقة واضحة عندما لا يمكن الوصول للتلفاز.
+- حجم البطاقات والأيقونات (صغير، متوسط، كبير)، ودليل بدء سريع داخل التطبيق.
+- شرح أن القفل المطلوب هو قفل الهاتف وليس كلمة مرور للتلفاز.
+- حماية أقوى: لا يمكن إيقاف حزم النظام الأساسية (مثل SDK Sandbox في Android 14)، وسحب صلاحية WRITE_SECURE_SETTINGS عند إلغاء ميزة DNS.
+
+#### الشاشة الرئيسية للتلفاز (المشغّل)
+- قائمة الضغط المطوّل على البطاقة: نقل، إزالة من الرئيسية، معلومات التطبيق.
+- مركز التحكم فوق أي تطبيق، شريط الوسائط العلوي، ساعة عند الرجوع، فتح تطبيق أو مدخل عند تشغيل التلفاز.
+- تخصيص أزرار الريموت بضغطة واحدة أو اثنتين أو ثلاث أو ضغط مطوّل.
+- قفل الشاشة الرئيسية على Mi5G لأجهزة شاومي مع رجوع آمن للمشغّل الأصلي بدون حذف.
+
+#### مواقيتي و Mi5G Score على التلفاز
+- مواقيت الصلاة على التلفاز بمحرك مواقيتي، الأذان الإجباري، تنبيه قبل الأذان، ونافذة عائمة للصلاة القادمة، مع ضبط الإعدادات من الهاتف.
+- تذكير يوم الجمعة (العنوان فقط)، وإذاعات قرآن مباشرة من بث عام موجود.
+- Mi5G Score: نتائج ومواعيد المباريات وجداول الدوريات وأحداث المباراة.
+
+#### الأجهزة والصيانة والتحديثات
+- مساعد شاشات سامسونج Tizen و LG webOS: ريموت عبر Wi-Fi، خطوات AdGuard DNS، وخطوات إيقاف إعلانات Home Promotion و Live Plus و Smart Hub.
+- تثبيت كل تطبيقات Mi5G TV على التلفاز من الهاتف بضغطة واحدة.
+- ملفات تعريف جديدة: Xiaomi TV Stick 4K (MiTV-AXSR0) و Mi Box S الجيل الثالث (MDZ-32-AA)، وفلتر «المقترح» في مدير التطبيقات.
+- قسم التحديثات: الإصدار الحالي والمتاح وطريقة التحديث، وزر «حدّث الآن» يفتح ملف التحديث في المتصفح.
+- إعادة الإعداد بضغطة واحدة بعد تحديث النظام، واستعادة كاملة بضغطة واحدة.
+- صفحة الشكر والتراخيص: tvOS-Launcher و OmarchyTV و talkies (TechPP) و tv-vibehack (Gathin) والخطوط.
+
+### What's new in 2.0.0
+#### Phone and remote
+- A new remote: gold D-pad ring, volume and channel rockers, trackpad, keyboard and favorite apps.
+- Built-in Wireless Debugging pairing for Android 11 to 14 (pairing code and port), no computer needed, plus manual IP/port entry.
+- Clearer errors: the install step that failed, and a clear card when the TV can't be reached.
+- Card and icon size (small, medium, large) and an in-app quick start.
+- Explains that the lock prompt is the phone's own lock, not a TV password.
+- Stronger protection: core system packages (such as the Android 14 SDK Sandbox) can't be switched off, and WRITE_SECURE_SETTINGS is revoked when DNS is turned off.
+
+#### TV home screen (launcher)
+- Hold-OK tile menu: move, remove from Home, app info.
+- Control Center over any app, a media pill at the top, a clock on Back, open an app or input when the TV wakes.
+- Remote button mapper with 1x, 2x, 3x and hold presses.
+- Lock Home to Mi5G on Xiaomi TVs, with a safe return to the stock launcher (never uninstalls).
+
+#### Mawaqiti and Mi5G Score on the TV
+- Prayer times on the TV with the Mawaqiti engine, forced adhan, pre-adhan banner and a floating next-prayer widget, set from the phone.
+- Friday reminder (title only) and live Quran radio from existing public streams.
+- Mi5G Score: results, fixtures, league tables and match events.
+
+#### Devices, maintenance and updates
+- Samsung Tizen and LG webOS helper: Wi-Fi remote, AdGuard DNS steps, and steps to turn off Home Promotion, Live Plus and Smart Hub ads.
+- Install every Mi5G TV app on the TV from the phone in one tap.
+- New profiles: Xiaomi TV Stick 4K (MiTV-AXSR0) and Mi Box S 3rd Gen (MDZ-32-AA), and a "Suggested" filter in the App Manager.
+- Updates section: current and available version, how updating works, and "Update now" opens the update APK in the browser.
+- One-tap re-setup after a system update, and one-tap full restore.
+- Credits and licences: tvOS-Launcher, OmarchyTV, talkies (TechPP), tv-vibehack (Gathin) and the fonts.
+
 ## 1.5.0 (2026-10-26)
 
 ### الجديد في الإصدار 1.5.0
