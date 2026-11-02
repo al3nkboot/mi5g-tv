@@ -712,6 +712,40 @@ class ShellRenderer(private val watchdogVariant: WatchdogVariant = WatchdogVaria
             return ShellLine(ShellTokens.line(listOf(CMD, "package", "set-home-activity", component)))
         }
 
+        // ---- Mi5G 2.0 M3: مواقيتي on the TV (item 27) and Arabic banners -------------------------------
+        const val MI5G_PRAYER = "com.midroid.mi5gtv.prayer"
+        const val MI5G_PRAYER_FILES = "/sdcard/Android/data/$MI5G_PRAYER/files"
+        val PRAYER_STAGE = RemotePath(RemoteDir.RESTORE, listOf("mi5g_prayer.json"))
+
+        // Shell lines are ASCII only, so Arabic text travels as UTF-8 hex to the prayer module's
+        // DUMP-guarded BannerReceiver, which shows it as a Mi5G pill over any app.
+        fun arabicBannerLine(rawMessage: String): ShellLine {
+            val clean = rawMessage.trim().filter { !it.isISOControl() }.take(160)
+            require(clean.isNotEmpty()) { "empty banner" }
+            val hex = clean.toByteArray(Charsets.UTF_8).joinToString("") { "%02x".format(it.toInt() and 0xff) }
+            return ShellLine(ShellTokens.line(listOf(AM, "broadcast", "-a", "$MI5G_PRAYER.BANNER", "-p", MI5G_PRAYER, "--es", "hex", hex)))
+        }
+
+        fun isAsciiBanner(raw: String): Boolean = raw.trim().all { it in ' '..'~' }
+
+        // After the phone pushed settings.json to PRAYER_STAGE: copy it into the module's own files,
+        // grant what the adhan and the widget need over other apps, keep it alive, then re-arm.
+        fun prayerSettingsLines(): List<ShellLine> = listOf(
+            ShellLine(ShellTokens.line(listOf("mkdir", "-p", MI5G_PRAYER_FILES))),
+            ShellLine(ShellTokens.line(listOf("cp", PRAYER_STAGE.absolute, "$MI5G_PRAYER_FILES/settings.json"))),
+        ) + prayerGrantLines() + listOf(
+            ShellLine(ShellTokens.line(listOf(AM, "broadcast", "-a", "$MI5G_PRAYER.RELOAD", "-p", MI5G_PRAYER))),
+            ShellLine(ShellTokens.line(listOf("rm", "-f", PRAYER_STAGE.absolute))),
+        )
+
+        // Best effort: an older Android simply has no such op or permission.
+        fun prayerGrantLines(): List<ShellLine> = listOf(
+            listOf("appops", "set", MI5G_PRAYER, "SYSTEM_ALERT_WINDOW", "allow"),
+            listOf("appops", "set", MI5G_PRAYER, "SCHEDULE_EXACT_ALARM", "allow"),
+            listOf(CMD, "deviceidle", "whitelist", "+$MI5G_PRAYER"),
+            listOf(PM, "grant", MI5G_PRAYER, "android.permission.POST_NOTIFICATIONS"),
+        ).map { ShellLine(ShellTokens.line(it)) }
+
         fun startHomeLine(): ShellLine =
             ShellLine(ShellTokens.line(listOf(AM, "start", "-a", "android.intent.action.MAIN", "-c", "android.intent.category.HOME")))
 

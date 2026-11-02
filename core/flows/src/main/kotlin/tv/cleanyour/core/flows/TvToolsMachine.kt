@@ -145,6 +145,7 @@ data class TvToolsState(
     val downloaderInput: String = "",
     val tvBannerInput: String = "",
     val powerToolStatus: PowerToolStatus = PowerToolStatus.Idle,
+    val prayer: PrayerTvSettings = PrayerTvSettings(),
 )
 
 sealed interface TvToolsIntent {
@@ -187,6 +188,9 @@ sealed interface TvToolsIntent {
     data object SwitchHdmiInput : TvToolsIntent
     data class UpdateTvBannerInput(val text: String) : TvToolsIntent
     data class SendTvBanner(val text: String? = null) : TvToolsIntent
+    // M3 item 27: مواقيتي settings, edited on the phone and pushed to the TV module.
+    data class UpdatePrayer(val settings: PrayerTvSettings) : TvToolsIntent
+    data object SendPrayerSettings : TvToolsIntent
 }
 
 class TvToolsMachine(
@@ -248,6 +252,7 @@ class TvToolsMachine(
         is CastMediaUpdate -> state.copy(castMediaStatus = event.status)
         is TvToolsIntent.UpdateDownloaderInput -> state.copy(downloaderInput = event.input.take(ShellRenderer.MAX_URL_LEN))
         is TvToolsIntent.UpdateTvBannerInput -> state.copy(tvBannerInput = event.text.take(160))
+        is TvToolsIntent.UpdatePrayer -> state.copy(prayer = event.settings)
         is PowerToolUpdate -> state.copy(
             powerToolStatus = event.status,
             tvBannerInput = if (event.clearBanner) "" else state.tvBannerInput,
@@ -348,7 +353,7 @@ class TvToolsMachine(
             is TvToolsIntent.SendTvBanner -> {
                 val msgText = (event.text ?: before.tvBannerInput).trim()
                 if (msgText.isNotEmpty()) scope.launch {
-                    val line = runCatching { ShellRenderer.tvNotificationBannerLine(msgText) }.getOrNull()
+                    val line = runCatching { bannerLine(msgText) }.getOrNull()
                     if (line != null) {
                         runPowerLines(listOf(line), "@banner", clearBanner = true)
                     } else {
@@ -356,7 +361,54 @@ class TvToolsMachine(
                     }
                 }
             }
+            TvToolsIntent.SendPrayerSettings -> scope.launch { sendPrayerSettings(before.prayer) }
             else -> {}
+        }
+    }
+
+    // Arabic text cannot ride an adb shell line (ASCII only); it goes as hex to the prayer module's banner.
+    // Without that module the old notification banner stays the fallback (it keeps only the ASCII part).
+    private suspend fun bannerLine(text: String): tv.cleanyour.core.model.ShellLine {
+        if (ShellRenderer.isAsciiBanner(text)) return ShellRenderer.tvNotificationBannerLine(text)
+        val session = (d.access.session(tvId) as? AccessResult.Ok)?.session
+        return if (session != null && installed(session, ShellRenderer.MI5G_PRAYER)) ShellRenderer.arabicBannerLine(text)
+        else ShellRenderer.tvNotificationBannerLine(text)
+    }
+
+    private suspend fun sendPrayerSettings(settings: PrayerTvSettings) {
+        val label = "@prayer"
+        send(PowerToolUpdate(PowerToolStatus.Working(label)))
+        val session = (d.access.session(tvId) as? AccessResult.Ok)?.session
+        if (session == null) {
+            send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.UNREACHABLE)))
+            return
+        }
+        if (!installed(session, ShellRenderer.MI5G_PRAYER)) {
+            send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.NO_APK)))
+            return
+        }
+        val blob = d.blobs.putBytes(settings.toJson().toByteArray(Charsets.UTF_8))
+        try {
+            attempt { TvShellRunner.run(session, ShellRenderer.mkdirRestoreLine()) }
+            val pushed = attempt { session.push(blob, ShellRenderer.PRAYER_STAGE) {} }.getOrNull()
+            if (pushed == null) {
+                send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.INSTALL)))
+                return
+            }
+            val grants = ShellRenderer.prayerGrantLines().toSet()
+            var ok = true
+            for (line in ShellRenderer.prayerSettingsLines()) {
+                val r = attempt { TvShellRunner.run(session, line) }.getOrNull()
+                if ((r == null || r.exit != 0) && line !in grants) ok = false
+            }
+            if (ok) {
+                send(PowerToolUpdate(PowerToolStatus.Done(label)))
+                effect(ManageEffect.HapticDouble)
+            } else {
+                send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.LAUNCH)))
+            }
+        } finally {
+            withContext(NonCancellable) { attempt { d.blobs.delete(blob.sha256) } }
         }
     }
 

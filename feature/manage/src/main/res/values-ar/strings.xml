@@ -462,5 +462,19 @@
     <string name="tvtools_stock_home">العودة لمشغّل التلفاز الأصلي</string>
     <string name="tvtools_label_keep_home">تثبيت شاشة Mi5G الرئيسية</string>
     <string name="tvtools_label_stock_home">العودة لمشغّل التلفاز الأصلي</string>
+    <!-- M3: مواقيتي on the TV -->
+    <string name="tvtools_prayer_section">مواقيتي على التلفاز</string>
+    <string name="tvtools_prayer_note">اختر المدينة وطريقة الحساب والأذان، ثم أرسلها إلى التلفاز. يعمل الأذان فوق أي تطبيق.</string>
+    <string name="tvtools_prayer_on">مفعّل</string>
+    <string name="tvtools_prayer_off">متوقف</string>
+    <string name="tvtools_prayer_forced">🔊 الأذان الإجباري</string>
+    <string name="tvtools_prayer_volume">مستوى صوت الأذان {percent}%</string>
+    <string name="tvtools_prayer_pre">⏰ تنبيه قبل الأذان: {minutes} دقيقة</string>
+    <string name="tvtools_prayer_overlay">🕰️ الودجت العائم</string>
+    <string name="tvtools_prayer_size">الحجم {percent}%</string>
+    <string name="tvtools_prayer_opacity">الشفافية {percent}%</string>
+    <string name="tvtools_prayer_kahf">📖 تذكير الجمعة</string>
+    <string name="tvtools_prayer_send">إرسال الإعدادات إلى التلفاز</string>
+    <string name="tvtools_label_prayer">إعدادات مواقيتي</string>
 </resources>
 

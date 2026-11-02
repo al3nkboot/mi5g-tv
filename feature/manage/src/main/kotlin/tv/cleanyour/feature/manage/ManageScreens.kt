@@ -49,6 +49,11 @@ import androidx.compose.ui.unit.dp
 import java.text.SimpleDateFormat
 import java.util.Date
 import tv.cleanyour.core.engine.PauseReason
+import tv.cleanyour.core.flows.OverlayCorner
+import tv.cleanyour.core.flows.PrayerCities
+import tv.cleanyour.core.flows.PrayerMethod
+import tv.cleanyour.core.flows.PrayerTvSettings
+import tv.cleanyour.core.flows.after
 import tv.cleanyour.core.flows.AppConfirm
 import tv.cleanyour.core.flows.AppSettingsIntent
 import tv.cleanyour.core.flows.AppSettingsState
@@ -782,6 +787,63 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
             )
         }
 
+        // M3 item 27: مواقيتي on the TV — every choice here is sent as settings.json over ADB.
+        SectionLabel(stringResource(R.string.tvtools_prayer_section))
+        Body(stringResource(R.string.tvtools_prayer_note), Modifier.padding(bottom = 8.dp, start = 4.dp, end = 4.dp))
+        val p = state.prayer
+        val set: (PrayerTvSettings) -> Unit = { onIntent(TvToolsIntent.UpdatePrayer(it)) }
+        val on = stringResource(R.string.tvtools_prayer_on)
+        val off = stringResource(R.string.tvtools_prayer_off)
+        FlowRow(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            val cities = PrayerCities.ALL
+            GlassChip(text = "◀", onClick = { set(p.copy(city = cities.asReversed().after(p.city))) })
+            GlassChip(text = "🏙️ " + p.city.ar + " · " + p.city.countryAr, onClick = { set(p.copy(city = cities.after(p.city))) })
+            GlassChip(text = "▶", onClick = { set(p.copy(city = cities.after(p.city))) })
+            GlassChip(text = "🧭 " + p.method.ar, onClick = { set(p.copy(method = PrayerMethod.entries.after(p.method))) })
+            GlassChip(
+                text = stringResource(R.string.tvtools_prayer_forced) + ": " + if (p.forcedAdhan) on else off,
+                onClick = { set(p.copy(forcedAdhan = !p.forcedAdhan)) },
+            )
+            GlassChip(
+                text = msg(R.string.tvtools_prayer_volume, "percent" to p.forcedVolume),
+                onClick = { set(p.copy(forcedVolume = PrayerTvSettings.VOLUMES.after(p.forcedVolume))) },
+            )
+            GlassChip(
+                text = msg(R.string.tvtools_prayer_pre, "minutes" to p.preMinutes),
+                onClick = { set(p.copy(preMinutes = PrayerTvSettings.PRE_MINUTES.after(p.preMinutes))) },
+            )
+            GlassChip(
+                text = stringResource(R.string.tvtools_prayer_overlay) + ": " + if (p.overlay) on else off,
+                onClick = { set(p.copy(overlay = !p.overlay)) },
+            )
+            if (p.overlay) {
+                GlassChip(text = "📍 " + p.corner.ar, onClick = { set(p.copy(corner = OverlayCorner.entries.after(p.corner))) })
+                GlassChip(
+                    text = msg(R.string.tvtools_prayer_size, "percent" to p.overlaySize),
+                    onClick = { set(p.copy(overlaySize = PrayerTvSettings.SIZES.after(p.overlaySize))) },
+                )
+                GlassChip(
+                    text = msg(R.string.tvtools_prayer_opacity, "percent" to p.overlayOpacity),
+                    onClick = { set(p.copy(overlayOpacity = PrayerTvSettings.OPACITIES.after(p.overlayOpacity))) },
+                )
+            }
+            GlassChip(
+                text = stringResource(R.string.tvtools_prayer_kahf) + ": " + if (p.kahf) on else off,
+                onClick = { set(p.copy(kahf = !p.kahf)) },
+            )
+        }
+        ActionColumn {
+            PrimaryButton(
+                stringResource(R.string.tvtools_prayer_send),
+                { onIntent(TvToolsIntent.SendPrayerSettings) },
+                enabled = !powerWorking,
+            )
+        }
+
         // 3) Instant TV Notification / Toast Banner
         SectionLabel(stringResource(R.string.tvtools_banner_section))
         Row(
@@ -1472,6 +1534,7 @@ private fun powerLabel(raw: String): String = when {
     raw == "@hdmi" -> stringResource(R.string.tvtools_label_hdmi)
     raw == "@banner" -> stringResource(R.string.tvtools_label_banner)
     raw == "@keep_home" -> stringResource(R.string.tvtools_label_keep_home)
+    raw == "@prayer" -> stringResource(R.string.tvtools_label_prayer)
     raw == "@stock_home" -> stringResource(R.string.tvtools_label_stock_home)
     raw.startsWith("@open:") -> msg(R.string.tvtools_label_open, "target" to raw.removePrefix("@open:"))
     else -> raw

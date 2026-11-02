@@ -469,5 +469,19 @@
     <string name="tvtools_stock_home">Return to the TV launcher</string>
     <string name="tvtools_label_keep_home">Locking Home to Mi5G</string>
     <string name="tvtools_label_stock_home">Returning to the TV launcher</string>
+    <!-- M3: مواقيتي on the TV -->
+    <string name="tvtools_prayer_section">Prayer times on the TV</string>
+    <string name="tvtools_prayer_note">Pick the city, method and adhan, then send them to the TV. The adhan plays over any app.</string>
+    <string name="tvtools_prayer_on">on</string>
+    <string name="tvtools_prayer_off">off</string>
+    <string name="tvtools_prayer_forced">🔊 Forced adhan</string>
+    <string name="tvtools_prayer_volume">Adhan volume {percent}%</string>
+    <string name="tvtools_prayer_pre">⏰ Alert before adhan: {minutes} min</string>
+    <string name="tvtools_prayer_overlay">🕰️ Floating widget</string>
+    <string name="tvtools_prayer_size">Size {percent}%</string>
+    <string name="tvtools_prayer_opacity">Opacity {percent}%</string>
+    <string name="tvtools_prayer_kahf">📖 Friday reminder</string>
+    <string name="tvtools_prayer_send">Send settings to the TV</string>
+    <string name="tvtools_label_prayer">Prayer settings</string>
 </resources>
 
