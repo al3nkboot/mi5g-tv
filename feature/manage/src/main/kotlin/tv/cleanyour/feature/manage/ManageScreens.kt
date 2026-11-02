@@ -802,7 +802,7 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
             )
         }
         val bannerPresets = listOf(
-            "🕌 Prayer Time Alert" to "Prayer time now - Hayya ala as-Salah",
+            "🕌 تنبيه وقت الصلاة" to "تنبيه وقت الصلاة",
             "🍽️ Dinner is Ready" to "Dinner is ready",
             "🔉 Lower TV Volume" to "Please lower the TV volume",
         )
