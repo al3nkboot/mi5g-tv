@@ -353,12 +353,7 @@ private fun StepsContent(state: SetupState.OpenDoor, actions: SetupActions, name
         Modifier.padding(top = 4.dp),
     )
     if (showTizenGuide) {
-        CytBottomSheet({ showTizenGuide = false }) {
-            SheetHeader(stringResource(R.string.door_tizen_webos_title))
-            Body(stringResource(R.string.door_tizen_webos_body), Modifier.padding(top = 12.dp))
-            MonospaceBlock(listOf("DNS 1: 94.140.14.14", "DNS 2: 94.140.15.15"), Modifier.padding(top = 12.dp))
-            PrimaryButton(stringResource(R.string.action_ok), { showTizenGuide = false }, Modifier.padding(top = 16.dp), guardObscured = false)
-        }
+        CytBottomSheet({ showTizenGuide = false }) { SmartTvHelperContent(onDone = { showTizenGuide = false }) }
     }
     if (showChineseGuide) {
         CytBottomSheet({ showChineseGuide = false }) {
