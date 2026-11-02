@@ -45,13 +45,19 @@
             android:screenOrientation="landscape" />
         <receiver android:name=".AlarmReceiver" android:exported="false" />
         <!-- The phone's settings push ends with: am broadcast -a com.midroid.mi5gtv.prayer.RELOAD -n <this> -->
-        <receiver android:name=".BootReceiver" android:exported="true">
+        <receiver android:name=".BootReceiver" android:exported="true" android:permission="android.permission.DUMP">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.TIME_SET" />
                 <action android:name="android.intent.action.TIMEZONE_CHANGED" />
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
                 <action android:name="com.midroid.mi5gtv.prayer.RELOAD" />
+            </intent-filter>
+        </receiver>
+        <!-- Arabic TV banners from the phone (hex UTF-8); DUMP: only adb shell may send. -->
+        <receiver android:name=".BannerReceiver" android:exported="true" android:permission="android.permission.DUMP">
+            <intent-filter>
+                <action android:name="com.midroid.mi5gtv.prayer.BANNER" />
             </intent-filter>
         </receiver>
         <service android:name=".AdhanService" android:exported="false" android:foregroundServiceType="mediaPlayback" />

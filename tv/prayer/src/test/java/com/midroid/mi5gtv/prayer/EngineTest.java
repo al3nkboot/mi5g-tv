@@ -3,6 +3,7 @@ package com.midroid.mi5gtv.prayer;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -111,5 +112,12 @@ public class EngineTest {
                 + "{\"name\":\"\",\"url\":\"https://x/2\"},{\"name\":\"b\",\"url\":\"file:///etc\"}]}");
         assertEquals(1, st.size());
         assertEquals(0, RadioActivity.parse("garbage").size());
+    }
+    @Test public void bannerHexDecodes() {
+        assertEquals("تنبيه وقت الصلاة", BannerReceiver.decode("d8aad986d8a8d98ad98720d988d982d8aa20d8a7d984d8b5d984d8a7d8a9"));
+        assertNull(BannerReceiver.decode("zz"));
+        assertNull(BannerReceiver.decode("abc"));
+        assertNull(BannerReceiver.decode(null));
+        assertNull(BannerReceiver.decode("0a0d"));
     }
 }
