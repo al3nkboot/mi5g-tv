@@ -11,8 +11,8 @@ android {
         applicationId providers.gradleProperty('launcherApplicationId').getOrElse('com.gathin.tvhome')
         minSdk 26
         targetSdk 34
-        versionCode 6
-        versionName '2.5'
+        versionCode 7
+        versionName '2.6-mi5g'
     }
 
     buildTypes {
@@ -34,6 +34,12 @@ android {
         }
     }
 
+    testOptions {
+        // Mi5G 2.0: Robolectric screenshot tests render real resources.
+        unitTests.includeAndroidResources = true
+        unitTests.all { systemProperty 'robolectric.graphicsMode', 'NATIVE' }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
@@ -45,4 +51,5 @@ dependencies {
     implementation 'androidx.dynamicanimation:dynamicanimation:1.0.0'
     // Test only (never in the APK): plain JVM tests for the module card validators, src/test.
     testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.robolectric:robolectric:4.17'
 }
