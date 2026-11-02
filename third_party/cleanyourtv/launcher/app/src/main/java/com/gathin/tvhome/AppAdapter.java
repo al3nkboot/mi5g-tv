@@ -57,6 +57,9 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         void onLibraryRequested();
         void onLibraryFocused();
         void onLibraryUp();
+
+        /** Hold OK on an app tile; true when the menu opened. */
+        default boolean onTileMenu(String pkg, String name) { return false; }
     }
 
     static final class Entry {
@@ -205,6 +208,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.favourites = cfg.dockApps;
         this.fillDock = cfg.fillDock;
         this.hidden = new HashSet<>(cfg.hiddenApps);
+        this.hidden.addAll(TileMenu.removed(ctx));   // Mi5G 2.0: Remove from Home
         this.animations = cfg.animations;
         this.advancedEffects = cfg.animations && cfg.advancedEffects;
         this.showHomeSettings = cfg.showHomeSettingsShortcut;
@@ -262,7 +266,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             String label = card != null ? card.label : Cards.cleanLabel(
                     appLabels.containsKey(pkg) ? appLabels.get(pkg) : String.valueOf(ri.loadLabel(pm)), pkg);
             if (!seen.add(pkg + '\n' + label)) continue;
-            Drawable banner = bundledBanner(appBanners.get(pkg));
+            Drawable banner = TileMenu.customImage(ctx, pkg);
+            if (banner == null) banner = bundledBanner(appBanners.get(pkg));
             if (banner == null) banner = loadBanner(pm, ri);
             Drawable icon = ri.loadIcon(pm);
             if (card != null) {
@@ -424,6 +429,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         h.card.setOnClickListener(v -> launch(e));
         h.card.setOnLongClickListener(v -> {
+            // Mi5G 2.0: hold OK opens the tile menu (Move, Remove from Home, App info, custom image).
+            if (e.kind == Entry.APP && listener != null && listener.onTileMenu(e.pkg, e.name)) return true;
             Intent i = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + e.pkg));
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             try {
@@ -628,6 +635,16 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return 16f * density * Math.min(1f, tileWidthPx / (DESIGN_W_DP * density));
     }
 
+    static void springScale(View view, float target) {
+        for (androidx.dynamicanimation.animation.DynamicAnimation.ViewProperty prop : new androidx.dynamicanimation.animation.DynamicAnimation.ViewProperty[]{
+                androidx.dynamicanimation.animation.DynamicAnimation.SCALE_X, androidx.dynamicanimation.animation.DynamicAnimation.SCALE_Y}) {
+            androidx.dynamicanimation.animation.SpringAnimation a = new androidx.dynamicanimation.animation.SpringAnimation(view, prop, target);
+            a.getSpring().setStiffness(androidx.dynamicanimation.animation.SpringForce.STIFFNESS_MEDIUM)
+                    .setDampingRatio(0.55f);
+            a.start();
+        }
+    }
+
     static final class Holder extends RecyclerView.ViewHolder {
         final View card;
         /** item_app.xml's tile_bg: the dark card behind an icon tile, or behind a banner that has transparent parts. */
@@ -699,12 +716,14 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     // Only on focus: snapping it back to -6dp while it fades out would jump it up over the tile.
                     if (focused) name.setTranslationY(density * 4f);
                 } else {
-                    view.animate().scaleX(s).scaleY(s)
+                    view.animate()
                             .translationY(focused && advancedEffects ? -4f * density : 0f)
                             .translationZ(focused && advancedEffects ? 8f * density : 0f)
                             .setDuration(advancedEffects ? (focused ? 220 : 170) : (focused ? 260 : 180))
-                            .setInterpolator(new OvershootInterpolator(focused ? (advancedEffects ? 0.7f : 1.6f) : 0f))
+                            .setInterpolator(new OvershootInterpolator(0f))
                             .withLayer().start();
+                    // Mi5G 2.0: the scale itself rides a spring, so focus hops settle like a physical card.
+                    springScale(view, s);
                     if (advancedEffects) {
                         banner.animate().scaleX(focused ? 1.035f : 1f).scaleY(focused ? 1.035f : 1f)
                                 .setDuration(280).start();
