@@ -191,7 +191,18 @@ sealed interface TvToolsIntent {
     // M3 item 27: مواقيتي settings, edited on the phone and pushed to the TV module.
     data class UpdatePrayer(val settings: PrayerTvSettings) : TvToolsIntent
     data object SendPrayerSettings : TvToolsIntent
+    // M4 item 32: push every bundled Mi5G TV app over Wi-Fi in one go (skips the ones already there).
+    data object InstallAllMi5gApps : TvToolsIntent
 }
+
+/** M4 item 32: the bundled TV apps the phone can push, as (module id, package). */
+val MI5G_TV_APPS: List<Pair<String, String>> = listOf(
+    "tv-matches" to "com.midroid.mi5gtv.matches",
+    "prayer-weather" to "com.midroid.mi5gtv.prayer",
+    "adguard-dns" to "com.midroid.mi5gtv.dns",
+    "tv-files" to "com.midroid.mi5gtv.files",
+    "tv-speedtest" to "com.midroid.mi5gtv.speedtest",
+)
 
 class TvToolsMachine(
     private val d: ManageDeps,
@@ -314,6 +325,9 @@ class TvToolsMachine(
             }
             is TvToolsIntent.MediaPicked -> scope.launch { castMedia(event) }
             TvToolsIntent.OpenAppManager -> effect(ManageEffect.Navigate("apps/${tvId.value}"))
+            TvToolsIntent.InstallAllMi5gApps -> if (before.powerToolStatus !is PowerToolStatus.Working) {
+                scope.launch { installAllMi5gApps() }
+            }
             is TvToolsIntent.LaunchBundledCard -> scope.launch {
                 launchOrInstallBundledCard(event.moduleId, event.pkg, event.label)
             }
@@ -592,6 +606,30 @@ class TvToolsMachine(
         }
         // 2.0 item 7: say which step failed ("paired but nothing installs") instead of failing silently.
         send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.of(blob != null, installed), launchOut?.trim()?.take(240)?.ifBlank { null })))
+    }
+
+    private suspend fun installAllMi5gApps() {
+        val label = "@install_all"
+        send(PowerToolUpdate(PowerToolStatus.Working(label)))
+        val session = (d.access.session(tvId) as? AccessResult.Ok)?.session
+        if (session == null) {
+            send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.UNREACHABLE)))
+            return
+        }
+        var failed = 0
+        var noApk = 0
+        for ((moduleId, pkg) in MI5G_TV_APPS) {
+            if (installed(session, pkg)) continue
+            val ver = d.registry.module(moduleId)?.versions?.firstOrNull()
+            val blob = ver?.let { v -> runCatching { d.blobs.bundled("mod-${v.artifact.sha256.hex.take(40)}.apk") }.getOrNull() }
+            if (blob == null) { noApk++; continue }
+            if (!installBlobOnSession(session, blob)) failed++
+        }
+        when {
+            failed == 0 && noApk == 0 -> { send(PowerToolUpdate(PowerToolStatus.Done(label))); effect(ManageEffect.HapticDouble) }
+            failed > 0 -> send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.INSTALL)))
+            else -> send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.NO_APK)))
+        }
     }
 
     private suspend fun installBlobOnSession(session: tv.cleanyour.core.session.TvSession, blob: BlobRef): Boolean {

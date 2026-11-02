@@ -498,5 +498,7 @@
     <string name="tvapps_suggested">المقترح</string>
     <string name="tvapps_profile_detected">تم التعرف على الجهاز: {device} · {count} تطبيقات مقترح إيقافها</string>
     <string name="tvapps_suggested_hint">تطبيقات إعلانات وتتبّع وتطبيقات مثبّتة مسبقًا يقترح ملف جهازك إيقافها. كل إيقاف يمكن التراجع عنه، ولا يُحذف شيء.</string>
+    <string name="tvtools_install_all">ثبّت كل تطبيقات Mi5G TV على التلفاز</string>
+    <string name="tvtools_label_install_all">تثبيت كل التطبيقات</string>
 </resources>
 

@@ -1057,6 +1057,27 @@ class ManageMachinesTest {
         assertNotNull(h.tvs.tvs.value.single { it.id == tv.id }.launcher)
     }
 
+    @Test fun installAllSkipsWhatIsThereAndSaysWhenAnApkIsMissing() = runTest(timeout = 30.seconds) {
+        val h = Harness()
+        val tv = h.knownTv()
+        for ((_, pkg) in MI5G_TV_APPS) h.session.recording.on("'pm' 'path' '$pkg'", "package:/data/app/$pkg/base.apk\n")
+        val tools = TvToolsMachine(h.manageDeps(), backgroundScope, tv.id)
+        settle()
+        tools.dispatch(TvToolsIntent.InstallAllMi5gApps)
+        settle()
+        assertEquals(PowerToolStatus.Done("@install_all"), tools.state.value.powerToolStatus)
+        assertTrue(h.session.execLines.none { "'install'" in it })
+
+        val h2 = Harness()
+        val tv2 = h2.knownTv()
+        val t2 = TvToolsMachine(h2.manageDeps(), backgroundScope, tv2.id)
+        settle()
+        t2.dispatch(TvToolsIntent.InstallAllMi5gApps)
+        settle()
+        val st = t2.state.value.powerToolStatus
+        assertTrue(st is PowerToolStatus.Failed && st.label == "@install_all", "$st")
+    }
+
     @Test fun speedBoostQuickCastAndTvAppManagerWorkEndToEnd() = runTest(timeout = 30.seconds) {
         val h = Harness()
         val tv = h.knownTv()

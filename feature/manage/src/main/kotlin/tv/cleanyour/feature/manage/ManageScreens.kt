@@ -657,6 +657,11 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
         // Quick Launch Bundled Mi5G TV Cards (solves Xiaomi TV Stick / Stock Launcher)
         SectionLabel(stringResource(R.string.tvtools_cards_section))
         Body(stringResource(R.string.tvtools_cards_note), Modifier.padding(bottom = 8.dp, start = 4.dp, end = 4.dp))
+        PrimaryButton(
+            text = stringResource(R.string.tvtools_install_all),
+            onClick = { if (!powerWorking) onIntent(TvToolsIntent.InstallAllMi5gApps) },
+            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+        )
         val bundledCards = listOf(
             Triple("tv-matches", "com.midroid.mi5gtv.matches", stringResource(R.string.tvtools_card_matches)),
             Triple("prayer-weather", "com.midroid.mi5gtv.prayer", stringResource(R.string.tvtools_card_prayer)),
@@ -1574,6 +1579,7 @@ private fun powerLabel(raw: String): String = when {
     raw == "@banner" -> stringResource(R.string.tvtools_label_banner)
     raw == "@keep_home" -> stringResource(R.string.tvtools_label_keep_home)
     raw == "@prayer" -> stringResource(R.string.tvtools_label_prayer)
+    raw == "@install_all" -> stringResource(R.string.tvtools_label_install_all)
     raw == "@stock_home" -> stringResource(R.string.tvtools_label_stock_home)
     raw.startsWith("@open:") -> msg(R.string.tvtools_label_open, "target" to raw.removePrefix("@open:"))
     else -> raw
