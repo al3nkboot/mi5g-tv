@@ -139,18 +139,19 @@ class HomePrefs(private val store: DocumentStore) {
 }
 
 // App settings (M8) that are preferences, not records: haptics and large text.
-data class AppPrefsValue(val haptics: Boolean = true, val largeTextFollowsSystem: Boolean = true)
+enum class CardSize(val scale: Float) { SMALL(.85f), MEDIUM(1f), LARGE(1.2f) }
+data class AppPrefsValue(val haptics: Boolean = true, val largeTextFollowsSystem: Boolean = true, val cardSize: CardSize = CardSize.MEDIUM)
 
 class AppPrefs(private val store: DocumentStore) {
     private val path = "settings.txt"
 
     suspend fun load(): AppPrefsValue = store.read(path) { bytes ->
         val map = bytes.decodeToString().lines().filter { '=' in it }.associate { it.substringBefore('=') to it.substringAfter('=') }
-        AppPrefsValue(haptics = map["haptics"] != "false", largeTextFollowsSystem = map["largeText"] != "false")
+        AppPrefsValue(haptics = map["haptics"] != "false", largeTextFollowsSystem = map["largeText"] != "false", cardSize = runCatching { CardSize.valueOf(map["cardSize"] ?: "MEDIUM") }.getOrDefault(CardSize.MEDIUM))
     } ?: AppPrefsValue()
 
     suspend fun save(v: AppPrefsValue) {
-        store.write(path, "haptics=${v.haptics}\nlargeText=${v.largeTextFollowsSystem}\n".encodeToByteArray())
+        store.write(path, "haptics=${v.haptics}\nlargeText=${v.largeTextFollowsSystem}\ncardSize=${v.cardSize.name}\n".encodeToByteArray())
     }
 }
 

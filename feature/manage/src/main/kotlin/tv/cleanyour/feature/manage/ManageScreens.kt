@@ -432,6 +432,7 @@ fun AppSettingsScreen(
 ) {
     var licences by rememberSaveable { mutableStateOf(false) }
     var privacy by rememberSaveable { mutableStateOf(false) }
+    var quickStart by rememberSaveable { mutableStateOf(false) }
     ScreenScaffold(Glow.Tv, modifier, topBar = { CytTopBar(onBack = onBack) }) {
         ScreenTitle(stringResource(R.string.appsettings_title), titleTop)
         ListGroup(Modifier.padding(top = 20.dp)) {
@@ -441,6 +442,13 @@ fun AppSettingsScreen(
             SwitchRow(stringResource(R.string.appsettings_haptics), state.prefs.haptics, { onIntent(AppSettingsIntent.SetHaptics(it)) },
                 subtitle = stringResource(R.string.appsettings_haptics_note))
         }
+        SectionLabel(stringResource(R.string.card_size_title))
+        ChoiceList(listOf(
+            ChoiceOption("SMALL", stringResource(R.string.card_size_small), icon = null),
+            ChoiceOption("MEDIUM", stringResource(R.string.card_size_medium), icon = null),
+            ChoiceOption("LARGE", stringResource(R.string.card_size_large), icon = null),
+        ), state.prefs.cardSize.name, { onIntent(AppSettingsIntent.SetCardSize(tv.cleanyour.core.flows.CardSize.valueOf(it.key))) })
+        ListGroup(Modifier.padding(top = 12.dp)) { ListRow(stringResource(R.string.quick_start_title), onClick = { quickStart = true }) }
         // 1.6: in-app language. Arabic by default; English as an extra choice.
         if (onLanguage != null) {
             SectionLabel(stringResource(R.string.appsettings_language))
@@ -526,9 +534,24 @@ fun AppSettingsScreen(
     }
     if (licences) CytBottomSheet({ licences = false }) { LicencesContent() }
     if (privacy) CytBottomSheet({ privacy = false }) { PrivacyContent(online = state.updateCheck || state.addOns) }
+    if (quickStart) CytBottomSheet({ quickStart = false }) { QuickStartContent() }
     state.confirm?.let { what ->
         CytBottomSheet({ onIntent(AppSettingsIntent.CancelConfirm) }) { ConfirmContent(what, state.working, onIntent) }
     }
+}
+
+const val QUICK_START_VIDEO_URL = "https://github.com/al3nkboot/mi5g-tv#quick-start"
+
+@Composable
+internal fun QuickStartContent() {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    SheetHeader(stringResource(R.string.quick_start_title))
+    listOf(R.string.quick_start_step1, R.string.quick_start_step2, R.string.quick_start_step3, R.string.quick_start_step4, R.string.quick_start_step5).forEachIndexed { i, line ->
+        Body("${i + 1}. ${stringResource(line)}", Modifier.padding(top = 10.dp, start = 4.dp, end = 4.dp))
+    }
+    PrimaryButton(stringResource(R.string.quick_start_video), {
+        context.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(QUICK_START_VIDEO_URL)))
+    }, Modifier.padding(top = 16.dp), guardObscured = false)
 }
 
 @Composable

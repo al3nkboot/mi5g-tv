@@ -314,8 +314,10 @@ class SetupMachine(
             is SetupState.Welcome -> state.found.firstOrNull { it.host == event.host }?.let { door(it) } ?: state
             else -> state
         }
-        is SetupIntent.EnterAddress -> if (isHomeAddress(event.ip) && (state is SetupState.Welcome || state is SetupState.Picker || state is SetupState.OpenDoor || state is SetupState.PairingNeeded))
-            door(manualTv(event.ip.trim())) else state
+        is SetupIntent.EnterAddress -> if (isHomeAddress(event.ip) && (state is SetupState.Welcome || state is SetupState.Picker || state is SetupState.OpenDoor || state is SetupState.PairingNeeded)) {
+            if (!event.pairingCode.isNullOrBlank()) SetupState.PairingNeeded(manualTv(event.ip.trim()), event.port.toString(), event.pairingCode)
+            else door(manualTv(event.ip.trim()))
+        } else state
         is SetupIntent.ChangeFamily -> if (state is SetupState.OpenDoor) {
             val f = if (event.family in Families.all) event.family else Families.ofBrand(event.family)
             state.copy(family = f, banner = bannerFor(f, state.tv))

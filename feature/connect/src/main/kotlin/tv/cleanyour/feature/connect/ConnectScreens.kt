@@ -22,6 +22,7 @@ import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import kotlinx.coroutines.delay
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -215,6 +216,10 @@ fun DoorScreen(state: SetupState.OpenDoor, extras: SetupExtras, actions: SetupAc
     val name = extras.tvName ?: state.tv.friendlyName ?: state.tv.model ?: extras.identity?.model ?: state.tv.host.ifEmpty { null }
     var showNotSeen by rememberSaveable { mutableStateOf(false) }
     var brandsOpen by rememberSaveable { mutableStateOf(state.family == Families.UNKNOWN) }
+    var manualVisible by rememberSaveable(state.tv.host) { mutableStateOf(false) }
+    LaunchedEffect(state.tv.host, state.phase, state.step) {
+        if (state.phase == DoorPhase.STEPS && state.step >= 2) { delay(8_000); manualVisible = true }
+    }
     // S2c has no primary, only the way out; S2d asks the identity question with Yes and No.
     val allowBar: @Composable ColumnScope.() -> Unit = { SecondaryButton(stringResource(R.string.allow_dont_see), { showNotSeen = true }) }
     val identityBar: @Composable ColumnScope.() -> Unit = {
@@ -244,6 +249,7 @@ fun DoorScreen(state: SetupState.OpenDoor, extras: SetupExtras, actions: SetupAc
             }
             DoorPhase.STEPS, DoorPhase.CONNECTING -> {
                 StepsContent(state, actions, name, brandsOpen, onBrands = { brandsOpen = !brandsOpen })
+                if (manualVisible) ManualAddressContent { ip, port, code -> actions.intent(SetupIntent.EnterAddress(ip, port, code)) }
                 NotThisTv(state, actions)
             }
         }
@@ -255,6 +261,26 @@ fun DoorScreen(state: SetupState.OpenDoor, extras: SetupExtras, actions: SetupAc
             NotSeenContent(extras.allowRetries, onAsk = { actions.intent(SetupIntent.AskTvAgain); showNotSeen = false })
         }
     }
+}
+
+@Composable
+private fun ManualAddressContent(onSubmit: (String, Int, String?) -> Unit) {
+    var ip by rememberSaveable { mutableStateOf("") }; var port by rememberSaveable { mutableStateOf("5555") }; var code by rememberSaveable { mutableStateOf("") }
+    var attempted by rememberSaveable { mutableStateOf(false) }
+    val valid = validManualAddress(ip, port)
+    TertiaryButton(stringResource(R.string.manual_entry), { attempted = true }, Modifier.padding(top = 8.dp))
+    if (attempted) {
+        CytTextField(ip, { ip = it.filter { c -> c.isDigit() || c == '.' }.take(15) }, stringResource(R.string.address_field_label), Modifier.padding(top = 8.dp), keyboardType = KeyboardType.Decimal)
+        CytTextField(port, { port = it.filter(Char::isDigit).take(5) }, stringResource(R.string.manual_port), Modifier.padding(top = 8.dp), keyboardType = KeyboardType.Number)
+        CytTextField(code, { code = it.filter(Char::isDigit).take(6) }, stringResource(R.string.pairing_code_label), Modifier.padding(top = 8.dp), keyboardType = KeyboardType.Number)
+        PrimaryButton(stringResource(R.string.address_connect), { if (valid) onSubmit(ip.trim(), port.toInt(), code.ifBlank { null }) }, Modifier.padding(top = 8.dp), enabled = valid, guardObscured = false)
+    }
+}
+
+internal fun validManualAddress(ip: String, port: String): Boolean {
+    val octets = ip.trim().split('.')
+    val p = port.toIntOrNull() ?: return false
+    return octets.size == 4 && octets.all { it.isNotEmpty() && it.toIntOrNull() in 0..255 } && p in 1..65535
 }
 
 // Start goes straight to the one device discovery found, which may not be the TV (emulator run,
@@ -412,8 +438,8 @@ internal fun NotSeenContent(retries: Int, onAsk: () -> Unit) {
 @Composable
 fun PairingScreen(state: SetupState.PairingNeeded, extras: SetupExtras, actions: SetupActions, modifier: Modifier = Modifier) {
     var steps by rememberSaveable { mutableStateOf(false) }
-    var pairPort by rememberSaveable(state.tv.host) { mutableStateOf("") }
-    var pairCode by rememberSaveable(state.tv.host) { mutableStateOf("") }
+    var pairPort by rememberSaveable(state.tv.host) { mutableStateOf(state.pairingPort) }
+    var pairCode by rememberSaveable(state.tv.host) { mutableStateOf(state.pairingCode) }
     val host = state.tv.host.ifBlank { "192.168.1.50" }
     val portDisplay = pairPort.ifBlank { "37123" }
     val codeDisplay = pairCode.ifBlank { "123456" }

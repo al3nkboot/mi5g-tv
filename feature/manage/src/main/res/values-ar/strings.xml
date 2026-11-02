@@ -448,5 +448,7 @@
     <string name="remote_coming_soon_cast">إرسال الصور والفيديو من الجوال إلى التلفاز.</string>
     <string name="remote_coming_soon_settings">ستكون إعدادات الريموت هنا.</string>
     <string name="remote_open">فتح</string>
+    <string name="card_size_title">حجم التطبيقات والبطاقات</string><string name="card_size_small">صغير</string><string name="card_size_medium">متوسط</string><string name="card_size_large">كبير</string>
+    <string name="quick_start_title">دليل البدء السريع</string><string name="quick_start_step1">صِل الجوال والتلفاز بشبكة Wi-Fi نفسها.</string><string name="quick_start_step2">فعّل خيارات المطور وتصحيح الأخطاء عبر الشبكة أو لاسلكيًا على التلفاز.</string><string name="quick_start_step3">اقرن بالتلفاز واسمح بالاتصال.</string><string name="quick_start_step4">استخدم تبويب الريموت للتحكم بالتلفاز.</string><string name="quick_start_step5">ثبّت الوحدات من شاشة الوحدات.</string><string name="quick_start_video">شاهد الفيديو (دقيقتان)</string>
 </resources>
 
