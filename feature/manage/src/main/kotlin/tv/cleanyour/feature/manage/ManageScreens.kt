@@ -1331,6 +1331,12 @@ fun TvAppManagerScreen(
                 modifier = Modifier.weight(1f),
                 accented = state.filter == TvAppFilter.SYSTEM,
             )
+            if (state.suggested.isNotEmpty()) RemoteActionKey(
+                text = stringResource(R.string.tvapps_suggested),
+                onClick = { onIntent(TvAppManagerIntent.SetFilter(TvAppFilter.SUGGESTED)) },
+                modifier = Modifier.weight(1f),
+                accented = state.filter == TvAppFilter.SUGGESTED,
+            )
             RemoteActionKey(
                 text = stringResource(R.string.tvapps_refresh),
                 onClick = { onIntent(TvAppManagerIntent.Refresh) },
@@ -1339,7 +1345,16 @@ fun TvAppManagerScreen(
             )
         }
 
-        Body(stringResource(if (state.filter == TvAppFilter.USER) R.string.v16_mine_hint else R.string.v16_factory_hint), Modifier.padding(top = 10.dp, start = 4.dp, end = 4.dp))
+        // M4 item 33: the profile the TV's model picked, and what it suggests switching off.
+        state.profileName?.let { name ->
+            Body(msg(R.string.tvapps_profile_detected, "device" to name, "count" to state.suggested.size), Modifier.padding(top = 10.dp, start = 4.dp, end = 4.dp),
+                color = CytTheme.colors.textPrimary)
+        }
+        Body(stringResource(when (state.filter) {
+            TvAppFilter.USER -> R.string.v16_mine_hint
+            TvAppFilter.SYSTEM -> R.string.v16_factory_hint
+            TvAppFilter.SUGGESTED -> R.string.tvapps_suggested_hint
+        }), Modifier.padding(top = 10.dp, start = 4.dp, end = 4.dp))
 
         AppActionFeedback(state.actionStatus)
 

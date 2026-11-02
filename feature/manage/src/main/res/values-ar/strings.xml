@@ -494,5 +494,9 @@
     <string name="manage_row_resetup_sub">بضغطة واحدة: يفحص ما أعاده التحديث ويطفئه من جديد</string>
     <string name="manage_row_fullrestore">↩️ استعادة كاملة</string>
     <string name="manage_row_fullrestore_sub">بضغطة واحدة: يُرجع التلفاز كما كان قبل Mi5G بعد تأكيدك</string>
+    <!-- M4 item 33 -->
+    <string name="tvapps_suggested">المقترح</string>
+    <string name="tvapps_profile_detected">تم التعرف على الجهاز: {device} · {count} تطبيقات مقترح إيقافها</string>
+    <string name="tvapps_suggested_hint">تطبيقات إعلانات وتتبّع وتطبيقات مثبّتة مسبقًا يقترح ملف جهازك إيقافها. كل إيقاف يمكن التراجع عنه، ولا يُحذف شيء.</string>
 </resources>
 

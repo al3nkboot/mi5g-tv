@@ -12407,6 +12407,106 @@
           "ask": false
         }
       }
+    },
+    "xiaomi-tv-stick-4k-axsr0": {
+      "match": {
+        "models": [
+          "MiTV-AXSR0",
+          "Xiaomi TV Stick 4K (2nd Gen)"
+        ],
+        "devices": [],
+        "brand": "Xiaomi",
+        "sdkMin": 30,
+        "sdkMax": 35,
+        "fingerprintPrefix": null
+      },
+      "platform": "GOOGLE_TV",
+      "stockLaunchers": [
+        "com.google.android.apps.tv.launcherx"
+      ],
+      "liveTv": null,
+      "setupWraith": "com.google.android.tungsten.setupwraith",
+      "quirks": [
+        "HOME_TAKEOVER_SETUPWRAITH"
+      ],
+      "neverDisable": [
+        "mitv.service",
+        "com.mi.bluetooth",
+        "com.xiaomi.gtv.settings",
+        "com.xiaomi.tvqs.overseas"
+      ],
+      "suggestedDock": [],
+      "tested": {
+        "by": null,
+        "firmware": null,
+        "daysLivedWith": null,
+        "rebootTested": false
+      },
+      "groups": {
+        "Telemetry and attribution": {
+          "category": "tracking",
+          "ask": false
+        },
+        "Ad rows and promos": {
+          "category": "ads",
+          "ask": false
+        },
+        "Preloaded apps, off by choice": {
+          "category": "preloads",
+          "ask": false
+        }
+      },
+      "packages": {}
+    },
+    "xiaomi-tv-box-s-3rd-gen": {
+      "match": {
+        "models": [
+          "MDZ-32-AA",
+          "Xiaomi TV Box S (3rd Gen)"
+        ],
+        "devices": [],
+        "brand": "Xiaomi",
+        "sdkMin": 33,
+        "sdkMax": 35,
+        "fingerprintPrefix": null
+      },
+      "platform": "GOOGLE_TV",
+      "stockLaunchers": [
+        "com.google.android.apps.tv.launcherx"
+      ],
+      "liveTv": null,
+      "setupWraith": "com.google.android.tungsten.setupwraith",
+      "quirks": [
+        "HOME_TAKEOVER_SETUPWRAITH"
+      ],
+      "neverDisable": [
+        "mitv.service",
+        "com.mi.bluetooth",
+        "com.xiaomi.gtv.settings",
+        "com.xiaomi.tvqs.overseas"
+      ],
+      "suggestedDock": [],
+      "tested": {
+        "by": null,
+        "firmware": null,
+        "daysLivedWith": null,
+        "rebootTested": false
+      },
+      "groups": {
+        "Telemetry and attribution": {
+          "category": "tracking",
+          "ask": false
+        },
+        "Ad rows and promos": {
+          "category": "ads",
+          "ask": false
+        },
+        "Preloaded apps, off by choice": {
+          "category": "preloads",
+          "ask": false
+        }
+      },
+      "packages": {}
     }
   }
 }

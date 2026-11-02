@@ -24,8 +24,8 @@ class ProfilesTest {
     private fun profile(folder: String) = DebloatTxtParser.parse(examples.first { it.folder == folder }.debloatTxt, folder)
 
     @Test fun everyConvertedUpstreamExampleParsesWithCuratedMetadata() {
-        assertEquals(154, upstream.size)
-        assertEquals(138, examples.size)
+        assertEquals(156, upstream.size)   // M4: + Xiaomi TV Stick 4K MiTV-AXSR0 and TV Box S 3rd Gen (Mi5G lists)
+        assertEquals(140, examples.size)
         for (e in examples) {
             val profile = DebloatTxtParser.parse(e.debloatTxt, e.folder)
             assertEquals(e.folder, profile.id)

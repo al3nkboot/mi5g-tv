@@ -501,5 +501,9 @@
     <string name="manage_row_resetup_sub">One tap: finds what the update brought back and switches it off again</string>
     <string name="manage_row_fullrestore">↩️ Full restore</string>
     <string name="manage_row_fullrestore_sub">One tap: puts the TV back as it was before Mi5G, after you confirm</string>
+    <!-- M4 item 33 -->
+    <string name="tvapps_suggested">Suggested</string>
+    <string name="tvapps_profile_detected">Device recognised: {device} · {count} apps suggested to switch off</string>
+    <string name="tvapps_suggested_hint">Ads, tracking and preloaded apps your device profile suggests switching off. Every switch-off can be undone; nothing is removed.</string>
 </resources>
 

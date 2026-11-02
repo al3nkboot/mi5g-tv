@@ -1,0 +1,21 @@
+# Xiaomi TV Stick 4K, 2nd edition (model MiTV-AXSR0), Google TV. Mi5G TV 2.0 profile (M4, own list).
+# NOT YET TESTED ON A DEVICE: every line is a plain disable, undone by Restore; nothing is uninstalled.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (Google TV), setup wizard setupwraith takes Home
+# if launcherx alone is disabled, as on the other Xiaomi Google TV boxes.
+# Kept on purpose: Google Play Services and Store, Chromecast, the phone remote, Xiaomi Bluetooth remote
+# service and quick settings.
+
+# Telemetry and attribution
+com.miui.tv.analytics                  # Xiaomi analytics
+com.google.android.feedback            # Google feedback agent
+com.google.android.partnersetup        # partner attribution pings
+com.google.android.tv.bugreportsender  # bug report uploader
+
+# Ad rows and promos
+com.mitv.tvhome.mitvplus               # Xiaomi TV+ ad-funded channels
+com.xm.webcontent                      # Xiaomi web promos
+
+# Preloaded apps, off by choice
+com.google.android.play.games          # Google Play Games
+com.android.printspooler               # print service on a TV
