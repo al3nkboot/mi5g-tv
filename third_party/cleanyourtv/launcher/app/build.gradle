@@ -11,8 +11,8 @@ android {
         applicationId providers.gradleProperty('launcherApplicationId').getOrElse('com.gathin.tvhome')
         minSdk 26
         targetSdk 34
-        versionCode 7
-        versionName '2.6-mi5g'
+        versionCode 8
+        versionName '2.7-mi5g'   // Mi5G 2.0.1
     }
 
     buildTypes {
@@ -49,6 +49,8 @@ android {
 dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.3.2'
     implementation 'androidx.dynamicanimation:dynamicanimation:1.0.0'
+    // Mi5G 2.0.1: QR code for arrange-from-phone (Apache-2.0).
+    implementation 'com.google.zxing:core:3.5.3'
     // Test only (never in the APK): plain JVM tests for the module card validators, src/test.
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.robolectric:robolectric:4.17'

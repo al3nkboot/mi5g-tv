@@ -53,6 +53,21 @@ public final class Mi5gSettingsActivity extends Activity {
     private void build() {
         rows.removeAllViews();
         SharedPreferences p = getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE);
+        // Mi5G 2.0.1: credits for the projects this launcher builds on.
+        Rows.add(this, rows, R.drawable.ic_home_settings, getString(R.string.mi5g_credits), "Aerial TV · Clean Your TV · tv-vibehack · talkies",
+                () -> new android.app.AlertDialog.Builder(this).setTitle(R.string.mi5g_credits)
+                        .setMessage(R.string.mi5g_credits_body).setPositiveButton(android.R.string.ok, null).show());
+        // Mi5G 2.0.1: arrange Home from a phone on the same Wi-Fi (QR code, off when this screen closes).
+        Rows.add(this, rows, R.drawable.ic_apps, getString(R.string.mi5g_arrange_row), getString(R.string.mi5g_arrange_row_hint),
+                () -> startActivity(new Intent(this, ArrangeActivity.class)));
+        // Mi5G 2.0.1: the city screensaver is picked in the TV's screensaver settings.
+        Rows.add(this, rows, R.drawable.ic_clock, getString(R.string.mi5g_city_dream_row), getString(R.string.mi5g_city_dream_hint), () -> {
+            try {
+                startActivity(new Intent(android.provider.Settings.ACTION_DREAM_SETTINGS));
+            } catch (Exception e) {
+                startActivity(new Intent(this, CityDreamActivity.class));
+            }
+        });
         Rows.add(this, rows, R.drawable.ic_keys, getString(R.string.mi5g_mapper), null,
                 () -> startActivity(new Intent(this, ButtonMapperActivity.class)));
         Rows.add(this, rows, R.drawable.ic_wake, getString(R.string.mi5g_wake), wakeLabel(), this::pickWake);

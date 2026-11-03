@@ -8,4 +8,12 @@ import android.service.notification.NotificationListenerService;
  * "cmd notification allow_listener"; notifications themselves are never read.
  */
 public class MediaListener extends NotificationListenerService {
+
+    /** Mi5G 2.0.1: the system rebinds the listener after a standby force stop; put the key services back. */
+    @Override
+    public void onListenerConnected() {
+        super.onListenerConnected();
+        Revival.restore(this);
+    }
+
 }

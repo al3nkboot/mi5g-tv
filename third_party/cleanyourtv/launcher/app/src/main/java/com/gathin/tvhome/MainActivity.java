@@ -288,6 +288,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         density = getResources().getDisplayMetrics().density;
+        // Mi5G 2.0.1: a layout saved from the phone rebuilds Home (now, or when it comes back to the front).
+        HomeLayout.setListener(() -> { if (isResumedNow) recreate(); else layoutChanged = true; });
+        applyClockOptions(HomeLayout.load(this).options);
         // config.xml, overlaid by config.json from a pushed theme (see Config and tools/theme.sh).
         Config cfg = Config.load(this);
         settingsKeycodes = cfg.settingsKeycodes;
@@ -604,6 +607,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onResume() {
         super.onResume();
+        isResumedNow = true;
+        if (layoutChanged) {   // Mi5G 2.0.1: arranged from the phone while Home was behind
+            layoutChanged = false;
+            recreate();
+            return;
+        }
+        Mi5gWallpapers.refreshBingAsync(this, () -> { if (isResumedNow) recreate(); else layoutChanged = true; });
         // A festival that started or ended while Home was in the background: rebuild with or without it.
         if (festive != festival.active(LocalDate.now())) {
             recreate();
@@ -719,6 +729,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onPause() {
         super.onPause();
+        isResumedNow = false;   // Mi5G 2.0.1
         endReorder();   // Home or another app while reordering keeps the order so far
         wallpaperPlayer.stop();
         mediaPill.stop();
@@ -757,6 +768,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        HomeLayout.setListener(null);   // Mi5G 2.0.1
         wallpaperPlayer.close();
         ConnectivityManager cm = getSystemService(ConnectivityManager.class);
         TvInputManager tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);
@@ -1053,6 +1065,88 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (openPopup == null && ClockActivity.backOpensClock(this)) {
             startActivity(new Intent(this, ClockActivity.class));
         }
+    }
+
+    /** Mi5G 2.0.1: set from the HomeLayout listener; read on the main thread only. */
+    private boolean isResumedNow, layoutChanged;
+    private Dialog folderDialog;
+
+    /** Mi5G 2.0.1: clock size (s/m/l) and corner (start = left on this LTR layout, end = right) from the phone. */
+    private void applyClockOptions(HomeLayout.Options o) {
+        TextView clock = findViewById(R.id.clock);
+        if (clock != null) clock.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, "s".equals(o.clockSize) ? 40 : "l".equals(o.clockSize) ? 68 : 52);
+        if (!"end".equals(o.clockCorner)) return;
+        View left = findViewById(R.id.leftBlock), buttons = findViewById(R.id.topButtons);
+        if (left == null || buttons == null) return;
+        android.widget.RelativeLayout.LayoutParams lp = (android.widget.RelativeLayout.LayoutParams) left.getLayoutParams();
+        android.widget.RelativeLayout.LayoutParams bp = (android.widget.RelativeLayout.LayoutParams) buttons.getLayoutParams();
+        lp.removeRule(android.widget.RelativeLayout.ALIGN_PARENT_START);
+        lp.removeRule(android.widget.RelativeLayout.START_OF);
+        lp.addRule(android.widget.RelativeLayout.ALIGN_PARENT_END);
+        lp.addRule(android.widget.RelativeLayout.END_OF, R.id.topButtons);
+        bp.removeRule(android.widget.RelativeLayout.ALIGN_PARENT_END);
+        bp.addRule(android.widget.RelativeLayout.ALIGN_PARENT_START);
+        if (left instanceof LinearLayout) ((LinearLayout) left).setGravity(Gravity.END);
+        left.setLayoutParams(lp);
+        buttons.setLayoutParams(bp);
+    }
+
+    /** Mi5G 2.0.1: OK on a folder tile lists its apps; OK on one opens it. */
+    @Override
+    public void onFolder(String name, List<AppAdapter.Entry> apps) {
+        if (openPopup != null) openPopup.dismiss();
+        if (folderDialog != null) folderDialog.dismiss();
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        LinearLayout list = new LinearLayout(this);
+        list.setOrientation(LinearLayout.VERTICAL);
+        list.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
+        int pad = (int) (16 * density);
+        list.setPadding(pad, pad, pad, pad);
+        android.graphics.drawable.GradientDrawable bg = new android.graphics.drawable.GradientDrawable();
+        bg.setColor(0xF2083A3A);
+        bg.setCornerRadius(16 * density);
+        bg.setStroke((int) (2 * density), 0xFFD4AF37);
+        list.setBackground(bg);
+        TextView title = new TextView(this);
+        title.setText(name);
+        title.setTextColor(0xFFD4AF37);
+        title.setTextSize(22);
+        title.setPadding(pad, 0, pad, pad / 2);
+        list.addView(title);
+        for (AppAdapter.Entry e : apps) {
+            TextView row = new TextView(this);
+            row.setText(e.label);
+            row.setTextColor(Color.WHITE);
+            row.setTextSize(18);
+            row.setFocusable(true);
+            row.setPadding(pad, pad / 2, pad, pad / 2);
+            row.setCompoundDrawablePadding(pad);
+            if (e.icon != null) {
+                android.graphics.drawable.Drawable ic = e.icon.getConstantState() != null ? e.icon.getConstantState().newDrawable().mutate() : e.icon;
+                ic.setBounds(0, 0, (int) (32 * density), (int) (32 * density));
+                // The launcher is laid out left to right; Arabic puts the icon on the right by hand.
+                boolean rtl = android.text.TextUtils.getLayoutDirectionFromLocale(java.util.Locale.getDefault()) == View.LAYOUT_DIRECTION_RTL;
+                row.setGravity(Gravity.CENTER_VERTICAL | (rtl ? Gravity.RIGHT : Gravity.LEFT));
+                if (rtl) row.setCompoundDrawables(null, null, ic, null); else row.setCompoundDrawables(ic, null, null, null);
+            }
+            row.setOnFocusChangeListener((v, f) -> v.setBackgroundColor(f ? 0x40D4AF37 : 0));
+            row.setOnClickListener(v -> { dialog.dismiss(); adapter.launch(e); });
+            list.addView(row);
+        }
+        android.widget.ScrollView scroll = new android.widget.ScrollView(this);
+        scroll.addView(list);
+        dialog.setContentView(scroll);
+        Window w = dialog.getWindow();
+        if (w != null) {
+            w.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            w.setLayout((int) (420 * density), ViewGroup.LayoutParams.WRAP_CONTENT);
+            w.setDimAmount(0.6f);
+        }
+        dialog.setOnDismissListener(d -> { if (folderDialog == dialog) folderDialog = null; });
+        folderDialog = dialog;
+        dialog.show();
+        if (list.getChildCount() > 1) list.getChildAt(1).requestFocus();
     }
 
     @Override

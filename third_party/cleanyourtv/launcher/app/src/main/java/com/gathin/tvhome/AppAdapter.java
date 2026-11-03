@@ -60,10 +60,15 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         /** Hold OK on an app tile; true when the menu opened. */
         default boolean onTileMenu(String pkg, String name) { return false; }
+
+        /** Mi5G 2.0.1: OK on a folder tile; the apps it holds, in Home order. */
+        default void onFolder(String name, List<Entry> apps) { }
     }
 
     static final class Entry {
         static final int APP = 0, HOME_SETTINGS = 1, CARD = 2, EMPTY = 3;
+        /** Mi5G 2.0.1: an app folder and a pinned TV input (HDMI or another source). */
+        static final int FOLDER = 4, INPUT = 5;
 
         final int kind;
         final String label;
@@ -75,6 +80,10 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         final String name;
         /** Ambient glow colour; 0 until sampled from the banner, or the card's accent from the start. */
         int ambient;
+        /** Mi5G 2.0.1: the folder id or the TV input id; null for other tiles. */
+        String extra;
+        /** Mi5G 2.0.1: the key the saved order ranks this tile by (a folder sorts where its first app was). */
+        String orderKey;
 
         Entry(String label, ComponentName component, Drawable banner, Drawable icon) {
             this(APP, label, component, banner, icon, null, 0);
@@ -89,6 +98,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             this.icon = icon;
             this.name = caption == null ? label : label + " \u00B7 " + caption;
             this.ambient = accent;
+            this.orderKey = component.flattenToShortString();
         }
     }
 
@@ -199,6 +209,9 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final Map<String, String> launchActions;
     /** Tile names and bundled banners that replace the app's own (config.xml, app_labels and app_banners). */
     private final Map<String, String> appLabels, appBanners;
+    /** Mi5G 2.0.1: what the phone arranged (names, folders, pinned inputs, look). */
+    private HomeLayout layout = HomeLayout.EMPTY;
+    private final Map<String, List<Entry>> folderApps = new HashMap<>();
     private final List<Entry> items = new ArrayList<>();
 
     AppAdapter(Context ctx, TileListener listener, int dockSize, Config cfg) {
@@ -232,6 +245,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      */
     void reload(List<Cards.Card> cards) {
         PackageManager pm = ctx.getPackageManager();
+        layout = HomeLayout.load(ctx);
+        folderApps.clear();
         Intent probe = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER);
         List<ResolveInfo> found = new ArrayList<>(pm.queryIntentActivities(probe, 0));
         Set<String> tvPackages = new HashSet<>();
@@ -264,21 +279,38 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             // Same cleaner as the card prompt: an app label with a bidi override or line separator must not
             // redraw the tile name as something else (#117).
             String label = card != null ? card.label : Cards.cleanLabel(
-                    appLabels.containsKey(pkg) ? appLabels.get(pkg) : String.valueOf(ri.loadLabel(pm)), pkg);
+                    layout.names.containsKey(pkg) ? layout.names.get(pkg)   // Mi5G 2.0.1: renamed on the phone
+                    : appLabels.containsKey(pkg) ? appLabels.get(pkg) : String.valueOf(ri.loadLabel(pm)), pkg);
             if (!seen.add(pkg + '\n' + label)) continue;
             Drawable banner = TileMenu.customImage(ctx, pkg);
             if (banner == null) banner = bundledBanner(appBanners.get(pkg));
             if (banner == null) banner = loadBanner(pm, ri);
             Drawable icon = ri.loadIcon(pm);
-            if (card != null) {
-                fresh.add(new Entry(Entry.CARD, label, component, banner, icon, card.caption, card.accent));
+            Entry entry = card != null ? new Entry(Entry.CARD, label, component, banner, icon, card.caption, card.accent)
+                    : new Entry(label, component, banner, icon);
+            HomeLayout.Folder folder = layout.folderOf(pkg);
+            if (folder != null && !reordering) {
+                // Mi5G 2.0.1: an app in a folder leaves the grid; the folder tile stands where it was.
+                List<Entry> in = folderApps.get(folder.id);
+                if (in == null) folderApps.put(folder.id, in = new ArrayList<>());
+                in.add(entry);
             } else {
-                fresh.add(new Entry(label, component, banner, icon));
+                fresh.add(entry);
             }
+        }
+        for (HomeLayout.Folder folder : layout.folders) {
+            List<Entry> in = folderApps.get(folder.id);
+            if (in == null || in.isEmpty()) continue;
+            Collections.sort(in, (a, b) -> Order.compare(savedRanks, a.orderKey, b.orderKey));
+            Entry f = new Entry(Entry.FOLDER, folder.name, new ComponentName(ctx, "mi5g-folder-" + folder.id),
+                    null, ctx.getDrawable(R.drawable.ic_folder), in.size() + "", 0);
+            f.extra = folder.id;
+            f.orderKey = in.get(0).orderKey;
+            fresh.add(f);
         }
         Collections.sort(fresh, (a, b) -> {
             // The owner's own order first; tiles it does not know (new installs) follow by the rule below.
-            int saved = Order.compare(savedRanks, a.component.flattenToShortString(), b.component.flattenToShortString());
+            int saved = Order.compare(savedRanks, a.orderKey, b.orderKey);
             if (saved != 0) return saved;
             int fa = favourites.indexOf(a.pkg), fb = favourites.indexOf(b.pkg);
             if (fa >= 0 || fb >= 0) {
@@ -300,6 +332,9 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         docked = 0;
         while (docked < fresh.size() && favourites.contains(fresh.get(docked).pkg)) docked++;
+        // Mi5G 2.0.1: pinned inputs come right after the dock favourites, under the name the phone gave them.
+        List<Entry> pinned = inputEntries();
+        fresh.addAll(docked, pinned);
         emptySlots = dockRow && !reordering ? DockSlots.empty(docked, dockSize, fresh.size(), fillDock) : 0;
         for (int i = 0; i < emptySlots; i++) {
             fresh.add(docked + i, new Entry(Entry.EMPTY, "", new ComponentName(ctx, "empty-dock-slot-" + i),
@@ -309,6 +344,27 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         items.addAll(fresh);
         notifyDataSetChanged();
     }
+
+    /** Mi5G 2.0.1: the inputs pinned from the phone that the TV still lists. */
+    private List<Entry> inputEntries() {
+        List<Entry> out = new ArrayList<>();
+        if (layout.inputs.isEmpty()) return out;
+        Map<String, ArrangeServer.InputRow> tv = new HashMap<>();
+        for (ArrangeServer.InputRow r : ArrangeServer.inputs(ctx)) tv.put(r.id, r);
+        for (HomeLayout.PinnedInput p : layout.inputs) {
+            ArrangeServer.InputRow r = tv.get(p.id);
+            if (r == null) continue;
+            String label = p.name.isEmpty() ? r.label : p.name;
+            Entry e = new Entry(Entry.INPUT, label, new ComponentName(ctx, "mi5g-input-" + Integer.toHexString(p.id.hashCode())),
+                    null, ctx.getDrawable(r.hdmi ? R.drawable.ic_input : R.drawable.ic_av), null, 0);
+            e.extra = p.id;
+            out.add(e);
+        }
+        return out;
+    }
+
+    /** Mi5G 2.0.1: the look options from the phone (names, focus style). */
+    HomeLayout.Options options() { return layout.options; }
 
     /** A banner_* drawable bundled with the launcher, or null for none or a name that is not one. */
     private Drawable bundledBanner(String name) {
@@ -403,8 +459,11 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         h.card.setFocusable(true);
         h.name.setText(e.name);
         h.name.setVisibility(dockRow && position < dockSize ? View.INVISIBLE : View.VISIBLE);   // the dock has no labels
+        h.opts = layout.options;
+        if ("never".equals(h.opts.names)) h.name.setVisibility(View.INVISIBLE);
         boolean focused = h.card.isFocused();   // a rebind after reload() can hit the focused tile
-        h.name.setAlpha(focused ? 1f : 0f);
+        h.name.setAlpha(focused || "always".equals(h.opts.names) ? 1f : 0f);
+        h.card.setForeground(focused && !"scale".equals(h.opts.focus) ? h.focusRing : null);
         h.card.setScaleX(focused && animations ? focusScale() : 1f);
         h.card.setScaleY(focused && animations ? focusScale() : 1f);
         h.card.setTranslationY(focused && advancedEffects ? -4f * ctx.getResources().getDisplayMetrics().density : 0f);
@@ -428,7 +487,12 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             h.label.setVisibility(View.VISIBLE);
         }
         h.card.setOnClickListener(v -> launch(e));
+        if (e.kind == Entry.FOLDER) {
+            List<Entry> apps = folderApps.get(e.extra);
+            h.card.setOnClickListener(v -> { if (listener != null && apps != null) listener.onFolder(e.label, apps); });
+        }
         h.card.setOnLongClickListener(v -> {
+            if (e.kind == Entry.FOLDER || e.kind == Entry.INPUT) return false;
             // Mi5G 2.0: hold OK opens the tile menu (Move, Remove from Home, App info, custom image).
             if (e.kind == Entry.APP && listener != null && listener.onTileMenu(e.pkg, e.name)) return true;
             Intent i = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + e.pkg));
@@ -442,7 +506,17 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     /** Opens the tile's activity by explicit component, with no extras: a card can name nothing else. */
-    private void launch(Entry e) {
+    void launch(Entry e) {
+        if (e.kind == Entry.INPUT) {
+            // Mi5G 2.0.1: a pinned input opens like the input switcher does (passthrough channel URI).
+            try {
+                ctx.startActivity(new Intent(Intent.ACTION_VIEW, android.media.tv.TvContract.buildChannelUriForPassthroughInput(e.extra))
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            } catch (Exception ex) {
+                Toast.makeText(ctx, ctx.getString(R.string.cant_open, e.label), Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
         if (e.kind == Entry.HOME_SETTINGS) {
             ctx.startActivity(new Intent(ctx, HomeSettingsActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
@@ -656,6 +730,9 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         final boolean animations;
         final boolean advancedEffects;
         final boolean reducedMotion;
+        /** Mi5G 2.0.1: names and focus style from the phone, set at each bind. */
+        HomeLayout.Options opts = HomeLayout.Options.DEFAULT;
+        final Drawable focusRing;
 
         Holder(View v, TileListener listener, boolean animations, boolean advancedEffects,
                boolean reducedMotion) {
@@ -669,6 +746,10 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             this.animations = animations;
             this.advancedEffects = advancedEffects;
             this.reducedMotion = reducedMotion;
+            android.graphics.drawable.GradientDrawable ring = new android.graphics.drawable.GradientDrawable();
+            ring.setCornerRadius(12 * v.getResources().getDisplayMetrics().density);
+            ring.setStroke(Math.round(3 * v.getResources().getDisplayMetrics().density), 0xFFD4AF37);
+            focusRing = ring;
 
             final float density = v.getResources().getDisplayMetrics().density;
             card.setOutlineProvider(new ViewOutlineProvider() {
@@ -692,8 +773,10 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 view.animate().cancel();
                 banner.animate().cancel();
                 name.animate().cancel();
-                float scale = !animations ? 1f : advancedEffects ? 1.12f : 1.10f;
+                float scale = !animations || "border".equals(opts.focus) ? 1f : advancedEffects ? 1.12f : 1.10f;
                 float s = focused ? scale : 1f;
+                view.setForeground(focused && !"scale".equals(opts.focus) ? focusRing : null);
+                boolean always = "always".equals(opts.names);
                 if (!animations) {
                     view.setScaleX(1f);
                     view.setScaleY(1f);
@@ -701,7 +784,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     view.setTranslationZ(0f);
                     banner.setScaleX(1f);
                     banner.setScaleY(1f);
-                    name.setAlpha(focused ? 1f : 0f);
+                    name.setAlpha(focused || always ? 1f : 0f);
                     name.setTranslationY(0f);
                 } else if (reducedMotion) {
                     view.animate().scaleX(s).scaleY(s)
@@ -710,7 +793,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             .setDuration(focused ? 120 : 80)
                             .setInterpolator(new DecelerateInterpolator())
                             .withLayer().start();
-                    name.animate().alpha(focused ? 1f : 0f).setDuration(100).start();
+                    name.animate().alpha(focused || always ? 1f : 0f).setDuration(100).start();
                     // Same place as the full motion's slide ends: the layout's -6dp is only its starting point, and
                     // left there the name overlaps the zoomed tile.
                     // Only on focus: snapping it back to -6dp while it fades out would jump it up over the tile.
@@ -728,8 +811,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         banner.animate().scaleX(focused ? 1.035f : 1f).scaleY(focused ? 1.035f : 1f)
                                 .setDuration(280).start();
                     }
-                    name.animate().alpha(focused ? 1f : 0f)
-                            .translationY(focused ? density * 4f : -density * 6f)
+                    name.animate().alpha(focused || always ? 1f : 0f)
+                            .translationY(focused || always ? density * 4f : -density * 6f)
                             .setDuration(220).start();
                 }
                 int pos = getBindingAdapterPosition();

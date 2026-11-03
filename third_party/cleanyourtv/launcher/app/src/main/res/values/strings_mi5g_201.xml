@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Mi5G 2.0.1 strings. -->
+<resources>
+    <string name="mi5g_arrange_title">Arrange Home from your phone</string>
+    <string name="mi5g_arrange_body">Scan the code with a phone on the same Wi-Fi. Reorder, rename, change icons, hide apps, make folders, pin inputs and pick a wallpaper. The link stops working when you close this screen.</string>
+    <string name="mi5g_arrange_stop">Stop</string>
+    <string name="mi5g_arrange_no_network">Connect the TV to Wi-Fi or Ethernet first.</string>
+    <string name="mi5g_arrange_row">Arrange Home from phone</string>
+    <string name="mi5g_arrange_row_hint">QR code, same Wi-Fi only</string>
+    <string name="mi5g_city_dream_name">Mi5G city clock</string>
+    <string name="mi5g_city_dream_row">City screensaver</string>
+    <string name="mi5g_city_dream_hint">Clock, Hijri date, next prayer, weather</string>
+    <string name="mi5g_city_next_prayer">Next prayer: %1$s</string>
+    <string name="mi5g_credits">About and credits</string>
+    <string name="mi5g_credits_body">Mi5G TV by @midroid5G, built on Clean Your TV by Gathin (MIT). Ideas from Aerial TV by pengchujin (MIT), tv-vibehack by Gathin (MIT), talkies by TechPP (MIT). QR: ZXing (Apache-2.0). Cairo font: SIL OFL 1.1.</string>
+</resources>
