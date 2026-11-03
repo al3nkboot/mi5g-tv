@@ -133,7 +133,20 @@ talkies — https://github.com/rajupp/talkies
 tv-vibehack — https://github.com/samdegan2311/tv-vibehack
   MIT License. Copyright (c) 2026 Gathin. The launcher Control Center is adapted from it.
 
-The MIT License text for the three MIT projects above:
+Aerial TV — https://github.com/pengchujin/aerial-tv
+  MIT License. Copyright (c) 2026 pengchujin.
+  Mi5G TV 2.0.1 reuses ideas from it in the bundled launcher (com.gathin.tvhome): arranging Home from
+  a phone over the local network with a QR code, pinned TV inputs, app folders, the Bing photo of the day
+  and phone uploads as wallpaper, layout options, the boot / standby revival approach and a city
+  screensaver. The code is Mi5G's own and the look is Mi5G's (teal and gold, Arabic RTL, Cairo font).
+  No Apple aerial videos are included. Aerial TV's own font (Inter) is under the SIL Open Font License
+  1.1 and is not included in Mi5G TV.
+
+ZXing core 3.5.3 (launcher QR code) — https://github.com/zxing/zxing
+  Copyright ZXing authors. Licensed under the Apache License, Version 2.0
+  (http://www.apache.org/licenses/LICENSE-2.0).
+
+The MIT License text for the four MIT projects above:
   Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
   associated documentation files (the "Software"), to deal in the Software without restriction,
   including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
