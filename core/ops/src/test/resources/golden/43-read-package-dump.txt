@@ -1,7 +1,7 @@
 # dumpsys of one package
 op: Read kind=PACKAGE_DUMP pkg=com.gathin.tvhome
 privilege: READ
-timeout_ms: 20000
+timeout_ms: 45000
 stdout_cap: 1048576
 line: 'dumpsys' 'package' 'com.gathin.tvhome'
 transfer: none

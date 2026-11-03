@@ -332,7 +332,7 @@ class ShellRenderer(private val watchdogVariant: WatchdogVariant = WatchdogVaria
         // Timeouts (SECURITY 3.5, ARCHITECTURE 3.3) and output caps (SECURITY 3.5, ARCHITECTURE 3.7).
         const val T_DEFAULT = 30_000L
         const val T_PM = 30_000L
-        const val T_DUMPSYS = 20_000L
+        const val T_DUMPSYS = 45_000L   // 2.0.1: slow 1 GB SDK 28 boxes (GAORUI m7332)
         const val T_INSTALL = 120_000L
         const val T_START_WAIT = 180_000L
         const val T_PUSH = 600_000L

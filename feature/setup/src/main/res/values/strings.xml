@@ -39,6 +39,8 @@
     <!-- Stop: probe failure -->
     <string name="stop_probe_failed_title">We couldn\'t read what\'s on the TV</string>
     <string name="stop_probe_failed_body">The TV stopped answering while we were reading it. Nothing was changed. Check that it\'s still on, then try again.</string>
+    <string name="stop_plan_refused_title">There\'s no safe plan for this TV yet</string>
+    <string name="stop_plan_refused_body">We read the TV fine, but there\'s no safe way to clean it from the phone yet, so nothing was changed. Send the problem report so we can add this TV, or try again.</string>
     <string name="stop_probe_failed_primary">Try again</string>
     <string name="stop_probe_failed_secondary">Back</string>
     <string name="stop_probe_failed_tertiary">Show details</string>

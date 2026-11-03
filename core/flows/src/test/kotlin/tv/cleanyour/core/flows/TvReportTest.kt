@@ -66,7 +66,7 @@ class TvReportTest {
     )
 
     private val expected = """
-        Clean Your TV: TV report
+        Mi5G TV: TV report
         App: 0.3.2 (full)
         Phone: Samsung SM-S921B, Android 16
 
@@ -265,7 +265,7 @@ class TvReportTest {
     @Test fun theProblemReportHasTheSummaryAndTheLog() {
         val log = "Clean Your TV 0.3.2, Android 36\n1792745323148 I setup: run paused STEP_FAILED at step 72"
         val text = TvReport.problem(about, input(), log)
-        assertTrue(text.startsWith("Clean Your TV: problem report\nApp: 0.3.2 (full)\nPhone: Samsung SM-S921B, Android 16\n"), text)
+        assertTrue(text.startsWith("Mi5G TV: problem report\nApp: 0.3.2 (full)\nPhone: Samsung SM-S921B, Android 16\n"), text)
         assertTrue("Model: 55A6H" in text && "Profile: brand set Hisense" in text && "Apps: 4 system, 2 other" in text)
         assertFalse(storeDemo.value in text)
         assertTrue(text.endsWith("Diagnostics log (addresses, serial numbers, keys and codes removed)\n$log\n"), text)

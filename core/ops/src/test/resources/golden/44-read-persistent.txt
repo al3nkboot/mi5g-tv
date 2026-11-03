@@ -1,7 +1,7 @@
 # The packages section of dumpsys package
 op: Read kind=PERSISTENT
 privilege: READ
-timeout_ms: 20000
+timeout_ms: 45000
 stdout_cap: 4194304
 line: 'dumpsys' 'package' 'packages'
 transfer: none

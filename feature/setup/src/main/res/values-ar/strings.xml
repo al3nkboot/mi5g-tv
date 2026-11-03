@@ -33,6 +33,8 @@
     <!-- Stop: probe failure -->
     <string name="stop_probe_failed_title">تعذّرت قراءة محتويات التلفاز</string>
     <string name="stop_probe_failed_body">توقف التلفاز عن الاستجابة أثناء قراءته. لم يتغير أي شيء. تأكد من أنه ما زال قيد التشغيل، ثم حاول مرة أخرى.</string>
+    <string name="stop_plan_refused_title">لا توجد خطة آمنة لهذا التلفاز بعد</string>
+    <string name="stop_plan_refused_body">قرأنا التلفاز بنجاح، لكن لا توجد طريقة آمنة لتنظيفه من الهاتف حاليًا، لذلك لم نغيّر أي شيء. أرسل تقرير المشكلة لنضيف هذا التلفاز، أو حاول مرة أخرى.</string>
     <string name="stop_probe_failed_primary">حاول مرة أخرى</string>
     <string name="stop_probe_failed_secondary">رجوع</string>
     <string name="stop_probe_failed_tertiary">عرض التفاصيل</string>

@@ -72,6 +72,7 @@ enum class CopyKey(val res: String) {
     STOP_INSTALL_FAILED_PRIMARY("stop_install_failed_primary"),
     STOP_UNDONE_TITLE("stop_undone_title"), STOP_UNDONE_BODY("stop_undone_body"), STOP_UNDONE_PRIMARY("stop_undone_primary"),
     STOP_PROBE_FAILED_TITLE("stop_probe_failed_title"), STOP_PROBE_FAILED_BODY("stop_probe_failed_body"),
+    STOP_PLAN_REFUSED_TITLE("stop_plan_refused_title"), STOP_PLAN_REFUSED_BODY("stop_plan_refused_body"),
     STOP_PROBE_FAILED_PRIMARY("stop_probe_failed_primary"), STOP_PROBE_FAILED_SECONDARY("stop_probe_failed_secondary"),
     STOP_NOT_BACK_TITLE("stop_not_back_title"), STOP_NOT_BACK_BODY("stop_not_back_body"),
     STOP_NOT_BACK_PRIMARY("stop_not_back_primary"), STOP_NOT_BACK_SECONDARY("stop_not_back_secondary"),

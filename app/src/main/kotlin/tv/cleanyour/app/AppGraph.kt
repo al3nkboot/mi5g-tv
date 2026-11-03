@@ -179,7 +179,7 @@ class AppGraph(context: Context, val appVersion: String = versionOf(context), va
     val homePrefs = HomePrefs(documents)
     val appPrefs = AppPrefs(documents)
     val openWrites = OpenWrites()                          // one per graph (R5-W8 O2), held by the one ManageDeps
-    val diagnostics = LogDiagnostics { "Clean Your TV $appVersion, Android ${android.os.Build.VERSION.SDK_INT}" }
+    val diagnostics = LogDiagnostics { "Mi5G TV $appVersion, Android ${android.os.Build.VERSION.RELEASE} (SDK ${android.os.Build.VERSION.SDK_INT})" }
     // 0.3.2 B1, B2: what a report says about the app and the phone (no id of the phone: its maker,
     // model and Android version, as a person would type them into the issue form).
     val about = AppAbout(appVersion, store.flavour, phoneName(), "Android ${android.os.Build.VERSION.RELEASE}")

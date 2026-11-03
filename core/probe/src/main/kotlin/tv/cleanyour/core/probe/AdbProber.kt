@@ -47,7 +47,7 @@ class AdbProber(
 ) : Prober, LaunchableApps, SavedWifiOwners {
 
     private suspend fun run(
-        session: TvSession, line: ShellLine, stage: ProbeStage, cap: Int, timeoutMs: Long = 30_000, retry: RetryClass = RetryClass.IDEMPOTENT_READ,
+        session: TvSession, line: ShellLine, stage: ProbeStage, cap: Int, timeoutMs: Long = 60_000, retry: RetryClass = RetryClass.IDEMPOTENT_READ,
     ): ExecResult {
         val r = session.exec(line, ExecSpec(timeoutMs = timeoutMs, stdoutCap = cap, retry = retry))
         if (r.truncated) throw ProbeException(stage, "output over $cap bytes")

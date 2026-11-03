@@ -108,6 +108,8 @@ class ResourceFlowCopy(context: Context) : FlowCopy {
         CopyKey.STOP_PROBE_FAILED_BODY -> SetupR.string.stop_probe_failed_body
         CopyKey.STOP_PROBE_FAILED_PRIMARY -> SetupR.string.stop_probe_failed_primary
         CopyKey.STOP_PROBE_FAILED_SECONDARY -> SetupR.string.stop_probe_failed_secondary
+        CopyKey.STOP_PLAN_REFUSED_TITLE -> SetupR.string.stop_plan_refused_title
+        CopyKey.STOP_PLAN_REFUSED_BODY -> SetupR.string.stop_plan_refused_body
         CopyKey.STOP_NOT_BACK_TITLE -> SetupR.string.stop_not_back_title
         CopyKey.STOP_NOT_BACK_BODY -> SetupR.string.stop_not_back_body
         CopyKey.STOP_NOT_BACK_PRIMARY -> SetupR.string.stop_not_back_primary

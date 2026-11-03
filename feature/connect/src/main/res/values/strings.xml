@@ -15,7 +15,7 @@
     <string name="action_ok">OK</string>
 
     <!-- S1 Welcome. The overline is the product name, as on the TV launcher. -->
-    <string name="welcome_overline">Clean Your TV</string>
+    <string name="welcome_overline">Mi5G TV</string>
     <string name="welcome_title">Your TV, tidied up.</string>
     <string name="welcome_body">Switch off the clutter, keep the apps you use, and get a calm home screen. Five minutes. Everything can be put back.</string>
     <string name="welcome_hero_cd">A TV home screen full of sponsored rows turns into a clean one with four apps along the bottom</string>

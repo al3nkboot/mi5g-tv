@@ -24,7 +24,7 @@
     <string name="gate_failed">We couldn\'t confirm it\'s you, so nothing was changed.</string>
 
     <!-- M1 Manage -->
-    <string name="manage_title">Clean Your TV</string>
+    <string name="manage_title">Mi5G TV</string>
     <string name="manage_settings_cd">App settings</string>
     <string name="manage_tv_title">{tv}, {room}</string>
     <string name="manage_tv_title_noroom">{tv}</string>

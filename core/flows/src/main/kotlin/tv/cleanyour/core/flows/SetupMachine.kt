@@ -551,6 +551,9 @@ class SetupMachine(
         }.getOrElse { OpenResult.Failed(AdbError.Transport.Unreachable) }
         when (result) {
             is OpenResult.Ok -> {
+                // 2.0.1: a reconnect after "Back" or a retry closes the previous connection first, so
+                // a slow TV is not left serving two or three adb connections at once.
+                session?.takeIf { it !== result.session }?.let { old -> attempt { old.close() } }
                 session = result.session
                 val identity = result.session.identity
                 // D38: a TV that raised no Allow dialog and is new to this phone gets the "Is this your
@@ -600,7 +603,17 @@ class SetupMachine(
 
     // probe and plan (S2d to S3)
 
+    // 2.0.1: one probe at a time on the one session; a Retry tapped while a probe still runs on a
+    // slow TV no longer stacks a second full read on top of it.
+    private var probing = false
+
     private suspend fun probe() {
+        if (probing) return
+        probing = true
+        try { probeOnce() } finally { probing = false }
+    }
+
+    private suspend fun probeOnce() {
         val s = session ?: return
         val tvId = s.tvId
         deps.log.line("setup: probe start")
@@ -672,7 +685,15 @@ class SetupMachine(
         val fireOs = p?.platform == Platform.FIRE_OS || FireOs.isFireOs(f, snap)
         mutableExtras.update { it.copy(fireTv = fireOs) }
         // Already ours (a re-run): there is no switch to skip, as in the planner's takeover.
-        val ours = snap.home.resolved?.pkg == deps.launcherPin.bundled().pkg
+        // 2.0.1: ours means our package AND our key. The same package signed with another key (an
+        // older Clean Your TV launcher already Home, GAORUI m7332) is a home screen the person
+        // chose; the planner can only replace it while the TV's own home is in charge (D36), so
+        // asking for the switch there got the whole plan refused on every probe.
+        val bundled = deps.launcherPin.bundled()
+        val samePkg = snap.home.resolved?.pkg == bundled.pkg
+        val foreignOurs = samePkg && snap.packages[bundled.pkg]?.signer?.let { it != bundled.signer } == true
+        foreignHome = foreignOurs
+        val ours = samePkg && !foreignOurs
         val risk = if (ours) null else HomeSwitchRisk.of(f, p, snap, wifi)
         // Issue #8: the exact profile's stock launchers too, through the planner's own StockHome, so
         // a TV whose own home screen is not among the claimants is never asked for a switch the
@@ -689,6 +710,7 @@ class SetupMachine(
             f.sdk < DefaultPlanner.TV_MIN_SDK -> HomeBlock.OLD_ANDROID
             risk == HomeSwitchRisk.Risk.BOOT_LOOP -> HomeBlock.BOOT_LOOP
             risk == HomeSwitchRisk.Risk.CASTING -> HomeBlock.CASTING
+            foreignOurs -> HomeBlock.HOME_CHANGED
             stockUnknown && StockHome.changedByPerson(snap, stocks) -> HomeBlock.HOME_CHANGED
             (p != null && p.stockLaunchers.isEmpty()) || stockUnknown -> HomeBlock.UNKNOWN_HOME
             risk == HomeSwitchRisk.Risk.WIZARD_WIFI -> HomeBlock.WIZARD_WIFI
@@ -699,7 +721,10 @@ class SetupMachine(
     }
 
     // Plans the Setup from the current snapshot and draft; pure and quick (the planner is pure).
-    private suspend fun replan(record: Tv, fresh: Boolean = false) {
+    // 2.0.1: Home answers to our launcher package signed with another key (homeBlock).
+    private var foreignHome = false
+
+    private suspend fun replan(record: Tv, fresh: Boolean = false, cleanUpOnly: Boolean = false) {
         val s = session ?: return
         val res = resolution ?: return
         if (fresh) snapshot = deps.runner.freshSnapshot(s)
@@ -714,8 +739,8 @@ class SetupMachine(
         val wifi = wizardWifi(s, snap)
         val block = homeBlock(snap, wifi)
         val possible = block == HomeBlock.NONE
-        val canForce = block == HomeBlock.HOME_CHANGED || block == HomeBlock.UNKNOWN_HOME || block == HomeBlock.WIZARD_STAYS_ON
-        val installHome = possible || (canForce && forceHome)
+        val canForce = !cleanUpOnly && !foreignHome && (block == HomeBlock.HOME_CHANGED || block == HomeBlock.UNKNOWN_HOME || block == HomeBlock.WIZARD_STAYS_ON)
+        val installHome = !cleanUpOnly && (possible || (canForce && forceHome))
         val choices = Choices(
             kept = draft.kept, extraOff = draft.extraOff, dock = dock,
             theme = theme,
@@ -758,8 +783,15 @@ class SetupMachine(
                 send(Ev.PlanReady(record.id, r.plan, draft.level))
             }
             is PlanResult.Refused -> {
-                deps.log.line("setup: plan refused")
-                send(Ev.Stop(record.id, card(StopCase.PROBE_FAILED, null)))
+                deps.log.line("setup: plan refused: ${r.reasons.take(3).joinToString("; ").take(300)}")
+                // 2.0.1: an unknown or unusual TV gets the safe clean-up alone (no home screen switch,
+                // no launcher install) instead of no plan at all.
+                if (installHome) {
+                    deps.log.line("setup: planning the clean-up alone, without the home screen")
+                    replan(record, cleanUpOnly = true)
+                    return
+                }
+                send(Ev.Stop(record.id, card(StopCase.PROBE_FAILED, null, title = CopyKey.STOP_PLAN_REFUSED_TITLE, body = CopyKey.STOP_PLAN_REFUSED_BODY)))
             }
         }
     }
@@ -1385,10 +1417,10 @@ class SetupMachine(
 
     private fun counts(plan: Plan, done: Int): Map<String, Any> = mapOf("done" to done, "total" to plan.steps.count { it.op is Op.Disable })
 
-    private fun card(case: StopCase, planId: PlanId?, args: Map<String, Any> = emptyMap(), body: CopyKey? = null, primary: CopyKey? = null): StopCard {
+    private fun card(case: StopCase, planId: PlanId?, args: Map<String, Any> = emptyMap(), body: CopyKey? = null, primary: CopyKey? = null, title: CopyKey? = null): StopCard {
         val k = stopKeys(case)
         val c = deps.copy
-        return StopCard(case, c.text(k.title, args), c.text(body ?: k.body, args), c.text(primary ?: k.primary, args),
+        return StopCard(case, c.text(title ?: k.title, args), c.text(body ?: k.body, args), c.text(primary ?: k.primary, args),
             k.secondary?.let { c.text(it, args) }, planId, k.tertiary?.let { c.text(it, args) })
     }
 
