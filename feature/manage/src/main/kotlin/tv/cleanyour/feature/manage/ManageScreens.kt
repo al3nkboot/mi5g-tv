@@ -506,14 +506,21 @@ fun AppSettingsScreen(
             if (state.updateCheck) {
                 ListDivider()
                 val update = state.update
+                val help = stringResource(R.string.appsettings_update_help)
                 ListRow(stringResource(R.string.appsettings_check_updates), subtitle = when (update) {
                     UpdateCheck.Checking -> stringResource(R.string.appsettings_checking)
                     is UpdateCheck.Available -> msg(R.string.appsettings_update_available, "version" to update.version)
-                    UpdateCheck.Latest -> stringResource(R.string.appsettings_up_to_date)
+                    UpdateCheck.Latest -> stringResource(R.string.appsettings_up_to_date) + "\n" + help
                     UpdateCheck.Failed -> stringResource(R.string.appsettings_update_error)
-                    UpdateCheck.Idle -> null
+                    UpdateCheck.Idle -> help
                 }, trailing = if (update == UpdateCheck.Checking) ({ Spinner() }) else null,
                     onClick = { if (update is UpdateCheck.Available) onOpenRelease() else onIntent(AppSettingsIntent.CheckUpdates) })
+                // 2.0.1: one update item; when the check fails, the releases page is the fallback.
+                if (update == UpdateCheck.Failed) {
+                    ListDivider()
+                    ListRow(stringResource(R.string.appsettings_open_releases),
+                        subtitle = stringResource(R.string.appsettings_open_releases_note), onClick = onOpenRelease)
+                }
                 // M4 item 34: the new APK straight from the release; Android installs it over this one
                 // only when it carries the same signature (the browser downloads it; the app holds no
                 // install permission, SECURITY 4.2).
@@ -522,19 +529,9 @@ fun AppSettingsScreen(
                     ListRow(msg(R.string.appsettings_update_now, "version" to update.version),
                         subtitle = stringResource(R.string.appsettings_update_now_note), onClick = { onUpdateNow(update.version) })
                 }
-                ListDivider()
-                ListRow(stringResource(R.string.appsettings_update_how), subtitle = stringResource(R.string.appsettings_update_how_note))
             }
         }
         ListGroup(Modifier.padding(top = 12.dp)) {
-            if (state.updateCheck) {
-                ListRow(
-                    stringResource(R.string.appsettings_download_github),
-                    subtitle = stringResource(R.string.appsettings_download_github_note),
-                    onClick = onOpenRelease,
-                )
-                ListDivider()
-            }
             if (onSupportPayPal != null) {
                 ListRow(
                     stringResource(R.string.appsettings_support_paypal),

@@ -308,8 +308,6 @@
     <string name="tvapps_done_pull_apk">APK backup for {name} saved and ready to share.</string>
     <string name="tvapps_failed_action">Could not complete action for {name}.</string>
     <!-- v1.5.0: TV App Manager 7 actions, Downloader codes, Button Mapper, Force Landscape, TV Banner, GitHub Update -->
-    <string name="appsettings_download_github">Download latest APK from GitHub Releases</string>
-    <string name="appsettings_download_github_note">github.com/al3nkboot/mi5g-tv/releases/latest</string>
     <string name="tvapps_filter_system_toggle">Show system and factory apps (Netflix, Prime)</string>
     <string name="tvapps_action_restrict_bg">Restrict background work and wake-lock</string>
     <string name="tvapps_action_disable">Freeze / Disable app</string>
@@ -497,8 +495,6 @@
     <!-- M4 item 34: updates -->
     <string name="appsettings_update_now">Update now to {version}</string>
     <string name="appsettings_update_now_note">Downloads the update from the official release page; then tap Install. Android accepts it only with the same signature as this app, and your data stays.</string>
-    <string name="appsettings_update_how">How updating works</string>
-    <string name="appsettings_update_how_note">1. Check for updates. 2. Update now downloads the file. 3. Open it and tap Install (allow your browser to install apps once). The TV modules and launcher update from Cards and modules.</string>
     <!-- M4 item 35 -->
     <string name="manage_row_resetup">🔄 Re-set up after a system update</string>
     <string name="manage_row_resetup_sub">One tap: finds what the update brought back and switches it off again</string>
@@ -510,5 +506,8 @@
     <string name="tvapps_suggested_hint">Ads, tracking and preloaded apps your device profile suggests switching off. Every switch-off can be undone; nothing is removed.</string>
     <string name="tvtools_install_all">Install all Mi5G TV apps on the TV</string>
     <string name="tvtools_label_install_all">Install all apps</string>
+    <string name="appsettings_update_help">Checks the signed update list for the app, the TV modules and the launcher. Tap Update now, then open the file and tap Install.</string>
+    <string name="appsettings_open_releases">Open the GitHub releases page</string>
+    <string name="appsettings_open_releases_note">github.com/al3nkboot/mi5g-tv/releases</string>
 </resources>
 
