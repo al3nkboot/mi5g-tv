@@ -147,6 +147,7 @@
     <string name="appsettings_licence_tvos">tvOS Launcher، techgenius: ترخيص Apache-2.0 مع ملف NOTICE</string>
     <string name="appsettings_licence_omarchy">OmarchyTV، Marco Porro: ترخيص MIT</string>
     <string name="appsettings_licence_talkies">talkies، TechPP: ترخيص MIT</string>
+    <string name="appsettings_licence_aerial">Aerial TV، pengchujin: ترخيص MIT (أفكار الترتيب من الهاتف والمجلدات والمداخل والخلفيات وشاشة توقف المدينة؛ رمز QR من ZXing: ترخيص Apache-2.0)</string>
     <string name="appsettings_licence_vibehack">tv-vibehack، Gathin: ترخيص MIT (مركز التحكم مقتبس منه)</string>
     <string name="appsettings_licence_adhan">adhan-java، Batoul Apps: ترخيص MIT؛ إحداثيات المدن من GeoNames (CC BY 4.0)</string>
     <string name="appsettings_licence_streams">إذاعات القرآن: بث عام من mp3quran.net؛ بيانات المباريات من ESPN (غير رسمية)</string>
@@ -466,6 +467,8 @@
     <string name="quick_start_title">دليل البدء السريع</string><string name="quick_start_step1">صِل الجوال والتلفاز بشبكة Wi-Fi نفسها.</string><string name="quick_start_step2">فعّل خيارات المطور وتصحيح الأخطاء عبر الشبكة أو لاسلكيًا على التلفاز.</string><string name="quick_start_step3">اقرن بالتلفاز واسمح بالاتصال.</string><string name="quick_start_step4">استخدم تبويب الريموت للتحكم بالتلفاز.</string><string name="quick_start_step5">ثبّت الوحدات من شاشة الوحدات.</string><string name="quick_start_video">شاهد الفيديو (دقيقتان)</string>
     <string name="tvtools_home_section">شاشة Mi5G الرئيسية</string>
     <string name="tvtools_home_note">تُبقي Mi5G الشاشة الرئيسية بعد ضغط زر الهوم وإعادة التشغيل، وتفعّل أزرار الريموت ومركز التحكم وشريط الوسائط. العودة لمشغّل التلفاز تعيد تشغيل المشغّل الأصلي، ولا يُحذف أي شيء.</string>
+    <string name="tvtools_arrange_home">رتّب الشاشة الرئيسية من الهاتف</string>
+    <string name="tvtools_label_arrange_home">فتح رمز الترتيب على التلفاز</string>
     <string name="tvtools_keep_home">تثبيت Mi5G كشاشة رئيسية</string>
     <string name="tvtools_stock_home">العودة لمشغّل التلفاز الأصلي</string>
     <string name="tvtools_label_keep_home">تثبيت شاشة Mi5G الرئيسية</string>

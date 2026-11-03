@@ -181,6 +181,8 @@ sealed interface TvToolsIntent {
     data object QuickSettingsOverlay : TvToolsIntent
     data object KeepMi5gHome : TvToolsIntent
     data object ReturnToStockHome : TvToolsIntent
+    /** Mi5G 2.0.1: open the launcher's arrange-from-phone QR screen on the TV. */
+    data object ArrangeHomeFromPhone : TvToolsIntent
     data class MapRemoteKey(val keyCode: Int, val targetPkg: String, val label: String) : TvToolsIntent
     data class SetForceLandscape(val landscape: Boolean) : TvToolsIntent
     data object StartClockScreensaver : TvToolsIntent
@@ -347,6 +349,7 @@ class TvToolsMachine(
             }
             TvToolsIntent.KeepMi5gHome -> scope.launch { keepMi5gHome() }
             TvToolsIntent.ReturnToStockHome -> scope.launch { returnToStockHome() }
+            TvToolsIntent.ArrangeHomeFromPhone -> scope.launch { runPowerLines(ShellRenderer.arrangeHomeLines(), "@arrange_home") }
             is TvToolsIntent.MapRemoteKey -> scope.launch {
                 mapRemoteKey(event.keyCode, event.targetPkg, event.label)
             }

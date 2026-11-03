@@ -595,6 +595,7 @@ internal fun ColumnScope.LicencesContent() {
         listOf(
             R.string.appsettings_licence_app, R.string.appsettings_licence_launcher, R.string.appsettings_licence_tvos,
             R.string.appsettings_licence_omarchy, R.string.appsettings_licence_talkies, R.string.appsettings_licence_vibehack,
+            R.string.appsettings_licence_aerial,
             R.string.appsettings_licence_adhan, R.string.appsettings_licence_streams, R.string.appsettings_licence_font,
             R.string.appsettings_licence_apache, R.string.appsettings_licence_bouncycastle, R.string.appsettings_licence_full,
         )
@@ -812,6 +813,12 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
             SecondaryButton(
                 stringResource(R.string.tvtools_stock_home),
                 { onIntent(TvToolsIntent.ReturnToStockHome) },
+                enabled = !powerWorking,
+            )
+            // Mi5G 2.0.1: arrange the launcher's Home from this phone (QR on the TV, same network only).
+            SecondaryButton(
+                stringResource(R.string.tvtools_arrange_home),
+                { onIntent(TvToolsIntent.ArrangeHomeFromPhone) },
                 enabled = !powerWorking,
             )
         }
@@ -1571,6 +1578,7 @@ private fun AppActionFeedback(status: TvAppActionStatus) {
 @Composable
 private fun powerLabel(raw: String): String = when {
     raw == "@settings_overlay" -> stringResource(R.string.tvtools_label_settings_overlay)
+    raw == "@arrange_home" -> stringResource(R.string.tvtools_label_arrange_home)
     raw == "@landscape" -> stringResource(R.string.tvtools_label_landscape)
     raw == "@rotation_auto" -> stringResource(R.string.tvtools_label_rotation_auto)
     raw == "@screensaver" -> stringResource(R.string.tvtools_label_screensaver)

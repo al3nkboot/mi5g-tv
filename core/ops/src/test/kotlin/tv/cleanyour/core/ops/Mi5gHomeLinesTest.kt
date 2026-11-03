@@ -36,4 +36,13 @@ class Mi5gHomeLinesTest {
         assertEquals(1, ShellRenderer.putAccessibilityLines("").size)
         assertFailsWith<IllegalArgumentException> { ShellRenderer.putAccessibilityLines("x;rm") }
     }
+
+    // Mi5G 2.0.1: the arrange-from-phone button grants one permission to our launcher only, then opens its QR screen.
+    @Test fun arrangeHomeOpensOnlyOurLauncherScreen() {
+        val lines = ShellRenderer.arrangeHomeLines().map { it.text }
+        assertEquals(2, lines.size)
+        assertEquals(listOf("pm", "grant", "com.gathin.tvhome", "android.permission.WRITE_SECURE_SETTINGS"), ShellTokens.tokenize(lines[0]))
+        assertEquals(listOf("am", "start", "-n", "com.gathin.tvhome/.ArrangeActivity"), ShellTokens.tokenize(lines[1]))
+        assertTrue(lines.none { "uninstall" in it || "disable" in it })
+    }
 }

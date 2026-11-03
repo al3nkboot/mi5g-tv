@@ -152,6 +152,7 @@
     <string name="appsettings_licence_tvos">tvOS Launcher, techgenius: Apache-2.0 with its NOTICE</string>
     <string name="appsettings_licence_omarchy">OmarchyTV, Marco Porro: MIT License</string>
     <string name="appsettings_licence_talkies">talkies, TechPP: MIT License</string>
+    <string name="appsettings_licence_aerial">Aerial TV, pengchujin: MIT License (ideas for arrange-from-phone, folders, inputs, wallpapers and the city screensaver; ZXing QR: Apache-2.0)</string>
     <string name="appsettings_licence_vibehack">tv-vibehack, Gathin: MIT License (Control Center adapted from it)</string>
     <string name="appsettings_licence_adhan">adhan-java, Batoul Apps: MIT; city coordinates from GeoNames (CC BY 4.0)</string>
     <string name="appsettings_licence_streams">Quran radio: public mp3quran.net streams; match data from ESPN (unofficial)</string>
@@ -473,6 +474,8 @@
     <string name="quick_start_title">Quick start</string><string name="quick_start_step1">Connect your phone and TV to the same Wi-Fi.</string><string name="quick_start_step2">Enable Developer options and network or wireless debugging on the TV.</string><string name="quick_start_step3">Pair with the TV and allow the connection.</string><string name="quick_start_step4">Use the remote tab to control the TV.</string><string name="quick_start_step5">Install modules from the Modules screen.</string><string name="quick_start_video">Watch the video (2 minutes)</string>
     <string name="tvtools_home_section">Mi5G home screen</string>
     <string name="tvtools_home_note">Keeps Mi5G as Home after Home presses and restarts, turns on the remote buttons, Control Center and the media pill. Return to the TV launcher switches the original back on; nothing is uninstalled.</string>
+    <string name="tvtools_arrange_home">Arrange Home from the phone</string>
+    <string name="tvtools_label_arrange_home">Open the arrange QR code on the TV</string>
     <string name="tvtools_keep_home">Lock Home to Mi5G</string>
     <string name="tvtools_stock_home">Return to the TV launcher</string>
     <string name="tvtools_label_keep_home">Locking Home to Mi5G</string>

@@ -746,6 +746,16 @@ class ShellRenderer(private val watchdogVariant: WatchdogVariant = WatchdogVaria
             listOf(PM, "grant", MI5G_PRAYER, "android.permission.POST_NOTIFICATIONS"),
         ).map { ShellLine(ShellTokens.line(it)) }
 
+        /**
+         * Mi5G 2.0.1: lets the launcher put its key services back after a Xiaomi/TCL standby force stop
+         * (WRITE_SECURE_SETTINGS, granted over adb only), then opens its arrange-from-phone QR screen.
+         * The screen's local server is token protected and stops when the screen closes.
+         */
+        fun arrangeHomeLines(): List<ShellLine> = listOf(
+            ShellLine(ShellTokens.line(listOf(PM, "grant", MI5G_HOME, "android.permission.WRITE_SECURE_SETTINGS"))),
+            ShellLine(ShellTokens.line(listOf(AM, "start", "-n", "$MI5G_HOME/.ArrangeActivity"))),
+        )
+
         fun startHomeLine(): ShellLine =
             ShellLine(ShellTokens.line(listOf(AM, "start", "-a", "android.intent.action.MAIN", "-c", "android.intent.category.HOME")))
 
