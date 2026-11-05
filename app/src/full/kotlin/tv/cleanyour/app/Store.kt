@@ -20,6 +20,8 @@ object Store : StorePorts {
     // does not answer or the repository has no published release yet.
     override fun updateChecker(http: HttpFetcher) = UpdateChecker { current ->
         val r = http.get(RELEASES_URL, null, null)
+        // 2.0.2: GitHub's limit for calls without an account answers 403 (or 429); say so plainly.
+        if (r.code == 403 || r.code == 429) { r.body?.close(); throw tv.cleanyour.core.flows.UpdateRateLimited() }
         if (r.code != 200) { r.body?.close(); null } else {
             val body = r.body?.use { it.readBytes().decodeToString() } ?: return@UpdateChecker null
             val tag = Releases.parse(body)?.version ?: return@UpdateChecker null

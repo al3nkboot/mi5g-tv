@@ -92,7 +92,12 @@ sealed interface UpdateCheck {
     data class Available(val version: String) : UpdateCheck
     data object Latest : UpdateCheck
     data object Failed : UpdateCheck
+    // 2.0.2: GitHub answered 403/429 (its hourly limit for calls without an account).
+    data object RateLimited : UpdateCheck
 }
+
+// 2.0.2: thrown by an UpdateChecker when GitHub refuses the call for its rate limit.
+class UpdateRateLimited : Exception("GitHub rate limit")
 
 data class AppSettingsState(
     val version: String = "",
@@ -176,8 +181,12 @@ class AppSettingsMachine(
         when (event) {
             is AppSettingsIntent.SetHaptics, is AppSettingsIntent.SetLargeText, is AppSettingsIntent.SetCardSize -> scope.launch { d.appPrefs.save(after.prefs) }
             AppSettingsIntent.CheckUpdates -> if (d.store.updateCheck && before.update != UpdateCheck.Checking) scope.launch {
-                val v = attempt { d.updates.latestNewerThan(d.appVersion) }.getOrNull()
-                send(Update(when { v == null -> UpdateCheck.Failed; v.isEmpty() -> UpdateCheck.Latest; else -> UpdateCheck.Available(v) }))
+                val r = attempt { d.updates.latestNewerThan(d.appVersion) }
+                val v = r.getOrNull()
+                send(Update(when {
+                    r.exceptionOrNull() is UpdateRateLimited -> UpdateCheck.RateLimited
+                    v == null -> UpdateCheck.Failed; v.isEmpty() -> UpdateCheck.Latest; else -> UpdateCheck.Available(v)
+                }))
             }
             AppSettingsIntent.ReportProblem -> effect(ManageEffect.Navigate("report/problem"))
             AppSettingsIntent.ResetKey -> if (!before.working) scope.launch { resetKey() }

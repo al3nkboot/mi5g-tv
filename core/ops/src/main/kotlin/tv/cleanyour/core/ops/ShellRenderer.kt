@@ -630,6 +630,11 @@ class ShellRenderer(private val watchdogVariant: WatchdogVariant = WatchdogVaria
             ShellLine(ShellTokens.line(listOf(CMD, "dreams", "start-dreaming"))),
         )
 
+        // 2.0.2: back to the TV's Home after Mi5G installed or updated something. TCL sets reopen the
+        // last app; the HOME intent resolves to the default Home (the Mi5G launcher once it is set).
+        fun backToHomeLine(): ShellLine =
+            ShellLine(ShellTokens.line(listOf(AM, "start", "-n", "com.gathin.tvhome/.MainActivity")))
+
         fun quietNightVolumeLine(): ShellLine =
             ShellLine(ShellTokens.line(listOf(CMD, "media_session", "volume", "--show", "--set", "7")))
 
@@ -757,7 +762,7 @@ class ShellRenderer(private val watchdogVariant: WatchdogVariant = WatchdogVaria
         )
 
         fun startHomeLine(): ShellLine =
-            ShellLine(ShellTokens.line(listOf(AM, "start", "-a", "android.intent.action.MAIN", "-c", "android.intent.category.HOME")))
+            ShellLine(ShellTokens.line(listOf(AM, "start", "-n", "com.gathin.tvhome/.MainActivity")))
 
         fun normalizeDownloaderUrl(rawInput: String): String {
             val trimmed = rawInput.trim()

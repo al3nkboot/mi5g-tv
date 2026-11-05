@@ -18,6 +18,7 @@ object Denylist {
     const val FRAMEWORK = "android"
 
     val exact: Map<String, String> = linkedMapOf(
+        "com.tcl.exhibit" to "it is TCL art mode and must remain available",
         FRAMEWORK to "it is the Android framework itself",
         "com.android.systemui" to "it draws the TV's status bar, dialogs and system UI",
         "com.android.settings" to "it is the TV's Settings app",

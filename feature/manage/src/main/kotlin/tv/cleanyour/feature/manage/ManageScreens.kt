@@ -453,6 +453,8 @@ fun AppSettingsScreen(
     language: String = "ar",
     onLanguage: ((String) -> Unit)? = null,
     onUpdateNow: ((String) -> Unit)? = null,
+    // 2.0.2: this device has no screen that installs an APK (many TV boxes): say so instead of silence.
+    updateInstallBlocked: Boolean = false,
 ) {
     var licences by rememberSaveable { mutableStateOf(false) }
     var privacy by rememberSaveable { mutableStateOf(false) }
@@ -512,11 +514,12 @@ fun AppSettingsScreen(
                     is UpdateCheck.Available -> msg(R.string.appsettings_update_available, "version" to update.version)
                     UpdateCheck.Latest -> stringResource(R.string.appsettings_up_to_date) + "\n" + help
                     UpdateCheck.Failed -> stringResource(R.string.appsettings_update_error)
+                    UpdateCheck.RateLimited -> stringResource(R.string.appsettings_update_rate_limited)
                     UpdateCheck.Idle -> help
                 }, trailing = if (update == UpdateCheck.Checking) ({ Spinner() }) else null,
                     onClick = { if (update is UpdateCheck.Available) onOpenRelease() else onIntent(AppSettingsIntent.CheckUpdates) })
                 // 2.0.1: one update item; when the check fails, the releases page is the fallback.
-                if (update == UpdateCheck.Failed) {
+                if (update == UpdateCheck.Failed || update == UpdateCheck.RateLimited) {
                     ListDivider()
                     ListRow(stringResource(R.string.appsettings_open_releases),
                         subtitle = stringResource(R.string.appsettings_open_releases_note), onClick = onOpenRelease)
@@ -528,6 +531,11 @@ fun AppSettingsScreen(
                     ListDivider()
                     ListRow(msg(R.string.appsettings_update_now, "version" to update.version),
                         subtitle = stringResource(R.string.appsettings_update_now_note), onClick = { onUpdateNow(update.version) })
+                }
+                if (update is UpdateCheck.Available && updateInstallBlocked) {
+                    ListDivider()
+                    ListRow(stringResource(R.string.appsettings_update_cannot_install),
+                        subtitle = stringResource(R.string.appsettings_update_cannot_install_note), onClick = onOpenRelease)
                 }
             }
         }
@@ -836,6 +844,7 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
             GlassChip(text = "◀", onClick = { set(p.copy(city = cities.asReversed().after(p.city))) })
             GlassChip(text = "🏙️ " + p.city.ar + " · " + p.city.countryAr, onClick = { set(p.copy(city = cities.after(p.city))) })
             GlassChip(text = "▶", onClick = { set(p.copy(city = cities.after(p.city))) })
+            GlassChip(text = stringResource(if (p.hanafi) R.string.prayer_asr_hanafi else R.string.prayer_asr_shafi), onClick = { set(p.copy(hanafi = !p.hanafi)) })
             GlassChip(text = "🧭 " + p.method.ar, onClick = { set(p.copy(method = PrayerMethod.entries.after(p.method))) })
             GlassChip(
                 text = stringResource(R.string.tvtools_prayer_forced) + ": " + if (p.forcedAdhan) on else off,

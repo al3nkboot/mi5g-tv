@@ -499,8 +499,12 @@
     <string name="tvapps_suggested_hint">تطبيقات إعلانات وتتبّع وتطبيقات مثبّتة مسبقًا يقترح ملف جهازك إيقافها. كل إيقاف يمكن التراجع عنه، ولا يُحذف شيء.</string>
     <string name="tvtools_install_all">ثبّت كل تطبيقات Mi5G TV على التلفاز</string>
     <string name="tvtools_label_install_all">تثبيت كل التطبيقات</string>
-    <string name="appsettings_update_help">يتحقق من قائمة التحديثات الموقّعة للتطبيق ووحدات التلفاز والمشغّل. اضغط «تحديث الآن» ثم افتح الملف واضغط «تثبيت».</string>
+    <string name="appsettings_update_help">يتحقق من آخر إصدار للتطبيق على GitHub</string>
     <string name="appsettings_open_releases">افتح صفحة الإصدارات على GitHub</string>
     <string name="appsettings_open_releases_note">github.com/al3nkboot/mi5g-tv/releases</string>
+    <!-- 2.0.2 -->
+    <string name="appsettings_update_rate_limited">تجاوزت حد GitHub المؤقت، جرّب بعد قليل أو افتح صفحة الإصدارات</string>
+    <string name="appsettings_update_cannot_install">لا يمكن تثبيت التحديث على هذا الجهاز</string>
+    <string name="appsettings_update_cannot_install_note">لا توجد على هذا الجهاز شاشة لتثبيت ملفات APK. نزّل التحديث من صفحة الإصدارات على الكمبيوتر أو الهاتف، ثم ثبّته من هناك (مثلًا عبر «تثبيت APK» في أدوات التلفاز من تطبيق الهاتف أو عبر adb).</string>
 </resources>
 

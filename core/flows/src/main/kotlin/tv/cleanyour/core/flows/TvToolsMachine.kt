@@ -621,13 +621,17 @@ class TvToolsMachine(
         }
         var failed = 0
         var noApk = 0
+        var anyInstalled = false
         for ((moduleId, pkg) in MI5G_TV_APPS) {
             if (installed(session, pkg)) continue
             val ver = d.registry.module(moduleId)?.versions?.firstOrNull()
             val blob = ver?.let { v -> runCatching { d.blobs.bundled("mod-${v.artifact.sha256.hex.take(40)}.apk") }.getOrNull() }
             if (blob == null) { noApk++; continue }
-            if (!installBlobOnSession(session, blob)) failed++
+            if (!installBlobOnSession(session, blob)) failed++ else anyInstalled = true
         }
+        // 2.0.2: TVs that reopen the last app after an install (TCL) were left in the updated app;
+        // go back to the TV's Home (the Mi5G launcher where it is the Home app).
+        if (anyInstalled) attempt { TvShellRunner.run(session, ShellRenderer.backToHomeLine()) }
         when {
             failed == 0 && noApk == 0 -> { send(PowerToolUpdate(PowerToolStatus.Done(label))); effect(ManageEffect.HapticDouble) }
             failed > 0 -> send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.INSTALL)))
@@ -929,6 +933,7 @@ class TvToolsMachine(
                 }.getOrNull()
                 when (outcome) {
                     InstallOutcome.Installed -> {
+                        attempt { TvShellRunner.run(session, ShellRenderer.backToHomeLine()) }
                         send(SideloadUpdate(SideloadStatus.Installed(ready.fileName)))
                         effect(ManageEffect.HapticDouble)
                     }
@@ -957,6 +962,7 @@ class TvToolsMachine(
                     }.getOrNull()
                     val out = (res?.stdout.orEmpty() + "\n" + res?.stderr.orEmpty())
                     if (res != null && res.exit == 0 && "Success" in out) {
+                        attempt { TvShellRunner.run(session, ShellRenderer.backToHomeLine()) }
                         send(SideloadUpdate(SideloadStatus.Installed(ready.fileName)))
                         effect(ManageEffect.HapticDouble)
                     } else {

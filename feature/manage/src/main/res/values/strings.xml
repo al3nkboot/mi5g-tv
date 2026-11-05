@@ -506,8 +506,12 @@
     <string name="tvapps_suggested_hint">Ads, tracking and preloaded apps your device profile suggests switching off. Every switch-off can be undone; nothing is removed.</string>
     <string name="tvtools_install_all">Install all Mi5G TV apps on the TV</string>
     <string name="tvtools_label_install_all">Install all apps</string>
-    <string name="appsettings_update_help">Checks the signed update list for the app, the TV modules and the launcher. Tap Update now, then open the file and tap Install.</string>
+    <string name="appsettings_update_help">Checks the latest release of the app on GitHub</string>
     <string name="appsettings_open_releases">Open the GitHub releases page</string>
     <string name="appsettings_open_releases_note">github.com/al3nkboot/mi5g-tv/releases</string>
+    <!-- 2.0.2 -->
+    <string name="appsettings_update_rate_limited">GitHub\'s temporary limit was reached. Try again shortly or open the releases page</string>
+    <string name="appsettings_update_cannot_install">The update can\'t be installed on this device</string>
+    <string name="appsettings_update_cannot_install_note">This device has no screen for installing APK files. Download the update from the releases page on a computer or phone and install it from there (for example with Install APK in the phone app\'s TV tools, or with adb).</string>
 </resources>
 

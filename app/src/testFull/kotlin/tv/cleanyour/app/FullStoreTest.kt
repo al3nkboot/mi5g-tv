@@ -68,6 +68,14 @@ class FullStoreTest {
         assertEquals("https://github.com/al3nkboot/mi5g-tv/releases", Store.releasePage)
     }
 
+    // 2.0.2: GitHub's rate limit is told apart from any other failure.
+    @Test fun aRateLimitAnswerIsReportedAsSuch() = runBlocking {
+        for (code in listOf(403, 429)) {
+            val e = runCatching { Store.updateChecker(OneAnswer(code, "")).latestNewerThan("2.0.2-dev") }.exceptionOrNull()
+            assertIs<tv.cleanyour.core.flows.UpdateRateLimited>(e)
+        }
+    }
+
     @Test fun softwareUpdatesStayTheOwnersChoice() {
         val g = graph()
         val ota = PackageName("com.mitv.ota")

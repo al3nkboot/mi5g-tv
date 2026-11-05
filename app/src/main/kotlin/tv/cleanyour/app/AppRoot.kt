@@ -372,14 +372,20 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
                     val state by m.state.collectAsStateWithLifecycle()
                     LaunchedEffect(m) { m.effects.collect { onManageEffect(it) } }
                     SecureWindow(state.confirm == AppConfirm.RESET_KEY)
+                    var updateInstallBlocked by remember { mutableStateOf(false) }
                     AppSettingsScreen(
                         state, m::dispatch, onBack = { go("back") },
                         onOpenRelease = { graph.store.releasePage?.let { url -> scope.launch { onManageEffect(ManageEffect.OpenUrl(url)) } } },
                         onSupportPayPal = { scope.launch { onManageEffect(ManageEffect.OpenUrl("https://paypal.me/Midroid5G")) } },
                         onOpenDeveloper = { scope.launch { onManageEffect(ManageEffect.OpenUrl("https://x.com/midroid5G")) } },
                         onUpdateNow = graph.store.releasePage?.let { _ ->
-                            { v: String -> scope.launch { onManageEffect(ManageEffect.OpenUrl(Releases.apkUrlFor(v))) } }
+                            { v: String ->
+                                // 2.0.2: no install screen on this device (many TV boxes): say so instead of silence.
+                                if (!UpdateInstall.possible(context)) updateInstallBlocked = true
+                                else scope.launch { onManageEffect(ManageEffect.OpenUrl(Releases.apkUrlFor(v))) }
+                            }
                         },
+                        updateInstallBlocked = updateInstallBlocked,
                         language = ArabicLocale.choice(context),
                         onLanguage = { lang ->
                             if (lang != ArabicLocale.choice(context)) {

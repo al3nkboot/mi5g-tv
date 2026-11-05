@@ -45,4 +45,10 @@ class Mi5gHomeLinesTest {
         assertEquals(listOf("am", "start", "-n", "com.gathin.tvhome/.ArrangeActivity"), ShellTokens.tokenize(lines[1]))
         assertTrue(lines.none { "uninstall" in it || "disable" in it })
     }
+
+    // 2.0.2: after installing from Mi5G, Home comes back on TVs that reopen the last app (TCL).
+    @Test fun backToHomeStartsOnlyTheHomeIntent() {
+        assertEquals(listOf("am", "start", "-n", "com.gathin.tvhome/.MainActivity"),
+            ShellTokens.tokenize(ShellRenderer.backToHomeLine().text))
+    }
 }
