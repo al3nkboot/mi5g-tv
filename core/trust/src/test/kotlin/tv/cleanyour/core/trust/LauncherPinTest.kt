@@ -44,7 +44,7 @@ class LauncherPinTest {
         val bytes = apk.readBytes()
         val artifact = BundledLauncherPin(OneBlob(PinnedLauncher.ASSET_NAME, bytes)).bundled()
         assertEquals(PackageName("com.gathin.tvhome"), artifact.pkg)
-        assertEquals(8L, artifact.versionCode)
+        assertEquals(9L, artifact.versionCode)
         assertEquals("2.7-mi5g", artifact.versionName)
         assertEquals(Sha256(PinnedLauncher.SHA256), artifact.sha256)
         assertEquals(Sha256(PinnedLauncher.SIGNER_SHA256), artifact.signer)

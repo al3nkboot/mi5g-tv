@@ -29,10 +29,10 @@ object PinnedLauncher {
     const val ASSET_NAME = "cleanyourtv-launcher.apk"
     const val UPSTREAM_COMMIT = "9071ec8d2f41826778f6b4c7f5f42dadc22f5b22"
     const val PACKAGE = "com.gathin.tvhome"
-    const val VERSION_CODE = 8L
+    const val VERSION_CODE = 9L
     const val VERSION_NAME = "2.7-mi5g"
-    const val SIZE = 668_025L
-    const val SHA256 = "e5cc683546963d9368a65a40d675eb90492a8564397bf4833874eb34c9cf44ae"
+    const val SIZE = 704_945L
+    const val SHA256 = "b8605555ef888da6fdab87a0be374fb99feccecdea5eafbfcaac3bea1d3f56eb"
     // SHA-256 of the signing certificate (DER): the Mi5G release key, v2 and v3.
     const val SIGNER_SHA256 = "c1f317965f154fe5e79fe7483abd5dd5dec7df57d87f3a645a5fd12f39a5480c"
     // The 1.x signer ("O=cleanyourtv, CN=Clean Your TV launcher") of the launcher and the curtain.
