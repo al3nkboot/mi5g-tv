@@ -90,6 +90,7 @@ public final class ButtonMapperActivity extends Activity {
     }
 
     String actionLabel(String a) {
+        if (a.startsWith("input:")) return a.substring(6);
         if (a.startsWith("app:")) {
             try {
                 return String.valueOf(getPackageManager().getApplicationLabel(getPackageManager().getApplicationInfo(a.substring(4), 0)));
@@ -103,6 +104,7 @@ public final class ButtonMapperActivity extends Activity {
             case "home": return getString(R.string.mi5g_action_home);
             case "back": return getString(R.string.mi5g_action_back);
             case "recents": return getString(R.string.mi5g_action_recents);
+            case "ignore": return getString(R.string.mi5g_action_ignore);
             case "inputs": return getString(R.string.mi5g_action_inputs);
             default: return a;
         }
@@ -168,6 +170,9 @@ public final class ButtonMapperActivity extends Activity {
                 () -> { d.dismiss(); ButtonMap.put(this, code, pattern, null); saved(); });
         for (String a : ButtonMap.FIXED_ACTIONS) {
             Rows.add(this, list, 0, actionLabel(a), null, () -> { d.dismiss(); ButtonMap.put(this, code, pattern, a); saved(); });
+        }
+        for (ArrangeServer.InputRow in : ArrangeServer.inputs(this)) {
+            Rows.add(this,list,R.drawable.ic_input,in.label,null,()->{d.dismiss();ButtonMap.put(this,code,pattern,"input:"+in.id);saved();});
         }
         for (String[] app : Mi5gSettingsActivity.apps(this)) {
             Rows.add(this, list, 0, app[1], null, () -> { d.dismiss(); ButtonMap.put(this, code, pattern, "app:" + app[0]); saved(); });

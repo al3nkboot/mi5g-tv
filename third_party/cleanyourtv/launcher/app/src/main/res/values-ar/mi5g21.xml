@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="mi5g_device_on_card">تشغّل %1$s · انتقل إلى %2$s</string>
+    <string name="mi5g_device_on_hint">موافق: انتقل · رجوع: إغلاق</string>
+    <string name="mi5g_device_on_row">بطاقة تشغيل جهاز</string>
+    <string name="mi5g_device_on_unnamed">جهاز</string>
+    <string name="mi5g_cec_only">حالة الاتصال لأجهزة HDMI-CEC فقط</string>
+    <string name="mi5g_effects">المؤثرات البصرية</string>
+    <string name="mi5g_effects_auto">تلقائي</string>
+    <string name="mi5g_effects_auto_lite">تلقائي · مؤثرات خفيفة</string>
+    <string name="mi5g_effects_full">كاملة</string>
+    <string name="mi5g_effects_lite">خفيفة</string>
+    <string name="mi5g_hidden_app_hidden">مخفي · موافق للإظهار</string>
+    <string name="mi5g_hidden_app_shown">ظاهر · موافق للإخفاء</string>
+    <string name="mi5g_hidden_apps">التطبيقات المخفية</string>
+    <string name="mi5g_hidden_apps_filter">إخفاء إضافات الشركة المصنّعة</string>
+    <string name="mi5g_hidden_apps_none">لا توجد إضافات للشركة المصنّعة</string>
+    <string name="mi5g_hidden_apps_note">تُخفى الأدلة والمحدّثات والعروض وأدوات المصنع من جميع التطبيقات فقط. لا يُعطّل أو يُحذف أي تطبيق.</string>
+    <string name="mi5g_input_hidden">مخفي · موافق للخيارات</string>
+    <string name="mi5g_input_shown">ظاهر · موافق للخيارات</string>
+    <string name="mi5g_inputs_edit">تعديل المداخل</string>
+    <string name="mi5g_inputs_edit_note">اختر مدخلًا لتغيير اسمه أو إخفائه أو إظهاره. متاح أيضًا عبر صفحة رمز QR على الهاتف.</string>
+    <string name="mi5g_rename_input">تغيير الاسم</string>
+    <string name="mi5g_hide_input">إخفاء / إظهار</string>
+    <string name="mi5g_quiet_hours">ساعات هدوء شاشة التوقف</string>
+    <string name="mi5g_weather_auto">موقع IP تقريبي · أسبوعيًا</string>
+    <string name="mi5g_weather_auto_short">موقع تلقائي</string>
+    <string name="mi5g_weather_city">مدينة الطقس</string>
+    <string name="mi5g_weather_city_clear">إزالة المدينة المحددة</string>
+    <string name="mi5g_weather_city_hint">اكتب مدينة</string>
+    <string name="mi5g_weather_city_none">مدينة الصلاة ثم الموقع التقريبي</string>
+    <string name="mi5g_weather_city_not_found">تعذّر العثور على المدينة. حاول مجددًا.</string>
+    <string name="mi5g_weather_near_unknown">قربك · يظهر بعد البحث</string>
+    <string name="mi5g_weather_place">موقع الطقس</string>
+    <string name="mi5g_weather_place_note">الأولوية لمدينتك ثم مدينة الصلاة ثم موقع IP تقريبي أسبوعي. أوقف الموقع التلقائي لإزالته. الطقس: Open-Meteo، والبديل MET Norway.</string>
+    <string name="mi5g_message">رسالة شاشة التوقف</string>
+    <string name="mi5g_files">نقل الملفات</string>
+    <string name="mi5g_action_ignore">تجاهل الزر (لا يفعل شيئًا)</string>
+<string name="mi5g_fast_home">رجوع سريع إلى Mi5G</string><string name="mi5g_fast_home_note">اختياري: إذا ظهرت الرئيسية الأصلية بدل Mi5G، تعيدك خدمة تسهيل الاستخدام إلى Mi5G. تراقب اسم التطبيق فقط ولا تقرأ محتوى الشاشة. فعّلها عند الحاجة فقط، وأوقفها هنا أو من تسهيل الاستخدام. لا تُعطّل أي تطبيقات نظام.</string><string name="mi5g_continue_watching">متابعة المشاهدة</string><string name="mi5g_grid">شبكة التطبيقات</string><string name="mi5g_columns">التطبيقات في الصف</string><string name="mi5g_icon_size">حجم الأيقونات</string><string name="mi5g_size_small">صغير</string><string name="mi5g_size_medium">متوسط</string><string name="mi5g_size_large">كبير</string><string name="mi5g_send_tv_file">اختر ملفًا من التلفاز للهاتف</string><string name="mi5g_received_files">الملفات المستلمة (Downloads/Mi5G)</string><string name="mi5g_download_permission">السماح بالحفظ في التنزيلات</string><string name="mi5g_selected_file">ملف مختار من التلفاز</string><string name="mi5g_continue_permission">يلزم السماح بقراءة قوائم التلفاز لعرض متابعة المشاهدة. يبقى الصف متوقفًا دون الإذن.</string></resources>

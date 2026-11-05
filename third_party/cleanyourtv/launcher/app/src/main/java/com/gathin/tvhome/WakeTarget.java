@@ -24,14 +24,7 @@ final class WakeTarget {
         if (t.startsWith("app:")) {
             RemoteKeys.launch(ctx, t.substring(4));
         } else if (t.startsWith("input:")) {
-            Intent view = new Intent(Intent.ACTION_VIEW)
-                    .setDataAndType(TvContract.buildChannelUriForPassthroughInput(t.substring(6)),
-                            "vnd.android.cursor.item/channel")
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            try {
-                ctx.startActivity(view);
-            } catch (ActivityNotFoundException ignored) {
-            }
+            InputLauncher.open(ctx, t.substring(6));
         }
     }
 }

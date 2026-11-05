@@ -51,8 +51,13 @@ final class HomeLayout {
         final String names;
         /** "scale", "border" or "glow". */
         final String focus;
+        final String iconSize;
 
         Options(int columns, int rows, String clockSize, String clockCorner, String names, String focus) {
+            this(columns, rows, clockSize, clockCorner, names, focus, "m");
+        }
+        Options(int columns, int rows, String clockSize, String clockCorner, String names, String focus, String iconSize) {
+            this.iconSize=oneOf(iconSize,"m","s","m","l");
             this.columns = columns >= 4 && columns <= 6 ? columns : 0;
             this.rows = rows == 1 || rows == 2 ? rows : 0;
             this.clockSize = oneOf(clockSize, "m", "s", "m", "l");
@@ -68,14 +73,35 @@ final class HomeLayout {
     final List<Folder> folders;
     final List<PinnedInput> inputs;
     final Options options;
+    /** Mi5G 2.0.2: inputs left out of the Inputs menu (TV input ids, or LIVE_TV for the Live TV row). */
+    final List<String> hiddenInputs;
+    static final String LIVE_TV = "mi5g:livetv";
+    static final int MAX_HIDDEN_INPUTS = 32;
 
     HomeLayout(Map<String, String> names, List<Folder> folders, List<PinnedInput> inputs, Options options) {
+        this(names, folders, inputs, options, Collections.emptyList());
+    }
+
+    HomeLayout(Map<String, String> names, List<Folder> folders, List<PinnedInput> inputs, Options options, List<String> hiddenInputs) {
         this.names = Collections.unmodifiableMap(new LinkedHashMap<>(names));
         this.folders = Collections.unmodifiableList(new ArrayList<>(folders));
         this.inputs = Collections.unmodifiableList(new ArrayList<>(inputs));
         this.options = options;
+        this.hiddenInputs = Collections.unmodifiableList(new ArrayList<>(hiddenInputs));
     }
 
+    /** The same layout with one input hidden or shown again. */
+    HomeLayout withInputHidden(String id, boolean hide) {
+        List<String> h = new ArrayList<>(hiddenInputs);
+        h.remove(id);
+        if (hide && validId(id) && h.size() < MAX_HIDDEN_INPUTS) h.add(id);
+        return new HomeLayout(names, folders, inputs, options, h);
+    }
+
+    String inputName(String id) {
+        String n=names.get("input:"+id);if(n!=null)return n;
+        for(PinnedInput p:inputs)if(p.id.equals(id))return p.name;return "";
+    }
     static final HomeLayout EMPTY = new HomeLayout(Collections.emptyMap(), Collections.emptyList(), Collections.emptyList(), Options.DEFAULT);
 
     private static String oneOf(String v, String fallback, String... allowed) {
@@ -129,9 +155,12 @@ final class HomeLayout {
             JSONArray is = new JSONArray();
             for (PinnedInput i : l.inputs) is.put(new JSONObject().put("id", i.id).put("name", i.name));
             o.put("inputs", is);
+            JSONArray hi = new JSONArray();
+            for (String id : l.hiddenInputs) hi.put(id);
+            o.put("hiddenInputs", hi);
             Options p = l.options;
             o.put("options", new JSONObject().put("columns", p.columns).put("rows", p.rows).put("clockSize", p.clockSize)
-                    .put("clockCorner", p.clockCorner).put("names", p.names).put("focus", p.focus));
+                    .put("iconSize",p.iconSize).put("clockCorner", p.clockCorner).put("names", p.names).put("focus", p.focus));
             return o;
         } catch (JSONException e) {
             throw new IllegalStateException(e);
@@ -148,7 +177,7 @@ final class HomeLayout {
             for (int i = 0; keys != null && i < keys.length() && names.size() < 500; i++) {
                 String k = keys.optString(i);
                 String v = cleanName(n.optString(k));
-                if ((validPackage(k) || (k.startsWith("folder:") && validId(k)) ) && !v.isEmpty()) names.put(k, v);
+                if ((validPackage(k) || (k.startsWith("folder:") && validId(k)) || (k.startsWith("input:") && validId(k.substring(6))) ) && !v.isEmpty()) names.put(k, v);
             }
         }
         List<Folder> folders = new ArrayList<>();
@@ -181,10 +210,16 @@ final class HomeLayout {
             for (PinnedInput p : inputs) dup |= p.id.equals(id);
             if (!dup) inputs.add(new PinnedInput(id, cleanName(in.optString("name"))));
         }
+        List<String> hiddenInputs = new ArrayList<>();
+        JSONArray hi = o.optJSONArray("hiddenInputs");
+        for (int i = 0; hi != null && i < hi.length() && hiddenInputs.size() < MAX_HIDDEN_INPUTS; i++) {
+            String id = hi.optString(i);
+            if (validId(id) && !hiddenInputs.contains(id)) hiddenInputs.add(id);
+        }
         JSONObject p = o.optJSONObject("options");
         Options opts = p == null ? Options.DEFAULT : new Options(p.optInt("columns"), p.optInt("rows"), p.optString("clockSize"),
-                p.optString("clockCorner"), p.optString("names"), p.optString("focus"));
-        return new HomeLayout(names, folders, inputs, opts);
+                p.optString("clockCorner"), p.optString("names"), p.optString("focus"), p.optString("iconSize"));
+        return new HomeLayout(names, folders, inputs, opts, hiddenInputs);
     }
 
     // ---- file ------------------------------------------------------------------------------------

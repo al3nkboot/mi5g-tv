@@ -81,8 +81,8 @@ public class Mi5g201Test {
     }
 
     @Test public void serverOnlyAnswersLocalPeersWithTheToken() throws Exception {
-        assertTrue(ArrangeServer.localPeer(InetAddress.getByName("192.168.1.20")));
-        assertTrue(ArrangeServer.localPeer(InetAddress.getByName("10.0.0.5")));
+        // Mi5G 2.0.2: private addresses are no longer answered for being private, only on the TV's own subnet
+        // (ArrangeServer.sameSubnet, Mi5g202Test).
         assertTrue(ArrangeServer.localPeer(InetAddress.getByName("127.0.0.1")));
         assertFalse(ArrangeServer.localPeer(InetAddress.getByName("8.8.8.8")));
         assertFalse(ArrangeServer.localPeer(null));

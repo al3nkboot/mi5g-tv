@@ -25,8 +25,9 @@ public final class ClockActivity extends Activity {
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Random random = new Random();
     private LinearLayout clock;
+    private FrameLayout root;
     private final Runnable shift = new Runnable() {
-        @Override public void run() { place(); handler.postDelayed(this, SHIFT_MS); }
+        @Override public void run() { ClockDream.applyQuiet(root,QuietHours.quietNow(ClockActivity.this));place(); handler.postDelayed(this, SHIFT_MS); }
     };
 
     static boolean backOpensClock(Context ctx) {
@@ -48,7 +49,8 @@ public final class ClockActivity extends Activity {
     protected void onCreate(Bundle state) {
         super.onCreate(state);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        FrameLayout root = new FrameLayout(this);
+        root = new FrameLayout(this);
+        MinuteClock.watch(root);
         root.setBackgroundColor(0xFF000000);
         clock = new LinearLayout(this);
         clock.setOrientation(LinearLayout.VERTICAL);
@@ -70,7 +72,9 @@ public final class ClockActivity extends Activity {
         date.setTypeface(cairo);
         clock.addView(time);
         clock.addView(date);
+        ClockDream.addMessage(this,clock);
         clock.setAlpha(0.85f);
+        ClockDream.applyQuiet(root,QuietHours.quietNow(this));
         root.addView(clock, new FrameLayout.LayoutParams(-2, -2));
         setContentView(root);
         root.post(this::place);

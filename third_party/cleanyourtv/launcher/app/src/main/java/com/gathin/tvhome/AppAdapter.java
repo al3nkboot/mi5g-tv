@@ -222,11 +222,11 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.fillDock = cfg.fillDock;
         this.hidden = new HashSet<>(cfg.hiddenApps);
         this.hidden.addAll(TileMenu.removed(ctx));   // Mi5G 2.0: Remove from Home
-        this.animations = cfg.animations;
-        this.advancedEffects = cfg.animations && cfg.advancedEffects;
+        this.animations = cfg.animations && !EffectsMode.lite(ctx);
+        this.advancedEffects = cfg.animations && cfg.advancedEffects && !EffectsMode.lite(ctx);
         this.showHomeSettings = cfg.showHomeSettingsShortcut;
         this.showLibrary = cfg.appLibrary;
-        this.reducedMotion = cfg.reducedMotion;
+        this.reducedMotion = cfg.reducedMotion || EffectsMode.lite(ctx);
         this.rowsBelowDock = cfg.rowsBelowDock;
         this.dockTitle = cfg.dockTitle;
         this.dockRow = cfg.dockRow;
@@ -420,6 +420,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         int width = parent.getWidth() > 0 ? parent.getWidth() : parent.getMeasuredWidth();
         int inner = width - parent.getPaddingLeft() - parent.getPaddingRight();
         int w = tileWidthPx(inner, parent.getHeight(), dockSize, rowsBelowDock, dockTitle, dockRow, density), h = tileHeightPx(w);
+        w=Math.round(w*("s".equals(layout.options.iconSize)?0.75f:"l".equals(layout.options.iconSize)?1f:0.9f));
+        h=tileHeightPx(w);
         View card = v.findViewById(R.id.card);
         ViewGroup.LayoutParams cardLp = card.getLayoutParams();
         cardLp.width = w;

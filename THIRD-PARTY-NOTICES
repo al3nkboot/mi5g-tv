@@ -127,8 +127,9 @@ OmarchyTV — https://github.com/piermark/omarchytv
   MIT License. Copyright (c) 2026 Marco Porro (x.com/MarcoPorro · www.marcoporro.it).
   Reference for the Samsung Tizen / LG webOS helper flow; no Omarchy artwork or themes are included.
 
-talkies — https://github.com/rajupp/talkies
+talkies v1.2.8 — https://github.com/rajupp/talkies
   MIT License. Copyright (c) 2026 TechPP.
+  Mi5G 2.1 keeps this notice; the added device/input, screensaver and weather implementations are our own.
 
 tv-vibehack — https://github.com/samdegan2311/tv-vibehack
   MIT License. Copyright (c) 2026 Gathin. The launcher Control Center is adapted from it.

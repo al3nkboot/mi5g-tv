@@ -14,7 +14,7 @@ public class BootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String a = intent == null ? null : intent.getAction();
-        if (!Intent.ACTION_BOOT_COMPLETED.equals(a) && !"android.intent.action.QUICKBOOT_POWERON".equals(a)
+        if (!Intent.ACTION_MY_PACKAGE_REPLACED.equals(a) && !Intent.ACTION_BOOT_COMPLETED.equals(a) && !"android.intent.action.QUICKBOOT_POWERON".equals(a)
                 && !"com.htc.intent.action.QUICKBOOT_POWERON".equals(a)) return;
         final PendingResult pending = goAsync();
         final Context app = context.getApplicationContext();

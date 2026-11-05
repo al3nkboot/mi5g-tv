@@ -68,6 +68,39 @@ public final class Mi5gSettingsActivity extends Activity {
                 startActivity(new Intent(this, CityDreamActivity.class));
             }
         });
+        Rows.add(this,rows,R.drawable.ic_home_settings,getString(R.string.mi5g_fast_home),onOff(FastHomeService.enabled(this)),()->{
+            if(FastHomeService.enabled(this)){getSharedPreferences(Config.SETTINGS_NAME,MODE_PRIVATE).edit().putBoolean(FastHomeService.KEY,false).apply();build();}
+            else new android.app.AlertDialog.Builder(this).setTitle(R.string.mi5g_fast_home).setMessage(R.string.mi5g_fast_home_note)
+                .setNegativeButton(android.R.string.cancel,null).setPositiveButton(android.R.string.ok,(d,w)->{
+                    getSharedPreferences(Config.SETTINGS_NAME,MODE_PRIVATE).edit().putBoolean(FastHomeService.KEY,true).apply();
+                    try{startActivity(new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS));}catch(RuntimeException ignored){} build();
+                }).show();
+        });
+        Rows.add(this,rows,R.drawable.ic_play,getString(R.string.mi5g_continue_watching),onOff(ContinueWatching.enabled(this)),()->{
+            if(!ContinueWatching.enabled(this) && checkSelfPermission("android.permission.READ_TV_LISTINGS")!=android.content.pm.PackageManager.PERMISSION_GRANTED){requestPermissions(new String[]{"android.permission.READ_TV_LISTINGS"},61);}
+            else {getSharedPreferences(Config.SETTINGS_NAME,MODE_PRIVATE).edit().putBoolean(ContinueWatching.KEY,!ContinueWatching.enabled(this)).apply();build();}
+        });
+        Rows.add(this,rows,R.drawable.ic_apps,getString(R.string.mi5g_grid),null,()->startActivity(new Intent(this,GridSettingsActivity.class)));
+        // Mi5G 2.0.2
+        Rows.add(this, rows, R.drawable.ic_input, getString(R.string.mi5g_device_on_row),
+                onOff(DeviceOnCard.enabled(this)), () -> { DeviceOnCard.setEnabled(this, !DeviceOnCard.enabled(this)); build(); });
+        Rows.add(this, rows, R.drawable.ic_input, getString(R.string.mi5g_cec_only),
+                onOff(DeviceOnCard.cecOnly(this)), () -> { getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE).edit().putBoolean(DeviceOnCard.CEC_ONLY, !DeviceOnCard.cecOnly(this)).apply(); build(); });
+        Rows.add(this, rows, R.drawable.ic_input, getString(R.string.mi5g_inputs_edit), null,
+                () -> startActivity(new Intent(this, InputsEditActivity.class)));
+        Rows.add(this, rows, R.drawable.ic_timer, getString(R.string.mi5g_quiet_hours), quietLabel(), () -> {
+            QuietHours.set(this, QuietHours.next(QuietHours.get(this)));
+            build();
+        });
+        Rows.add(this, rows, R.drawable.ic_wifi, getString(R.string.mi5g_weather_place), weatherLabel(),
+                () -> startActivity(new Intent(this, WeatherPlaceActivity.class)));
+        Rows.add(this, rows, R.drawable.ic_speed, getString(R.string.mi5g_effects), effectsLabel(), () -> {
+            EffectsMode.set(this, EffectsMode.next(EffectsMode.get(this)));
+            setResult(RESULT_OK);
+            build();
+        });
+        Rows.add(this, rows, R.drawable.ic_apps, getString(R.string.mi5g_hidden_apps), null,
+                () -> startActivity(new Intent(this, HiddenAppsActivity.class)));
         Rows.add(this, rows, R.drawable.ic_keys, getString(R.string.mi5g_mapper), null,
                 () -> startActivity(new Intent(this, ButtonMapperActivity.class)));
         Rows.add(this, rows, R.drawable.ic_wake, getString(R.string.mi5g_wake), wakeLabel(), this::pickWake);
@@ -89,6 +122,32 @@ public final class Mi5gSettingsActivity extends Activity {
             });
         }
         rows.getChildAt(0).requestFocus();
+    }
+
+    @Override public void onRequestPermissionsResult(int request,String[] permissions,int[] grants){
+        super.onRequestPermissionsResult(request,permissions,grants);
+        if(request==61){boolean granted=grants.length>0&&grants[0]==android.content.pm.PackageManager.PERMISSION_GRANTED;
+            getSharedPreferences(Config.SETTINGS_NAME,MODE_PRIVATE).edit().putBoolean(ContinueWatching.KEY,granted).apply();
+            if(!granted)android.widget.Toast.makeText(this,R.string.mi5g_continue_permission,android.widget.Toast.LENGTH_LONG).show();build();}
+    }
+
+    private String quietLabel() {
+        String q = QuietHours.get(this);
+        return QuietHours.OFF.equals(q) ? getString(R.string.mi5g_off) : q.replace("-", " – ");
+    }
+
+    private String weatherLabel() {
+        Weather.Place u = Weather.userPlace(this), ip = Weather.ipPlace(this);
+        if (u != null) return u.name;
+        if (ip != null) return ip.shown();
+        return getString(R.string.mi5g_weather_auto_short);
+    }
+
+    private String effectsLabel() {
+        String m = EffectsMode.get(this);
+        if (EffectsMode.FULL.equals(m)) return getString(R.string.mi5g_effects_full);
+        if (EffectsMode.LITE.equals(m)) return getString(R.string.mi5g_effects_lite);
+        return getString(EffectsMode.lite(this) ? R.string.mi5g_effects_auto_lite : R.string.mi5g_effects_auto);
     }
 
     private String onOff(boolean on) { return getString(on ? R.string.mi5g_on : R.string.mi5g_off); }

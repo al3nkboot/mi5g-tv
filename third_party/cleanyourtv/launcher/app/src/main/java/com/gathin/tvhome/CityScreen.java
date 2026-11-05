@@ -37,18 +37,21 @@ import java.util.Random;
 final class CityScreen {
 
     static final Uri PRAYER_TODAY = Uri.parse("content://com.midroid.mi5gtv.prayer.times/today");
-    private static final String WEATHER_KEY = "mi5g_city_weather", WEATHER_AT = "mi5g_city_weather_at";
+    static final String WEATHER_KEY = "mi5g_city_weather", WEATHER_AT = "mi5g_city_weather_at";
     private static final long WEATHER_EVERY_MS = 30 * 60_000L;
 
     /** What the screen shows besides the clock; empty strings are hidden. */
     static final class Data {
         String city = "", prayer = "", weather = "";
         double lat = Double.NaN, lon = Double.NaN;
+        /** Mi5G 2.0.2: the two lines typed on the phone, and quiet hours (dimmed). */
+        String line1 = "", line2 = "";
+        boolean quiet;
     }
 
     final View root;
     final LinearLayout block;
-    final TextView hijri, gregorian, prayer, weather, city;
+    final TextView hijri, gregorian, prayer, weather, city, line1, line2;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Random random = new Random();
     private final Context ctx;
@@ -77,6 +80,9 @@ final class CityScreen {
         gregorian = add(cairo, 22, 0xCCFFFFFF);
         prayer = add(cairo, 26, 0xFF7FE0D6);
         weather = add(cairo, 22, 0xCCFFFFFF);
+        line1 = add(cairo, 30, 0xFFD4AF37);
+        line2 = add(cairo, 24, 0xFFE8D9A8);
+        ((LinearLayout.LayoutParams) line1.getLayoutParams()).topMargin = (int) (14 * d);
         GradientDrawable line = new GradientDrawable();
         line.setColor(0xFFD4AF37);
         View rule = new View(ctx);
@@ -87,6 +93,8 @@ final class CityScreen {
         block.addView(rule, 1, rp);
         frame.addView(block, new FrameLayout.LayoutParams((int) (620 * d), ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER));
         root = frame;
+        MinuteClock.watch(root);
+        root.setAlpha(QuietHours.quietNow(ctx)?QuietHours.DIM_ALPHA:1f);
         setDates(new Date());
     }
 
@@ -114,6 +122,10 @@ final class CityScreen {
         show(city, data.city);
         show(prayer, data.prayer.isEmpty() ? "" : ctx.getString(R.string.mi5g_city_next_prayer, data.prayer));
         show(weather, data.weather);
+        show(line1, data.line1);
+        show(line2, data.line2);
+        // Mi5G 2.0.2: quiet hours dim the whole screen (the TV's own backlight is left alone).
+        root.setAlpha(data.quiet ? QuietHours.DIM_ALPHA : 1f);
     }
 
     private static void show(TextView t, String s) {
@@ -137,6 +149,7 @@ final class CityScreen {
         public void run() {
             if (!running) return;
             setDates(new Date());
+            root.setAlpha(QuietHours.quietNow(ctx)?QuietHours.DIM_ALPHA:1f);
             refreshAsync();
             View p = (View) block.getParent();
             if (p != null && p.getWidth() > 0) {
@@ -164,7 +177,15 @@ final class CityScreen {
         } catch (Exception ignored) {
             // no prayer module, or an older one: the line stays hidden
         }
-        data.weather = weather(ctx, data.lat, data.lon);
+        // Mi5G 2.0.2: the user's place, then the prayer city, then an approximate one from the IP address.
+        Weather.Place prayerPlace = Weather.valid(data.lat, data.lon) ? new Weather.Place(data.city, data.lat, data.lon, Weather.Place.PRAYER) : null;
+        Weather.Place place = Weather.resolve(ctx, Weather.HTTP, prayerPlace, System.currentTimeMillis());
+        if (place != null && place.source != Weather.Place.PRAYER) data.city = place.shown();
+        data.weather = place == null ? "" : weather(ctx, place.lat, place.lon);
+        String[] msg = ScreensaverMessage.get(ctx);
+        data.line1 = msg[0];
+        data.line2 = msg[1];
+        data.quiet = QuietHours.quietNow(ctx);
         return data;
     }
 
@@ -187,32 +208,15 @@ final class CityScreen {
         if (Double.isNaN(lat) || Double.isNaN(lon)) return "";
         SharedPreferences p = ctx.getSharedPreferences(Config.SETTINGS_NAME, Context.MODE_PRIVATE);
         String cached = p.getString(WEATHER_KEY, "");
-        if (System.currentTimeMillis() - p.getLong(WEATHER_AT, 0) < WEATHER_EVERY_MS) return cached;
-        try {
-            String url = String.format(Locale.US,
-                    "https://api.open-meteo.com/v1/forecast?latitude=%.3f&longitude=%.3f&current=temperature_2m,weather_code", lat, lon);
-            String s = parseWeather(get(url));
-            if (s.isEmpty()) return cached;
-            p.edit().putString(WEATHER_KEY, s).putLong(WEATHER_AT, System.currentTimeMillis()).apply();
-            return s;
-        } catch (Exception e) {
-            return cached;
-        }
-    }
-
-    private static String get(String url) throws Exception {
-        HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
-        c.setConnectTimeout(8000);
-        c.setReadTimeout(8000);
-        try (InputStream in = c.getInputStream()) {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            byte[] b = new byte[4096];
-            int n;
-            while ((n = in.read(b)) > 0 && out.size() < 64 * 1024) out.write(b, 0, n);
-            return new String(out.toByteArray(), StandardCharsets.UTF_8);
-        } finally {
-            c.disconnect();
-        }
+        String location=String.format(Locale.US,"%.3f,%.3f",lat,lon);
+        boolean same=location.equals(p.getString("mi5g_weather_coords",""));
+        if (same && System.currentTimeMillis() - p.getLong(WEATHER_AT, 0) < WEATHER_EVERY_MS) return cached;
+        if(!same)cached="";
+        // Mi5G 2.0.2: Open-Meteo, then MET Norway (Weather).
+        String s = Weather.fetch(Weather.HTTP, lat, lon);
+        if (s.isEmpty()) return cached;
+        p.edit().putString(WEATHER_KEY, s).putLong(WEATHER_AT, System.currentTimeMillis()).putString("mi5g_weather_coords",location).apply();
+        return s;
     }
 
     /** "٢٨° · صحو" from an Open-Meteo answer, or "" when it isn't one. */

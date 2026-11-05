@@ -173,6 +173,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private boolean settingsKeyPanel;
     /** Calmer motion for weak GPUs (config.xml, reduced_motion): stiff spring, short fades, no replay. */
     private boolean reducedMotion;
+    /** Mi5G 2.0.2: times the first D-pad moves (Auto Lite effects). */
+    private EffectsMode.Probe effectsProbe;
+    /** Mi5G 2.0.2: the "a device turns on" card. */
+    private DeviceOnCard deviceOn;
     /** config.xml dock_row: the first row is a separate dock (band, parked low, top shelf) rather than plain grid. */
     private boolean dockRow;
     /** Festive skin from the theme (see Festival); applied while it is active today. */
@@ -233,6 +237,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         @Override
         public void onInputAdded(String inputId) {
             updateInputsButton();
+            deviceAdded(inputId);   // Mi5G 2.0.2
+        }
+
+        @Override
+        public void onInputStateChanged(String inputId, int state) {
+            deviceState(inputId, state);   // Mi5G 2.0.2
         }
 
         @Override
@@ -295,10 +305,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         Config cfg = Config.load(this);
         settingsKeycodes = cfg.settingsKeycodes;
         settingsKeyPanel = cfg.settingsKeyPanel;
-        COLUMNS = cfg.columns;
+        int savedColumns = HomeLayout.load(this).options.columns;
+        COLUMNS = savedColumns >= 4 && savedColumns <= 6 ? savedColumns : cfg.columns;
         animations = cfg.animations;
         advancedEffects = cfg.animations && cfg.advancedEffects;
         reducedMotion = cfg.reducedMotion;
+        // Mi5G 2.0.2: Lite effects (set, or found by timing the first D-pad moves on a slow TV).
+        if (EffectsMode.lite(this)) { animations = false; advancedEffects = false; reducedMotion = true; }
+        effectsProbe = new EffectsMode.Probe(this, () -> { animations = false; advancedEffects = false; reducedMotion = true; if(isResumedNow) handler.post(this::recreate); });
         dockRow = cfg.dockRow;
         festival = cfg.festival;
         festive = festival.active(LocalDate.now());
@@ -309,6 +323,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         sourcePanelAction = cfg.sourcePanelAction;
 
         root = findViewById(R.id.root);
+        MinuteClock.watch(root);
+        deviceOn = new DeviceOnCard(root);   // Mi5G 2.0.2
         mediaPill = new MediaPill(root);
         root.setBackgroundColor(cfg.backgroundColor);
         // root fills the window with an opaque colour (Config keeps background_color opaque), so the window's own
@@ -339,6 +355,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (!cfg.dockTitle) hero.setVisibility(View.GONE);
         greeting = findViewById(R.id.greeting);
         clockBlock = findViewById(R.id.leftBlock);
+        View bar=findViewById(R.id.topButtons);
+        boolean rtl="ar".equals(getResources().getConfiguration().getLocales().get(0).getLanguage());
+        bar.setLayoutDirection(rtl?View.LAYOUT_DIRECTION_RTL:View.LAYOUT_DIRECTION_LTR);
+        int[] ids={R.id.btnInputs,R.id.btnWifi,R.id.btnReorder,R.id.btnSettings};
+        for(int n=0;n<ids.length;n++){
+            View v=findViewById(ids[n]);
+            v.setNextFocusRightId(ids[Math.max(0,Math.min(ids.length-1,n+(rtl?-1:1)))]);
+            v.setNextFocusLeftId(ids[Math.max(0,Math.min(ids.length-1,n+(rtl?1:-1)))]);
+        }
         greetingColor = greeting.getCurrentTextColor();
         btnWifi = findViewById(R.id.btnWifi);
         shamsiDate = findViewById(R.id.shamsiDate);
@@ -514,7 +539,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         // Keep focus on the top bar at its ends and at the top: Android's focus finder would otherwise
         // jump to a tile far below when there is nothing in that direction.
-        boolean rtlMenuBar = getResources().getBoolean(R.bool.rtl_menu_bar);
+        boolean rtlMenuBar = rtl || getResources().getBoolean(R.bool.rtl_menu_bar);
         View.OnKeyListener pillKeys = (v, keyCode, event) -> {
             if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
             if (keyCode == KeyEvent.KEYCODE_DPAD_UP) return true;
@@ -523,11 +548,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 focusTile(lastFocused % COLUMNS);
                 return true;
             }
-            int firstButton = btnInputs.getVisibility() == View.VISIBLE ? R.id.btnInputs : R.id.btnWifi;
-            int leftButton = rtlMenuBar ? R.id.btnSettings : firstButton;
-            int rightButton = rtlMenuBar ? firstButton : R.id.btnSettings;
-            if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) return v.getId() == leftButton;
-            return keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && v.getId() == rightButton;
+            if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+                java.util.List<View> visible=new ArrayList<>();
+                for(View button:new View[]{btnInputs,btnWifi,btnReorder,btnSettings})if(button.getVisibility()==View.VISIBLE)visible.add(button);
+                int step=(keyCode==KeyEvent.KEYCODE_DPAD_RIGHT?1:-1)*(rtlMenuBar?-1:1);
+                int next=visible.indexOf(v)+step;
+                if(next>=0&&next<visible.size())visible.get(next).requestFocus();
+                return true;
+            }
+            return false;
         };
         btnInputs.setOnKeyListener(pillKeys);
         btnWifi.setOnKeyListener(pillKeys);
@@ -629,6 +658,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         updateRace();
         updateWifiLabel();
         updateInputsButton();
+        seedDeviceStates();   // Mi5G 2.0.2
+        ContinueWatching.refresh(this, findViewById(R.id.continueRow));
         if (showStats) startStats();
         sky.update();
         wallpaperPlayer.start();
@@ -745,6 +776,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (cardPrompt != null) cardPrompt.dismiss();
         if (appLibrary != null) appLibrary.close();
         if (openPopup != null) openPopup.dismiss();
+        if (deviceOn != null) deviceOn.dismiss();   // Mi5G 2.0.2
     }
 
     @Override
@@ -812,6 +844,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         if (handleSettingsKey(event)) return true;
+        if (event.getAction() == KeyEvent.ACTION_DOWN && effectsProbe != null) {
+            int k = event.getKeyCode();
+            if (k == KeyEvent.KEYCODE_DPAD_LEFT || k == KeyEvent.KEYCODE_DPAD_RIGHT || k == KeyEvent.KEYCODE_DPAD_UP || k == KeyEvent.KEYCODE_DPAD_DOWN) effectsProbe.onMove();
+        }
+        if (deviceOn != null && deviceOn.isShowing() && deviceOn.dispatch(event)) return true;
         if (!reordering) return super.dispatchKeyEvent(event);
         if (dockEditing) return dispatchDockEdit(event);
         boolean down = event.getAction() == KeyEvent.ACTION_DOWN;
@@ -1726,17 +1763,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     private long memAvailableMb() {
-        try (java.io.BufferedReader r = new java.io.BufferedReader(new java.io.FileReader("/proc/meminfo"))) {
-            String line;
-            while ((line = r.readLine()) != null) {
-                if (line.startsWith("MemAvailable:")) {
-                    String[] t = line.split("\\s+");
-                    return t.length >= 2 ? Long.parseLong(t[1]) / 1024 : -1;
-                }
-            }
-        } catch (IOException | NumberFormatException ignored) {
-        }
-        return -1;
+        try { return MemoryStats.availableMb(new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get("/proc/meminfo")), java.nio.charset.StandardCharsets.US_ASCII)); }
+        catch (IOException e) { return -1; }
     }
 
     private static String readFirstLine(String path) {
@@ -2186,20 +2214,67 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      *  which the Live TV app handles; where nothing takes that, the configured `input_action` is sent
      *  with the same URI instead (XGIMI's HDMI player only answers com.xgimi.action.hdmiPlayer). */
     private void openInput(String inputId) {
-        Uri uri = TvContract.buildChannelUriForPassthroughInput(inputId);
-        Intent view = new Intent(Intent.ACTION_VIEW).setDataAndType(uri, "vnd.android.cursor.item/channel")
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        try {
-            startActivity(view);
-            return;
-        } catch (ActivityNotFoundException e) {
-            if (inputAction.isEmpty()) {
-                Toast.makeText(this, R.string.not_available, Toast.LENGTH_SHORT).show();
-                return;
-            }
-        }
-        open(new Intent(inputAction).setDataAndType(uri, "vnd.android.cursor.item/channel"));
+        if (!InputLauncher.open(this, inputId)) Toast.makeText(this, R.string.not_available, Toast.LENGTH_SHORT).show();
     }
+
+    // ---- Mi5G 2.0.2: a device turns on ----------------------------------------------------------------
+
+    /** The inputs' states as Home starts: only later changes offer a card. */
+    private void seedDeviceStates() {
+        TvInputManager tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);
+        if (tim == null) return;
+        try {
+            for (TvInputInfo info : tim.getTvInputList()) {
+                if (info.isPassthroughInput()) deviceOn.tracker.seed(info.getId(), tim.getInputState(info.getId()));
+            }
+        } catch (RuntimeException unavailable) { /* no input service on this TV */ }
+    }
+
+    private void deviceState(String inputId, int state) {
+        if (!isResumedNow || deviceOn == null || !DeviceOnCard.enabled(this)) {
+            if (deviceOn != null) deviceOn.tracker.seed(inputId, state);
+            return;
+        }
+        TvInputInfo info = inputInfo(inputId);
+        if (info == null || !info.isPassthroughInput() || info.getType() != TvInputInfo.TYPE_HDMI) return;
+        if (DeviceOnCard.cecOnly(this) && info.getParentId() == null) { deviceOn.tracker.seed(inputId, state); return; }
+        if (!deviceOn.tracker.onState(inputId, state, System.currentTimeMillis(), DeviceOnCard.hidden(this))) return;
+        CharSequence custom = info.loadCustomLabel(this);
+        offerDevice(custom != null && custom.length() > 0 ? custom.toString() : null, portLabel(info), inputId);
+    }
+
+    private void deviceAdded(String inputId) {
+        if (!isResumedNow || deviceOn == null || !DeviceOnCard.enabled(this)) return;
+        TvInputInfo info = inputInfo(inputId);
+        if (info == null || !info.isPassthroughInput() || info.getParentId() == null) return;
+        TvInputInfo port = inputInfo(info.getParentId());
+        if (port == null) return;
+        if (!deviceOn.tracker.onDeviceAdded(inputId, info.getParentId(), System.currentTimeMillis(), DeviceOnCard.hidden(this))) return;
+        CharSequence name = info.loadCustomLabel(this);
+        if (name == null || name.length() == 0) name = info.loadLabel(this);
+        offerDevice(name == null ? null : name.toString(), portLabel(port), inputId);
+    }
+
+    private void offerDevice(String device, String port, String inputId) {
+        if (openPopup != null || appLibrary != null) return;
+        deviceOn.show(device, port, () -> openInput(inputId));
+    }
+
+    private TvInputInfo inputInfo(String id) {
+        TvInputManager tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);
+        if (tim == null || id == null) return null;
+        try { return tim.getTvInputInfo(id); } catch (RuntimeException e) { return null; }
+    }
+
+    private String portLabel(TvInputInfo info) {
+        CharSequence l = info.loadLabel(this);
+        String label = l == null ? "HDMI" : l.toString();
+        if (info.getType() == TvInputInfo.TYPE_HDMI && !label.toUpperCase(Locale.ROOT).contains("HDMI")) label = "HDMI " + label;
+        return label;
+    }
+
+    /** For the screenshot test: the card as it shows. */
+    View showDeviceOnForTest(String device, String port) { return deviceOn.show(device, port, () -> { }); }
 
     /** Dropdown menu under the Inputs pill: HDMI ports (with connection state), AV and Live TV. */
     private void showInputs() {
@@ -2218,6 +2293,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         final PopupWindow popup = glassPopup(panel, width);
 
         TvInputManager tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);
+        // Mi5G 2.0.2: inputs hidden in Edit inputs (on the TV or from the phone) stay out of the menu.
+        Set<String> hiddenIn = new HashSet<>(HomeLayout.load(this).hiddenInputs);
         boolean sawNonHdmi = false;
         String tunerId = null;
         boolean tunerIsHw = false;
@@ -2278,13 +2355,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 }
                 // Inputs hidden in the TV's Settings > Inputs stay out of the menu too.
                 if (!info.isPassthroughInput() || info.isHidden(this)) continue;
+                if (hiddenIn.contains(info.getId())) continue;
                 // A CEC device's row is added with its port, below.
                 if (info.getParentId() != null && inputIds.contains(info.getParentId())) continue;
                 CharSequence l = info.loadLabel(this);
                 String label = l == null ? info.getId() : l.toString();
                 boolean hdmi = info.getType() == TvInputInfo.TYPE_HDMI;
                 if (hdmi && !label.toUpperCase(Locale.ROOT).contains("HDMI")) label = "HDMI " + label;
-                CharSequence custom = info.loadCustomLabel(this);
+                CharSequence custom = HomeLayout.load(this).inputName(info.getId());
+                if(custom.length()==0)custom=info.loadCustomLabel(this);
                 boolean named = custom != null && custom.length() > 0 && !custom.toString().equals(label);
                 if (!hdmi && rows.getChildCount() > 0 && !sawNonHdmi) addSeparator(rows);
                 if (!hdmi) sawNonHdmi = true;
@@ -2294,11 +2373,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     // Settings > Inputs), then the port. Opening the device's input also makes it the CEC
                     // active source, which wakes it.
                     for (TvInputInfo device : devices) {
+                        if (hiddenIn.contains(device.getId())) continue;
                         CharSequence name = device.loadCustomLabel(this);
                         if (name == null || name.length() == 0) name = named ? custom : device.loadLabel(this);
+                        if(!HomeLayout.load(this).inputName(device.getId()).isEmpty())name=HomeLayout.load(this).inputName(device.getId());
                         String deviceLabel = name == null || name.length() == 0 ? label : name + " \u00B7 " + label;
                         final String deviceId = device.getId();
-                        int state = hdmiStateBogus ? -1 : tim.getInputState(deviceId);
+                        int state = hdmiStateBogus && !DeviceOnCard.cecOnly(this) ? -1 : tim.getInputState(deviceId);
                         addInputRow(rows, popup, R.drawable.ic_input, deviceLabel, state, () -> openInput(deviceId))
                                 .setOnLongClickListener(v -> pinWakeInput(popup, deviceId));
                     }
@@ -2307,7 +2388,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 // The name given in Settings > Inputs (e.g. "MacBook Pro") goes first, the port after it.
                 if (named) label = custom + " \u00B7 " + label;
                 final String id = info.getId();
-                int state = hdmi && hdmiStateBogus ? -1 : tim.getInputState(id);
+                int state = hdmi && (hdmiStateBogus || DeviceOnCard.cecOnly(this)) ? -1 : tim.getInputState(id);
                 addInputRow(rows, popup, hdmi ? R.drawable.ic_input : R.drawable.ic_av, label, state,
                         () -> openInput(id)).setOnLongClickListener(v -> pinWakeInput(popup, id));
             }
@@ -2329,10 +2410,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     .setPackage(liveTvPkg);
             if (tuned.resolveActivity(getPackageManager()) != null) liveTv = tuned;
         }
-        if (liveTv != null) {
+        if (liveTv != null && !hiddenIn.contains(HomeLayout.LIVE_TV)) {
             if (rows.getChildCount() > 0) addSeparator(rows);
             final Intent liveTvIntent = liveTv;
-            addInputRow(rows, popup, R.drawable.ic_livetv, getString(R.string.live_tv), -1, () -> open(liveTvIntent));
+            addInputRow(rows, popup, R.drawable.ic_livetv, HomeLayout.load(this).inputName(HomeLayout.LIVE_TV).isEmpty()?getString(R.string.live_tv):HomeLayout.load(this).inputName(HomeLayout.LIVE_TV), -1, () -> open(liveTvIntent));
         }
         if (rows.getChildCount() == 0) {
             Toast.makeText(this, R.string.no_inputs, Toast.LENGTH_SHORT).show();

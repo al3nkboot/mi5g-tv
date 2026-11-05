@@ -67,6 +67,7 @@ public class InputKeyService extends AccessibilityService {
     void run(String action) {
         if (action == null) return;
         switch (action) {
+            case "ignore": break;
             case "home": performGlobalAction(GLOBAL_ACTION_HOME); break;
             case "back": performGlobalAction(GLOBAL_ACTION_BACK); break;
             case "recents": performGlobalAction(GLOBAL_ACTION_RECENTS); break;
@@ -85,6 +86,7 @@ public class InputKeyService extends AccessibilityService {
                 break;
             default:
                 if (action.startsWith("app:")) RemoteKeys.launch(this, action.substring(4));
+                else if(action.startsWith("input:")) InputLauncher.open(this,action.substring(6));
         }
     }
 

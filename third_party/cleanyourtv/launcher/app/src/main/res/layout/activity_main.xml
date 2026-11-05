@@ -339,6 +339,7 @@
             </LinearLayout>
         </RelativeLayout>
 
+        <LinearLayout android:id="@+id/continueRow" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:visibility="gone" android:layoutDirection="locale" />
         <!-- The wrapper clips at the grid's edge; the grid itself must not clip so scaled tiles can overflow their cells. -->
         <FrameLayout
             android:layout_width="match_parent"

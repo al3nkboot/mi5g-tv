@@ -9,18 +9,19 @@ import java.util.TreeMap;
 
 /**
  * Mi5G 2.0 button mapper storage: "map.<keycode>.<1|2|3|H>" = action, in the launcher's settings.
- * Actions: "app:<package>", "settings", "control_center", "home", "back", "recents", "inputs".
+ * Actions: "app:<package>", "settings", "control_center", "home", "back", "recents", "inputs", "ignore".
  */
 final class ButtonMap {
     static final String PREFS = "button_map";
-    static final String[] FIXED_ACTIONS = {"control_center", "settings", "home", "back", "recents", "inputs"};
+    static final String[] FIXED_ACTIONS = {"control_center", "settings", "home", "back", "recents", "inputs", "ignore"};
 
     static String key(int keyCode, int pattern) { return "map." + keyCode + "." + PressPattern.suffix(pattern); }
 
     /** Parses a stored action; null when it is not one this version knows (ignored, never run). */
     static String validAction(String a) {
         if (a == null) return null;
-        if (a.startsWith("app:")) return a.substring(4).matches("[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z0-9_]+)+") ? a : null;
+        if (a.startsWith("input:")) return HomeLayout.validId(a.substring(6)) ? a : null;
+        if (a.startsWith("app:")) return a.substring(4).matches("[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z][A-Za-z0-9_]*)+") ? a : null;
         for (String f : FIXED_ACTIONS) if (f.equals(a)) return a;
         return null;
     }

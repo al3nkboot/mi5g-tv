@@ -47,8 +47,8 @@ import java.util.concurrent.Executors;
 
 /**
  * Mi5G 2.0.1: the small web server the phone talks to after scanning the QR code on the TV
- * (ArrangeActivity). Local network only: it answers private, link-local and loopback addresses and
- * closes anything else. Every path starts with a 128-bit token made fresh each time it starts and
+ * (ArrangeActivity). Local network only: since 2.0.2 it answers clients on the TV's own subnet (and
+ * loopback) and closes anything else. Every path starts with a 128-bit token made fresh each time it starts and
  * shown only on the TV. It runs only while the QR screen is open and stops by itself after
  * {@link #IDLE_MS} without a request. The idea follows Aerial's PhoneServer (pengchujin/aerial-tv,
  * MIT); the code is Mi5G's own, with no third-party HTTP library.
@@ -67,6 +67,7 @@ final class ArrangeServer {
     private final Handler main = new Handler(Looper.getMainLooper());
     private volatile long lastUse = System.currentTimeMillis();
     private volatile boolean closed;
+    private final java.util.Set<Socket> clients=java.util.concurrent.ConcurrentHashMap.newKeySet();
     private Runnable onStopped;
 
     private ArrangeServer(Context ctx, String token, ServerSocket socket) {
@@ -112,6 +113,9 @@ final class ArrangeServer {
     void stop() {
         if (closed) return;
         closed = true;
+        FileTransfer.outgoing=null;
+        for(Socket client:clients)try{client.close();}catch(IOException ignored){}
+        clients.clear();
         try { socket.close(); } catch (IOException ignored) { }
         pool.shutdownNow();
         main.removeCallbacksAndMessages(null);
@@ -131,21 +135,56 @@ final class ArrangeServer {
         return ip == null ? null : "http://" + ip + ":" + socket.getLocalPort() + "/" + token + "/";
     }
 
+    /**
+     * The TV's IPv4 address for the QR code. Mi5G 2.0.2: a private address first, then any other IPv4
+     * address on a working interface, as some routers hand out addresses outside the usual private
+     * ranges (100.64/10 carrier NAT, or public blocks used as a LAN).
+     */
     static String localAddress() {
+        String other = null;
         try {
             for (NetworkInterface ni : Collections.list(NetworkInterface.getNetworkInterfaces())) {
                 if (!ni.isUp() || ni.isLoopback()) continue;
                 for (InetAddress a : Collections.list(ni.getInetAddresses())) {
-                    if (a instanceof Inet4Address && a.isSiteLocalAddress()) return a.getHostAddress();
+                    if (!(a instanceof Inet4Address) || a.isLinkLocalAddress() || a.isLoopbackAddress()) continue;
+                    if (a.isSiteLocalAddress()) return a.getHostAddress();
+                    if (other == null) other = a.getHostAddress();
                 }
             }
         } catch (Exception ignored) { }
-        return null;
+        return other;
     }
 
-    /** Private (10/8, 172.16/12, 192.168/16), link-local or loopback: the only peers answered. */
+    /**
+     * Mi5G 2.0.2: only clients on one of the TV's own subnets (from its interfaces' addresses and prefix
+     * lengths), whatever range the router uses; loopback stays allowed.
+     */
     static boolean localPeer(InetAddress a) {
-        return a != null && (a.isSiteLocalAddress() || a.isLinkLocalAddress() || a.isLoopbackAddress());
+        if (a == null) return false;
+        if (a.isLoopbackAddress()) return true;
+        try {
+            for (NetworkInterface ni : Collections.list(NetworkInterface.getNetworkInterfaces())) {
+                if (!ni.isUp() || ni.isLoopback()) continue;
+                for (java.net.InterfaceAddress ia : ni.getInterfaceAddresses()) {
+                    InetAddress own = ia.getAddress();
+                    if (own != null && sameSubnet(own.getAddress(), a.getAddress(), ia.getNetworkPrefixLength())) return true;
+                }
+            }
+        } catch (Exception ignored) { }
+        return false;
+    }
+
+    /** Whether two addresses of the same family share the first prefix bits (the interface's real prefix). */
+    static boolean sameSubnet(byte[] own, byte[] peer, int prefix) {
+        if (own == null || peer == null || own.length != peer.length) return false;
+        int bits = own.length * 8;
+        if (prefix <= 0 || prefix > bits) return false;
+        if (own.length != 4 && own.length != 16) return false;
+        int full = prefix / 8, rest = prefix % 8;
+        for (int i = 0; i < full; i++) if (own[i] != peer[i]) return false;
+        if (rest == 0) return true;
+        int mask = (0xFF << (8 - rest)) & 0xFF;
+        return (own[full] & mask) == (peer[full] & mask);
     }
 
     static boolean tokenMatches(String expected, String got) {
@@ -158,6 +197,7 @@ final class ArrangeServer {
             try {
                 Socket c = socket.accept();
                 if (!localPeer(c.getInetAddress())) { c.close(); continue; }
+                clients.add(c);
                 pool.execute(() -> handle(c));
             } catch (IOException e) {
                 if (!closed) Log.w(TAG, "accept: " + e);
@@ -235,7 +275,7 @@ final class ArrangeServer {
             route(r, rest, in, length, out);
         } catch (Exception e) {
             Log.w(TAG, "request: " + e);
-        }
+        } finally { clients.remove(c); }
     }
 
     private static byte[] readBody(InputStream in, long length, int max) throws IOException {
@@ -259,6 +299,10 @@ final class ArrangeServer {
             case "cairo.ttf":
                 respond(out, 200, "font/ttf", readAll(ctx.getResources().openRawResource(R.font.cairo)));
                 return;
+            case "api/files":
+                respond(out,200,"application/json",FileTransfer.listing(ctx).toString().getBytes(StandardCharsets.UTF_8));return;
+            case "api/files/download":
+                try{FileTransfer.download(ctx,r.query.get("id"),out);}catch(Exception e){respond(out,404,"text/plain",new byte[0]);}return;
             case "api/state":
                 respond(out, 200, "application/json", state().toString().getBytes(StandardCharsets.UTF_8));
                 return;
@@ -301,6 +345,27 @@ final class ArrangeServer {
             case "api/wallpaper/choose":
                 ok(out, Mi5gWallpapers.choose(ctx, r.query.get("name")) && changedTrue());
                 return;
+            case "api/files/upload": {
+                try{FileTransfer.receive(ctx,r.query.get("name"),in,length);ok(out,true);}
+                catch(Exception e){respond(out,400,"application/json","{\"ok\":false}".getBytes(StandardCharsets.UTF_8));}
+                return;
+            }
+            case "api/quiet": {
+                JSONObject body = new JSONObject(new String(readBody(in,length,4096),StandardCharsets.UTF_8));
+                String value=body.optString("hours");boolean valid=QuietHours.OFF.equals(value)||QuietHours.parse(value)!=null;
+                if(valid)QuietHours.set(ctx,value);ok(out,valid);return;
+            }
+            case "api/message": {
+                JSONObject body = new JSONObject(new String(readBody(in, length, 4096), StandardCharsets.UTF_8));
+                ScreensaverMessage.set(ctx, body.optString("line1"), body.optString("line2"));
+                ok(out, true);
+                return;
+            }
+            case "api/weather": {
+                JSONObject body = new JSONObject(new String(readBody(in, length, 4096), StandardCharsets.UTF_8));
+                ok(out, applyWeather(ctx, body, Weather.HTTP));
+                return;
+            }
             case "api/stop":
                 ok(out, true);
                 main.post(this::stop);
@@ -414,9 +479,19 @@ final class ArrangeServer {
         for (HomeLayout.PinnedInput p : layout.inputs) pinned.put(p.id, p.name);
         for (InputRow in : inputs(ctx)) {
             ins.put(new JSONObject().put("id", in.id).put("label", in.label).put("hdmi", in.hdmi)
-                    .put("pinned", pinned.containsKey(in.id)).put("name", pinned.containsKey(in.id) ? pinned.get(in.id) : ""));
+                    .put("pinned", pinned.containsKey(in.id)).put("name", layout.inputName(in.id))
+                    .put("hiddenInMenu", layout.hiddenInputs.contains(in.id)));
         }
+        // Mi5G 2.0.2: the Live TV row can be hidden from the Inputs menu too.
+        ins.put(new JSONObject().put("id", HomeLayout.LIVE_TV).put("label", ctx.getString(R.string.live_tv)).put("hdmi", false)
+                .put("pinned", false).put("name", layout.inputName(HomeLayout.LIVE_TV)).put("liveTv", true).put("hiddenInMenu", layout.hiddenInputs.contains(HomeLayout.LIVE_TV)));
+        String[] msg = ScreensaverMessage.get(ctx);
+        Weather.Place user = Weather.userPlace(ctx), ip = Weather.ipPlace(ctx);
         JSONObject o = HomeLayout.encode(layout);
+        o.put("quietHours",QuietHours.get(ctx));
+        o.put("message", new JSONObject().put("line1", msg[0]).put("line2", msg[1]));
+        o.put("weather", new JSONObject().put("user", user == null ? "" : user.name).put("near", ip == null ? "" : ip.shown())
+                .put("auto", Weather.ipAllowed(ctx)));
         o.put("tiles", t).put("tvInputs", ins).put("wallpapers", Mi5gWallpapers.state(ctx));
         o.put("theme", new JSONObject().put("columns", cfg.columns).put("rows", cfg.rowsBelowDock));
         return o;
@@ -454,7 +529,7 @@ final class ArrangeServer {
         HomeLayout old = HomeLayout.load(ctx);
         JSONObject merged = HomeLayout.encode(old);
         try {
-            for (String k : new String[]{"names", "folders", "inputs", "options"}) if (body.has(k)) merged.put(k, body.get(k));
+            for (String k : new String[]{"names", "folders", "inputs", "options", "hiddenInputs"}) if (body.has(k)) merged.put(k, body.get(k));
         } catch (Exception e) {
             return false;
         }
@@ -483,6 +558,24 @@ final class ArrangeServer {
         if (next.options.rows > 0) e.putInt(Config.ROWS_BELOW_DOCK_KEY, next.options.rows); else e.remove(Config.ROWS_BELOW_DOCK_KEY);
         e.apply();
         new Handler(Looper.getMainLooper()).post(HomeLayout::changed);
+        return ok;
+    }
+
+    /**
+     * Mi5G 2.0.2: {"city":"..."} sets the weather place (looked up by name), {"city":""} clears it;
+     * {"auto":false} removes the approximate place from the IP address, {"auto":true} allows it again.
+     */
+    static boolean applyWeather(Context ctx, JSONObject body, Weather.Fetcher f) {
+        boolean ok = true;
+        if (body.has("auto")) Weather.setIpAllowed(ctx, body.optBoolean("auto", true));
+        if (body.has("city")) {
+            String city = HomeLayout.cleanName(body.optString("city"));
+            if (city.isEmpty()) Weather.setUser(ctx, null);
+            else {
+                Weather.Place p = Weather.geocode(f, city);
+                if (p == null) ok = false; else Weather.setUser(ctx, p);
+            }
+        }
         return ok;
     }
 

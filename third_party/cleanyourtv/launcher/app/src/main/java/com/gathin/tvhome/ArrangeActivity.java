@@ -74,6 +74,16 @@ public final class ArrangeActivity extends Activity {
         LinearLayout.LayoutParams blp = new LinearLayout.LayoutParams(-2, -2);
         blp.topMargin = (int) (20 * dp);
         text.addView(stop, blp);
+        Button choose=new Button(this);choose.setText(R.string.mi5g_send_tv_file);choose.setTypeface(cairo);choose.setOnClickListener(v->{
+            android.content.Intent pick=new android.content.Intent(android.content.Intent.ACTION_OPEN_DOCUMENT).setType("*/*").addCategory(android.content.Intent.CATEGORY_OPENABLE);
+            try{startActivityForResult(pick,51);}catch(android.content.ActivityNotFoundException e){android.widget.Toast.makeText(this,R.string.not_available,android.widget.Toast.LENGTH_SHORT).show();}
+        });text.addView(choose);
+        Button received=new Button(this);received.setText(R.string.mi5g_received_files);received.setTypeface(cairo);received.setOnClickListener(v->{
+            try{org.json.JSONArray files=FileTransfer.listing(this);String[] names=new String[files.length()];for(int i=0;i<files.length();i++)names[i]=files.getJSONObject(i).getString("name");new android.app.AlertDialog.Builder(this).setTitle(R.string.mi5g_received_files).setItems(names,null).setPositiveButton(android.R.string.ok,null).show();}catch(Exception ignored){}
+        });text.addView(received);
+        if(android.os.Build.VERSION.SDK_INT<=28 && checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)!=android.content.pm.PackageManager.PERMISSION_GRANTED){
+            Button allow=new Button(this);allow.setText(R.string.mi5g_download_permission);allow.setOnClickListener(v->requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},52));text.addView(allow);
+        }
         root.addView(text, new LinearLayout.LayoutParams(0, -2, 1f));
 
         ImageView qr = new ImageView(this);
@@ -109,6 +119,10 @@ public final class ArrangeActivity extends Activity {
         server = null;
     }
 
+    @Override protected void onActivityResult(int request,int result,android.content.Intent data){
+        super.onActivityResult(request,result,data);
+        if(request==51 && result==RESULT_OK && data!=null && data.getData()!=null && "content".equals(data.getData().getScheme()))FileTransfer.outgoing=data.getData();
+    }
     /** A black-on-white QR code of the text, with a quiet zone, size x size pixels. */
     static Bitmap qr(String text, int size) {
         Map<EncodeHintType, Object> hints = new EnumMap<>(EncodeHintType.class);
