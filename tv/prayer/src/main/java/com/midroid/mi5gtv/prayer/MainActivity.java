@@ -68,6 +68,10 @@ public class MainActivity extends Activity {
         root.addView(row, rl);
         LinearLayout buttons = new LinearLayout(this);
         buttons.setGravity(Gravity.CENTER);
+        TextView asr=button(getString(s.hanafi?R.string.prayer_asr_hanafi:R.string.prayer_asr_shafi),cairo,v->{
+            if(Settings.saveHanafi(this,!s.hanafi)){s=Settings.load(this);((TextView)v).setText(s.hanafi?R.string.prayer_asr_hanafi:R.string.prayer_asr_shafi);refresh();Alarms.arm(this);}
+        });
+        buttons.addView(asr);
         buttons.addView(button(getString(R.string.radio), cairo, v -> startActivity(new Intent(this, RadioActivity.class))));
         buttons.addView(button(getString(R.string.test_adhan), cairo, v -> AdhanService.start(this, Engine.next(s, now()).prayer)));
         LinearLayout.LayoutParams bl = new LinearLayout.LayoutParams(-2, -2);

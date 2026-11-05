@@ -6,6 +6,11 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class PrayerTvSettingsTest {
+    @org.junit.Test fun asrDefaultsToShafiAndSerializesBothMethods() {
+        kotlin.test.assertTrue(PrayerTvSettings().toJson().contains("\"hanafi\":false"))
+        kotlin.test.assertTrue(PrayerTvSettings(hanafi = true).toJson().contains("\"hanafi\":true"))
+    }
+
     @Test fun defaultsAreMuscatOmanForcedAdhan() {
         val j = PrayerTvSettings().toJson()
         assertTrue("\"id\":\"muscat\"" in j)

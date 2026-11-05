@@ -18,6 +18,7 @@ enum class OverlayCorner(val key: String, val ar: String) {
 data class PrayerTvSettings(
     val city: PrayerCity = PrayerCities.ALL.first(),
     val method: PrayerMethod = PrayerMethod.OMAN,
+    val hanafi: Boolean = false,
     val forcedAdhan: Boolean = true,
     val forcedVolume: Int = 70,
     val preMinutes: Int = 10,
@@ -30,6 +31,7 @@ data class PrayerTvSettings(
     fun toJson(): String = buildString {
         append("{\"city\":{\"id\":").append(q(city.id)).append(",\"ar\":").append(q(city.ar))
         append(",\"lat\":").append(city.lat).append(",\"lon\":").append(city.lon).append(",\"zone\":").append(q(city.zone)).append("},")
+        append("\"hanafi\":").append(hanafi).append(',')
         append("\"method\":").append(q(method.name)).append(',')
         append("\"forced_adhan\":").append(forcedAdhan).append(",\"forced_volume\":").append(forcedVolume.coerceIn(10, 100)).append(',')
         append("\"pre_minutes\":").append(preMinutes.coerceIn(0, 60)).append(',')

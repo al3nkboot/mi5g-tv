@@ -38,6 +38,8 @@ public class PrayerScreensTest {
         MainActivity a = Robolectric.buildActivity(MainActivity.class).setup().get();
         a.showAt(ZonedDateTime.of(2026, 11, 6, 14, 41, 12, 0, ZoneId.of("Asia/Muscat")));
         save(a.getWindow().getDecorView(), "prayer-home");
+        java.nio.file.Files.createDirectories(java.nio.file.Paths.get("/workspace/out/mi5g-tv-2.1/screens"));
+        java.nio.file.Files.copy(java.nio.file.Paths.get("build/prayer-screens/prayer-home.png"),java.nio.file.Paths.get("/workspace/out/mi5g-tv-2.1/screens/asr_option_ar.png"),java.nio.file.StandardCopyOption.REPLACE_EXISTING);
     }
 
     @Test public void adhan() throws Exception {

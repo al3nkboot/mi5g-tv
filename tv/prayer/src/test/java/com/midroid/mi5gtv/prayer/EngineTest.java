@@ -25,6 +25,12 @@ import org.robolectric.annotation.Config;
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 34)
 public class EngineTest {
+ @Test public void asrMethodChangesOnlyAsrAndDefaultsToShafi() {
+  Settings shafi=Settings.parse("{}"),hanafi=Settings.parse("{\"hanafi\":true}");assertFalse(shafi.hanafi);assertTrue(hanafi.hanafi);
+  ZonedDateTime[] s=Engine.day(shafi,LocalDate.of(2026,11,5)),h=Engine.day(hanafi,LocalDate.of(2026,11,5));
+  assertTrue(h[Engine.ASR].isAfter(s[Engine.ASR]));for(int i=0;i<Engine.COUNT;i++)if(i!=Engine.ASR)assertEquals(s[i],h[i]);
+ }
+
     static Settings city(String id) throws Exception {
         String json = new String(EngineTest.class.getClassLoader().getResourceAsStream("cities.json") == null
                 ? java.nio.file.Files.readAllBytes(java.nio.file.Paths.get("src/main/assets/cities.json"))

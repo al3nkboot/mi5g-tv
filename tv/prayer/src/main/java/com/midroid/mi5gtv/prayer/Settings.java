@@ -78,6 +78,16 @@ final class Settings {
         return s;
     }
 
+    static boolean saveHanafi(Context ctx, boolean hanafi) {
+        File dir=ctx.getExternalFilesDir(null); if(dir==null)return false;
+        File f=new File(dir,FILE), tmp=new File(dir,FILE+".tmp");
+        try {
+            JSONObject o=f.isFile()?new JSONObject(new String(Files.readAllBytes(f.toPath()),StandardCharsets.UTF_8)):new JSONObject();
+            o.put("hanafi",hanafi); Files.write(tmp.toPath(),o.toString().getBytes(StandardCharsets.UTF_8));
+            Files.move(tmp.toPath(),f.toPath(),java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return true;
+        } catch(Exception e){return false;}
+    }
     private static boolean validZone(String z) {
         try { java.time.ZoneId.of(z); return true; } catch (Exception e) { return false; }
     }
