@@ -222,6 +222,26 @@ class SetupMachineTest {
         assertEquals(listOf(h.setupPlan.id), h.ledger.runs(w.tvId).map { it.planId })
     }
 
+    @Test fun notificationDenialKeepsFoundAndStillStartsThePlan() = runTest(timeout = 30.seconds) {
+        val h = Harness()
+        h.sessions.allowPromptFor[HOST] = "AB:CD:7F:2A"
+        h.engine.onStart = { emit(it.tvId, RunState.Running(it, 0, listOf(NarrationLine("Restore point saved", NarrationState.DOING)), 10, null)) }
+        val m = h.setup(backgroundScope)
+        toFound(h, m)
+        val before = m.state.value
+        m.dispatch(SetupIntent.NotificationPermissionSettled)
+        settle()
+        assertEquals(before, m.state.value)
+        assertFalse(m.extras.value.starting)
+        m.effects.test {
+            m.dispatch(SetupIntent.MakeItClean)
+            settle()
+            assertFalse(SetupEffect.RequestNotificationPermission in drain())
+        }
+        assertEquals(1, h.engine.calls.filterIsInstance<FakeEngine.Call.Start>().size)
+        assertIs<SetupState.Working>(m.state.value)
+    }
+
     @Test fun cancelledPromptStartsNothing() = runTest(timeout = 30.seconds) {
         val h = Harness()
         h.sessions.allowPromptFor[HOST] = "AB:CD:7F:2A"

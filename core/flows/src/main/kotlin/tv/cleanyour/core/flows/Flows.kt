@@ -59,6 +59,7 @@ sealed interface SetupIntent { data object Start : SetupIntent; data class PickT
     data class Keep(val pkg: PackageName, val keep: Boolean) : SetupIntent; data class SetDock(val dock: List<PackageName>) : SetupIntent
     data class SetTheme(val id: String) : SetupIntent; data class KeepDebuggingOn(val on: Boolean) : SetupIntent; data class Open(val sheet: Sheet?) : SetupIntent
     data object MakeItClean : SetupIntent; data class CredentialPassed(val pass: GatePass) : SetupIntent; data object CredentialFailed : SetupIntent   // R0: 6
+    data object NotificationPermissionSettled : SetupIntent   // 2.1.1: allow or deny; clean continues either way
     data object StopAndUndo : SetupIntent; data object YesISeeIt : SetupIntent; data object NoPutItBack : SetupIntent
     data object TryWithWizardOff : SetupIntent; data object LeaveOldHome : SetupIntent; data object CarryOn : SetupIntent; data object UndoWhatWeDid : SetupIntent
     data object Restart : SetupIntent; data object SaveRestoreNote : SetupIntent; data object AddCard : SetupIntent; data object Finish : SetupIntent

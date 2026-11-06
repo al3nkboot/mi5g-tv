@@ -35,6 +35,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 import kotlinx.coroutines.delay
 import tv.cleanyour.core.engine.RunState
 import tv.cleanyour.core.flows.AppChoice
@@ -269,7 +270,7 @@ fun FoundScreen(
 fun CustomiseSheet(state: SetupState.Found, extras: SetupExtras, actions: SetupActions, onCopyCommands: (String) -> Unit = {}) {
     val undo = rememberUndoSnackbarState()
     var why by remember { mutableStateOf(false) }
-    CytBottomSheet({ actions.intent(SetupIntent.Open(null)) }) {
+    CytBottomSheet({ actions.intent(SetupIntent.Open(null)) }, scrollable = false) {
         Box(Modifier.fillMaxWidth()) {
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 CustomiseContent(state, extras, actions, undo, onWhy = { why = true }, onCopyCommands = onCopyCommands)
@@ -296,7 +297,8 @@ internal fun ColumnScope.CustomiseContent(
     val custom = state.level == Level.CUSTOM
     val keptText = stringResource(R.string.customise_snackbar_kept)
     val offText = stringResource(R.string.customise_snackbar_off)
-    val locale = LocalConfiguration.current.locales[0]
+    val locales = LocalConfiguration.current.locales
+    val locale = if (locales.isEmpty) Locale.getDefault() else locales[0]
     SheetHeader(
         stringResource(R.string.customise_title),
         trailing = rememberEmphasis(msg(R.string.customise_live, "total" to total, "off" to off), "$off"),
@@ -406,7 +408,7 @@ fun DockSheet(current: List<AppChoice>, apps: List<AppChoice>, columns: Int, onD
     val state = remember(current, columns) { DockEditorState(current.map { it.toDockApp() }, columns) }
     val scroll = rememberScrollState()
     val undo = rememberUndoSnackbarState()
-    CytBottomSheet(onDismiss) {
+    CytBottomSheet(onDismiss, scrollable = false) {
         Box(Modifier.fillMaxWidth()) {
             Column(Modifier.verticalScroll(scroll)) {
                 DockContent(state, apps, onDone = { onDone(state.apps.map { PackageName(it.key) }) }, scroll, undo)

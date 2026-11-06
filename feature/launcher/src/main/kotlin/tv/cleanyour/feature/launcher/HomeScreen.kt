@@ -243,7 +243,7 @@ fun DockSheet(current: List<AppChoice>, apps: List<AppChoice>, columns: Int, onD
     val state = remember(current, columns) { DockEditorState(current.map { it.toDockApp() }, columns) }
     val scroll = rememberScrollState()
     val undo = rememberUndoSnackbarState()
-    CytBottomSheet(onDismiss) {
+    CytBottomSheet(onDismiss, scrollable = false) {
         // Three rows and the other apps can be taller than the screen; the sheet scrolls, also by
         // itself while an app is dragged near its edge.
         Box(Modifier.fillMaxWidth()) {

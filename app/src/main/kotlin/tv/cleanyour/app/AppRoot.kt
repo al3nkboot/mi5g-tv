@@ -1,6 +1,7 @@
 package tv.cleanyour.app
 
 import android.Manifest
+import android.content.pm.PackageManager
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent
@@ -24,11 +25,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.core.content.ContextCompat
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -51,7 +54,9 @@ import tv.cleanyour.core.flows.DoorPhase
 import tv.cleanyour.core.flows.ManageEffect
 import tv.cleanyour.core.flows.ReportKind
 import tv.cleanyour.core.flows.Reach
+import tv.cleanyour.core.flows.SetupActions
 import tv.cleanyour.core.flows.SetupEffect
+import tv.cleanyour.core.flows.SetupIntent
 import tv.cleanyour.core.flows.SetupStart
 import tv.cleanyour.core.flows.SetupState
 import tv.cleanyour.core.flows.SnackKind
@@ -195,8 +200,6 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
     }
 
     val undoLabel = androidx.compose.ui.res.stringResource(tv.cleanyour.feature.manage.R.string.action_undo)
-    val notificationPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { }
-
     suspend fun onSetupEffect(e: SetupEffect) = when (e) {
         SetupEffect.HapticLight -> haptic(HapticFeedbackConstants.CLOCK_TICK)
         SetupEffect.HapticDouble -> haptic(if (Build.VERSION.SDK_INT >= 30) HapticFeedbackConstants.CONFIRM else HapticFeedbackConstants.VIRTUAL_KEY)
@@ -205,7 +208,9 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
         is SetupEffect.Share -> share(e.text)
         is SetupEffect.Navigate -> go(e.key)
         is SetupEffect.Notify -> {}            // the foreground service's notification carries it (D18)
-        SetupEffect.RequestNotificationPermission -> if (Build.VERSION.SDK_INT >= 33) notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS) else Unit
+        // Asked from the Found screen before MakeItClean, so a denial cannot start a run
+        // under a paused or recreated Activity.
+        SetupEffect.RequestNotificationPermission -> Unit
     }
 
     suspend fun onManageEffect(
@@ -253,11 +258,29 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
                     val m = rememberMachine("setup:${key.tvId}:${key.planId}") { graph.setup(it, start) }
                     val state by m.state.collectAsStateWithLifecycle()
                     val extras by m.extras.collectAsStateWithLifecycle()
+                    var pendingStartClean by rememberSaveable { mutableStateOf(false) }
+                    val notificationPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { _ ->
+                        if (pendingStartClean) {
+                            pendingStartClean = false
+                            m.dispatch(SetupIntent.NotificationPermissionSettled)
+                            m.dispatch(SetupIntent.MakeItClean)
+                        }
+                    }
+                    val gated = NotificationGatedSetupActions(m) {
+                        val granted = ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+                        if (shouldAskPostNotifications(Build.VERSION.SDK_INT, granted)) {
+                            pendingStartClean = true
+                            notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        } else {
+                            m.dispatch(SetupIntent.NotificationPermissionSettled)
+                            m.dispatch(SetupIntent.MakeItClean)
+                        }
+                    }
                     LaunchedEffect(m) { m.effects.collect { onSetupEffect(it) } }
                     BackHandler { if (!m.back()) { if (backStack.size > 1) backStack.removeAt(backStack.lastIndex) else onExit() } }
                     SecureWindow((state as? SetupState.OpenDoor)?.phase == DoorPhase.ALLOW)
-                    if (isConnectState(state)) ConnectFlow(state, extras, m, onReturning = { go("returning") })
-                    else SetupFlow(state, extras, m, onCopyCommands = { copyText(context, it) }, onRoute = { go(it) })
+                    if (isConnectState(state)) ConnectFlow(state, extras, gated, onReturning = { go("returning") })
+                    else SetupFlow(state, extras, gated, onCopyCommands = { copyText(context, it) }, onRoute = { go(it) })
                 }
                 entry<Dest.Manage> { key ->
                     val m = rememberMachine("manage:${key.tvId}") { graph.manage(it, key.tvId?.let(::TvId)) }
@@ -411,6 +434,18 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
         val reach by graph.access.reach.collectAsStateWithLifecycle()
         if (reach !is Reach.Idle) DebugStepSheet(reach) { graph.access.cancelWaiting() }
         SnackbarHost(snack, Modifier.align(Alignment.BottomCenter).padding(16.dp))
+    }
+}
+
+
+internal fun shouldAskPostNotifications(sdkInt: Int, granted: Boolean): Boolean = sdkInt >= 33 && !granted
+
+internal class NotificationGatedSetupActions(
+    private val inner: SetupActions,
+    private val askThenStart: () -> Unit,
+) : SetupActions by inner {
+    override fun intent(intent: SetupIntent) {
+        if (intent == SetupIntent.MakeItClean) askThenStart() else inner.intent(intent)
     }
 }
 
