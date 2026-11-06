@@ -2,6 +2,22 @@
 
 All notable changes to the app. Versions follow [semantic versioning](https://semver.org/).
 
+## 2.1.1 (2026-11-06)
+
+Patch release for two crashes found on OnePlus 13 (Android 15) after v2.1.0.
+
+### الجديد منذ v2.1.0
+- إصلاح الشاشة السوداء عند رفض إذن الإشعارات أثناء بدء التنظيف. التطبيق يطلب الإذن أولاً، ثم يكمل سواء وافقت أو رفضت.
+- إصلاح انهيار التطبيق عند فتح «تخصيص» بسبب تمرير متداخل على أندرويد 15.
+
+دعم التطوير: https://paypal.me/Midroid5G · X: @midroid5G
+
+### What's new since v2.1.0
+- Fixed a black-screen crash when denying the notification permission as cleanup starts. The app now asks first, then continues whether you allow or deny.
+- Fixed a crash when opening Customise, caused by nested scrolling on Android 15.
+
+Support: https://paypal.me/Midroid5G · X: @midroid5G
+
 ## 2.1.0 (2026-11-06)
 
 First public release since v1.6.0. Includes the unpublished 2.0.0 and 2.0.1 work plus 2.1.
