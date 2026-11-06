@@ -182,4 +182,29 @@
     <string name="door_chinese_tv_body">إذا لم يظهر خيار «تصحيح أخطاء USB» بعد الضغط 7 مرات على رقم الإصدار في الشاشات الصينية أو Ikon أو Haier أو Nikai أو البروجكتر HY320:
 1. أكواد القائمة السرية بالريموت: اضغط زر القائمة (Menu) ثم الأرقام 2580، أو زر المصدر (Source) ثم 2580، أو Menu ثم 1147، أو Home ثم 1999 لفتح قائمة المصنع وتفعيل ADB.
 2. طريقة الفلاشة USB: ضع ملفات APK على فلاشة USB بنظام FAT32 وأدخلها في التلفاز، ثم افتح مدير الملفات المدمج (Media / FileBrowser) لتثبيت التطبيقات مباشرة.</string>
+    <string name="manual_entry">إدخال يدوي</string><string name="manual_port">المنفذ</string>
+    <!-- M4 item 31: Samsung / LG helper -->
+    <string name="smarttv_power">إيقاف التشغيل</string>
+    <string name="smarttv_title">مساعد سامسونج و LG</string>
+    <string name="smarttv_samsung">سامسونج Tizen</string>
+    <string name="smarttv_lg">LG webOS</string>
+    <string name="smarttv_tab_remote">📱 ريموت Wi-Fi</string>
+    <string name="smarttv_tab_dns">🛡️ حجب الإعلانات (DNS)</string>
+    <string name="smarttv_tab_ads">🚫 إيقاف إعلانات الشاشة</string>
+    <string name="smarttv_remote_note">الهاتف والتلفاز على نفس شبكة Wi-Fi. اكتب عنوان IP للتلفاز (الإعدادات ← الشبكة ← حالة الشبكة).</string>
+    <string name="smarttv_ip_label">عنوان IP للتلفاز، مثل 192.168.1.20</string>
+    <string name="smarttv_ip_error">اكتب عنوانًا من شبكتك المنزلية (192.168.x.x أو 10.x.x.x)</string>
+    <string name="smarttv_connect">اتصال بالتلفاز</string>
+    <string name="smarttv_allow_samsung">اختر «سماح» على شاشة التلفاز عند ظهور طلب Mi5G TV.</string>
+    <string name="smarttv_allow_lg">اختر «قبول» على شاشة التلفاز عند ظهور طلب Mi5G TV.</string>
+    <string name="smarttv_connected">متصل ✓ استخدم الأزرار بالأسفل.</string>
+    <string name="smarttv_denied">رفض التلفاز الاتصال. أعد المحاولة واختر «سماح».</string>
+    <string name="smarttv_unreachable">تعذّر الوصول إلى التلفاز. تأكد من العنوان وأن التلفاز يعمل وعلى نفس الشبكة.</string>
+    <string name="smarttv_dns_note">يحجب AdGuard DNS الإعلانات والمتتبعات لكل تطبيقات التلفاز. التغيير من إعدادات التلفاز نفسه ويمكن التراجع عنه في أي وقت.</string>
+    <string name="smarttv_dns_samsung">1. الإعدادات ← عام ← الشبكة ← حالة الشبكة ← إعدادات IP.\n2. إعدادات DNS ← إدخال يدوي.\n3. اكتب خادم DNS أدناه ثم «موافق».\n4. ارجع واختبر الاتصال بالإنترنت.</string>
+    <string name="smarttv_dns_lg">1. الإعدادات ← الشبكة ← اتصال Wi-Fi (أو سلكي) ← إعدادات Wi-Fi المتقدمة ← تعديل.\n2. ألغِ «ضبط تلقائي».\n3. اكتب خادم DNS أدناه ثم «اتصال».\n4. ارجع واختبر الاتصال بالإنترنت.</string>
+    <string name="smarttv_dns_undo">للتراجع: أعد إعدادات IP أو DNS إلى «تلقائي». إن انقطع الإنترنت بعد التغيير فالراوتر يحظر DNS الخارجي؛ ارجع إلى «تلقائي».</string>
+    <string name="smarttv_ads_samsung">• الإعدادات ← الدعم ← الشروط والخصوصية: أوقف «الإعلانات حسب الاهتمامات» و«خدمات المعلومات المشاهدة».\n• الإعدادات ← عام ← ميزات Smart: أوقف «تشغيل Smart Hub تلقائيًا» و«تشغيل آخر تطبيق تلقائيًا».\n• Samsung TV Plus: من الإعدادات ← البث أوقف «تشغيل Samsung TV Plus تلقائيًا».</string>
+    <string name="smarttv_ads_lg">• الإعدادات ← عام ← النظام ← إعدادات إضافية ← إعدادات الشاشة الرئيسية: أوقف «ترويج الشاشة الرئيسية» و«توصيات المحتوى».\n• الإعدادات ← عام ← النظام ← إعدادات إضافية: أوقف «Live Plus».\n• الإعدادات ← الدعم ← اتفاقيات المستخدم: ألغِ «معلومات المشاهدة» و«الإعلانات حسب الاهتمامات».</string>
+    <string name="smarttv_ads_note">تختلف أسماء القوائم قليلًا حسب السنة والطراز. لا يغيّر Mi5G TV شيئًا على هذه الشاشات بنفسه.</string>
 </resources>

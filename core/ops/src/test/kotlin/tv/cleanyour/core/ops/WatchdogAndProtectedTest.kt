@@ -108,6 +108,11 @@ class ProtectedTest {
         }
     }
 
+    @Test fun sdkSandboxIsProtected() {
+        for (p in listOf("com.android.sdksandbox", "com.google.android.sdksandbox", "com.google.android.adservices.api"))
+            assertNotNull(p, Protected.isProtected(PackageName(p), null, null))
+    }
+
     @Test fun liveFactsAndProfile() {
         val pkg = PackageName("com.vendor.service")
         assertNull(Protected.isProtected(pkg, state(), null))

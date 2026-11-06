@@ -49,6 +49,11 @@ import androidx.compose.ui.unit.dp
 import java.text.SimpleDateFormat
 import java.util.Date
 import tv.cleanyour.core.engine.PauseReason
+import tv.cleanyour.core.flows.OverlayCorner
+import tv.cleanyour.core.flows.PrayerCities
+import tv.cleanyour.core.flows.PrayerMethod
+import tv.cleanyour.core.flows.PrayerTvSettings
+import tv.cleanyour.core.flows.after
 import tv.cleanyour.core.flows.AppConfirm
 import tv.cleanyour.core.flows.AppSettingsIntent
 import tv.cleanyour.core.flows.AppSettingsState
@@ -128,6 +133,8 @@ import tv.cleanyour.ui.design.component.TvStatusChip
 import tv.cleanyour.ui.design.icon.CytIcons
 import tv.cleanyour.ui.design.theme.CytTheme
 import tv.cleanyour.ui.design.theme.Glow
+import tv.cleanyour.ui.design.theme.LocalCardScale
+import tv.cleanyour.core.flows.PowerFailStep
 
 // Screens M1, M1a, M4, M5, M7 and M8 (PRODUCT-SPEC 4, UX 4.3, 4.11, 4.13, 6.1), built from the
 // :ui:design components (ui/design/API.md). Each sheet keeps its body in an internal *Content
@@ -143,6 +150,7 @@ private val titleTop = Modifier.padding(top = 20.dp)
 fun ManageScreen(state: ManageState, onIntent: (ManageIntent) -> Unit, modifier: Modifier = Modifier) {
     val tv = state.current
     val locale = LocalConfiguration.current.locales[0]
+    var showQuickStart by rememberSaveable { mutableStateOf(false) }
     ScreenScaffold(Glow.Tv, modifier, topBar = {
         CytTopBar(
             center = { if (tv != null) TvStatusChip(tv.name, tv.chip.toTvStatus()) },
@@ -150,10 +158,16 @@ fun ManageScreen(state: ManageState, onIntent: (ManageIntent) -> Unit, modifier:
         )
     }) {
         ScreenTitle(stringResource(R.string.manage_title), titleTop)
+        ListGroup(Modifier.padding(top = 12.dp)) {
+            ListRow(stringResource(R.string.quick_start_title), onClick = { showQuickStart = true })
+        }
         if (state.offline) {
-            Banner(
-                stringResource(R.string.manage_offline_banner), BannerTone.NEUTRAL, Modifier.padding(top = 16.dp), icon = CytIcons.WifiOff,
-                actionLabel = if (state.reconnecting) null else stringResource(R.string.manage_reconnect), onAction = { onIntent(ManageIntent.Reconnect) },
+            StopCard(
+                stringResource(R.string.manage_unreachable_title), stringResource(R.string.manage_unreachable_body), Modifier.padding(top = 16.dp),
+                icon = CytIcons.WifiOff,
+                primaryLabel = if (state.reconnecting) null else stringResource(R.string.manage_reconnect),
+                onPrimary = { onIntent(ManageIntent.Reconnect) }, primaryGuarded = false,
+                busyText = if (state.reconnecting) stringResource(R.string.manage_reconnecting) else null,
             )
             if (state.reconnecting) LiveLine(stringResource(R.string.manage_reconnecting))
         }
@@ -177,6 +191,14 @@ fun ManageScreen(state: ManageState, onIntent: (ManageIntent) -> Unit, modifier:
             if (tv.helpAddTv) {
                 Banner(stringResource(R.string.manage_help_add_tv_banner), BannerTone.INFO, Modifier.padding(top = 16.dp),
                     actionLabel = stringResource(R.string.manage_help_add_tv), onAction = { onIntent(ManageIntent.HelpAddTv) })
+            }
+            // M4 item 35: the two one-tap maintenance actions (each still shows what it will do and asks).
+            ListGroup(Modifier.padding(top = 16.dp)) {
+                ListRow(stringResource(R.string.manage_row_resetup), subtitle = stringResource(R.string.manage_row_resetup_sub),
+                    onClick = { onIntent(ManageIntent.ReSetupAfterUpdate) })
+                ListDivider()
+                ListRow(stringResource(R.string.manage_row_fullrestore), subtitle = stringResource(R.string.manage_row_fullrestore_sub),
+                    onClick = { onIntent(ManageIntent.FullRestore) })
             }
             ListGroup(Modifier.padding(top = 16.dp)) {
                 // 0.3.3 D2: without the new home screen there is no dock to name; the row opens the reason.
@@ -216,6 +238,7 @@ fun ManageScreen(state: ManageState, onIntent: (ManageIntent) -> Unit, modifier:
             LinkRow(stringResource(R.string.manage_add_tv), { onIntent(ManageIntent.SetUpAnother) }, chevron = false, minHeight = 56.dp)
         }
     }
+    if (showQuickStart) CytBottomSheet({ showQuickStart = false }) { QuickStartContent() }
 }
 
 // M1a: the debugging step for a returning write; it advances on its own when the port opens
@@ -429,9 +452,13 @@ fun AppSettingsScreen(
     onOpenDeveloper: (() -> Unit)? = null,
     language: String = "ar",
     onLanguage: ((String) -> Unit)? = null,
+    onUpdateNow: ((String) -> Unit)? = null,
+    // 2.0.2: this device has no screen that installs an APK (many TV boxes): say so instead of silence.
+    updateInstallBlocked: Boolean = false,
 ) {
     var licences by rememberSaveable { mutableStateOf(false) }
     var privacy by rememberSaveable { mutableStateOf(false) }
+    var quickStart by rememberSaveable { mutableStateOf(false) }
     ScreenScaffold(Glow.Tv, modifier, topBar = { CytTopBar(onBack = onBack) }) {
         ScreenTitle(stringResource(R.string.appsettings_title), titleTop)
         ListGroup(Modifier.padding(top = 20.dp)) {
@@ -441,6 +468,13 @@ fun AppSettingsScreen(
             SwitchRow(stringResource(R.string.appsettings_haptics), state.prefs.haptics, { onIntent(AppSettingsIntent.SetHaptics(it)) },
                 subtitle = stringResource(R.string.appsettings_haptics_note))
         }
+        SectionLabel(stringResource(R.string.card_size_title))
+        ChoiceList(listOf(
+            ChoiceOption("SMALL", stringResource(R.string.card_size_small), icon = null),
+            ChoiceOption("MEDIUM", stringResource(R.string.card_size_medium), icon = null),
+            ChoiceOption("LARGE", stringResource(R.string.card_size_large), icon = null),
+        ), state.prefs.cardSize.name, { onIntent(AppSettingsIntent.SetCardSize(tv.cleanyour.core.flows.CardSize.valueOf(it.key))) })
+        ListGroup(Modifier.padding(top = 12.dp)) { ListRow(stringResource(R.string.quick_start_title), onClick = { quickStart = true }) }
         // 1.6: in-app language. Arabic by default; English as an extra choice.
         if (onLanguage != null) {
             SectionLabel(stringResource(R.string.appsettings_language))
@@ -474,25 +508,38 @@ fun AppSettingsScreen(
             if (state.updateCheck) {
                 ListDivider()
                 val update = state.update
+                val help = stringResource(R.string.appsettings_update_help)
                 ListRow(stringResource(R.string.appsettings_check_updates), subtitle = when (update) {
                     UpdateCheck.Checking -> stringResource(R.string.appsettings_checking)
                     is UpdateCheck.Available -> msg(R.string.appsettings_update_available, "version" to update.version)
-                    UpdateCheck.Latest -> stringResource(R.string.appsettings_up_to_date)
+                    UpdateCheck.Latest -> stringResource(R.string.appsettings_up_to_date) + "\n" + help
                     UpdateCheck.Failed -> stringResource(R.string.appsettings_update_error)
-                    UpdateCheck.Idle -> null
+                    UpdateCheck.RateLimited -> stringResource(R.string.appsettings_update_rate_limited)
+                    UpdateCheck.Idle -> help
                 }, trailing = if (update == UpdateCheck.Checking) ({ Spinner() }) else null,
                     onClick = { if (update is UpdateCheck.Available) onOpenRelease() else onIntent(AppSettingsIntent.CheckUpdates) })
+                // 2.0.1: one update item; when the check fails, the releases page is the fallback.
+                if (update == UpdateCheck.Failed || update == UpdateCheck.RateLimited) {
+                    ListDivider()
+                    ListRow(stringResource(R.string.appsettings_open_releases),
+                        subtitle = stringResource(R.string.appsettings_open_releases_note), onClick = onOpenRelease)
+                }
+                // M4 item 34: the new APK straight from the release; Android installs it over this one
+                // only when it carries the same signature (the browser downloads it; the app holds no
+                // install permission, SECURITY 4.2).
+                if (update is UpdateCheck.Available && onUpdateNow != null) {
+                    ListDivider()
+                    ListRow(msg(R.string.appsettings_update_now, "version" to update.version),
+                        subtitle = stringResource(R.string.appsettings_update_now_note), onClick = { onUpdateNow(update.version) })
+                }
+                if (update is UpdateCheck.Available && updateInstallBlocked) {
+                    ListDivider()
+                    ListRow(stringResource(R.string.appsettings_update_cannot_install),
+                        subtitle = stringResource(R.string.appsettings_update_cannot_install_note), onClick = onOpenRelease)
+                }
             }
         }
         ListGroup(Modifier.padding(top = 12.dp)) {
-            if (state.updateCheck) {
-                ListRow(
-                    stringResource(R.string.appsettings_download_github),
-                    subtitle = stringResource(R.string.appsettings_download_github_note),
-                    onClick = onOpenRelease,
-                )
-                ListDivider()
-            }
             if (onSupportPayPal != null) {
                 ListRow(
                     stringResource(R.string.appsettings_support_paypal),
@@ -526,16 +573,37 @@ fun AppSettingsScreen(
     }
     if (licences) CytBottomSheet({ licences = false }) { LicencesContent() }
     if (privacy) CytBottomSheet({ privacy = false }) { PrivacyContent(online = state.updateCheck || state.addOns) }
+    if (quickStart) CytBottomSheet({ quickStart = false }) { QuickStartContent() }
     state.confirm?.let { what ->
         CytBottomSheet({ onIntent(AppSettingsIntent.CancelConfirm) }) { ConfirmContent(what, state.working, onIntent) }
     }
+}
+
+const val QUICK_START_VIDEO_URL = "https://github.com/al3nkboot/mi5g-tv#quick-start"
+
+@Composable
+internal fun QuickStartContent() {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    SheetHeader(stringResource(R.string.quick_start_title))
+    listOf(R.string.quick_start_step1, R.string.quick_start_step2, R.string.quick_start_step3, R.string.quick_start_step4, R.string.quick_start_step5).forEachIndexed { i, line ->
+        Body("${i + 1}. ${stringResource(line)}", Modifier.padding(top = 10.dp, start = 4.dp, end = 4.dp))
+    }
+    PrimaryButton(stringResource(R.string.quick_start_video), {
+        runCatching { context.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(QUICK_START_VIDEO_URL))) }   // no browser: nothing to open
+    }, Modifier.padding(top = 16.dp), guardObscured = false)
 }
 
 @Composable
 internal fun ColumnScope.LicencesContent() {
     SheetHeader(stringResource(R.string.appsettings_licences))
     ListGroup(Modifier.padding(top = 16.dp)) {
-        listOf(R.string.appsettings_licence_app, R.string.appsettings_licence_font, R.string.appsettings_licence_apache, R.string.appsettings_licence_bouncycastle)
+        listOf(
+            R.string.appsettings_licence_app, R.string.appsettings_licence_launcher, R.string.appsettings_licence_tvos,
+            R.string.appsettings_licence_omarchy, R.string.appsettings_licence_talkies, R.string.appsettings_licence_vibehack,
+            R.string.appsettings_licence_aerial,
+            R.string.appsettings_licence_adhan, R.string.appsettings_licence_streams, R.string.appsettings_licence_font,
+            R.string.appsettings_licence_apache, R.string.appsettings_licence_bouncycastle, R.string.appsettings_licence_full,
+        )
             .forEachIndexed { i, id ->
                 if (i > 0) ListDivider()
                 ListRow(stringResource(id))
@@ -566,7 +634,7 @@ internal fun ColumnScope.ConfirmContent(what: AppConfirm, working: Boolean, onIn
 // M9 TV remote and tools (v1.1.0 / v1.3.0 / v1.5.0): Bundled cards quick launch, Speed boost, Downloader codes & SmartTube, Button Mapper, Force Landscape, TV Banner, Quick Cast, D-Pad remote, screenshot, and APK sideloader.
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack: () -> Unit, modifier: Modifier = Modifier) {
+fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack: () -> Unit, modifier: Modifier = Modifier, onRemote: () -> Unit = {}) {
     val sending = state.remoteStatus is RemoteStatus.Sending
     val boosting = state.speedBoostStatus is SpeedBoostStatus.Boosting
     val applyingScale = state.animationScaleStatus is AnimationScaleStatus.Applying
@@ -577,13 +645,29 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
         when (val ps = state.powerToolStatus) {
             is PowerToolStatus.Working -> LiveLine(msg(R.string.tvtools_power_working, "name" to powerLabel(ps.label)))
             is PowerToolStatus.Done -> CheckLine(msg(R.string.tvtools_power_done, "name" to powerLabel(ps.label)), Modifier.padding(top = 8.dp, start = 4.dp))
-            is PowerToolStatus.Failed -> Body(msg(R.string.tvtools_power_failed, "name" to powerLabel(ps.label)), Modifier.padding(top = 8.dp, start = 4.dp), color = CytTheme.colors.danger)
+            is PowerToolStatus.Failed -> Column {
+                Body(msg(R.string.tvtools_power_failed, "name" to powerLabel(ps.label)), Modifier.padding(top = 8.dp, start = 4.dp), color = CytTheme.colors.danger)
+                ps.step?.let { step ->
+                    Body(stringResource(when (step) {
+                        PowerFailStep.UNREACHABLE -> R.string.manage_unreachable_body
+                        PowerFailStep.NO_APK -> R.string.tvtools_fail_no_apk
+                        PowerFailStep.INSTALL -> R.string.tvtools_fail_install
+                        PowerFailStep.LAUNCH -> R.string.tvtools_fail_launch
+                    }), Modifier.padding(top = 6.dp, start = 4.dp), color = CytTheme.colors.danger)
+                }
+                ps.tvSaid?.let { Body(stringResource(R.string.tvtools_fail_tv_said) + " " + it, Modifier.padding(top = 4.dp, start = 4.dp)) }
+            }
             PowerToolStatus.Idle -> {}
         }
 
         // Quick Launch Bundled Mi5G TV Cards (solves Xiaomi TV Stick / Stock Launcher)
         SectionLabel(stringResource(R.string.tvtools_cards_section))
         Body(stringResource(R.string.tvtools_cards_note), Modifier.padding(bottom = 8.dp, start = 4.dp, end = 4.dp))
+        PrimaryButton(
+            text = stringResource(R.string.tvtools_install_all),
+            onClick = { if (!powerWorking) onIntent(TvToolsIntent.InstallAllMi5gApps) },
+            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+        )
         val bundledCards = listOf(
             Triple("tv-matches", "com.midroid.mi5gtv.matches", stringResource(R.string.tvtools_card_matches)),
             Triple("prayer-weather", "com.midroid.mi5gtv.prayer", stringResource(R.string.tvtools_card_prayer)),
@@ -630,6 +714,7 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
             onClick = { onIntent(TvToolsIntent.RunSpeedBoost) },
             enabled = !boosting,
             loading = boosting,
+            guardObscured = false,
         )
         when (val sb = state.speedBoostStatus) {
             SpeedBoostStatus.Boosting -> LiveLine(stringResource(R.string.tvtools_speed_boosting))
@@ -707,53 +792,8 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
         }
         Banner(stringResource(R.string.tvtools_smarttube_tip), BannerTone.INFO, Modifier.padding(top = 12.dp))
 
-        // 2) Button Mapper + Xiaomi Settings Key Fix + Force Landscape + Screensaver & Quiet Hours
-        val yt_smarttubeLabel = stringResource(R.string.tvtools_mapper_yt_smarttube)
-        val yt_officialLabel = stringResource(R.string.tvtools_mapper_yt_official)
-        val nf_shahidLabel = stringResource(R.string.tvtools_mapper_nf_shahid)
-        val nf_matchesLabel = stringResource(R.string.tvtools_mapper_nf_matches)
-        SectionLabel(stringResource(R.string.tvtools_mapper_section))
+        // The mapper and screensaver actions remain available through their next home surfaces.
         ActionColumn {
-            PrimaryButton(
-                stringResource(R.string.tvtools_mapper_settings_fix),
-                { onIntent(TvToolsIntent.QuickSettingsOverlay) },
-                enabled = !powerWorking,
-            )
-            SecondaryButton(
-                stringResource(R.string.tvtools_mapper_yt_smarttube),
-                { onIntent(TvToolsIntent.MapRemoteKey(190, "com.teamsmart.videomanager.tv", yt_smarttubeLabel)) },
-                enabled = !powerWorking,
-            )
-            SecondaryButton(
-                stringResource(R.string.tvtools_mapper_yt_official),
-                { onIntent(TvToolsIntent.MapRemoteKey(190, "com.google.android.youtube.tv", yt_officialLabel)) },
-                enabled = !powerWorking,
-            )
-            SecondaryButton(
-                stringResource(R.string.tvtools_mapper_nf_shahid),
-                { onIntent(TvToolsIntent.MapRemoteKey(191, "net.mbc.shahidTV", nf_shahidLabel)) },
-                enabled = !powerWorking,
-            )
-            SecondaryButton(
-                stringResource(R.string.tvtools_mapper_nf_matches),
-                { onIntent(TvToolsIntent.MapRemoteKey(191, "com.midroid.mi5gtv.matches", nf_matchesLabel)) },
-                enabled = !powerWorking,
-            )
-            SecondaryButton(
-                stringResource(R.string.tvtools_rotation_landscape),
-                { onIntent(TvToolsIntent.SetForceLandscape(true)) },
-                enabled = !powerWorking,
-            )
-            SecondaryButton(
-                stringResource(R.string.tvtools_rotation_auto),
-                { onIntent(TvToolsIntent.SetForceLandscape(false)) },
-                enabled = !powerWorking,
-            )
-            SecondaryButton(
-                stringResource(R.string.tvtools_screensaver_now),
-                { onIntent(TvToolsIntent.StartClockScreensaver) },
-                enabled = !powerWorking,
-            )
             SecondaryButton(
                 stringResource(R.string.tvtools_quiet_night),
                 { onIntent(TvToolsIntent.ApplyQuietNightVolume) },
@@ -762,6 +802,86 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
             SecondaryButton(
                 stringResource(R.string.tvtools_hdmi_switch),
                 { onIntent(TvToolsIntent.SwitchHdmiInput) },
+                enabled = !powerWorking,
+            )
+        }
+
+        // Items 25/26: lock Home to Mi5G, and the always-available way back.
+        SectionLabel(stringResource(R.string.tvtools_home_section))
+        Body(stringResource(R.string.tvtools_home_note), Modifier.padding(bottom = 8.dp, start = 4.dp, end = 4.dp))
+        ActionColumn {
+            PrimaryButton(
+                stringResource(R.string.tvtools_keep_home),
+                { onIntent(TvToolsIntent.KeepMi5gHome) },
+                enabled = !powerWorking,
+            )
+            SecondaryButton(
+                stringResource(R.string.tvtools_stock_home),
+                { onIntent(TvToolsIntent.ReturnToStockHome) },
+                enabled = !powerWorking,
+            )
+            // Mi5G 2.0.1: arrange the launcher's Home from this phone (QR on the TV, same network only).
+            SecondaryButton(
+                stringResource(R.string.tvtools_arrange_home),
+                { onIntent(TvToolsIntent.ArrangeHomeFromPhone) },
+                enabled = !powerWorking,
+            )
+        }
+
+        // M3 item 27: مواقيتي on the TV — every choice here is sent as settings.json over ADB.
+        SectionLabel(stringResource(R.string.tvtools_prayer_section))
+        Body(stringResource(R.string.tvtools_prayer_note), Modifier.padding(bottom = 8.dp, start = 4.dp, end = 4.dp))
+        val p = state.prayer
+        val set: (PrayerTvSettings) -> Unit = { onIntent(TvToolsIntent.UpdatePrayer(it)) }
+        val on = stringResource(R.string.tvtools_prayer_on)
+        val off = stringResource(R.string.tvtools_prayer_off)
+        FlowRow(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            val cities = PrayerCities.ALL
+            GlassChip(text = "◀", onClick = { set(p.copy(city = cities.asReversed().after(p.city))) })
+            GlassChip(text = "🏙️ " + p.city.ar + " · " + p.city.countryAr, onClick = { set(p.copy(city = cities.after(p.city))) })
+            GlassChip(text = "▶", onClick = { set(p.copy(city = cities.after(p.city))) })
+            GlassChip(text = stringResource(if (p.hanafi) R.string.prayer_asr_hanafi else R.string.prayer_asr_shafi), onClick = { set(p.copy(hanafi = !p.hanafi)) })
+            GlassChip(text = "🧭 " + p.method.ar, onClick = { set(p.copy(method = PrayerMethod.entries.after(p.method))) })
+            GlassChip(
+                text = stringResource(R.string.tvtools_prayer_forced) + ": " + if (p.forcedAdhan) on else off,
+                onClick = { set(p.copy(forcedAdhan = !p.forcedAdhan)) },
+            )
+            GlassChip(
+                text = msg(R.string.tvtools_prayer_volume, "percent" to p.forcedVolume),
+                onClick = { set(p.copy(forcedVolume = PrayerTvSettings.VOLUMES.after(p.forcedVolume))) },
+            )
+            GlassChip(
+                text = msg(R.string.tvtools_prayer_pre, "minutes" to p.preMinutes),
+                onClick = { set(p.copy(preMinutes = PrayerTvSettings.PRE_MINUTES.after(p.preMinutes))) },
+            )
+            GlassChip(
+                text = stringResource(R.string.tvtools_prayer_overlay) + ": " + if (p.overlay) on else off,
+                onClick = { set(p.copy(overlay = !p.overlay)) },
+            )
+            if (p.overlay) {
+                GlassChip(text = "📍 " + p.corner.ar, onClick = { set(p.copy(corner = OverlayCorner.entries.after(p.corner))) })
+                GlassChip(
+                    text = msg(R.string.tvtools_prayer_size, "percent" to p.overlaySize),
+                    onClick = { set(p.copy(overlaySize = PrayerTvSettings.SIZES.after(p.overlaySize))) },
+                )
+                GlassChip(
+                    text = msg(R.string.tvtools_prayer_opacity, "percent" to p.overlayOpacity),
+                    onClick = { set(p.copy(overlayOpacity = PrayerTvSettings.OPACITIES.after(p.overlayOpacity))) },
+                )
+            }
+            GlassChip(
+                text = stringResource(R.string.tvtools_prayer_kahf) + ": " + if (p.kahf) on else off,
+                onClick = { set(p.copy(kahf = !p.kahf)) },
+            )
+        }
+        ActionColumn {
+            PrimaryButton(
+                stringResource(R.string.tvtools_prayer_send),
+                { onIntent(TvToolsIntent.SendPrayerSettings) },
                 enabled = !powerWorking,
             )
         }
@@ -786,7 +906,7 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
             )
         }
         val bannerPresets = listOf(
-            "🕌 Prayer Time Alert" to "Prayer time now - Hayya ala as-Salah",
+            "🕌 تنبيه وقت الصلاة" to "تنبيه وقت الصلاة",
             "🍽️ Dinner is Ready" to "Dinner is ready",
             "🔉 Lower TV Volume" to "Please lower the TV volume",
         )
@@ -866,6 +986,7 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
         }
 
         SectionLabel(stringResource(R.string.tvtools_remote_section))
+        SecondaryButton(stringResource(R.string.remote_title), onRemote, Modifier.fillMaxWidth().padding(bottom = 8.dp))
         val upLabel = stringResource(R.string.tvtools_dpad_up)
         val downLabel = stringResource(R.string.tvtools_dpad_down)
         val leftLabel = stringResource(R.string.tvtools_dpad_left)
@@ -1200,6 +1321,7 @@ fun TvAppManagerScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val cardScale = LocalCardScale.current
     ScreenScaffold(Glow.Tv, modifier, topBar = { CytTopBar(onBack = onBack) }) {
         ScreenTitle(stringResource(R.string.tvapps_title), titleTop)
 
@@ -1227,6 +1349,12 @@ fun TvAppManagerScreen(
                 modifier = Modifier.weight(1f),
                 accented = state.filter == TvAppFilter.SYSTEM,
             )
+            if (state.suggested.isNotEmpty()) RemoteActionKey(
+                text = stringResource(R.string.tvapps_suggested),
+                onClick = { onIntent(TvAppManagerIntent.SetFilter(TvAppFilter.SUGGESTED)) },
+                modifier = Modifier.weight(1f),
+                accented = state.filter == TvAppFilter.SUGGESTED,
+            )
             RemoteActionKey(
                 text = stringResource(R.string.tvapps_refresh),
                 onClick = { onIntent(TvAppManagerIntent.Refresh) },
@@ -1235,7 +1363,16 @@ fun TvAppManagerScreen(
             )
         }
 
-        Body(stringResource(if (state.filter == TvAppFilter.USER) R.string.v16_mine_hint else R.string.v16_factory_hint), Modifier.padding(top = 10.dp, start = 4.dp, end = 4.dp))
+        // M4 item 33: the profile the TV's model picked, and what it suggests switching off.
+        state.profileName?.let { name ->
+            Body(msg(R.string.tvapps_profile_detected, "device" to name, "count" to state.suggested.size), Modifier.padding(top = 10.dp, start = 4.dp, end = 4.dp),
+                color = CytTheme.colors.textPrimary)
+        }
+        Body(stringResource(when (state.filter) {
+            TvAppFilter.USER -> R.string.v16_mine_hint
+            TvAppFilter.SYSTEM -> R.string.v16_factory_hint
+            TvAppFilter.SUGGESTED -> R.string.tvapps_suggested_hint
+        }), Modifier.padding(top = 10.dp, start = 4.dp, end = 4.dp))
 
         AppActionFeedback(state.actionStatus)
 
@@ -1266,7 +1403,7 @@ fun TvAppManagerScreen(
                     ListRow(
                         title = app.name,
                         subtitle = "${app.pkg.value} · $statusText",
-                        leading = { AppTile(app.name) },
+                        leading = { AppTile(app.name, size = 40.dp * cardScale) },
                         onClick = { onIntent(TvAppManagerIntent.SelectApp(app)) },
                     )
                 }
@@ -1447,12 +1584,17 @@ private fun AppActionFeedback(status: TvAppActionStatus) {
 @Composable
 private fun powerLabel(raw: String): String = when {
     raw == "@settings_overlay" -> stringResource(R.string.tvtools_label_settings_overlay)
+    raw == "@arrange_home" -> stringResource(R.string.tvtools_label_arrange_home)
     raw == "@landscape" -> stringResource(R.string.tvtools_label_landscape)
     raw == "@rotation_auto" -> stringResource(R.string.tvtools_label_rotation_auto)
     raw == "@screensaver" -> stringResource(R.string.tvtools_label_screensaver)
     raw == "@quiet_hours" -> stringResource(R.string.tvtools_label_quiet_hours)
     raw == "@hdmi" -> stringResource(R.string.tvtools_label_hdmi)
     raw == "@banner" -> stringResource(R.string.tvtools_label_banner)
+    raw == "@keep_home" -> stringResource(R.string.tvtools_label_keep_home)
+    raw == "@prayer" -> stringResource(R.string.tvtools_label_prayer)
+    raw == "@install_all" -> stringResource(R.string.tvtools_label_install_all)
+    raw == "@stock_home" -> stringResource(R.string.tvtools_label_stock_home)
     raw.startsWith("@open:") -> msg(R.string.tvtools_label_open, "target" to raw.removePrefix("@open:"))
     else -> raw
 }

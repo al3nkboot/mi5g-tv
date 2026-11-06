@@ -19,7 +19,7 @@
 
     <!-- Credential prompt (D17) -->
     <string name="gate_title">Confirm it\'s you</string>
-    <string name="gate_subtitle">Before we change anything on {tv}</string>
+    <string name="gate_subtitle">Before we change anything on {tv}: confirm with this phone’s screen lock (PIN, pattern or fingerprint). This is not a TV password; the TV has none.</string>
     <string name="gate_negative">Cancel</string>
     <string name="gate_failed">We couldn\'t confirm it\'s you, so nothing was changed.</string>
 
@@ -39,6 +39,8 @@
     <!-- Stop: probe failure -->
     <string name="stop_probe_failed_title">We couldn\'t read what\'s on the TV</string>
     <string name="stop_probe_failed_body">The TV stopped answering while we were reading it. Nothing was changed. Check that it\'s still on, then try again.</string>
+    <string name="stop_plan_refused_title">There\'s no safe plan for this TV yet</string>
+    <string name="stop_plan_refused_body">We read the TV fine, but there\'s no safe way to clean it from the phone yet, so nothing was changed. Send the problem report so we can add this TV, or try again.</string>
     <string name="stop_probe_failed_primary">Try again</string>
     <string name="stop_probe_failed_secondary">Back</string>
     <string name="stop_probe_failed_tertiary">Show details</string>
@@ -72,6 +74,7 @@
     <string name="found_customise">Customise</string>
     <!-- D36 (RF-LAUNCHER-240 F1): the plan replaces a home screen app signed with another key -->
     <string name="found_replaces_launcher">Replaces the home screen app already on this TV. Its look, app order, settings and card answers start fresh.</string>
+    <string name="found_lock_note">This phone will ask for its own screen lock (PIN, pattern or fingerprint), not a TV password; the TV has none.</string>
     <string name="found_no_lock">No screen lock on this phone, so we can\'t double-check it\'s you.</string>
     <!-- Unknown model (no profile) -->
     <string name="found_unknown_title">{count, plural, =0 {We didn\'t find anything we\'re sure about} one {We found one thing we\'re sure about} other {We found # things we\'re sure about}}</string>

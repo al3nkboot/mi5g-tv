@@ -17,14 +17,14 @@
 
     <!-- Credential prompt (D17) -->
     <string name="gate_title">Confirm it\'s you</string>
-    <string name="gate_subtitle">Before we change anything on {tv}</string>
+    <string name="gate_subtitle">Before we change anything on {tv}: confirm with this phone’s screen lock (PIN, pattern or fingerprint). This is not a TV password; the TV has none.</string>
     <string name="gate_subtitle_reset_key">Before we reset this phone\'s key</string>
     <string name="gate_subtitle_delete_all">Before we delete everything</string>
     <string name="gate_negative">Cancel</string>
     <string name="gate_failed">We couldn\'t confirm it\'s you, so nothing was changed.</string>
 
     <!-- M1 Manage -->
-    <string name="manage_title">Clean Your TV</string>
+    <string name="manage_title">Mi5G TV</string>
     <string name="manage_settings_cd">App settings</string>
     <string name="manage_tv_title">{tv}, {room}</string>
     <string name="manage_tv_title_noroom">{tv}</string>
@@ -53,6 +53,8 @@
     <string name="manage_offline_banner">Lost the TV. Is it still on?</string>
     <string name="manage_reconnect">Reconnect</string>
     <string name="manage_reconnecting">Reconnecting...</string>
+    <string name="manage_unreachable_title">Can’t reach the TV</string>
+    <string name="manage_unreachable_body">The TV may be off or asleep, the phone may be on a different Wi-Fi network, the TV’s IP may have changed, or debugging may be off. Check these and retry.</string>
 
     <!-- M1a Debugging step for a returning write (UX 4.3, returning) -->
     <string name="debugstep_title">To change things on the TV, debugging needs to be on for a moment.</string>
@@ -144,8 +146,17 @@
     <string name="appsettings_support_paypal_note">paypal.me/Midroid5G · Support free, ad-free development</string>
     <string name="appsettings_developer_x">Developer on X (@midroid5G)</string>
     <string name="appsettings_licences">Licences</string>
-    <string name="appsettings_licence_app">Clean Your TV: GPL-3.0-or-later</string>
+    <string name="appsettings_licence_app">Mi5G TV (built on Clean Your TV by Gathin): MIT License</string>
     <string name="appsettings_licence_font">Cairo and Outfit typefaces: SIL Open Font Licence 1.1</string>
+    <string name="appsettings_licence_launcher">TV launcher com.gathin.tvhome from Clean Your TV v2.5.0, Gathin: MIT License</string>
+    <string name="appsettings_licence_tvos">tvOS Launcher, techgenius: Apache-2.0 with its NOTICE</string>
+    <string name="appsettings_licence_omarchy">OmarchyTV, Marco Porro: MIT License</string>
+    <string name="appsettings_licence_talkies">talkies, TechPP: MIT License</string>
+    <string name="appsettings_licence_aerial">Aerial TV, pengchujin: MIT License (ideas for arrange-from-phone, folders, inputs, wallpapers and the city screensaver; ZXing QR: Apache-2.0)</string>
+    <string name="appsettings_licence_vibehack">tv-vibehack, Gathin: MIT License (Control Center adapted from it)</string>
+    <string name="appsettings_licence_adhan">adhan-java, Batoul Apps: MIT; city coordinates from GeoNames (CC BY 4.0)</string>
+    <string name="appsettings_licence_streams">Quran radio: public mp3quran.net streams; match data from ESPN (unofficial)</string>
+    <string name="appsettings_licence_full">Full licence texts and notices: THIRD-PARTY-NOTICES in the project repository</string>
     <string name="appsettings_licence_apache">dadb and Shizuku code we adapted: Apache-2.0 notices</string>
     <string name="appsettings_licence_bouncycastle">Bouncy Castle cryptography library: Bouncy Castle Licence</string>
     <string name="appsettings_privacy">Privacy</string>
@@ -297,8 +308,6 @@
     <string name="tvapps_done_pull_apk">APK backup for {name} saved and ready to share.</string>
     <string name="tvapps_failed_action">Could not complete action for {name}.</string>
     <!-- v1.5.0: TV App Manager 7 actions, Downloader codes, Button Mapper, Force Landscape, TV Banner, GitHub Update -->
-    <string name="appsettings_download_github">Download latest APK from GitHub Releases</string>
-    <string name="appsettings_download_github_note">github.com/al3nkboot/mi5g-tv/releases/latest</string>
     <string name="tvapps_filter_system_toggle">Show system and factory apps (Netflix, Prime)</string>
     <string name="tvapps_action_restrict_bg">Restrict background work and wake-lock</string>
     <string name="tvapps_action_disable">Freeze / Disable app</string>
@@ -338,6 +347,10 @@
     <string name="tvtools_banner_send">Show on TV</string>
     <string name="tvtools_power_working">Running on TV: {name}...</string>
     <string name="tvtools_power_done">Completed on TV: {name}.</string>
+    <string name="tvtools_fail_no_apk">Stopped at: copying the app to the TV. This build doesn\'t carry the app file; update Mi5G TV and try again.</string>
+    <string name="tvtools_fail_install">Stopped at: installing on the TV. The TV refused the install (common on Chromecast and Google TV). On the TV open Settings › Privacy/Security › Install unknown apps, allow installs over USB/debugging if offered, then try again.</string>
+    <string name="tvtools_fail_launch">Stopped at: opening the app. It installed, but the TV didn\'t open it. Look for it in the TV\'s app list or try again.</string>
+    <string name="tvtools_fail_tv_said">The TV said:</string>
     <string name="tvtools_power_failed">Could not run on TV: {name}.</string>
     <!-- Mi5G TV 1.6 (web-preview is the source of truth for copy) -->
     <string name="v16_health_title">TV health</string>
@@ -395,5 +408,110 @@
     <string name="tvtools_label_hdmi">Open the HDMI inputs menu</string>
     <string name="tvtools_label_banner">Send the notice to the TV screen</string>
     <string name="tvtools_label_open">Open {target} on the TV</string>
+    <string name="remote_connected">Connected</string>
+    <string name="remote_not_connected">Not connected</string>
+    <string name="remote_connect_prompt">Connect to this TV to use the remote.</string>
+    <string name="remote_connect">Connect TV</string>
+    <string name="remote_buttons">Buttons</string>
+    <string name="remote_trackpad">Trackpad</string>
+    <string name="remote_keyboard">Keyboard</string>
+    <string name="remote_volume">Volume</string>
+    <string name="remote_channel">Channel</string>
+    <string name="remote_back">Back</string>
+    <string name="remote_home">Home</string>
+    <string name="remote_mute">Mute</string>
+    <string name="remote_play_pause">Play/Pause</string>
+    <string name="remote_more">More</string>
+    <string name="remote_menu">Menu</string>
+    <string name="remote_settings">Settings</string>
+    <string name="remote_power">Power</string>
+    <string name="remote_sleep">Sleep</string>
+    <string name="remote_input">Input</string>
+    <string name="remote_rewind">Rewind</string>
+    <string name="remote_fast_forward">Fast forward</string>
+    <string name="remote_done">Done</string>
+    <string name="remote_trackpad_hint">Swipe to navigate, tap to select</string>
+    <string name="remote_text">Text to send</string>
+    <string name="remote_unicode_warning">Arabic and other non-English characters cannot be sent. They will be skipped.</string>
+    <string name="remote_send">Send</string>
+    <string name="remote_backspace">⌫</string>
+    <string name="remote_coming_soon">Coming soon</string>
+    <string name="remote_tab_remote">Remote</string>
+    <string name="remote_tab_apps">Apps</string>
+    <string name="remote_tab_cast">Cast</string>
+    <string name="remote_tab_settings">Settings</string>
+    <string name="remote_title">Remote</string>
+    <string name="remote_digit_0">0</string>
+    <string name="remote_digit_1">1</string>
+    <string name="remote_digit_2">2</string>
+    <string name="remote_digit_3">3</string>
+    <string name="remote_digit_4">4</string>
+    <string name="remote_digit_5">5</string>
+    <string name="remote_digit_6">6</string>
+    <string name="remote_digit_7">7</string>
+    <string name="remote_digit_8">8</string>
+    <string name="remote_digit_9">9</string>
+    <string name="remote_favorite_add">Add to favorites</string>
+    <string name="remote_favorite_remove">Remove from favorites</string>
+    <string name="remote_ok">OK</string>
+    <string name="remote_up">Up</string>
+    <string name="remote_down">Down</string>
+    <string name="remote_left">Left</string>
+    <string name="remote_right">Right</string>
+    <string name="remote_connecting">Connecting…</string>
+    <string name="remote_favorites_header">Favorites</string>
+    <string name="remote_all_apps_header">Apps on the TV</string>
+    <string name="remote_apps_empty">No apps found yet. Connect the TV and refresh.</string>
+    <string name="remote_refresh">Refresh</string>
+    <string name="remote_backspace_desc">Delete one character</string>
+    <string name="remote_number_pad">Numbers</string>
+    <string name="remote_coming_soon_cast">Cast photos and videos from the phone to the TV.</string>
+    <string name="remote_coming_soon_settings">Remote settings will live here.</string>
+    <string name="remote_open">Open</string>
+    <string name="card_size_title">App and card size</string><string name="card_size_small">Small</string><string name="card_size_medium">Medium</string><string name="card_size_large">Large</string>
+    <string name="quick_start_title">Quick start</string><string name="quick_start_step1">Connect your phone and TV to the same Wi-Fi.</string><string name="quick_start_step2">Enable Developer options and network or wireless debugging on the TV.</string><string name="quick_start_step3">Pair with the TV and allow the connection.</string><string name="quick_start_step4">Use the remote tab to control the TV.</string><string name="quick_start_step5">Install modules from the Modules screen.</string><string name="quick_start_video">Watch the video (2 minutes)</string>
+    <string name="tvtools_home_section">Mi5G home screen</string>
+    <string name="tvtools_home_note">Keeps Mi5G as Home after Home presses and restarts, turns on the remote buttons, Control Center and the media pill. Return to the TV launcher switches the original back on; nothing is uninstalled.</string>
+    <string name="tvtools_arrange_home">Arrange Home from the phone</string>
+    <string name="tvtools_label_arrange_home">Open the arrange QR code on the TV</string>
+    <string name="tvtools_keep_home">Lock Home to Mi5G</string>
+    <string name="tvtools_stock_home">Return to the TV launcher</string>
+    <string name="tvtools_label_keep_home">Locking Home to Mi5G</string>
+    <string name="tvtools_label_stock_home">Returning to the TV launcher</string>
+    <!-- M3: مواقيتي on the TV -->
+    <string name="tvtools_prayer_section">Prayer times on the TV</string>
+    <string name="tvtools_prayer_note">Pick the city, method and adhan, then send them to the TV. The adhan plays over any app.</string>
+    <string name="tvtools_prayer_on">on</string>
+    <string name="tvtools_prayer_off">off</string>
+    <string name="tvtools_prayer_forced">🔊 Forced adhan</string>
+    <string name="tvtools_prayer_volume">Adhan volume {percent}%</string>
+    <string name="tvtools_prayer_pre">⏰ Alert before adhan: {minutes} min</string>
+    <string name="tvtools_prayer_overlay">🕰️ Floating widget</string>
+    <string name="tvtools_prayer_size">Size {percent}%</string>
+    <string name="tvtools_prayer_opacity">Opacity {percent}%</string>
+    <string name="tvtools_prayer_kahf">📖 Friday reminder</string>
+    <string name="tvtools_prayer_send">Send settings to the TV</string>
+    <string name="tvtools_label_prayer">Prayer settings</string>
+    <!-- M4 item 34: updates -->
+    <string name="appsettings_update_now">Update now to {version}</string>
+    <string name="appsettings_update_now_note">Downloads the update from the official release page; then tap Install. Android accepts it only with the same signature as this app, and your data stays.</string>
+    <!-- M4 item 35 -->
+    <string name="manage_row_resetup">🔄 Re-set up after a system update</string>
+    <string name="manage_row_resetup_sub">One tap: finds what the update brought back and switches it off again</string>
+    <string name="manage_row_fullrestore">↩️ Full restore</string>
+    <string name="manage_row_fullrestore_sub">One tap: puts the TV back as it was before Mi5G, after you confirm</string>
+    <!-- M4 item 33 -->
+    <string name="tvapps_suggested">Suggested</string>
+    <string name="tvapps_profile_detected">Device recognised: {device} · {count} apps suggested to switch off</string>
+    <string name="tvapps_suggested_hint">Ads, tracking and preloaded apps your device profile suggests switching off. Every switch-off can be undone; nothing is removed.</string>
+    <string name="tvtools_install_all">Install all Mi5G TV apps on the TV</string>
+    <string name="tvtools_label_install_all">Install all apps</string>
+    <string name="appsettings_update_help">Checks the latest release of the app on GitHub</string>
+    <string name="appsettings_open_releases">Open the GitHub releases page</string>
+    <string name="appsettings_open_releases_note">github.com/al3nkboot/mi5g-tv/releases</string>
+    <!-- 2.0.2 -->
+    <string name="appsettings_update_rate_limited">GitHub\'s temporary limit was reached. Try again shortly or open the releases page</string>
+    <string name="appsettings_update_cannot_install">The update can\'t be installed on this device</string>
+    <string name="appsettings_update_cannot_install_note">This device has no screen for installing APK files. Download the update from the releases page on a computer or phone and install it from there (for example with Install APK in the phone app\'s TV tools, or with adb).</string>
 </resources>
 

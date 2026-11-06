@@ -1,0 +1,892 @@
+[
+{
+"id": "muscat",
+"ar": "مسقط",
+"en": "Muscat",
+"lat": 23.58413,
+"lon": 58.40778,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "muttrah",
+"ar": "مطرح",
+"en": "Muttrah",
+"lat": 23.61775,
+"lon": 58.55717,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "bawshar",
+"ar": "بوشر",
+"en": "Bawshar",
+"lat": 23.57769,
+"lon": 58.39982,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "seeb",
+"ar": "السيب",
+"en": "Seeb",
+"lat": 23.67027,
+"lon": 58.18911,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "amerat",
+"ar": "العامرات",
+"en": "Al Amerat",
+"lat": 23.52239,
+"lon": 58.49866,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "quriyat",
+"ar": "قريات",
+"en": "Quriyat",
+"lat": 23.26298,
+"lon": 58.92014,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "buraimi",
+"ar": "البريمي",
+"en": "Al Buraimi",
+"lat": 24.25088,
+"lon": 55.79312,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "mahdah",
+"ar": "محضة",
+"en": "Mahdah",
+"lat": 24.40052,
+"lon": 55.96718,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "sunaynah",
+"ar": "السنينة",
+"en": "As Sunaynah",
+"lat": 23.6065,
+"lon": 55.95448,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "sohar",
+"ar": "صحار",
+"en": "Sohar",
+"lat": 24.34745,
+"lon": 56.70937,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "shinas",
+"ar": "شناص",
+"en": "Shinas",
+"lat": 24.7426,
+"lon": 56.46698,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "liwa",
+"ar": "لوى",
+"en": "Liwa",
+"lat": 24.53077,
+"lon": 56.563,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "saham",
+"ar": "صحم",
+"en": "Saham",
+"lat": 24.17222,
+"lon": 56.88861,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "khaburah",
+"ar": "الخابورة",
+"en": "Al Khaburah",
+"lat": 23.97144,
+"lon": 57.09313,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "suwayq",
+"ar": "السويق",
+"en": "As Suwayq",
+"lat": 23.84944,
+"lon": 57.43861,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "barka",
+"ar": "بركاء",
+"en": "Barka",
+"lat": 23.67872,
+"lon": 57.88605,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "rustaq",
+"ar": "الرستاق",
+"en": "Rustaq",
+"lat": 23.39083,
+"lon": 57.42444,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "musannah",
+"ar": "المصنعة",
+"en": "Al Musannah",
+"lat": 23.77997,
+"lon": 57.64014,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "nakhal",
+"ar": "نخل",
+"en": "Nakhal",
+"lat": 23.39849,
+"lon": 57.8218,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "maawil",
+"ar": "وادي المعاول",
+"en": "Wadi Al Maawil",
+"lat": 23.46423,
+"lon": 57.82177,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "awabi",
+"ar": "العوابي",
+"en": "Al Awabi",
+"lat": 23.30611,
+"lon": 57.53111,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "nizwa",
+"ar": "نزوى",
+"en": "Nizwa",
+"lat": 22.93333,
+"lon": 57.53333,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "bahla",
+"ar": "بهلا",
+"en": "Bahla",
+"lat": 22.97886,
+"lon": 57.3047,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "adam",
+"ar": "أدم",
+"en": "Adam",
+"lat": 22.37934,
+"lon": 57.52718,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "izki",
+"ar": "إزكي",
+"en": "Izki",
+"lat": 22.93333,
+"lon": 57.76667,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "samail",
+"ar": "سمائل",
+"en": "Samail",
+"lat": 23.29838,
+"lon": 57.9531,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "bidbid",
+"ar": "بدبد",
+"en": "Bidbid",
+"lat": 23.40787,
+"lon": 58.1283,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "manah",
+"ar": "منح",
+"en": "Manah",
+"lat": 22.79203,
+"lon": 57.60593,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "hamra",
+"ar": "الحمراء",
+"en": "Al Hamra",
+"lat": 23.11519,
+"lon": 57.29143,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "ibri",
+"ar": "عبري",
+"en": "Ibri",
+"lat": 23.22573,
+"lon": 56.51572,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "yanqul",
+"ar": "ينقل",
+"en": "Yanqul",
+"lat": 23.58645,
+"lon": 56.53969,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "dhank",
+"ar": "ضنك",
+"en": "Dhank",
+"lat": 23.55054,
+"lon": 56.25725,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "sur",
+"ar": "صور",
+"en": "Sur",
+"lat": 22.56667,
+"lon": 59.52889,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "jbbali",
+"ar": "جعلان بني بو علي",
+"en": "Jalan Bani Bu Ali",
+"lat": 22.01559,
+"lon": 59.33381,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "jbbhasan",
+"ar": "جعلان بني بو حسن",
+"en": "Jalan Bani Bu Hasan",
+"lat": 22.08167,
+"lon": 59.28565,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "kamil",
+"ar": "الكامل والوافي",
+"en": "Al Kamil Wal Wafi",
+"lat": 22.20772,
+"lon": 59.20643,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "masirah",
+"ar": "مصيرة",
+"en": "Masirah",
+"lat": 20.65063,
+"lon": 58.87277,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "ibra",
+"ar": "إبراء",
+"en": "Ibra",
+"lat": 22.69057,
+"lon": 58.53337,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "mudaybi",
+"ar": "المضيبي",
+"en": "Al Mudaybi",
+"lat": 22.57032,
+"lon": 58.12115,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "bidiyah",
+"ar": "بدية",
+"en": "Bidiyah",
+"lat": 22.4405,
+"lon": 58.79928,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "qabil",
+"ar": "القابل",
+"en": "Al Qabil",
+"lat": 22.571,
+"lon": 58.69472,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "wbk",
+"ar": "وادي بني خالد",
+"en": "Wadi Bani Khalid",
+"lat": 22.58001,
+"lon": 59.09329,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "dima",
+"ar": "دماء والطائيين",
+"en": "Dima Wa Al Taiyin",
+"lat": 23.033,
+"lon": 58.689,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "salalah",
+"ar": "صلالة",
+"en": "Salalah",
+"lat": 17.01505,
+"lon": 54.09237,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "taqah",
+"ar": "طاقة",
+"en": "Taqah",
+"lat": 17.04826,
+"lon": 54.39063,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "mirbat",
+"ar": "مرباط",
+"en": "Mirbat",
+"lat": 16.99638,
+"lon": 54.69063,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "thumrait",
+"ar": "ثمريت",
+"en": "Thumrait",
+"lat": 17.67,
+"lon": 54.03333,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "sadah",
+"ar": "سدح",
+"en": "Sadah",
+"lat": 17.05,
+"lon": 55.06667,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "rakhyut",
+"ar": "رخيوت",
+"en": "Rakhyut",
+"lat": 16.74768,
+"lon": 53.42189,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "dhalkut",
+"ar": "ضلكوت",
+"en": "Dhalkut",
+"lat": 16.70403,
+"lon": 53.24219,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "muqshin",
+"ar": "مقشن",
+"en": "Muqshin",
+"lat": 19.49805,
+"lon": 54.84341,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "shalim",
+"ar": "شليم وجزر الحلانيات",
+"en": "Shalim",
+"lat": 18.10252,
+"lon": 55.65333,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "khasab",
+"ar": "خصب",
+"en": "Khasab",
+"lat": 26.17993,
+"lon": 56.24774,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "dibba",
+"ar": "دبا",
+"en": "Dibba",
+"lat": 25.63643,
+"lon": 56.26597,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "bukha",
+"ar": "بخا",
+"en": "Bukha",
+"lat": 26.14107,
+"lon": 56.15202,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "madha",
+"ar": "مدحاء",
+"en": "Madha",
+"lat": 25.28357,
+"lon": 56.33196,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "haima",
+"ar": "هيماء",
+"en": "Haima",
+"lat": 19.95931,
+"lon": 56.27575,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "duqm",
+"ar": "الدقم",
+"en": "Duqm",
+"lat": 19.66207,
+"lon": 57.70367,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "mahout",
+"ar": "محوت",
+"en": "Mahout",
+"lat": 20.76133,
+"lon": 58.28952,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "jazer",
+"ar": "الجازر",
+"en": "Al Jazer",
+"lat": 18.545,
+"lon": 56.36,
+"zone": "Asia/Muscat",
+"country_ar": "عُمان",
+"country_en": "Oman"
+},
+{
+"id": "abudhabi",
+"ar": "أبوظبي",
+"en": "Abu Dhabi",
+"lat": 24.4539,
+"lon": 54.3773,
+"zone": "Asia/Dubai",
+"country_ar": "الإمارات",
+"country_en": "UAE"
+},
+{
+"id": "dubai",
+"ar": "دبي",
+"en": "Dubai",
+"lat": 25.2048,
+"lon": 55.2708,
+"zone": "Asia/Dubai",
+"country_ar": "الإمارات",
+"country_en": "UAE"
+},
+{
+"id": "sharjah",
+"ar": "الشارقة",
+"en": "Sharjah",
+"lat": 25.3463,
+"lon": 55.4209,
+"zone": "Asia/Dubai",
+"country_ar": "الإمارات",
+"country_en": "UAE"
+},
+{
+"id": "alain",
+"ar": "العين",
+"en": "Al Ain",
+"lat": 24.2075,
+"lon": 55.7447,
+"zone": "Asia/Dubai",
+"country_ar": "الإمارات",
+"country_en": "UAE"
+},
+{
+"id": "ajman",
+"ar": "عجمان",
+"en": "Ajman",
+"lat": 25.4052,
+"lon": 55.5136,
+"zone": "Asia/Dubai",
+"country_ar": "الإمارات",
+"country_en": "UAE"
+},
+{
+"id": "rak",
+"ar": "رأس الخيمة",
+"en": "Ras Al Khaimah",
+"lat": 25.8007,
+"lon": 55.9762,
+"zone": "Asia/Dubai",
+"country_ar": "الإمارات",
+"country_en": "UAE"
+},
+{
+"id": "fujairah",
+"ar": "الفجيرة",
+"en": "Fujairah",
+"lat": 25.1288,
+"lon": 56.3265,
+"zone": "Asia/Dubai",
+"country_ar": "الإمارات",
+"country_en": "UAE"
+},
+{
+"id": "makkah",
+"ar": "مكة المكرمة",
+"en": "Makkah",
+"lat": 21.4225,
+"lon": 39.8262,
+"zone": "Asia/Riyadh",
+"country_ar": "السعودية",
+"country_en": "Saudi Arabia"
+},
+{
+"id": "madinah",
+"ar": "المدينة المنورة",
+"en": "Madinah",
+"lat": 24.4672,
+"lon": 39.6024,
+"zone": "Asia/Riyadh",
+"country_ar": "السعودية",
+"country_en": "Saudi Arabia"
+},
+{
+"id": "riyadh",
+"ar": "الرياض",
+"en": "Riyadh",
+"lat": 24.7136,
+"lon": 46.6753,
+"zone": "Asia/Riyadh",
+"country_ar": "السعودية",
+"country_en": "Saudi Arabia"
+},
+{
+"id": "jeddah",
+"ar": "جدة",
+"en": "Jeddah",
+"lat": 21.4858,
+"lon": 39.1925,
+"zone": "Asia/Riyadh",
+"country_ar": "السعودية",
+"country_en": "Saudi Arabia"
+},
+{
+"id": "dammam",
+"ar": "الدمام",
+"en": "Dammam",
+"lat": 26.4207,
+"lon": 50.0888,
+"zone": "Asia/Riyadh",
+"country_ar": "السعودية",
+"country_en": "Saudi Arabia"
+},
+{
+"id": "doha",
+"ar": "الدوحة",
+"en": "Doha",
+"lat": 25.2854,
+"lon": 51.531,
+"zone": "Asia/Qatar",
+"country_ar": "قطر",
+"country_en": "Qatar"
+},
+{
+"id": "kuwait",
+"ar": "الكويت",
+"en": "Kuwait City",
+"lat": 29.3759,
+"lon": 47.9774,
+"zone": "Asia/Kuwait",
+"country_ar": "الكويت",
+"country_en": "Kuwait"
+},
+{
+"id": "manama",
+"ar": "المنامة",
+"en": "Manama",
+"lat": 26.2285,
+"lon": 50.586,
+"zone": "Asia/Bahrain",
+"country_ar": "البحرين",
+"country_en": "Bahrain"
+},
+{
+"id": "sanaa",
+"ar": "صنعاء",
+"en": "Sanaa",
+"lat": 15.3694,
+"lon": 44.191,
+"zone": "Asia/Aden",
+"country_ar": "اليمن",
+"country_en": "Yemen"
+},
+{
+"id": "aden",
+"ar": "عدن",
+"en": "Aden",
+"lat": 12.7855,
+"lon": 45.0187,
+"zone": "Asia/Aden",
+"country_ar": "اليمن",
+"country_en": "Yemen"
+},
+{
+"id": "baghdad",
+"ar": "بغداد",
+"en": "Baghdad",
+"lat": 33.3152,
+"lon": 44.3661,
+"zone": "Asia/Baghdad",
+"country_ar": "العراق",
+"country_en": "Iraq"
+},
+{
+"id": "amman",
+"ar": "عمّان",
+"en": "Amman",
+"lat": 31.9454,
+"lon": 35.9284,
+"zone": "Asia/Amman",
+"country_ar": "الأردن",
+"country_en": "Jordan"
+},
+{
+"id": "quds",
+"ar": "القدس",
+"en": "Jerusalem",
+"lat": 31.7683,
+"lon": 35.2137,
+"zone": "Asia/Jerusalem",
+"country_ar": "فلسطين",
+"country_en": "Palestine"
+},
+{
+"id": "damascus",
+"ar": "دمشق",
+"en": "Damascus",
+"lat": 33.5138,
+"lon": 36.2765,
+"zone": "Asia/Damascus",
+"country_ar": "سوريا",
+"country_en": "Syria"
+},
+{
+"id": "beirut",
+"ar": "بيروت",
+"en": "Beirut",
+"lat": 33.8938,
+"lon": 35.5018,
+"zone": "Asia/Beirut",
+"country_ar": "لبنان",
+"country_en": "Lebanon"
+},
+{
+"id": "cairo",
+"ar": "القاهرة",
+"en": "Cairo",
+"lat": 30.0444,
+"lon": 31.2357,
+"zone": "Africa/Cairo",
+"country_ar": "مصر",
+"country_en": "Egypt"
+},
+{
+"id": "khartoum",
+"ar": "الخرطوم",
+"en": "Khartoum",
+"lat": 15.5007,
+"lon": 32.5599,
+"zone": "Africa/Khartoum",
+"country_ar": "السودان",
+"country_en": "Sudan"
+},
+{
+"id": "tripoli",
+"ar": "طرابلس",
+"en": "Tripoli",
+"lat": 32.8872,
+"lon": 13.1913,
+"zone": "Africa/Tripoli",
+"country_ar": "ليبيا",
+"country_en": "Libya"
+},
+{
+"id": "tunis",
+"ar": "تونس",
+"en": "Tunis",
+"lat": 36.8065,
+"lon": 10.1815,
+"zone": "Africa/Tunis",
+"country_ar": "تونس",
+"country_en": "Tunisia"
+},
+{
+"id": "algiers",
+"ar": "الجزائر",
+"en": "Algiers",
+"lat": 36.7538,
+"lon": 3.0588,
+"zone": "Africa/Algiers",
+"country_ar": "الجزائر",
+"country_en": "Algeria"
+},
+{
+"id": "rabat",
+"ar": "الرباط",
+"en": "Rabat",
+"lat": 34.0209,
+"lon": -6.8416,
+"zone": "Africa/Casablanca",
+"country_ar": "المغرب",
+"country_en": "Morocco"
+},
+{
+"id": "nouakchott",
+"ar": "نواكشوط",
+"en": "Nouakchott",
+"lat": 18.0735,
+"lon": -15.9582,
+"zone": "Africa/Nouakchott",
+"country_ar": "موريتانيا",
+"country_en": "Mauritania"
+}
+]

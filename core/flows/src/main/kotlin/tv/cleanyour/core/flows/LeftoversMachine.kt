@@ -29,9 +29,13 @@ class LeftoversMachine(
     private val d: ManageDeps,
     scope: CoroutineScope,
     private val tvId: TvId,
+    // M4 item 35: "one-tap re-setup after a system update" opens this with auto = true, so what came
+    // back goes straight to the switch-off (the credential gate still asks, D17).
+    private val auto: Boolean = false,
 ) : Machine<LeftoversState, LeftoversIntent, ManageEffect>(LeftoversState.Checking, scope) {
 
     private data class Show(val s: LeftoversState)
+    private var autoRan = false
 
     init { scope.launch { check() } }
 
@@ -60,7 +64,9 @@ class LeftoversMachine(
         }.getOrNull()
         val plan = (r as? PlanResult.Ok)?.plan ?: return send(Show(LeftoversState.Failed))
         val back = plan.steps.mapNotNull { (it.op as? Op.Disable)?.pkg }
-        send(Show(if (back.isEmpty()) LeftoversState.Nothing else LeftoversState.Found(back.map { d.nameOf(it) }, plan)))
+        val found = if (back.isEmpty()) LeftoversState.Nothing else LeftoversState.Found(back.map { d.nameOf(it) }, plan)
+        send(Show(found))
+        if (auto && found is LeftoversState.Found && !autoRan) { autoRan = true; switchOff(found) }
     }
 
     private suspend fun switchOff(found: LeftoversState.Found) {

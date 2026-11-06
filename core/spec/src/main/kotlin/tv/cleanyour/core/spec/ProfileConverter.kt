@@ -14,10 +14,14 @@ object ProfileConverter {
     fun readUnconverted(file: File?): Set<String> =
         file?.readLines().orEmpty().map { it.substringBefore('#').trim() }.filter { it.isNotEmpty() }.toSet()
 
-    fun convert(examples: File, metaFile: File, commit: String, unconverted: Set<String> = emptySet()): Pair<ProfileBundle, List<String>> {
+    fun convert(examples: File, metaFile: File, commit: String, unconverted: Set<String> = emptySet(), mi5g: File? = null): Pair<ProfileBundle, List<String>> {
         val meta = ProfileMeta.decode(metaFile.readText())
         val problems = mutableListOf<String>()
-        val all = examples.listFiles().orEmpty().filter { File(it, "debloat.txt").isFile }.sortedBy { it.name }
+        val upstreamAll = examples.listFiles().orEmpty().filter { File(it, "debloat.txt").isFile }
+        // M5: Mi5G's own lists live outside the pinned upstream folder (core/spec/mi5g-examples).
+        val own = mi5g?.listFiles().orEmpty().filter { File(it, "debloat.txt").isFile }
+        (own.map { it.name }.toSet() intersect upstreamAll.map { it.name }.toSet()).forEach { problems += "$it: in both upstream and mi5g-examples" }
+        val all = (upstreamAll + own).sortedBy { it.name }
         (unconverted - all.map { it.name }.toSet()).forEach { problems += "$it: in unconverted.txt but not upstream" }
         (unconverted intersect meta.profiles.keys).forEach { problems += "$it: in both unconverted.txt and profile-meta.json" }
         val folders = all.filter { it.name !in unconverted }
@@ -38,8 +42,8 @@ object ProfileConverter {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        require(args.size in 4..5) { "usage: ProfileConverter <examples dir> <profile-meta.json> <commit> <out dir> [unconverted.txt]" }
-        val (bundle, problems) = convert(File(args[0]), File(args[1]), args[2], readUnconverted(args.getOrNull(4)?.let(::File)))
+        require(args.size in 4..6) { "usage: ProfileConverter <examples dir> <profile-meta.json> <commit> <out dir> [unconverted.txt] [mi5g examples dir]" }
+        val (bundle, problems) = convert(File(args[0]), File(args[1]), args[2], readUnconverted(args.getOrNull(4)?.let(::File)), args.getOrNull(5)?.let(::File))
         if (problems.isNotEmpty()) {
             System.err.println(problems.joinToString("\n"))
             throw IllegalStateException("${problems.size} profile conversion problem(s)")

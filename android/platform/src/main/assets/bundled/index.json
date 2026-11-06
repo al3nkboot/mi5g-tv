@@ -1,8 +1,8 @@
 {
   "schema": 1,
-  "sequence": 6,
-  "generated": "2026-10-26T10:00:00Z",
-  "expires": "2027-01-24T10:00:00Z",
+  "sequence": 9,
+  "generated": "2026-11-06T00:00:00Z",
+  "expires": "2027-02-04T00:00:00Z",
   "modules": [
     {
       "id": "adguard-dns",
@@ -48,9 +48,9 @@
     },
     {
       "id": "prayer-weather",
-      "name": "مواقيت الصلاة والطقس",
-      "one_line": "مواقيت الصلاة اليومية وحالة الطقس للمدن العربية",
-      "description": "بطاقة وتطبيق خفيف للتلفاز يعرض مواقيت الصلاة الخمس والشروق مع تنبيه صوتي ومرئي للأذان عند دخول وقت الصلاة وحالة الطقس المباشرة لمدن الخليج والعالم العربي.",
+      "name": "مواقيتي",
+      "one_line": "مواقيت الصلاة والأذان على التلفاز مع إعدادات من الهاتف",
+      "description": "مواقيت الصلاة الخمس والشروق بمحرك مواقيتي وتقويم عُمان، مع الأذان الكامل فوق أي تطبيق (الأذان الإجباري)، وتنبيه قبل الأذان، وودجت عائم اختياري للصلاة القادمة، وتذكير الجمعة بسورة الكهف، وإذاعة القرآن الكريم المباشرة. تُضبط الإعدادات من هاتفك، مع خيار حساب العصر حنفي أو شافعي.",
       "package": "com.midroid.mi5gtv.prayer",
       "type": "card",
       "tier": "verified",
@@ -61,22 +61,38 @@
       "artwork": null,
       "versions": [
         {
-          "version_code": 3,
-          "version_name": "1.2.0",
-          "released": "2026-10-26T10:00:00Z",
+          "version_code": 6,
+          "version_name": "2.1.0",
+          "released": "2026-11-06T00:00:00Z",
           "apk": {
-            "url": "https://github.com/al3nkboot/mi5g-tv/releases/download/v1.5.0/mi5g-tv-prayer.apk",
-            "size": 1061709,
-            "sha256": "ebd75ba6c2629bbffbfede88e57ecceac658d50044c16f2d518a168dade579ff",
+            "url": "https://github.com/al3nkboot/mi5g-tv/releases/download/v2.1.0/mi5g-tv-prayer.apk",
+            "size": 3003131,
+            "sha256": "9b790849cffce35fac98750b9d8f24d53976a9fbc1741daa1c9948e730759488",
             "signer_sha256": "c1f317965f154fe5e79fe7483abd5dd5dec7df57d87f3a645a5fd12f39a5480c"
           },
           "permissions": [
             {
               "permission": "android.permission.INTERNET",
-              "plain_words": "يجلب درجة الحرارة الحالية للمدينة المختارة عبر اتصال HTTPS."
+              "plain_words": "يشغّل بث إذاعات القرآن الكريم العامة عند طلبك فقط."
+            },
+            {
+              "permission": "android.permission.SYSTEM_ALERT_WINDOW",
+              "plain_words": "يعرض تنبيه الصلاة والأذان والودجت العائم فوق أي تطبيق."
+            },
+            {
+              "permission": "android.permission.USE_EXACT_ALARM",
+              "plain_words": "يضبط منبّهًا دقيقًا لكل وقت صلاة."
+            },
+            {
+              "permission": "android.permission.RECEIVE_BOOT_COMPLETED",
+              "plain_words": "يعيد جدولة التنبيهات بعد تشغيل التلفاز."
+            },
+            {
+              "permission": "android.permission.FOREGROUND_SERVICE",
+              "plain_words": "يبقى الأذان والودجت يعملان أثناء استخدام تطبيقات أخرى."
             }
           ],
-          "network": "يحسب مواقيت الصلاة محليًا بدون إنترنت، ويجلب درجة الحرارة فقط من خدمة الطقس المفتوحة.",
+          "network": "يحسب مواقيت الصلاة محليًا بدون إنترنت؛ الإنترنت فقط لبث الإذاعة عند تشغيلها.",
           "min_sdk": 26,
           "abis": [
             "armeabi-v7a",
@@ -174,8 +190,8 @@
     },
     {
       "id": "tv-matches",
-      "name": "بطاقة المباريات (فرقك المفضلة)",
-      "one_line": "نتائج ومواعيد مباريات اليوم والغد لفرقك ودورياتك المفضلة",
+      "name": "Mi5G Score",
+      "one_line": "نتائج ومواعيد فرقك المفضلة وجداول الترتيب",
       "description": "بطاقة وتطبيق رياضي مصمم لشاشة التلفاز والريموت يعرض نتائج ومواعيد مباريات اليوم والغد مباشرةً بالتوقيت المحلي، مع إمكانية اختيار فرقك ودورياتك المفضلة (دوري روشن السعودي، دوري أبطال أوروبا، الدوري الإنجليزي، الإسباني، الإيطالي، المصري، القطري، الإماراتي، ودوري أبطال آسيا) بضغطة زر.",
       "package": "com.midroid.mi5gtv.matches",
       "type": "card",
@@ -187,22 +203,22 @@
       "artwork": null,
       "versions": [
         {
-          "version_code": 2,
-          "version_name": "1.1.0",
-          "released": "2026-10-25T10:30:00Z",
+          "version_code": 3,
+          "version_name": "2.0.0",
+          "released": "2026-11-03T00:00:00Z",
           "apk": {
-            "url": "https://github.com/al3nkboot/mi5g-tv/releases/download/v1.4.0/tv-matches.apk",
-            "size": 90816,
-            "sha256": "a534d146c8222e38cbea184829ca364e4708385fead5fe520a5708c70e7c34af",
+            "url": "https://github.com/al3nkboot/mi5g-tv/releases/download/v2.1.0/mi5g-tv-score.apk",
+            "size": 271118,
+            "sha256": "cd8c1a21ff75ddd0712f09eeac7fda1896410f94b9ee358aaee4d63d1022416a",
             "signer_sha256": "c1f317965f154fe5e79fe7483abd5dd5dec7df57d87f3a645a5fd12f39a5480c"
           },
           "permissions": [
             {
               "permission": "android.permission.INTERNET",
-              "plain_words": "يجلب نتائج ومواعيد المباريات المباشرة للدوريات والفرق المختارة عبر اتصال HTTPS."
+              "plain_words": "يجلب نتائج ومواعيد المباريات وجداول الترتيب من ESPN."
             }
           ],
-          "network": "يتصل بواجهة نتائج المباريات عبر HTTPS عند التحديث، ويعمل أيضًا بدون إنترنت عبر جدول محلي مدمج.",
+          "network": "يجلب النتائج والمواعيد وجداول الترتيب من واجهة ESPN العامة فقط.",
           "min_sdk": 26,
           "abis": [
             "armeabi-v7a",

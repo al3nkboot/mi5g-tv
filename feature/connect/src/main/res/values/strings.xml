@@ -15,7 +15,7 @@
     <string name="action_ok">OK</string>
 
     <!-- S1 Welcome. The overline is the product name, as on the TV launcher. -->
-    <string name="welcome_overline">Clean Your TV</string>
+    <string name="welcome_overline">Mi5G TV</string>
     <string name="welcome_title">Your TV, tidied up.</string>
     <string name="welcome_body">Switch off the clutter, keep the apps you use, and get a calm home screen. Five minutes. Everything can be put back.</string>
     <string name="welcome_hero_cd">A TV home screen full of sponsored rows turns into a clean one with four apps along the bottom</string>
@@ -191,4 +191,29 @@ Samsung (Tizen) and LG (webOS) do not use Android APK files, but you can block s
     <string name="door_chinese_tv_body">If Developer Options or USB Debugging does not appear after pressing Build 7 times on Chinese TVs, Ikon (IK-E500FF), Haier, Nikai, or HY320 projectors:
 1. Secret factory menu codes on the remote: press Menu + 2580, or Source + 2580, or Menu + 1147, or Home + 1999, then enable ADB / UART debug.
 2. Or install Terminal / Bugjaeger or APK files directly from a FAT32 USB flash drive via the built-in Media / File Manager app.</string>
+    <string name="manual_entry">Enter manually</string><string name="manual_port">Port</string>
+    <!-- M4 item 31: Samsung / LG helper -->
+    <string name="smarttv_power">Power</string>
+    <string name="smarttv_title">Samsung and LG helper</string>
+    <string name="smarttv_samsung">Samsung Tizen</string>
+    <string name="smarttv_lg">LG webOS</string>
+    <string name="smarttv_tab_remote">📱 Wi-Fi remote</string>
+    <string name="smarttv_tab_dns">🛡️ Ad-block (DNS)</string>
+    <string name="smarttv_tab_ads">🚫 Turn off TV ads</string>
+    <string name="smarttv_remote_note">Phone and TV on the same Wi-Fi. Type the TV IP address (Settings > Network > Network status).</string>
+    <string name="smarttv_ip_label">TV IP address, e.g. 192.168.1.20</string>
+    <string name="smarttv_ip_error">Use an address on your home network (192.168.x.x or 10.x.x.x)</string>
+    <string name="smarttv_connect">Connect to the TV</string>
+    <string name="smarttv_allow_samsung">Choose Allow on the TV when Mi5G TV asks.</string>
+    <string name="smarttv_allow_lg">Choose Accept on the TV when Mi5G TV asks.</string>
+    <string name="smarttv_connected">Connected. Use the buttons below.</string>
+    <string name="smarttv_denied">The TV refused. Try again and choose Allow.</string>
+    <string name="smarttv_unreachable">Could not reach the TV. Check the address and that it is on and on the same network.</string>
+    <string name="smarttv_dns_note">AdGuard DNS blocks ads and trackers for every app on the TV. You change it in the TV own settings and can undo it any time.</string>
+    <string name="smarttv_dns_samsung">1. Settings > General > Network > Network status > IP settings.\n2. DNS setting > Enter manually.\n3. Type the DNS server below, then OK.\n4. Go back and test the connection.</string>
+    <string name="smarttv_dns_lg">1. Settings > Network > Wi-Fi (or wired) > Advanced Wi-Fi settings > Edit.\n2. Untick Set automatically.\n3. Type the DNS server below, then Connect.\n4. Go back and test the connection.</string>
+    <string name="smarttv_dns_undo">To undo: set IP or DNS back to automatic. If the internet stops after the change, your router blocks outside DNS; go back to automatic.</string>
+    <string name="smarttv_ads_samsung">• Settings > Support > Terms and privacy: turn off Interest-based ads and Viewing information services.\n• Settings > General > Smart features: turn off Autorun Smart Hub and Autorun last app.\n• Settings > Broadcasting: turn off Autorun Samsung TV Plus.</string>
+    <string name="smarttv_ads_lg">• Settings > General > System > Additional settings > Home settings: turn off Home promotion and Content recommendation.\n• Settings > General > System > Additional settings: turn off Live Plus.\n• Settings > Support > User agreements: untick Viewing information and Interest-based ads.</string>
+    <string name="smarttv_ads_note">Menu names differ a little by year and model. Mi5G TV changes nothing on these TVs by itself.</string>
 </resources>

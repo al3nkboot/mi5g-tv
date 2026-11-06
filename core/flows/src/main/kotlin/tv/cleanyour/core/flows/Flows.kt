@@ -35,7 +35,7 @@ sealed interface SetupState {
     data class Welcome(val found: List<FoundTv>, val onWifi: Boolean, val looking: Boolean) : SetupState
     data class Picker(val found: List<FoundTv>) : SetupState
     data class OpenDoor(val tv: FoundTv, val family: String, val step: Int, val phase: DoorPhase, val fingerprint: String?, val banner: String?, val waitedMs: Long) : SetupState
-    data class PairingNeeded(val tv: FoundTv) : SetupState
+    data class PairingNeeded(val tv: FoundTv, val pairingPort: String = "", val pairingCode: String = "") : SetupState
     data class Probing(val tvId: TvId, val stage: ProbeStage, val partial: PlanSummary?) : SetupState
     data class Found(val tvId: TvId, val plan: Plan, val level: Level, val sheet: Sheet?) : SetupState
     data class Working(val tvId: TvId, val run: RunState.Running, val thumbnail: ByteArray?) : SetupState
@@ -54,7 +54,7 @@ data class StopCard(val case: StopCase, val title: String, val body: String, val
 data class DoneSummary(val switchedOff: Int, val homeScreenOn: Boolean, val restorePointAtMs: Long, val skipped: List<String>, val restartRecommended: Boolean)
 sealed interface RestartState { data class Restarting(val sinceMs: Long) : RestartState; data class Back(val afterMs: Long) : RestartState
     data class NotBack(val afterMs: Long) : RestartState }
-sealed interface SetupIntent { data object Start : SetupIntent; data class PickTv(val host: String) : SetupIntent; data class EnterAddress(val ip: String) : SetupIntent
+sealed interface SetupIntent { data object Start : SetupIntent; data class PickTv(val host: String) : SetupIntent; data class EnterAddress(val ip: String, val port: Int = 5555, val pairingCode: String? = null) : SetupIntent
     data class ChangeFamily(val family: String) : SetupIntent; data object AskTvAgain : SetupIntent; data object ConfirmIdentity : SetupIntent
     data class Keep(val pkg: PackageName, val keep: Boolean) : SetupIntent; data class SetDock(val dock: List<PackageName>) : SetupIntent
     data class SetTheme(val id: String) : SetupIntent; data class KeepDebuggingOn(val on: Boolean) : SetupIntent; data class Open(val sheet: Sheet?) : SetupIntent

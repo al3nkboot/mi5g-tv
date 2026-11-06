@@ -9,8 +9,10 @@ work. The full licence texts are linked or included below.
 
 1. Clean Your TV launcher (bundled TV launcher APK, com.gathin.tvhome)
    https://github.com/Gathin23/cleanyourtv, tag v2.5.0, commit 9071ec8d2f41826778f6b4c7f5f42dadc22f5b22
-   (the third_party/cleanyourtv submodule). The APK in android/platform/src/main/assets/bundled is
-   built from that commit without changes and re-signed with this project's launcher key. The
+   (vendored in third_party/cleanyourtv). Since Mi5G TV 2.0 the APK in android/platform/src/main/assets/bundled
+   is built from that commit plus this project's own changes in third_party/cleanyourtv/launcher
+   (tile menu, Control Center, button mapper, media pill, clock, wake target; all marked "Mi5G 2.0"),
+   and signed with this project's release key. The Cairo typeface (3a below) is bundled in it too. The
    upstream repository's per TV clean-up lists, written by its community contributors, are
    converted into this app's TV profiles, and three of its themes (default, aurora with its
    wallpaper picture, six-columns) are bundled as they are. Licence: MIT. The aurora wallpaper
@@ -46,6 +48,10 @@ work. The full licence texts are linked or included below.
    Parts of :adb:wire are derived from it; see adb/wire/NOTICE for the files and the full
    Apache License 2.0 text. No dadb binary is used.
 
+2a. Android Debug Bridge pairing protocol
+   Protocol reimplemented from Android Open Source Project adb (Apache License 2.0) and
+   BoringSSL SPAKE2 (ISC License). No source code is copied.
+
 3. Outfit typeface (the app's and the launcher's font)
    https://github.com/Outfitio/Outfit-Fonts, Copyright 2021 The Outfit Project Authors.
    Licence: SIL Open Font License 1.1, full text in
@@ -62,6 +68,7 @@ work. The full licence texts are linked or included below.
    - AndroidX: Activity Compose, Lifecycle, Navigation 3, ProfileInstaller, Core and their
      transitive AndroidX dependencies (Google)
    - Jetpack Compose: runtime, UI, foundation, Material 3 (Google)
+   - Conscrypt OpenJDK uber (TLS 1.3 interop tests only; Apache License 2.0).
    - Bouncy Castle Crypto APIs, bcprov-jdk18on (Ed25519 for the signed module index).
      Licence: Bouncy Castle Licence (MIT style), https://www.bouncycastle.org/licence.html
      Copyright (c) 2000 to 2026 The Legion of the Bouncy Castle Inc. (https://www.bouncycastle.org)
@@ -73,3 +80,82 @@ work. The full licence texts are linked or included below.
    Gradle, the Android Gradle Plugin and build tools, Robolectric, Roborazzi, JUnit, Turbine,
    Kotest, apksig and apksigcopier, each under its own licence (Apache License 2.0, MIT, EPL 1.0
    for JUnit 4, GPL 3.0 or later for apksigcopier, which only compares release APKs).
+
+--------------------------------------------------------------------------------
+Mi5G TV 2.0 M3 — TV modules built in this repository (tv/prayer, tv/score)
+--------------------------------------------------------------------------------
+
+adhan-java 1.2.1 (com.batoulapps.adhan:adhan) — prayer-time calculation in tv/prayer
+  https://github.com/batoulapps/adhan-java — Copyright (c) Batoul Apps — MIT License.
+  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+  associated documentation files, to deal in the Software without restriction, subject to including the
+  above copyright notice and this permission notice in all copies or substantial portions of the Software.
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
+
+City coordinates (tv/prayer/src/main/assets/cities.json, core/flows PrayerCities) — GeoNames
+  https://www.geonames.org — Creative Commons Attribution 4.0 (CC BY 4.0).
+
+Default adhan audio (tv/prayer/src/main/res/raw/adhan_default.m4a) — provenance, modifications and hash
+  as recorded in the مواقيتي project's CREDITS.md (YouTube upload by the channel "بيت المسلم - Muslim House";
+  standard YouTube licence, uploader states "no rights"; bundled at the app owner's decision). Unchanged here.
+
+Oman prayer reference timetable (tests only, tv/prayer/src/test/resources/mara_2026.csv) — Ministry of
+  Endowments and Religious Affairs, Oman, public calendar; used to verify the calculation only.
+
+Quran radio (tv/prayer RadioActivity) — plays the public live streams listed by the mp3quran.net API
+  (https://mp3quran.net/api/v3/radios). Nothing is bundled or re-hosted; no recitation text is shown or generated.
+
+Mi5G Score (tv/score) — football data from ESPN's public JSON endpoints (site.api.espn.com); unofficial,
+  not affiliated with ESPN. Feature set follows the Mi5G Score phone app (live_score, MIT License,
+  Copyright (c) 2026 Rady Haggag); no code from it is included in the TV module.
+
+Cairo font (tv/prayer, tv/score res/font/cairo.ttf) — SIL Open Font License 1.1, see 3a above.
+
+--------------------------------------------------------------------------------
+Mi5G TV 2.0 — projects whose ideas or code Mi5G TV reuses (backlog 36)
+--------------------------------------------------------------------------------
+
+tvOS Launcher — https://github.com/techgenius1/tvOS-Launcher
+  Copyright 2026 techgenius. Licensed under the Apache License, Version 2.0
+  (http://www.apache.org/licenses/LICENSE-2.0). Its NOTICE file reads:
+    tvOS Launcher
+    Copyright 2026 techgenius
+    Licensed under the Apache License, Version 2.0 (see LICENSE).
+    Credits and acknowledgements: Hume Launcher (petrobot-admin/hume-launcher), Couch TV (Seagey/couch-tv).
+
+OmarchyTV — https://github.com/piermark/omarchytv
+  MIT License. Copyright (c) 2026 Marco Porro (x.com/MarcoPorro · www.marcoporro.it).
+  Reference for the Samsung Tizen / LG webOS helper flow; no Omarchy artwork or themes are included.
+
+talkies v1.2.8 — https://github.com/rajupp/talkies
+  MIT License. Copyright (c) 2026 TechPP.
+  Mi5G 2.1 keeps this notice; the added device/input, screensaver and weather implementations are our own.
+
+tv-vibehack — https://github.com/samdegan2311/tv-vibehack
+  MIT License. Copyright (c) 2026 Gathin. The launcher Control Center is adapted from it.
+
+Aerial TV — https://github.com/pengchujin/aerial-tv
+  MIT License. Copyright (c) 2026 pengchujin.
+  Mi5G TV 2.0.1 reuses ideas from it in the bundled launcher (com.gathin.tvhome): arranging Home from
+  a phone over the local network with a QR code, pinned TV inputs, app folders, the Bing photo of the day
+  and phone uploads as wallpaper, layout options, the boot / standby revival approach and a city
+  screensaver. The code is Mi5G's own and the look is Mi5G's (teal and gold, Arabic RTL, Cairo font).
+  No Apple aerial videos are included. Aerial TV's own font (Inter) is under the SIL Open Font License
+  1.1 and is not included in Mi5G TV.
+
+ZXing core 3.5.3 (launcher QR code) — https://github.com/zxing/zxing
+  Copyright ZXing authors. Licensed under the Apache License, Version 2.0
+  (http://www.apache.org/licenses/LICENSE-2.0).
+
+The MIT License text for the four MIT projects above:
+  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+  associated documentation files (the "Software"), to deal in the Software without restriction,
+  including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+  and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+  subject to the following conditions: The above copyright notice and this permission notice shall be
+  included in all copies or substantial portions of the Software.
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+  LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+  NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

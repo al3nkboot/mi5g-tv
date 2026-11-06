@@ -332,7 +332,7 @@ class ShellRenderer(private val watchdogVariant: WatchdogVariant = WatchdogVaria
         // Timeouts (SECURITY 3.5, ARCHITECTURE 3.3) and output caps (SECURITY 3.5, ARCHITECTURE 3.7).
         const val T_DEFAULT = 30_000L
         const val T_PM = 30_000L
-        const val T_DUMPSYS = 20_000L
+        const val T_DUMPSYS = 45_000L   // 2.0.1: slow 1 GB SDK 28 boxes (GAORUI m7332)
         const val T_INSTALL = 120_000L
         const val T_START_WAIT = 180_000L
         const val T_PUSH = 600_000L
@@ -375,6 +375,16 @@ class ShellRenderer(private val watchdogVariant: WatchdogVariant = WatchdogVaria
         fun inputTextLine(raw: String): ShellLine =
             ShellLine(ShellTokens.line(listOf("input", "text", escapeInputText(raw))))
 
+        fun launchPackageLine(pkg: String): ShellLine {
+            require(PACKAGE_RE.matches(pkg)) { "invalid package name" }
+            return ShellLine(ShellTokens.line(listOf("monkey", "-p", pkg, "-c", "android.intent.category.LEANBACK_LAUNCHER", "1")))
+        }
+
+        fun parsePackageList(output: String): List<String> = output.lineSequence()
+            .map { it.trim().removePrefix("package:") }
+            .filter { PACKAGE_RE.matches(it) }
+            .distinct().toList()
+
         fun mkdirTmpLine(): ShellLine =
             ShellLine(ShellTokens.line(listOf("mkdir", "-p", RemoteDir.TMP.path)))
 
@@ -404,7 +414,12 @@ class ShellRenderer(private val watchdogVariant: WatchdogVariant = WatchdogVaria
             ShellLine(ShellTokens.line(listOf(SETTINGS, "delete", "global", "private_dns_specifier"))),
         )
 
+        // 2.0 item 12: the DNS module keeps WRITE_SECURE_SETTINGS only while its feature is on.
+        fun revokeDnsSecureSettingsLine(): ShellLine =
+            ShellLine(ShellTokens.line(listOf(PM, "revoke", "com.midroid.mi5gtv.dns", "android.permission.WRITE_SECURE_SETTINGS")))
+
         fun resetPrivateDnsLines(): List<ShellLine> = listOf(
+            revokeDnsSecureSettingsLine(),
             ShellLine(ShellTokens.line(listOf(SETTINGS, "put", "global", "private_dns_mode", "opportunistic"))),
             ShellLine(ShellTokens.line(listOf(SETTINGS, "delete", "global", "private_dns_specifier"))),
         )
@@ -615,6 +630,11 @@ class ShellRenderer(private val watchdogVariant: WatchdogVariant = WatchdogVaria
             ShellLine(ShellTokens.line(listOf(CMD, "dreams", "start-dreaming"))),
         )
 
+        // 2.0.2: back to the TV's Home after Mi5G installed or updated something. TCL sets reopen the
+        // last app; the HOME intent resolves to the default Home (the Mi5G launcher once it is set).
+        fun backToHomeLine(): ShellLine =
+            ShellLine(ShellTokens.line(listOf(AM, "start", "-n", "com.gathin.tvhome/.MainActivity")))
+
         fun quietNightVolumeLine(): ShellLine =
             ShellLine(ShellTokens.line(listOf(CMD, "media_session", "volume", "--show", "--set", "7")))
 
@@ -627,6 +647,122 @@ class ShellRenderer(private val watchdogVariant: WatchdogVariant = WatchdogVaria
             ShellLine(ShellTokens.line(listOf("input", "keyevent", "176"))),
             ShellLine(ShellTokens.line(listOf(AM, "start", "-a", "android.settings.SETTINGS"))),
         )
+
+        // ---- Mi5G 2.0 home lock (item 25) and safe return (item 26) ----------------------------------
+        const val MI5G_HOME = "com.gathin.tvhome"
+        const val MI5G_HOME_ACTIVITY = "com.gathin.tvhome/.MainActivity"
+        val MI5G_ACCESSIBILITY = listOf("com.gathin.tvhome/.HomeKeyService", "com.gathin.tvhome/.InputKeyService")
+        const val MI5G_MEDIA_LISTENER = "com.gathin.tvhome/com.gathin.tvhome.MediaListener"
+        // Stock homes the lock may switch off and the safe return switches back on (never uninstalled).
+        val XIAOMI_HOMES = listOf("com.mitv.tvhome", "com.mitv.tvhome.atv")
+        val STOCK_HOMES = listOf(
+            "com.google.android.apps.tv.launcherx", "com.google.android.tvlauncher",
+            "com.google.android.leanbacklauncher", "com.mitv.tvhome", "com.mitv.tvhome.atv",
+        )
+
+        /** The `settings get` value with [add] present once and [remove] gone; order kept. */
+        fun mergeAccessibility(current: String?, add: List<String>, remove: List<String> = emptyList()): String {
+            val have = current.orEmpty().trim().takeUnless { it == "null" }.orEmpty()
+                .split(':').map { it.trim() }.filter { it.isNotEmpty() }
+            val kept = have.filter { it !in remove && it !in add }
+            return (kept + add).joinToString(":")
+        }
+
+        fun getSecureLine(key: String): ShellLine {
+            require(key.matches(Regex("[a-z_]{1,64}"))) { "invalid key" }
+            return ShellLine(ShellTokens.line(listOf(SETTINGS, "get", "secure", key)))
+        }
+
+        fun putAccessibilityLines(value: String): List<ShellLine> {
+            require(value.isEmpty() || value.split(':').all { it.matches(Regex("[A-Za-z0-9_.]+/[A-Za-z0-9_.$]+")) }) { "invalid services" }
+            val put = if (value.isEmpty()) listOf(SETTINGS, "delete", "secure", "enabled_accessibility_services")
+            else listOf(SETTINGS, "put", "secure", "enabled_accessibility_services", value)
+            return listOfNotNull(
+                ShellLine(ShellTokens.line(put)),
+                if (value.isEmpty()) null else ShellLine(ShellTokens.line(listOf(SETTINGS, "put", "secure", "accessibility_enabled", "1"))),
+            )
+        }
+
+        fun packagePathLine(pkg: String): ShellLine {
+            require(PACKAGE_RE.matches(pkg)) { "invalid package $pkg" }
+            return ShellLine(ShellTokens.line(listOf(PM, "path", pkg)))
+        }
+
+        /** Lock Home to Mi5G; only run after the launcher is confirmed installed. */
+        fun keepMi5gHomeLines(disableXiaomiHome: Boolean): List<ShellLine> = buildList {
+            add(ShellLine(ShellTokens.line(listOf(CMD, "package", "set-home-activity", MI5G_HOME_ACTIVITY))))
+            add(ShellLine(ShellTokens.line(listOf(CMD, "notification", "allow_listener", MI5G_MEDIA_LISTENER))))
+            add(ShellLine(ShellTokens.line(listOf(CMD, "appops", "set", MI5G_HOME, "RUN_IN_BACKGROUND", "allow"))))
+            add(ShellLine(ShellTokens.line(listOf(CMD, "deviceidle", "whitelist", "+$MI5G_HOME"))))
+            // PatchWall takes Home back at boot on Xiaomi TVs; pm enable (safe return) undoes this.
+            if (disableXiaomiHome) for (p in XIAOMI_HOMES) add(ShellLine(ShellTokens.line(listOf(PM, "disable-user", USER, "0", p))))
+            add(ShellLine(ShellTokens.line(listOf(AM, "start", "-a", "android.intent.action.MAIN", "-c", "android.intent.category.HOME", "-n", MI5G_HOME_ACTIVITY))))
+        }
+
+        /** Back to the TV's own launcher: re-enable it, make it Home, drop our services. Never uninstalls. */
+        fun returnToStockLines(installedStock: List<String>): List<ShellLine> = buildList {
+            for (p in installedStock) {
+                require(p in STOCK_HOMES) { "not a stock home $p" }
+                add(ShellLine(ShellTokens.line(listOf(PM, "enable", USER, "0", p))))
+            }
+            add(ShellLine(ShellTokens.line(listOf(CMD, "notification", "disallow_listener", MI5G_MEDIA_LISTENER))))
+            add(ShellLine(ShellTokens.line(listOf(CMD, "deviceidle", "whitelist", "-$MI5G_HOME"))))
+            installedStock.firstOrNull()?.let {
+                add(ShellLine(ShellTokens.line(listOf(CMD, "package", "resolve-activity", "--brief", "-a", "android.intent.action.MAIN", "-c", "android.intent.category.HOME", it))))
+            }
+        }
+
+        fun setHomeActivityLine(component: String): ShellLine {
+            require(component.matches(Regex("[A-Za-z0-9_.]+/[A-Za-z0-9_.$]+"))) { "invalid component" }
+            return ShellLine(ShellTokens.line(listOf(CMD, "package", "set-home-activity", component)))
+        }
+
+        // ---- Mi5G 2.0 M3: مواقيتي on the TV (item 27) and Arabic banners -------------------------------
+        const val MI5G_PRAYER = "com.midroid.mi5gtv.prayer"
+        const val MI5G_PRAYER_FILES = "/sdcard/Android/data/$MI5G_PRAYER/files"
+        val PRAYER_STAGE = RemotePath(RemoteDir.RESTORE, listOf("mi5g_prayer.json"))
+
+        // Shell lines are ASCII only, so Arabic text travels as UTF-8 hex to the prayer module's
+        // DUMP-guarded BannerReceiver, which shows it as a Mi5G pill over any app.
+        fun arabicBannerLine(rawMessage: String): ShellLine {
+            val clean = rawMessage.trim().filter { !it.isISOControl() }.take(160)
+            require(clean.isNotEmpty()) { "empty banner" }
+            val hex = clean.toByteArray(Charsets.UTF_8).joinToString("") { "%02x".format(it.toInt() and 0xff) }
+            return ShellLine(ShellTokens.line(listOf(AM, "broadcast", "-a", "$MI5G_PRAYER.BANNER", "-p", MI5G_PRAYER, "--es", "hex", hex)))
+        }
+
+        fun isAsciiBanner(raw: String): Boolean = raw.trim().all { it in ' '..'~' }
+
+        // After the phone pushed settings.json to PRAYER_STAGE: copy it into the module's own files,
+        // grant what the adhan and the widget need over other apps, keep it alive, then re-arm.
+        fun prayerSettingsLines(): List<ShellLine> = listOf(
+            ShellLine(ShellTokens.line(listOf("mkdir", "-p", MI5G_PRAYER_FILES))),
+            ShellLine(ShellTokens.line(listOf("cp", PRAYER_STAGE.absolute, "$MI5G_PRAYER_FILES/settings.json"))),
+        ) + prayerGrantLines() + listOf(
+            ShellLine(ShellTokens.line(listOf(AM, "broadcast", "-a", "$MI5G_PRAYER.RELOAD", "-p", MI5G_PRAYER))),
+            ShellLine(ShellTokens.line(listOf("rm", "-f", PRAYER_STAGE.absolute))),
+        )
+
+        // Best effort: an older Android simply has no such op or permission.
+        fun prayerGrantLines(): List<ShellLine> = listOf(
+            listOf("appops", "set", MI5G_PRAYER, "SYSTEM_ALERT_WINDOW", "allow"),
+            listOf("appops", "set", MI5G_PRAYER, "SCHEDULE_EXACT_ALARM", "allow"),
+            listOf(CMD, "deviceidle", "whitelist", "+$MI5G_PRAYER"),
+            listOf(PM, "grant", MI5G_PRAYER, "android.permission.POST_NOTIFICATIONS"),
+        ).map { ShellLine(ShellTokens.line(it)) }
+
+        /**
+         * Mi5G 2.0.1: lets the launcher put its key services back after a Xiaomi/TCL standby force stop
+         * (WRITE_SECURE_SETTINGS, granted over adb only), then opens its arrange-from-phone QR screen.
+         * The screen's local server is token protected and stops when the screen closes.
+         */
+        fun arrangeHomeLines(): List<ShellLine> = listOf(
+            ShellLine(ShellTokens.line(listOf(PM, "grant", MI5G_HOME, "android.permission.WRITE_SECURE_SETTINGS"))),
+            ShellLine(ShellTokens.line(listOf(AM, "start", "-n", "$MI5G_HOME/.ArrangeActivity"))),
+        )
+
+        fun startHomeLine(): ShellLine =
+            ShellLine(ShellTokens.line(listOf(AM, "start", "-n", "com.gathin.tvhome/.MainActivity")))
 
         fun normalizeDownloaderUrl(rawInput: String): String {
             val trimmed = rawInput.trim()

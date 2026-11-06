@@ -280,6 +280,10 @@ class DefaultEngine(
                         outcome is Outcome.Refused && outcome.kept -> {
                             run.skipped += step; run.states[i] = NarrationState.SKIPPED; run.at = i + 1
                         }
+                        // Some launchers reject disable commands; that leaves the old home intact and is safe to skip.
+                        section != null && (step.op as? Op.Disable)?.let { disabled -> section.rollback.any { it == Op.Enable(disabled.pkg) } } == true && outcome is Outcome.Refused -> {
+                            run.skipped += step; run.states[i] = NarrationState.SKIPPED; run.at = i + 1
+                        }
                         section != null -> {
                             run.states[i] = NarrationState.FAILED
                             if (!rollbackSection(run, section, HomeOutcome.VERIFY_FAILED)) return

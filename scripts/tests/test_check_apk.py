@@ -14,7 +14,7 @@ spec.loader.exec_module(ca)
 # Shape of `aapt2 dump xmltree --file AndroidManifest.xml` (build tools 36), trimmed.
 TREE = '''N: android=http://schemas.android.com/apk/res/android (line=6)
   E: manifest (line=6)
-    A: package="tv.cleanyour.app" (Raw: "tv.cleanyour.app")
+    A: package="com.midroid.mi5gtv" (Raw: "com.midroid.mi5gtv")
       E: application (line=21)
         A: http://schemas.android.com/apk/res/android:allowBackup(0x01010280)=false
         A: http://schemas.android.com/apk/res/android:networkSecurityConfig(0x01010527)=@0x7f120000

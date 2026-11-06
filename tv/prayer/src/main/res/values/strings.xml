@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">مواقيتي</string>
+    <string name="time_of">وقت صلاة %1$s</string>
+    <string name="pre_adhan">%1$s بعد %2$d دقائق</string>
+    <string name="kahf_title">تذكير الجمعة: سورة الكهف</string>
+    <string name="next_prayer">الصلاة القادمة: %1$s</string>
+    <string name="radio">إذاعة القرآن الكريم</string>
+    <string name="test_adhan">تجربة الأذان</string>
+    <string name="stop">إيقاف</string>
+    <string name="stop_hint">اضغط رجوع أو موافق للإيقاف</string>
+    <string name="overlay_name">الصلاة القادمة</string>
+    <string name="loading">جارٍ تحميل الإذاعات…</string>
+    <string name="offline">لا يوجد اتصال بالإنترنت</string>
+    <string name="stations">%1$d إذاعة</string>
+    <string name="connecting">جارٍ الاتصال: %1$s</string>
+    <string name="playing">يُبث الآن: %1$s</string>
+    <string name="stream_error">تعذّر تشغيل البث</string>
+</resources>

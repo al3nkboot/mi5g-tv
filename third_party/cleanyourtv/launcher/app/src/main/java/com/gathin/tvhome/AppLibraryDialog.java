@@ -166,6 +166,15 @@ final class AppLibraryDialog {
                 if (!pkg.equals(activity.getPackageName()) && !unique.containsKey(pkg)) unique.put(pkg, info);
             }
         }
+        // Mi5G 2.0.2: TV-maker extras stay out of All apps unless shown again in Mi5G settings > Hidden apps.
+        boolean extrasFilter = MakerExtras.filterOn(activity);
+        java.util.Set<String> shownAgain = MakerExtras.shownAgain(activity);
+        for (java.util.Iterator<Map.Entry<String, ResolveInfo>> it = unique.entrySet().iterator(); it.hasNext(); ) {
+            Map.Entry<String, ResolveInfo> e = it.next();
+            String l;
+            try { l = String.valueOf(e.getValue().loadLabel(pm)); } catch (RuntimeException unavailable) { l = ""; }
+            if (MakerExtras.hidden(e.getKey(), l, extrasFilter, shownAgain)) it.remove();
+        }
         totalApps = unique.size();
         apps = new ArrayList<>(unique.values());
         installTimes.clear();

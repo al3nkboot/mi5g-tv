@@ -63,7 +63,17 @@ class FullStoreTest {
         assertEquals(listOf(Store.RELEASES_URL), newer.urls)
         assertEquals("", Store.updateChecker(OneAnswer(200, """{"tag_name":"v0.3.0"}""")).latestNewerThan("0.3.0"))
         assertEquals(null, Store.updateChecker(OneAnswer(404, "")).latestNewerThan("0.3.0"))
+        // M4: an older tag (the 1.x line) is not offered to a 2.0 build
+        assertEquals("", Store.updateChecker(OneAnswer(200, """{"tag_name":"v1.6.0"}""")).latestNewerThan("2.0.0-dev"))
         assertEquals("https://github.com/al3nkboot/mi5g-tv/releases", Store.releasePage)
+    }
+
+    // 2.0.2: GitHub's rate limit is told apart from any other failure.
+    @Test fun aRateLimitAnswerIsReportedAsSuch() = runBlocking {
+        for (code in listOf(403, 429)) {
+            val e = runCatching { Store.updateChecker(OneAnswer(code, "")).latestNewerThan("2.0.2-dev") }.exceptionOrNull()
+            assertIs<tv.cleanyour.core.flows.UpdateRateLimited>(e)
+        }
     }
 
     @Test fun softwareUpdatesStayTheOwnersChoice() {

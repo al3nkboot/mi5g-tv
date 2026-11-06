@@ -31,6 +31,7 @@ public class ClockDream extends DreamService {
     private final Runnable tick = new Runnable() {
         @Override
         public void run() {
+            applyQuiet(findViewById(R.id.dreamRoot), QuietHours.quietNow(ClockDream.this));
             moveClock();
             shiftGlow();
             handler.postDelayed(this, MOVE_MS);
@@ -44,6 +45,7 @@ public class ClockDream extends DreamService {
         setFullscreen(true);
         setScreenBright(false);
         setContentView(R.layout.dream_clock);
+        MinuteClock.watch(findViewById(R.id.dreamRoot));
 
         content = findViewById(R.id.dreamContent);
         View ambient = findViewById(R.id.dreamAmbient);
@@ -54,6 +56,33 @@ public class ClockDream extends DreamService {
                 glow.setGradientRadius((r - l) * 0.55f));
         colorIndex = random.nextInt(PALETTE.length);
         setGlow(PALETTE[colorIndex]);
+        addMessage(this, (android.widget.LinearLayout) content);
+        applyQuiet(findViewById(R.id.dreamRoot), QuietHours.quietNow(this));
+    }
+
+    /** Mi5G 2.0.2: the two lines typed on the phone, under the date, in Cairo gold. */
+    static void addMessage(android.content.Context ctx, android.widget.LinearLayout into) {
+        String[] msg = ScreensaverMessage.get(ctx);
+        android.graphics.Typeface cairo = ctx.getResources().getFont(R.font.cairo);
+        int[] sizes = {28, 22};
+        int[] colors = {0xFFD4AF37, 0xCCE8D9A8};
+        for (int i = 0; i < 2; i++) {
+            if (msg[i].isEmpty()) continue;
+            android.widget.TextView t = new android.widget.TextView(ctx);
+            t.setText(msg[i]);
+            t.setTypeface(cairo);
+            t.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, sizes[i]);
+            t.setTextColor(colors[i]);
+            t.setTextDirection(View.TEXT_DIRECTION_ANY_RTL);
+            android.widget.LinearLayout.LayoutParams lp = new android.widget.LinearLayout.LayoutParams(-2, -2);
+            lp.topMargin = (int) ((i == 0 ? 16 : 2) * ctx.getResources().getDisplayMetrics().density);
+            into.addView(t, lp);
+        }
+    }
+
+    /** Mi5G 2.0.2: quiet hours dim the screensaver. */
+    static void applyQuiet(View root, boolean quiet) {
+        if (root != null) root.setAlpha(quiet ? QuietHours.DIM_ALPHA : 1f);
     }
 
     @Override

@@ -22,6 +22,7 @@ import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import kotlinx.coroutines.delay
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -147,7 +148,7 @@ fun WelcomeScreen(state: SetupState.Welcome, extras: SetupExtras, actions: Setup
                 // the TV is found before the first tap"); pinned like S3's safety line (R4-W8 H1).
                 DiscoveryChip(line, found = found.isNotEmpty(), modifier = Modifier.padding(bottom = 14.dp))
                 ActionColumn {
-                    PrimaryButton(stringResource(R.string.welcome_start), { actions.intent(SetupIntent.Start) })
+                    PrimaryButton(stringResource(R.string.welcome_start), { actions.intent(SetupIntent.Start) }, guardObscured = false)   // navigation: Sony overlays blocked it
                     TertiaryButton(stringResource(R.string.welcome_returning), onReturning)
                 }
             },
@@ -185,7 +186,7 @@ fun PickerScreen(state: SetupState.Picker, extras: SetupExtras, actions: SetupAc
             ActionColumn {
                 PrimaryButton(
                     msg(R.string.picker_primary, "name" to (chosen?.let { displayName(it) } ?: "")),
-                    { chosen?.let { actions.intent(SetupIntent.PickTv(it.host)) } }, enabled = chosen != null,
+                    { chosen?.let { actions.intent(SetupIntent.PickTv(it.host)) } }, enabled = chosen != null, guardObscured = false,
                 )
                 TertiaryButton(stringResource(R.string.picker_tertiary), { actions.intent(SetupIntent.Open(Sheet.ADDRESS)) })
             }
@@ -215,11 +216,15 @@ fun DoorScreen(state: SetupState.OpenDoor, extras: SetupExtras, actions: SetupAc
     val name = extras.tvName ?: state.tv.friendlyName ?: state.tv.model ?: extras.identity?.model ?: state.tv.host.ifEmpty { null }
     var showNotSeen by rememberSaveable { mutableStateOf(false) }
     var brandsOpen by rememberSaveable { mutableStateOf(state.family == Families.UNKNOWN) }
+    var manualVisible by rememberSaveable(state.tv.host) { mutableStateOf(false) }
+    LaunchedEffect(state.tv.host, state.phase, state.step) {
+        if (state.phase == DoorPhase.STEPS) { delay(MANUAL_ENTRY_AFTER_MS); manualVisible = true }
+    }
     // S2c has no primary, only the way out; S2d asks the identity question with Yes and No.
     val allowBar: @Composable ColumnScope.() -> Unit = { SecondaryButton(stringResource(R.string.allow_dont_see), { showNotSeen = true }) }
     val identityBar: @Composable ColumnScope.() -> Unit = {
         ActionColumn {
-            PrimaryButton(stringResource(R.string.identity_yes), { actions.intent(SetupIntent.ConfirmIdentity) })
+            PrimaryButton(stringResource(R.string.identity_yes), { actions.intent(SetupIntent.ConfirmIdentity) }, guardObscured = false)
             SecondaryButton(stringResource(R.string.identity_no), { actions.intent(SetupIntent.RejectIdentity) })
         }
     }
@@ -244,6 +249,7 @@ fun DoorScreen(state: SetupState.OpenDoor, extras: SetupExtras, actions: SetupAc
             }
             DoorPhase.STEPS, DoorPhase.CONNECTING -> {
                 StepsContent(state, actions, name, brandsOpen, onBrands = { brandsOpen = !brandsOpen })
+                if (manualVisible) ManualAddressContent { ip, port, code -> actions.intent(SetupIntent.EnterAddress(ip, port, code)) }
                 NotThisTv(state, actions)
             }
         }
@@ -255,6 +261,29 @@ fun DoorScreen(state: SetupState.OpenDoor, extras: SetupExtras, actions: SetupAc
             NotSeenContent(extras.allowRetries, onAsk = { actions.intent(SetupIntent.AskTvAgain); showNotSeen = false })
         }
     }
+}
+
+@Composable
+private fun ManualAddressContent(onSubmit: (String, Int, String?) -> Unit) {
+    var ip by rememberSaveable { mutableStateOf("") }; var port by rememberSaveable { mutableStateOf("5555") }; var code by rememberSaveable { mutableStateOf("") }
+    var attempted by rememberSaveable { mutableStateOf(false) }
+    val valid = validManualAddress(ip, port)
+    TertiaryButton(stringResource(R.string.manual_entry), { attempted = true }, Modifier.padding(top = 8.dp))
+    if (attempted) {
+        CytTextField(ip, { ip = it.filter { c -> c.isDigit() || c == '.' }.take(15) }, stringResource(R.string.address_field_label), Modifier.padding(top = 8.dp), keyboardType = KeyboardType.Decimal)
+        CytTextField(port, { port = it.filter(Char::isDigit).take(5) }, stringResource(R.string.manual_port), Modifier.padding(top = 8.dp), keyboardType = KeyboardType.Number)
+        CytTextField(code, { code = it.filter(Char::isDigit).take(6) }, stringResource(R.string.pairing_code_label), Modifier.padding(top = 8.dp), keyboardType = KeyboardType.Number)
+        PrimaryButton(stringResource(R.string.address_connect), { if (valid) onSubmit(ip.trim(), port.toInt(), code.ifBlank { null }) }, Modifier.padding(top = 8.dp), enabled = valid, guardObscured = false)
+    }
+}
+
+// 2.0 item 2: offer typing the address once the TV has had a fair chance to show up.
+internal const val MANUAL_ENTRY_AFTER_MS = 8_000L
+
+internal fun validManualAddress(ip: String, port: String): Boolean {
+    val octets = ip.trim().split('.')
+    val p = port.toIntOrNull() ?: return false
+    return octets.size == 4 && octets.all { it.isNotEmpty() && it.toIntOrNull() in 0..255 } && p in 1..65535
 }
 
 // Start goes straight to the one device discovery found, which may not be the TV (emulator run,
@@ -324,19 +353,14 @@ private fun StepsContent(state: SetupState.OpenDoor, actions: SetupActions, name
         Modifier.padding(top = 4.dp),
     )
     if (showTizenGuide) {
-        CytBottomSheet({ showTizenGuide = false }) {
-            SheetHeader(stringResource(R.string.door_tizen_webos_title))
-            Body(stringResource(R.string.door_tizen_webos_body), Modifier.padding(top = 12.dp))
-            MonospaceBlock(listOf("DNS 1: 94.140.14.14", "DNS 2: 94.140.15.15"), Modifier.padding(top = 12.dp))
-            PrimaryButton(stringResource(R.string.action_ok), { showTizenGuide = false }, Modifier.padding(top = 16.dp))
-        }
+        CytBottomSheet({ showTizenGuide = false }) { SmartTvHelperContent(onDone = { showTizenGuide = false }) }
     }
     if (showChineseGuide) {
         CytBottomSheet({ showChineseGuide = false }) {
             SheetHeader(stringResource(R.string.door_chinese_tv_title))
             Body(stringResource(R.string.door_chinese_tv_body), Modifier.padding(top = 12.dp))
             MonospaceBlock(listOf("Menu + 2580", "Source + 2580", "Menu + 1147", "Home + 1999"), Modifier.padding(top = 12.dp))
-            PrimaryButton(stringResource(R.string.action_ok), { showChineseGuide = false }, Modifier.padding(top = 16.dp))
+            PrimaryButton(stringResource(R.string.action_ok), { showChineseGuide = false }, Modifier.padding(top = 16.dp), guardObscured = false)
         }
     }
 }
@@ -399,12 +423,12 @@ internal fun NotSeenContent(retries: Int, onAsk: () -> Unit) {
     SheetHeader(stringResource(R.string.notseen_title))
     if (retries >= 3) {
         Body(stringResource(R.string.notseen_restart), Modifier.padding(top = 12.dp))
-        PrimaryButton(stringResource(R.string.notseen_restarted), onAsk, Modifier.padding(top = 20.dp))
+        PrimaryButton(stringResource(R.string.notseen_restarted), onAsk, Modifier.padding(top = 20.dp), guardObscured = false)
     } else {
         Body(stringResource(R.string.notseen_hidden), Modifier.padding(top = 12.dp))
         Body(stringResource(R.string.notseen_cancelled), Modifier.padding(top = 12.dp))
         Body(stringResource(R.string.notseen_greyed), Modifier.padding(top = 12.dp))
-        PrimaryButton(stringResource(R.string.notseen_ask_again), onAsk, Modifier.padding(top = 20.dp))
+        PrimaryButton(stringResource(R.string.notseen_ask_again), onAsk, Modifier.padding(top = 20.dp), guardObscured = false)
     }
 }
 
@@ -412,8 +436,8 @@ internal fun NotSeenContent(retries: Int, onAsk: () -> Unit) {
 @Composable
 fun PairingScreen(state: SetupState.PairingNeeded, extras: SetupExtras, actions: SetupActions, modifier: Modifier = Modifier) {
     var steps by rememberSaveable { mutableStateOf(false) }
-    var pairPort by rememberSaveable(state.tv.host) { mutableStateOf("") }
-    var pairCode by rememberSaveable(state.tv.host) { mutableStateOf("") }
+    var pairPort by rememberSaveable(state.tv.host) { mutableStateOf(state.pairingPort) }
+    var pairCode by rememberSaveable(state.tv.host) { mutableStateOf(state.pairingCode) }
     val host = state.tv.host.ifBlank { "192.168.1.50" }
     val portDisplay = pairPort.ifBlank { "37123" }
     val codeDisplay = pairCode.ifBlank { "123456" }
@@ -484,5 +508,5 @@ internal fun AddressContent(text: String, onText: (String) -> Unit, error: Boole
         text, onText, stringResource(R.string.address_field_label), Modifier.padding(top = 16.dp),
         error = if (error) stringResource(R.string.address_error) else null, keyboardType = KeyboardType.Decimal,
     )
-    PrimaryButton(stringResource(R.string.address_connect), onConnect, Modifier.padding(top = 16.dp), enabled = text.count { it == '.' } == 3)
+    PrimaryButton(stringResource(R.string.address_connect), onConnect, Modifier.padding(top = 16.dp), enabled = text.count { it == '.' } == 3, guardObscured = false)
 }

@@ -274,6 +274,29 @@ class ManageMachinesTest {
         assertFalse(undo.removeLauncher)
     }
 
+    @Test fun oneTapReSetupSwitchesOffWhatCameBackWithoutASecondTap() = runTest(timeout = 30.seconds) {
+        val h = Harness()
+        val tv = h.knownTv()
+        h.ranDisable(tv, listOf(adPkg))
+        h.respond(PlanKind.LEFTOVERS, listOf(Op.Disable(adPkg)))
+        val m = LeftoversMachine(h.manageDeps(), backgroundScope, tv.id, auto = true)
+        settle()
+        assertEquals(LeftoversState.Done(1), m.state.value)
+    }
+
+    @Test fun oneTapFullRestoreOpensOnTheConfirmationAndRunsOnlyAfterIt() = runTest(timeout = 30.seconds) {
+        val h = Harness()
+        val tv = h.knownTv()
+        h.ranDisable(tv, listOf(adPkg))
+        h.respond(PlanKind.UNDO_EVERYTHING, listOf(Op.Enable(adPkg)))
+        val m = RestorePointMachine(h.manageDeps(), backgroundScope, tv.id, auto = true)
+        settle()
+        assertTrue(assertIs<RestorePhase.Preview>(m.state.value.phase).confirming)
+        assertTrue(h.engine.calls.none { it is FakeEngine.Call.Start })
+        m.dispatch(RestorePointIntent.PutEverythingBack); settle()
+        assertIs<RestorePhase.Finished>(m.state.value.phase)
+    }
+
     @Test fun saveACopyAsksForADocumentAndWritesTheBundle() = runTest(timeout = 30.seconds) {
         val h = Harness()
         val tv = h.knownTv()
@@ -452,6 +475,44 @@ class ManageMachinesTest {
         m.dispatch(ModulesIntent.Add("retro")); settle()
         assertEquals(FetchFailure.SIGNER_MISMATCH, assertIs<InstallStep.Failed>(m.state.value.install).fetch)
         assertTrue(h.planner.requests.none { it is PlanRequest.AddModule })
+    }
+
+    // 1.6.1 repro of "can't add a modules card, I don't know why": a refused AddModule plan showed
+    // InstallStep.Failed(name, null), i.e. "couldn't be installed" with an empty reason.
+    @Test fun aRefusedAddSaysWhy() = runTest(timeout = 30.seconds) {
+        val h = Harness()
+        val apk = "retro apk bytes".encodeToByteArray()
+        val signer = sha256Of("signer".encodeToByteArray())
+        val ref = ArtifactRef("https://github.com/x/retro.apk", apk.size.toLong(), sha256Of(apk), signer)
+        val version = ModuleVersion(1, "0.1.0", "2026-10-03", ref, emptyList(), "", 21, emptyList(), emptyList())
+        val retro = Module("retro", "Retro", "NES", "A card", PackageName("io.github.example.retro"), "card", Tier.COMMUNITY,
+            "example", "https://github.com/example/retro", "MIT", null, null, listOf(version))
+        h.registry.onRefresh = { IndexState.Ready(VerifiedIndex(1, Long.MAX_VALUE, listOf(retro), emptyList()), stale = false, fetchedAtMs = 0) }
+        h.inspector = FakeApkInspector(mapOf(sha256Of(apk) to ApkInfo(retro.pkg, 1, "0.1.0", signer, sha256Of(apk), apk.size.toLong(), "test")))
+        h.planner.respond = { _, _ -> PlanResult.Refused(listOf("Retro is already on the TV, installed with another key")) }
+        val tv = h.knownTv()
+        val m = ModulesMachine(h.manageDeps(FakeArtifactFetcher(h.blobs, mapOf(ref.url to apk))), backgroundScope, tv.id)
+        settle()
+        m.dispatch(ModulesIntent.Add("retro")); settle()
+        val failed = assertIs<InstallStep.Failed>(m.state.value.install)
+        assertEquals(InstallBlock.REFUSED, failed.why)
+        assertTrue(failed.detail!!.contains("another key"))
+    }
+
+    @Test fun aModuleTheTvCannotRunSaysWhyInsteadOfOpeningNothing() = runTest(timeout = 30.seconds) {
+        val h = Harness()
+        val ref = ArtifactRef("https://github.com/x/retro.apk", 3, sha256Of("abc".encodeToByteArray()), sha256Of("s".encodeToByteArray()))
+        val version = ModuleVersion(1, "0.1.0", "2026-10-03", ref, emptyList(), "", 99, emptyList(), emptyList())
+        val retro = Module("retro", "Retro", "NES", "A card", PackageName("io.github.example.retro"), "card", Tier.COMMUNITY,
+            "example", "https://github.com/example/retro", "MIT", null, null, listOf(version))
+        h.registry.onRefresh = { IndexState.Ready(VerifiedIndex(1, Long.MAX_VALUE, listOf(retro), emptyList()), stale = false, fetchedAtMs = 0) }
+        val tv = h.knownTv()
+        val m = ModulesMachine(h.manageDeps(), backgroundScope, tv.id)
+        settle()
+        m.dispatch(ModulesIntent.Open("retro")); settle()
+        assertEquals(InstallBlock.NOT_COMPATIBLE, assertIs<InstallStep.Failed>(m.state.value.install).why)
+        m.dispatch(ModulesIntent.Add("retro")); settle()
+        assertEquals(InstallBlock.NOT_COMPATIBLE, assertIs<InstallStep.Failed>(m.state.value.install).why)
     }
 
     @Test fun gateKeeperCachesForTenMinutesPerTv() = runTest(timeout = 30.seconds) {
@@ -994,6 +1055,27 @@ class ManageMachinesTest {
         assertNull(m.state.value.notOnTv, "after installation, notOnTv is null and Dock/Look are active")
         assertTrue(m.state.value.homeScreenOurs)
         assertNotNull(h.tvs.tvs.value.single { it.id == tv.id }.launcher)
+    }
+
+    @Test fun installAllSkipsWhatIsThereAndSaysWhenAnApkIsMissing() = runTest(timeout = 30.seconds) {
+        val h = Harness()
+        val tv = h.knownTv()
+        for ((_, pkg) in MI5G_TV_APPS) h.session.recording.on("'pm' 'path' '$pkg'", "package:/data/app/$pkg/base.apk\n")
+        val tools = TvToolsMachine(h.manageDeps(), backgroundScope, tv.id)
+        settle()
+        tools.dispatch(TvToolsIntent.InstallAllMi5gApps)
+        settle()
+        assertEquals(PowerToolStatus.Done("@install_all"), tools.state.value.powerToolStatus)
+        assertTrue(h.session.execLines.none { "'install'" in it })
+
+        val h2 = Harness()
+        val tv2 = h2.knownTv()
+        val t2 = TvToolsMachine(h2.manageDeps(), backgroundScope, tv2.id)
+        settle()
+        t2.dispatch(TvToolsIntent.InstallAllMi5gApps)
+        settle()
+        val st = t2.state.value.powerToolStatus
+        assertTrue(st is PowerToolStatus.Failed && st.label == "@install_all", "$st")
     }
 
     @Test fun speedBoostQuickCastAndTvAppManagerWorkEndToEnd() = runTest(timeout = 30.seconds) {

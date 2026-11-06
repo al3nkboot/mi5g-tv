@@ -19,13 +19,13 @@ class ProfilesTest {
     private val unconvertedFile = File(Fixtures.repoRoot, "core/spec/upstream-feedback/unconverted.txt")
     private val unconverted = ProfileConverter.readUnconverted(unconvertedFile)
     private val upstream = Fixtures.upstreamExamples()
-    private val examples = upstream.filter { it.folder !in unconverted }
+    private val examples = (upstream + Fixtures.mi5gExamples()).filter { it.folder !in unconverted }.sortedBy { it.folder }
     private fun p(s: String) = PackageName(s)
     private fun profile(folder: String) = DebloatTxtParser.parse(examples.first { it.folder == folder }.debloatTxt, folder)
 
     @Test fun everyConvertedUpstreamExampleParsesWithCuratedMetadata() {
-        assertEquals(154, upstream.size)
-        assertEquals(138, examples.size)
+        assertEquals(154, upstream.size)   // pinned upstream; the 2 Mi5G lists live in core/spec/mi5g-examples
+        assertEquals(140, examples.size)
         for (e in examples) {
             val profile = DebloatTxtParser.parse(e.debloatTxt, e.folder)
             assertEquals(e.folder, profile.id)
@@ -50,6 +50,7 @@ class ProfilesTest {
             File(Fixtures.repoRoot, "core/spec/src/main/resources/tv/cleanyour/core/spec/profile-meta.json"),
             "9071ec8",
             unconverted,
+            Fixtures.mi5gExamplesDir,
         )
         assertEquals(emptyList(), problems)
         assertEquals(examples.map { it.folder }, bundle.profiles.map { it.id })
@@ -66,10 +67,10 @@ class ProfilesTest {
         assertTrue('\u2014' !in unconvertedFile.readText() && "-".repeat(2) !in unconvertedFile.readText())
         // A folder nobody lists or curates is a problem, and so is a stale or doubled line.
         val (_, missing) = ProfileConverter.convert(File(Fixtures.upstreamDir, "examples"),
-            File(Fixtures.repoRoot, "core/spec/src/main/resources/tv/cleanyour/core/spec/profile-meta.json"), "x", unconverted - unconverted.first())
+            File(Fixtures.repoRoot, "core/spec/src/main/resources/tv/cleanyour/core/spec/profile-meta.json"), "x", unconverted - unconverted.first(), Fixtures.mi5gExamplesDir)
         assertEquals(listOf("${unconverted.first()}: no entry in profile-meta.json"), missing)
         val (_, stale) = ProfileConverter.convert(File(Fixtures.upstreamDir, "examples"),
-            File(Fixtures.repoRoot, "core/spec/src/main/resources/tv/cleanyour/core/spec/profile-meta.json"), "x", unconverted + "gone-tv" + "xiaomi-mitv-axso0")
+            File(Fixtures.repoRoot, "core/spec/src/main/resources/tv/cleanyour/core/spec/profile-meta.json"), "x", unconverted + "gone-tv" + "xiaomi-mitv-axso0", Fixtures.mi5gExamplesDir)
         assertEquals(setOf("gone-tv: in unconverted.txt but not upstream", "xiaomi-mitv-axso0: in both unconverted.txt and profile-meta.json"), stale.toSet())
     }
 

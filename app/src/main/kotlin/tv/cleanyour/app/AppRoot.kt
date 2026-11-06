@@ -23,6 +23,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -56,6 +58,7 @@ import tv.cleanyour.core.flows.SnackKind
 import tv.cleanyour.core.flows.StartDestination
 import tv.cleanyour.core.flows.TvToolsIntent
 import tv.cleanyour.core.flows.TvWriter
+import tv.cleanyour.core.flows.CardSize
 import tv.cleanyour.core.model.PlanId
 import tv.cleanyour.core.model.TvId
 import tv.cleanyour.feature.backup.RestoreScreen
@@ -72,8 +75,12 @@ import tv.cleanyour.feature.manage.SwitchedOffScreen
 import tv.cleanyour.feature.manage.TvSettingsScreen
 import tv.cleanyour.feature.manage.TvAppManagerScreen
 import tv.cleanyour.feature.manage.TvToolsScreen
+import tv.cleanyour.core.flows.Releases
+import tv.cleanyour.feature.manage.RemoteScreen
+import tv.cleanyour.core.flows.RemoteIntent
 import tv.cleanyour.feature.modules.ModulesFlow
 import tv.cleanyour.feature.setup.SetupFlow
+import tv.cleanyour.ui.design.theme.LocalCardScale
 
 // Navigation 3 keys (ARCHITECTURE 2.2): serializable, ids only, never payloads, so the back stack
 // itself survives process death and every screen rebuilds its state from disk.
@@ -81,12 +88,13 @@ import tv.cleanyour.feature.setup.SetupFlow
     @Serializable data class Setup(val tvId: String? = null, val planId: String? = null) : Dest
     @Serializable data class Manage(val tvId: String? = null) : Dest
     @Serializable data class SwitchedOff(val tvId: String) : Dest
-    @Serializable data class Leftovers(val tvId: String) : Dest
+    @Serializable data class Leftovers(val tvId: String, val auto: Boolean = false) : Dest
     @Serializable data class Home(val tvId: String) : Dest
     @Serializable data class Modules(val tvId: String) : Dest
-    @Serializable data class Restore(val tvId: String) : Dest
+    @Serializable data class Restore(val tvId: String, val auto: Boolean = false) : Dest
     @Serializable data class TvSettings(val tvId: String) : Dest
     @Serializable data class TvTools(val tvId: String) : Dest
+    @Serializable data class Remote(val tvId: String) : Dest
     @Serializable data class TvApps(val tvId: String) : Dest
     @Serializable data object AppSettings : Dest
     // 0.3.2 B1, B2: the report preview; kind is ReportKind.key ("tv" or "problem").
@@ -118,8 +126,11 @@ internal fun applyRoute(stack: MutableList<NavKey>, route: String, noTvs: Boolea
         "switchedoff" -> id?.let { Dest.SwitchedOff(it) }
         "leftovers" -> id?.let { Dest.Leftovers(it) }
         "restore" -> id?.let { Dest.Restore(it) }
+        "fullrestore" -> id?.let { Dest.Restore(it, auto = true) }
+        "resetup" -> id?.let { Dest.Leftovers(it, auto = true) }
         "tvsettings" -> id?.let { Dest.TvSettings(it) }
         "tools" -> id?.let { Dest.TvTools(it) }
+        "remote" -> id?.let { Dest.Remote(it) }
         "apps" -> id?.let { Dest.TvApps(it) }
         "appsettings" -> Dest.AppSettings
         "report" -> id?.let { k -> ReportKind.of(k) }?.let { k -> if (k == ReportKind.TV && parts.getOrNull(2) == null) null else Dest.Report(k.key, parts.getOrNull(2)) }
@@ -171,6 +182,9 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
     val context = LocalContext.current
     val view = LocalView.current
     val scope = rememberCoroutineScope()
+    var cardScale by remember { mutableStateOf(CardSize.MEDIUM.scale) }
+    // Re-read on every navigation so a size picked in Settings applies when the person goes back.
+    LaunchedEffect(graph, backStack.size) { cardScale = graph.manageDeps.appPrefs.load().cardSize.scale }
 
     fun go(route: String) { if (!applyRoute(backStack, route, noTvs = graph.tvs.tvs.value.isEmpty(), addOns = graph.store.rules.addOns)) onExit() }
 
@@ -225,7 +239,7 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
     }
 
     Box(Modifier.fillMaxSize()) {
-        NavDisplay(
+        androidx.compose.runtime.CompositionLocalProvider(LocalCardScale provides cardScale) { NavDisplay(
             backStack = backStack,
             onBack = { if (backStack.size > 1) backStack.removeAt(backStack.lastIndex) else onExit() },
             entryDecorators = listOf(rememberSaveableStateHolderNavEntryDecorator(), rememberViewModelStoreNavEntryDecorator()),
@@ -261,7 +275,7 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
                     SwitchedOffScreen(state, m::dispatch, onBack = { go("back") })
                 }
                 entry<Dest.Leftovers> { key ->
-                    val m = rememberMachine("left:${key.tvId}") { graph.leftovers(it, TvId(key.tvId)) }
+                    val m = rememberMachine("left:${key.tvId}:${key.auto}") { graph.leftovers(it, TvId(key.tvId), key.auto) }
                     val state by m.state.collectAsStateWithLifecycle()
                     LaunchedEffect(m) { m.effects.collect { onManageEffect(it) } }
                     LeftoversScreen(state, m::dispatch, onBack = { go("back") })
@@ -279,7 +293,7 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
                     ModulesFlow(state, m::dispatch, onBack = { go("back") }, onOpenUrl = { url -> scope.launch { onManageEffect(ManageEffect.OpenUrl(url)) } })
                 }
                 entry<Dest.Restore> { key ->
-                    val m = rememberMachine("restore:${key.tvId}") { graph.restorePoint(it, TvId(key.tvId)) }
+                    val m = rememberMachine("restore:${key.tvId}:${key.auto}") { graph.restorePoint(it, TvId(key.tvId), key.auto) }
                     val state by m.state.collectAsStateWithLifecycle()
                     val create = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/zip")) { uri ->
                         if (uri != null) scope.launch {
@@ -332,7 +346,13 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
                             )
                         }
                     }
-                    TvToolsScreen(state, m::dispatch, onBack = { go("back") })
+                    TvToolsScreen(state, m::dispatch, onBack = { go("back") }, onRemote = { go("remote/${key.tvId}") })
+                }
+                entry<Dest.Remote> { key ->
+                    val m = rememberMachine("remote:${key.tvId}") { graph.remote(it, TvId(key.tvId)) }
+                    val state by m.state.collectAsStateWithLifecycle()
+                    LaunchedEffect(m) { m.effects.collect { onManageEffect(it) } }
+                    RemoteScreen(state, m::dispatch, onBack = { go("back") })
                 }
                 entry<Dest.TvApps> { key ->
                     val m = rememberMachine("apps:${key.tvId}") { graph.tvApps(it, TvId(key.tvId)) }
@@ -352,11 +372,20 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
                     val state by m.state.collectAsStateWithLifecycle()
                     LaunchedEffect(m) { m.effects.collect { onManageEffect(it) } }
                     SecureWindow(state.confirm == AppConfirm.RESET_KEY)
+                    var updateInstallBlocked by remember { mutableStateOf(false) }
                     AppSettingsScreen(
                         state, m::dispatch, onBack = { go("back") },
                         onOpenRelease = { graph.store.releasePage?.let { url -> scope.launch { onManageEffect(ManageEffect.OpenUrl(url)) } } },
                         onSupportPayPal = { scope.launch { onManageEffect(ManageEffect.OpenUrl("https://paypal.me/Midroid5G")) } },
                         onOpenDeveloper = { scope.launch { onManageEffect(ManageEffect.OpenUrl("https://x.com/midroid5G")) } },
+                        onUpdateNow = graph.store.releasePage?.let { _ ->
+                            { v: String ->
+                                // 2.0.2: no install screen on this device (many TV boxes): say so instead of silence.
+                                if (!UpdateInstall.possible(context)) updateInstallBlocked = true
+                                else scope.launch { onManageEffect(ManageEffect.OpenUrl(Releases.apkUrlFor(v))) }
+                            }
+                        },
+                        updateInstallBlocked = updateInstallBlocked,
                         language = ArabicLocale.choice(context),
                         onLanguage = { lang ->
                             if (lang != ArabicLocale.choice(context)) {
@@ -368,7 +397,7 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
                     )
                 }
             },
-        )
+        ) }
         // R5-W8 O2: a Manage write that paused left its run open; carry on, undo or stop it here.
         val open by graph.manageDeps.openWrites.current.collectAsStateWithLifecycle()
         open?.let { w ->

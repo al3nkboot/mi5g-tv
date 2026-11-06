@@ -18,6 +18,7 @@ object Denylist {
     const val FRAMEWORK = "android"
 
     val exact: Map<String, String> = linkedMapOf(
+        "com.tcl.exhibit" to "it is TCL art mode and must remain available",
         FRAMEWORK to "it is the Android framework itself",
         "com.android.systemui" to "it draws the TV's status bar, dialogs and system UI",
         "com.android.settings" to "it is the TV's Settings app",
@@ -46,6 +47,14 @@ object Denylist {
         "com.google.android.gms" to "it is Google Play services",
         "com.google.android.gsf" to "it is Google Play services",
         "com.android.vending" to "it is the Play Store",
+        // Android 14 SDK Runtime: a TCL TV hung on the boot logo with it switched off.
+        "com.android.sdksandbox" to "it is the Android 14 SDK sandbox the TV needs to start",
+        "com.google.android.sdksandbox" to "it is the Android 14 SDK sandbox the TV needs to start",
+        "com.android.adservices.api" to "it is a core Android service the SDK sandbox needs",
+        "com.google.android.adservices.api" to "it is a core Android service the SDK sandbox needs",
+        // 2.0.1: CTV / MediaTek generic boxes (GAORUI m7332): the stock home and boot app; it also
+        // starts the TV's inputs at boot, so it is never switched off on an unknown model.
+        "com.ctv.android.tvboot" to "it is the TV's own home and boot app on CTV / MediaTek boxes",
     )
 
     val prefixes: Map<String, String> = linkedMapOf(

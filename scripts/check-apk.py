@@ -3,7 +3,7 @@
 
 Runs aapt2 and apksigner from the build tools (and jarsigner and keytool from the JDK for an AAB)
 and checks:
-  - package tv.cleanyour.app, minSdkVersion 28, targetSdkVersion 36, and, when given, the
+  - package com.midroid.mi5gtv, minSdkVersion 28, targetSdkVersion 36, and, when given, the
     versionCode and versionName;
   - not debuggable, not testOnly, allowBackup false, no cleartext traffic, a network security
     config;
@@ -43,7 +43,7 @@ import sys
 import tempfile
 import zipfile
 
-PACKAGE = "tv.cleanyour.app"
+PACKAGE = "com.midroid.mi5gtv"   # Mi5G applicationId (AndroidConventionPlugins)
 MIN_SDK = 28
 TARGET_SDK = 36
 D16 = {

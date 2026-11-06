@@ -1,0 +1,266 @@
+<!doctype html>
+<!-- Mi5G 2.0.1: the phone page served by ArrangeServer on the TV (local network, token in the address). -->
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Mi5G TV · ترتيب الشاشة الرئيسية</title>
+<style>
+@font-face { font-family: Cairo; src: url("cairo.ttf"); }
+:root { --teal:#0E4D48; --deep:#0B1F1E; --card:#12302E; --gold:#D4AF37; --mint:#7FE3D6; --text:#F2F5F4; --dim:#A9BDBA; }
+* { box-sizing: border-box; }
+body { margin:0; font-family: Cairo, system-ui, sans-serif; background: var(--deep); color: var(--text); }
+header { position: sticky; top:0; z-index:5; background: linear-gradient(135deg, var(--teal), var(--deep)); padding: 14px 16px 8px; border-bottom: 1px solid #ffffff1a; }
+h1 { margin:0; font-size: 20px; color: var(--gold); }
+.sub { color: var(--dim); font-size: 13px; }
+nav { display:flex; gap:6px; overflow-x:auto; padding: 10px 0 4px; }
+nav button { flex: none; }
+button, select, input[type=text] { font-family: inherit; font-size: 15px; }
+button { background: var(--card); color: var(--text); border: 1px solid #ffffff22; border-radius: 12px; padding: 8px 14px; }
+button.on, button.primary { background: var(--gold); color: #1b1505; border-color: var(--gold); font-weight: 700; }
+main { padding: 12px 12px 96px; }
+section { display:none; } section.show { display:block; }
+.row { display:flex; align-items:center; gap:10px; background: var(--card); border-radius: 14px; padding: 8px; margin-bottom: 8px; touch-action: pan-y; }
+.row.drag { outline: 2px solid var(--gold); opacity: .85; }
+.row img { width: 96px; height: 54px; border-radius: 8px; object-fit: cover; background:#000; flex:none; }
+.grow { flex:1; min-width:0; display:flex; flex-direction:column; gap:6px; }
+.grow input[type=text], select { width:100%; background:#0B1F1E; color: var(--text); border:1px solid #ffffff26; border-radius: 10px; padding: 6px 10px; }
+.tools { display:flex; gap:6px; flex-wrap: wrap; }
+.tools button { padding: 4px 10px; font-size: 13px; }
+.handle { font-size: 22px; color: var(--gold); padding: 0 6px; cursor: grab; user-select:none; touch-action:none; }
+.hidden { opacity: .45; }
+.grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(140px,1fr)); gap:10px; }
+.wp { height: 84px; border-radius: 12px; border: 2px solid transparent; display:flex; align-items:end; padding:6px; font-size: 13px; background-size: cover; }
+.wp.on { border-color: var(--gold); }
+.opt { background: var(--card); border-radius: 14px; padding: 10px; margin-bottom: 10px; }
+.opt h3 { margin: 0 0 8px; font-size: 15px; color: var(--mint); }
+.choices { display:flex; gap:6px; flex-wrap:wrap; }
+footer { position: fixed; bottom:0; left:0; right:0; display:flex; gap:8px; padding: 10px 12px; background:#0B1F1Eee; border-top:1px solid #ffffff1a; }
+footer .primary { flex:1; }
+#toast { position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%); background: var(--gold); color:#1b1505; padding: 8px 16px; border-radius: 12px; display:none; font-weight:700; }
+.note { color: var(--dim); font-size: 13px; margin: 4px 2px 10px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>ترتيب الشاشة الرئيسية</h1>
+  <div class="sub">Mi5G TV · يعمل على شبكتك المنزلية فقط، ويتوقف عند إغلاق الشاشة على التلفاز</div>
+  <nav>
+    <button data-tab="tiles" class="on">التطبيقات</button>
+    <button data-tab="folders">المجلدات</button>
+    <button data-tab="inputs">المداخل</button>
+    <button data-tab="wallpaper">الخلفية</button>
+    <button data-tab="look">الشكل</button>
+    <button data-tab="message">رسالة شاشة التوقف</button>
+    <button data-tab="weather">موقع الطقس</button>
+    <button data-tab="files">نقل الملفات</button>
+  </nav>
+</header>
+<main>
+  <section id="tiles" class="show">
+    <p class="note">اسحب ☰ لتغيير الترتيب، أو استخدم ▲ ▼. غيّر الاسم أو الصورة، أو أخفِ التطبيق من الرئيسية (لا يُحذف).</p>
+    <div id="tileList"></div>
+  </section>
+  <section id="folders">
+    <p class="note">أنشئ مجلدًا ثم اختره لأي تطبيق في قائمة التطبيقات.</p>
+    <div id="folderList"></div>
+    <button id="addFolder">+ مجلد جديد</button>
+  </section>
+  <section id="inputs">
+    <p class="note">ثبّت أي مدخل (HDMI وغيره) كبطاقة في الرئيسية، باسم الجهاز الذي يعرفه التلفاز أو باسم تكتبه.</p>
+    <div id="inputList"></div>
+  </section>
+  <section id="wallpaper">
+    <div class="grid" id="wpGrid"></div>
+    <p class="note">أرسل صورة أو فيديو (MP4) من هاتفك ليكون خلفية.</p>
+    <input type="file" id="wpFile" accept="image/jpeg,image/png,image/webp,video/mp4">
+  </section>
+  <section id="look">
+    <div id="opts"></div>
+  </section>
+  <section id="message">
+    <h2>رسالة شاشة التوقف</h2><p class="note">سطران من اختيارك، يظهران على شاشة الساعة والمدينة.</p>
+    <div class="opt"><label>السطر الأول <input type="text" id="line1" maxlength="40"></label></div>
+    <div class="opt"><label>السطر الثاني <input type="text" id="line2" maxlength="40"></label></div>
+    <button id="saveMessage">حفظ الرسالة</button>
+    <h2>ساعات الهدوء</h2><p class="note">تُعتّم شاشة التوقف فقط. الوقت حسب ساعة التلفاز.</p>
+    <div class="opt"><label><input type="checkbox" id="quietOn"> تفعيل التعتيم</label><br>
+      <label>من <input type="time" id="quietStart" value="23:00"></label>
+      <label>إلى <input type="time" id="quietEnd" value="07:00"></label></div>
+    <button id="saveQuiet">حفظ ساعات الهدوء</button>
+  </section>
+  <section id="weather"><h2>موقع الطقس</h2><p class="note">الأولوية لمدينتك ثم مدينة الصلاة ثم موقع IP تقريبي أسبوعي. الطقس من Open-Meteo والبديل MET Norway.</p>
+    <div class="opt"><label>مدينة الطقس <input id="weatherCity" type="text" maxlength="40" placeholder="مسقط"></label><div id="weatherNear" class="note"></div></div>
+    <label><input type="checkbox" id="weatherAuto"> السماح بالموقع التقريبي من IP</label><br><button id="saveWeather">حفظ الموقع</button><button id="clearWeather">إزالة المدينة المحددة</button>
+  </section>
+  <section id="files"><h2>نقل الملفات</h2><p class="note">على الشبكة نفسها فقط. الحد 64 ميغابايت للملف. يُحفظ في Downloads/Mi5G. لا تُثبّت ملفات APK تلقائيًا. أغلق شاشة QR على التلفاز لإيقاف النقل.</p>
+    <div class="opt"><label>من الهاتف إلى التلفاز <input type="file" id="transferFile"></label><button id="uploadFile">إرسال الملف</button></div>
+    <h3>الملفات المستلمة / من التلفاز للهاتف</h3><p class="note">لمشاركة ملف آخر، اختره بزر «اختر ملفًا من التلفاز للهاتف» على شاشة QR.</p><button id="refreshFiles">تحديث القائمة</button><div id="fileList"></div>
+  </section>
+</main>
+<footer>
+  <button class="primary" id="save">حفظ على التلفاز</button>
+  <button id="stop">إنهاء</button>
+</footer>
+<div id="toast"></div>
+<input type="file" id="iconFile" accept="image/*" hidden>
+<script>
+"use strict";
+let S = null, iconFor = null;
+const $ = (q) => document.querySelector(q);
+const el = (t, a = {}, ...kids) => { const e = document.createElement(t); for (const k in a) { if (k === "text") e.textContent = a[k]; else if (k.startsWith("on")) e.addEventListener(k.slice(2), a[k]); else e.setAttribute(k, a[k]); } kids.forEach(k => k && e.appendChild(k)); return e; };
+function toast(t) { const x = $("#toast"); x.textContent = t; x.style.display = "block"; setTimeout(() => x.style.display = "none", 1800); }
+async function api(path, opts) { const r = await fetch(path, opts); if (!r.ok) throw new Error(r.status); return r.json(); }
+async function load() { S = await api("api/state"); render(); }
+
+document.querySelectorAll("nav button").forEach(b => b.onclick = () => {
+  document.querySelectorAll("nav button").forEach(x => x.classList.toggle("on", x === b));
+  document.querySelectorAll("section").forEach(s => s.classList.toggle("show", s.id === b.dataset.tab));
+});
+
+function render() { renderTiles(); renderFolders(); renderInputs(); renderWallpaper(); renderLook();
+ $("#line1").value=S.message.line1; $("#line2").value=S.message.line2;
+ $("#quietOn").checked=S.quietHours!=="off"; const hours=(S.quietHours==="off"?"23:00-07:00":S.quietHours).split("-"); $("#quietStart").value=hours[0]; $("#quietEnd").value=hours[1];
+ $("#weatherCity").value=S.weather.user; $("#weatherAuto").checked=S.weather.auto; $("#weatherNear").textContent=S.weather.near;
+ refreshFiles();
+}
+
+function folderSelect(t) {
+  const s = el("select", { onchange: e => { t.folder = e.target.value; } });
+  s.appendChild(el("option", { value: "", text: "بدون مجلد" }));
+  S.folders.forEach(f => { const o = el("option", { value: f.id, text: "📁 " + f.name }); if (t.folder === f.id) o.selected = true; s.appendChild(o); });
+  return s;
+}
+
+function renderTiles() {
+  const list = $("#tileList"); list.innerHTML = "";
+  S.tiles.forEach((t, i) => {
+    const img = el("img", { src: "api/tile.png?key=" + encodeURIComponent(t.key) + "&v=" + (t.v || 0), alt: "" });
+    const name = el("input", { type: "text", maxlength: "40", placeholder: t.label });
+    name.value = t.name; name.oninput = e => t.name = e.target.value;
+    const hide = el("button", { text: t.hidden ? "إظهار" : "إخفاء", onclick: () => { t.hidden = !t.hidden; renderTiles(); } });
+    const icon = el("button", { text: "تغيير الصورة", onclick: () => { iconFor = t; $("#iconFile").click(); } });
+    const tools = el("div", { class: "tools" }, hide, icon,
+      t.customIcon ? el("button", { text: "الصورة الأصلية", onclick: () => resetIcon(t) }) : null,
+      el("button", { text: "▲", "aria-label": "لأعلى", onclick: () => move(i, -1) }),
+      el("button", { text: "▼", "aria-label": "لأسفل", onclick: () => move(i, 1) }));
+    const handle = el("span", { class: "handle", text: "☰", "aria-hidden": "true" });
+    const row = el("div", { class: "row" + (t.hidden ? " hidden" : ""), "data-i": i }, handle, img, el("div", { class: "grow" }, name, folderSelect(t), tools));
+    handle.addEventListener("pointerdown", e => startDrag(e, row, i));
+    list.appendChild(row);
+  });
+}
+
+function move(i, d) { const j = i + d; if (j < 0 || j >= S.tiles.length) return; const [t] = S.tiles.splice(i, 1); S.tiles.splice(j, 0, t); renderTiles(); }
+
+function startDrag(e, row, from) {
+  e.preventDefault(); row.classList.add("drag");
+  const rows = [...document.querySelectorAll("#tileList .row")];
+  let to = from;
+  const onMove = ev => {
+    const y = ev.clientY;
+    to = rows.findIndex(r => { const b = r.getBoundingClientRect(); return y < b.top + b.height / 2; });
+    if (to < 0) to = rows.length - 1;
+    rows.forEach((r, k) => r.style.borderTop = k === to && k !== from ? "3px solid #D4AF37" : "");
+  };
+  const onUp = () => {
+    document.removeEventListener("pointermove", onMove); document.removeEventListener("pointerup", onUp);
+    if (to !== from) { const [t] = S.tiles.splice(from, 1); S.tiles.splice(to > from ? to - 1 : to, 0, t); }
+    renderTiles();
+  };
+  document.addEventListener("pointermove", onMove); document.addEventListener("pointerup", onUp);
+}
+
+$("#iconFile").onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ""; if (!f || !iconFor) return;
+  const bmp = await createImageBitmap(f);
+  const c = document.createElement("canvas"); c.width = 640; c.height = 360;
+  const g = c.getContext("2d"); const s = Math.max(640 / bmp.width, 360 / bmp.height);
+  g.drawImage(bmp, (640 - bmp.width * s) / 2, (360 - bmp.height * s) / 2, bmp.width * s, bmp.height * s);
+  const blob = await new Promise(r => c.toBlob(r, "image/png"));
+  try { await api("api/icon?pkg=" + encodeURIComponent(iconFor.pkg), { method: "POST", body: blob }); iconFor.customIcon = true; iconFor.v = Date.now(); toast("تم تغيير الصورة"); renderTiles(); }
+  catch (_) { toast("تعذّر إرسال الصورة"); }
+};
+async function resetIcon(t) { await api("api/icon/reset?pkg=" + encodeURIComponent(t.pkg), { method: "POST" }); t.customIcon = false; t.v = Date.now(); renderTiles(); }
+
+function renderFolders() {
+  const list = $("#folderList"); list.innerHTML = "";
+  S.folders.forEach((f, i) => {
+    const name = el("input", { type: "text", maxlength: "40", value: f.name }); name.oninput = e => f.name = e.target.value;
+    const count = S.tiles.filter(t => t.folder === f.id).length;
+    list.appendChild(el("div", { class: "row" }, el("span", { class: "handle", text: "📁" }), el("div", { class: "grow" }, name,
+      el("div", { class: "note", text: count + " تطبيق" })), el("button", { text: "حذف", onclick: () => { S.tiles.forEach(t => { if (t.folder === f.id) t.folder = ""; }); S.folders.splice(i, 1); render(); } })));
+  });
+}
+$("#addFolder").onclick = () => { if (S.folders.length >= 12) return; S.folders.push({ id: Math.random().toString(36).slice(2, 10), name: "مجلد " + (S.folders.length + 1), apps: [] }); render(); };
+
+function renderInputs() {
+  const list = $("#inputList"); list.innerHTML = "";
+  if (!S.tvInputs.length) list.appendChild(el("p", { class: "note", text: "لا يعرض هذا التلفاز مداخل قابلة للتثبيت." }));
+  S.tvInputs.forEach(x => {
+    const name = el("input", { type: "text", maxlength: "40", placeholder: x.label }); name.value = x.name; name.oninput = e => x.name = e.target.value;
+    const pin = el("button", { class: x.pinned ? "on" : "", text: x.pinned ? "مثبّت في الرئيسية" : "تثبيت في الرئيسية", onclick: () => { x.pinned = !x.pinned; renderInputs(); } });
+    const hide=el("button",{text:x.hiddenInMenu?"إظهار في المداخل":"إخفاء من المداخل",onclick:()=>{x.hiddenInMenu=!x.hiddenInMenu;renderInputs();}});
+    list.appendChild(el("div", { class: "row" }, el("span", { class: "handle", text: x.hdmi ? "⎚" : "⇥" }), el("div", { class: "grow" }, el("div", { text: x.label }), name), x.liveTv?null:pin,hide));
+  });
+}
+
+const BUILTIN_CSS = { "mi5g-teal.png": "linear-gradient(135deg,#0E4D48,#061514)", "mi5g-gold.png": "linear-gradient(135deg,#2A1F08,#0B1F1E)", "mi5g-night.png": "linear-gradient(135deg,#05080C,#0B1F1E)" };
+const BUILTIN_NAME = { "mi5g-teal.png": "فيروزي", "mi5g-gold.png": "ذهبي", "mi5g-night.png": "ليلي" };
+function renderWallpaper() {
+  const g = $("#wpGrid"); g.innerHTML = ""; const w = S.wallpapers;
+  const add = (id, label, bg) => g.appendChild(el("button", { class: "wp" + (w.choice === id ? " on" : ""), style: "background:" + bg, text: label, onclick: () => chooseWp(id) }));
+  add("none", "بدون خلفية", "#000");
+  add("bing", "صورة اليوم من Bing", "linear-gradient(135deg,#1d4f91,#0B1F1E)");
+  w.builtins.forEach(b => add(b, BUILTIN_NAME[b] || b, BUILTIN_CSS[b] || "#0E4D48"));
+  w.uploads.forEach((u, k) => add(u, (u.endsWith(".mp4") ? "فيديو " : "صورة ") + (k + 1) + " من الهاتف", "#12302E"));
+}
+async function chooseWp(id) { try { await api("api/wallpaper/choose?name=" + encodeURIComponent(id), { method: "POST" }); S.wallpapers.choice = id; renderWallpaper(); toast("تم تغيير الخلفية"); } catch (_) { toast("تعذّر تغيير الخلفية"); } }
+$("#wpFile").onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+  if (f.size > 80 * 1024 * 1024) { toast("الملف أكبر من 80 ميغابايت"); return; }
+  toast("جارٍ الإرسال…");
+  try { await api("api/wallpaper", { method: "POST", body: f }); await load(); toast("تم إرسال الخلفية"); } catch (_) { toast("تعذّر إرسال الملف"); }
+};
+
+const OPTS = [
+  ["columns", "عدد التطبيقات في الصف", [[0, "حسب الثيم"], [4, "4"], [5, "5"], [6, "6"]]],
+  ["rows", "عدد الصفوف تحت الشريط", [[0, "حسب الثيم"], [1, "صف واحد"], [2, "صفّان"]]],
+  ["iconSize", "حجم الأيقونات", [["s", "صغير"], ["m", "متوسط"], ["l", "كبير"]]],
+  ["clockSize", "حجم الساعة", [["s", "صغير"], ["m", "متوسط"], ["l", "كبير"]]],
+  ["clockCorner", "مكان الساعة", [["start", "الزاوية اليسرى"], ["end", "الزاوية اليمنى"]]],
+  ["names", "أسماء التطبيقات", [["focus", "عند التحديد"], ["always", "دائمًا"], ["never", "مخفية"]]],
+  ["focus", "شكل التحديد", [["scale", "تكبير"], ["border", "إطار ذهبي"], ["glow", "تكبير مع إطار"]]],
+];
+function renderLook() {
+  const box = $("#opts"); box.innerHTML = "";
+  OPTS.forEach(([k, title, vals]) => {
+    const c = el("div", { class: "choices" });
+    vals.forEach(([v, l]) => c.appendChild(el("button", { class: S.options[k] === v ? "on" : "", text: l, onclick: () => { S.options[k] = v; renderLook(); } })));
+    box.appendChild(el("div", { class: "opt" }, el("h3", { text: title }), c));
+  });
+}
+
+$("#save").onclick = async () => {
+  const folders = S.folders.map(f => ({ id: f.id, name: f.name.trim() || "مجلد", apps: S.tiles.filter(t => t.folder === f.id).map(t => t.pkg) }));
+  const names = {}; S.tiles.forEach(t => { if (t.name.trim()) names[t.pkg] = t.name.trim(); });
+  S.tvInputs.forEach(x=>{if(x.name.trim())names["input:"+x.id]=x.name.trim();});
+  const body = { hiddenInputs:S.tvInputs.filter(x=>x.hiddenInMenu).map(x=>x.id), order: S.tiles.map(t => t.key), hidden: S.tiles.filter(t => t.hidden).map(t => t.pkg), names, folders,
+    inputs: S.tvInputs.filter(x => x.pinned).map(x => ({ id: x.id, name: x.name.trim() })), options: S.options };
+  try { await api("api/layout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }); toast("تم الحفظ على التلفاز"); }
+  catch (_) { toast("تعذّر الحفظ"); }
+};
+$("#stop").onclick = async () => { try { await api("api/stop", { method: "POST" }); } catch (_) {} document.body.innerHTML = "<main><h1 style='color:#D4AF37'>تم. أُغلق الاتصال بالتلفاز.</h1></main>"; };
+async function postJSON(path,body){const result=await api(path,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});if(!result.ok)throw new Error("failed");}
+$("#saveMessage").onclick=async()=>{try{await postJSON("api/message",{line1:$("#line1").value,line2:$("#line2").value});toast("تم حفظ الرسالة");}catch(_){toast("تعذّر الحفظ");}};
+$("#saveQuiet").onclick=async()=>{try{await postJSON("api/quiet",{hours:$("#quietOn").checked?$("#quietStart").value+"-"+$("#quietEnd").value:"off"});toast("تم حفظ ساعات الهدوء");}catch(_){toast("تحقق من الوقت وحاول مجددًا");}};
+async function weatherSave(city){try{await postJSON("api/weather",{city,auto:$("#weatherAuto").checked});toast("تم حفظ الموقع");await load();}catch(_){toast("تعذّر العثور على المدينة أو حفظ الموقع");}}
+$("#saveWeather").onclick=()=>weatherSave($("#weatherCity").value);$("#clearWeather").onclick=()=>weatherSave("");
+async function refreshFiles(){try{const list=await api("api/files");const box=$("#fileList");box.replaceChildren();list.forEach(f=>box.appendChild(el("div",{class:"row"},el("a",{href:"api/files/download?id="+encodeURIComponent(f.id),download:"",text:f.name+(f.size>=0?" · "+Math.ceil(f.size/1024)+" KB":""),style:"color:#D4AF37"}))));}catch(_){toast("تعذّر عرض الملفات");}}
+$("#refreshFiles").onclick=refreshFiles;
+$("#uploadFile").onclick=async()=>{const f=$("#transferFile").files[0];if(!f)return;if(f.size<=0||f.size>64*1024*1024){toast("الحد 64 ميغابايت للملف");return;}$("#uploadFile").disabled=true;try{const r=await api("api/files/upload?name="+encodeURIComponent(f.name),{method:"POST",body:f});if(!r.ok)throw new Error();toast("تم إرسال الملف إلى التنزيلات");await refreshFiles();}catch(_){toast("تعذّر النقل. تحقق من مساحة التخزين وإذن التنزيلات على التلفاز");}finally{$("#uploadFile").disabled=false;}};
+load().catch(() => toast("تعذّر الوصول إلى التلفاز"));
+</script>
+</body>
+</html>

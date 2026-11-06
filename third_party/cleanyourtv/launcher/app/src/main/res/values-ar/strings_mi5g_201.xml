@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Mi5G 2.0.1 -->
+<resources>
+    <string name="mi5g_arrange_title">رتّب الشاشة الرئيسية من هاتفك</string>
+    <string name="mi5g_arrange_body">امسح الرمز بهاتف متصل بنفس شبكة الواي فاي. رتّب التطبيقات، غيّر الأسماء والأيقونات، أخفِ ما لا تريده، أنشئ مجلدات، ثبّت المداخل واختر الخلفية. يتوقف الرابط عند إغلاق هذه الشاشة.</string>
+    <string name="mi5g_arrange_stop">إيقاف</string>
+    <string name="mi5g_arrange_no_network">صِل التلفاز بالواي فاي أو الإيثرنت أولاً.</string>
+    <string name="mi5g_arrange_row">ترتيب الشاشة الرئيسية من الهاتف</string>
+    <string name="mi5g_arrange_row_hint">رمز QR، على نفس الشبكة فقط</string>
+    <string name="mi5g_city_dream_name">ساعة المدينة Mi5G</string>
+    <string name="mi5g_city_dream_row">شاشة توقف المدينة</string>
+    <string name="mi5g_city_dream_hint">الساعة، التاريخ الهجري، الصلاة القادمة، الطقس</string>
+    <string name="mi5g_city_next_prayer">الصلاة القادمة: %1$s</string>
+    <string name="mi5g_credits">حول وشكر</string>
+    <string name="mi5g_credits_body">Mi5G TV من @midroid5G، مبني على Clean Your TV من Gathin (MIT). أفكار من Aerial TV لـ pengchujin (MIT) و tv-vibehack لـ Gathin (MIT) و talkies من TechPP (MIT). رمز QR: ZXing (Apache-2.0). خط Cairo: SIL OFL 1.1.</string>
+</resources>

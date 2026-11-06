@@ -15,7 +15,8 @@ import tv.cleanyour.core.ops.ShellRenderer
 import tv.cleanyour.core.probe.TvShellRunner
 
 // 1.6 item 8: «تطبيقاتي» (installed by the user) and «المصنع» (factory/system) are separate lists.
-enum class TvAppFilter { USER, SYSTEM }
+// M4 item 33: SUGGESTED lists what this TV's profile (picked by its model) says can go off.
+enum class TvAppFilter { USER, SYSTEM, SUGGESTED }
 
 enum class TvAppActionKind {
     LAUNCH,
@@ -60,10 +61,12 @@ data class TvAppManagerState(
     val uninstallWord: String = "",
     val hasRestorePoint: Boolean = false,
     val actionStatus: TvAppActionStatus = TvAppActionStatus.Idle,
+    val profileName: String? = null,
+    val suggested: Set<PackageName> = emptySet(),
 ) {
     val filteredApps: List<TvInstalledApp>
         get() = apps.filter { app ->
-            (app.system == (filter == TvAppFilter.SYSTEM)) &&
+            (if (filter == TvAppFilter.SUGGESTED) app.pkg in suggested && app.enabled else app.system == (filter == TvAppFilter.SYSTEM)) &&
                 (searchQuery.isBlank() ||
                     app.name.contains(searchQuery, ignoreCase = true) ||
                     app.pkg.value.contains(searchQuery, ignoreCase = true))
@@ -98,6 +101,7 @@ class TvAppManagerMachine(
 
     private data class TvLoaded(val tvName: String)
     private data class AppsLoaded(val apps: List<TvInstalledApp>, val hasRestorePoint: Boolean = false)
+    private data class ProfileLoaded(val name: String?, val suggested: Set<PackageName>)
     private data object LoadingStarted
     private data class ActionUpdate(
         val status: TvAppActionStatus,
@@ -113,10 +117,18 @@ class TvAppManagerMachine(
             }
         }
         scope.launch { loadApps(liveOnly = true) }
+        scope.launch { loadProfile() }
+    }
+
+    private suspend fun loadProfile() {
+        val tv = d.tv(tvId) ?: return
+        val p = d.profileOf(tv) ?: return send(ProfileLoaded(null, emptySet()))
+        send(ProfileLoaded(DeviceProfiles.label(p.id, tv.facts.model), DeviceProfiles.suggestions(p)))
     }
 
     override fun reduce(state: TvAppManagerState, event: Any): TvAppManagerState = when (event) {
         is TvLoaded -> state.copy(tvName = event.tvName)
+        is ProfileLoaded -> state.copy(profileName = event.name, suggested = event.suggested)
         LoadingStarted -> state.copy(loading = true)
         is AppsLoaded -> {
             val updatedSelected = state.selectedApp?.let { sel -> event.apps.firstOrNull { it.pkg == sel.pkg } }

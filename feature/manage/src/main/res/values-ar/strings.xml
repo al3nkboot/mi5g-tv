@@ -13,7 +13,7 @@
 
     <!-- Credential prompt (D17) -->
     <string name="gate_title">تأكيد قفل شاشة جوالك</string>
-    <string name="gate_subtitle">أدخل رمز قفل الجوال أو البصمة قبل التعديل على {tv}</string>
+    <string name="gate_subtitle">قبل أي تغيير على {tv}: أكّد بقفل شاشة هذا الجوال (الرمز السري أو النمط أو البصمة). هذا ليس رمزًا للتلفاز، فالتلفاز لا يحتاج كلمة مرور.</string>
     <string name="gate_subtitle_reset_key">قبل إعادة ضبط مفتاح هذا الهاتف</string>
     <string name="gate_subtitle_delete_all">قبل حذف كل شيء</string>
     <string name="gate_negative">إلغاء</string>
@@ -49,6 +49,8 @@
     <string name="manage_offline_banner">انقطع الاتصال بالتلفاز. هل ما زال قيد التشغيل؟</string>
     <string name="manage_reconnect">إعادة الاتصال</string>
     <string name="manage_reconnecting">جارٍ إعادة الاتصال...</string>
+    <string name="manage_unreachable_title">لا يمكن الوصول إلى التلفاز</string>
+    <string name="manage_unreachable_body">قد يكون التلفاز مطفأً أو في وضع السكون، أو الهاتف على شبكة Wi-Fi مختلفة، أو تغيّر عنوان IP، أو أُوقف تصحيح الأخطاء. تحقق من هذه الأمور ثم أعد المحاولة.</string>
 
     <!-- M1a Debugging step for a returning write (UX 4.3, returning) -->
     <string name="debugstep_title">لإجراء تغييرات على التلفاز، يجب تفعيل تصحيح الأخطاء للحظات.</string>
@@ -139,8 +141,17 @@
     <string name="appsettings_support_paypal_note">paypal.me/Midroid5G · للمساهمة في استمرار تطوير التطبيق مجانًا وبدون إعلانات</string>
     <string name="appsettings_developer_x">حساب المطور على X (@midroid5G)</string>
     <string name="appsettings_licences">التراخيص</string>
-    <string name="appsettings_licence_app">Mi5G TV (مبني على Clean Your TV): ترخيص MIT</string>
+    <string name="appsettings_licence_app">Mi5G TV (مبني على Clean Your TV من Gathin): ترخيص MIT</string>
     <string name="appsettings_licence_font">خطا Cairo و Outfit: ترخيص SIL Open Font Licence 1.1</string>
+    <string name="appsettings_licence_launcher">مشغّل التلفاز com.gathin.tvhome من Clean Your TV v2.5.0، Gathin: ترخيص MIT</string>
+    <string name="appsettings_licence_tvos">tvOS Launcher، techgenius: ترخيص Apache-2.0 مع ملف NOTICE</string>
+    <string name="appsettings_licence_omarchy">OmarchyTV، Marco Porro: ترخيص MIT</string>
+    <string name="appsettings_licence_talkies">talkies، TechPP: ترخيص MIT</string>
+    <string name="appsettings_licence_aerial">Aerial TV، pengchujin: ترخيص MIT (أفكار الترتيب من الهاتف والمجلدات والمداخل والخلفيات وشاشة توقف المدينة؛ رمز QR من ZXing: ترخيص Apache-2.0)</string>
+    <string name="appsettings_licence_vibehack">tv-vibehack، Gathin: ترخيص MIT (مركز التحكم مقتبس منه)</string>
+    <string name="appsettings_licence_adhan">adhan-java، Batoul Apps: ترخيص MIT؛ إحداثيات المدن من GeoNames (CC BY 4.0)</string>
+    <string name="appsettings_licence_streams">إذاعات القرآن: بث عام من mp3quran.net؛ بيانات المباريات من ESPN (غير رسمية)</string>
+    <string name="appsettings_licence_full">النص الكامل للتراخيص والإشعارات في الملف THIRD-PARTY-NOTICES داخل مستودع المشروع</string>
     <string name="appsettings_licence_apache">شيفرة dadb وShizuku المعدّلة: إشعارات Apache-2.0</string>
     <string name="appsettings_licence_bouncycastle">مكتبة التشفير Bouncy Castle: ترخيص Bouncy Castle</string>
     <string name="appsettings_privacy">الخصوصية</string>
@@ -290,8 +301,6 @@
     <string name="tvapps_done_pull_apk">تم سحب وحفظ نسخة APK لتطبيق {name} في الهاتف.</string>
     <string name="tvapps_failed_action">تعذّر تنفيذ الإجراء لتطبيق {name}.</string>
     <!-- v1.5.0: TV App Manager 7 actions, Downloader codes, Button Mapper, Force Landscape, TV Banner, GitHub Update -->
-    <string name="appsettings_download_github">التحقق وتنزيل أحدث إصدار للتطبيق (GitHub)</string>
-    <string name="appsettings_download_github_note">تنزيل أحدث ملف APK مباشرة من صفحة الإصدارات الرسمية</string>
     <string name="tvapps_filter_system_toggle">إظهار تطبيقات النظام والمصنع (مثل Netflix و Prime)</string>
     <string name="tvapps_action_restrict_bg">منع العمل بالخلفية (توفير الرام والمعالج)</string>
     <string name="tvapps_action_disable">تجميد / تعطيل التطبيق</string>
@@ -331,6 +340,10 @@
     <string name="tvtools_banner_send">إرسال للتلفاز</string>
     <string name="tvtools_power_working">جارٍ التنفيذ على التلفاز: {name}...</string>
     <string name="tvtools_power_done">تم التنفيذ بنجاح: {name}.</string>
+    <string name="tvtools_fail_no_apk">الخطوة التي توقفت: نسخ التطبيق إلى التلفاز. ملف التطبيق غير موجود في هذه النسخة، حدّث Mi5G TV ثم أعد المحاولة.</string>
+    <string name="tvtools_fail_install">الخطوة التي توقفت: التثبيت على التلفاز. التلفاز رفض التثبيت (شائع في Chromecast وGoogle TV). افتح على التلفاز: الإعدادات ← الخصوصية/الأمان ← تثبيت تطبيقات غير معروفة، واسمح بالتثبيت عبر USB/التصحيح إن وُجد الخيار، ثم أعد المحاولة.</string>
+    <string name="tvtools_fail_launch">الخطوة التي توقفت: فتح التطبيق. تم التثبيت لكن التلفاز لم يفتح التطبيق. ابحث عنه في قائمة التطبيقات على التلفاز أو أعد المحاولة.</string>
+    <string name="tvtools_fail_tv_said">رسالة التلفاز:</string>
     <string name="tvtools_power_failed">تعذّر التنفيذ على التلفاز: {name}.</string>
     <!-- Mi5G TV 1.6 (web-preview is the source of truth for copy) -->
     <string name="v16_health_title">صحة التلفاز</string>
@@ -388,5 +401,110 @@
     <string name="tvtools_label_hdmi">فتح قائمة منافذ HDMI</string>
     <string name="tvtools_label_banner">إرسال الإشعار لشاشة التلفاز</string>
     <string name="tvtools_label_open">فتح {target} على التلفاز</string>
+    <string name="remote_connected">متصل</string>
+    <string name="remote_not_connected">غير متصل</string>
+    <string name="remote_connect_prompt">اتصل بهذا التلفاز لاستخدام جهاز التحكم.</string>
+    <string name="remote_connect">اتصال بالتلفاز</string>
+    <string name="remote_buttons">الأزرار</string>
+    <string name="remote_trackpad">لوحة اللمس</string>
+    <string name="remote_keyboard">لوحة المفاتيح</string>
+    <string name="remote_volume">الصوت</string>
+    <string name="remote_channel">القناة</string>
+    <string name="remote_back">رجوع</string>
+    <string name="remote_home">الرئيسية</string>
+    <string name="remote_mute">كتم الصوت</string>
+    <string name="remote_play_pause">تشغيل/إيقاف</string>
+    <string name="remote_more">المزيد</string>
+    <string name="remote_menu">القائمة</string>
+    <string name="remote_settings">الإعدادات</string>
+    <string name="remote_power">الطاقة</string>
+    <string name="remote_sleep">السكون</string>
+    <string name="remote_input">المدخل</string>
+    <string name="remote_rewind">ترجيع</string>
+    <string name="remote_fast_forward">تقديم سريع</string>
+    <string name="remote_done">تم</string>
+    <string name="remote_trackpad_hint">مرر للتنقل واضغط للاختيار</string>
+    <string name="remote_text">النص المراد إرساله</string>
+    <string name="remote_unicode_warning">لا يمكن إرسال العربية والمحارف غير الإنجليزية. سيتم تخطيها.</string>
+    <string name="remote_send">إرسال</string>
+    <string name="remote_backspace">⌫</string>
+    <string name="remote_coming_soon">قريباً</string>
+    <string name="remote_tab_remote">التحكم</string>
+    <string name="remote_tab_apps">التطبيقات</string>
+    <string name="remote_tab_cast">البث</string>
+    <string name="remote_tab_settings">الإعدادات</string>
+    <string name="remote_title">جهاز التحكم</string>
+    <string name="remote_digit_0">٠</string>
+    <string name="remote_digit_1">١</string>
+    <string name="remote_digit_2">٢</string>
+    <string name="remote_digit_3">٣</string>
+    <string name="remote_digit_4">٤</string>
+    <string name="remote_digit_5">٥</string>
+    <string name="remote_digit_6">٦</string>
+    <string name="remote_digit_7">٧</string>
+    <string name="remote_digit_8">٨</string>
+    <string name="remote_digit_9">٩</string>
+    <string name="remote_favorite_add">إضافة إلى المفضلة</string>
+    <string name="remote_favorite_remove">إزالة من المفضلة</string>
+    <string name="remote_ok">موافق</string>
+    <string name="remote_up">أعلى</string>
+    <string name="remote_down">أسفل</string>
+    <string name="remote_left">يسار</string>
+    <string name="remote_right">يمين</string>
+    <string name="remote_connecting">جارٍ الاتصال…</string>
+    <string name="remote_favorites_header">المفضلة</string>
+    <string name="remote_all_apps_header">التطبيقات على التلفاز</string>
+    <string name="remote_apps_empty">لا توجد تطبيقات بعد. صِل التلفاز ثم حدّث.</string>
+    <string name="remote_refresh">تحديث</string>
+    <string name="remote_backspace_desc">حذف حرف واحد</string>
+    <string name="remote_number_pad">الأرقام</string>
+    <string name="remote_coming_soon_cast">إرسال الصور والفيديو من الجوال إلى التلفاز.</string>
+    <string name="remote_coming_soon_settings">ستكون إعدادات الريموت هنا.</string>
+    <string name="remote_open">فتح</string>
+    <string name="card_size_title">حجم التطبيقات والبطاقات</string><string name="card_size_small">صغير</string><string name="card_size_medium">متوسط</string><string name="card_size_large">كبير</string>
+    <string name="quick_start_title">دليل البدء السريع</string><string name="quick_start_step1">صِل الجوال والتلفاز بشبكة Wi-Fi نفسها.</string><string name="quick_start_step2">فعّل خيارات المطور وتصحيح الأخطاء عبر الشبكة أو لاسلكيًا على التلفاز.</string><string name="quick_start_step3">اقرن بالتلفاز واسمح بالاتصال.</string><string name="quick_start_step4">استخدم تبويب الريموت للتحكم بالتلفاز.</string><string name="quick_start_step5">ثبّت الوحدات من شاشة الوحدات.</string><string name="quick_start_video">شاهد الفيديو (دقيقتان)</string>
+    <string name="tvtools_home_section">شاشة Mi5G الرئيسية</string>
+    <string name="tvtools_home_note">تُبقي Mi5G الشاشة الرئيسية بعد ضغط زر الهوم وإعادة التشغيل، وتفعّل أزرار الريموت ومركز التحكم وشريط الوسائط. العودة لمشغّل التلفاز تعيد تشغيل المشغّل الأصلي، ولا يُحذف أي شيء.</string>
+    <string name="tvtools_arrange_home">رتّب الشاشة الرئيسية من الهاتف</string>
+    <string name="tvtools_label_arrange_home">فتح رمز الترتيب على التلفاز</string>
+    <string name="tvtools_keep_home">تثبيت Mi5G كشاشة رئيسية</string>
+    <string name="tvtools_stock_home">العودة لمشغّل التلفاز الأصلي</string>
+    <string name="tvtools_label_keep_home">تثبيت شاشة Mi5G الرئيسية</string>
+    <string name="tvtools_label_stock_home">العودة لمشغّل التلفاز الأصلي</string>
+    <!-- M3: مواقيتي on the TV -->
+    <string name="tvtools_prayer_section">مواقيتي على التلفاز</string>
+    <string name="tvtools_prayer_note">اختر المدينة وطريقة الحساب والأذان، ثم أرسلها إلى التلفاز. يعمل الأذان فوق أي تطبيق.</string>
+    <string name="tvtools_prayer_on">مفعّل</string>
+    <string name="tvtools_prayer_off">متوقف</string>
+    <string name="tvtools_prayer_forced">🔊 الأذان الإجباري</string>
+    <string name="tvtools_prayer_volume">مستوى صوت الأذان {percent}%</string>
+    <string name="tvtools_prayer_pre">⏰ تنبيه قبل الأذان: {minutes} دقيقة</string>
+    <string name="tvtools_prayer_overlay">🕰️ الودجت العائم</string>
+    <string name="tvtools_prayer_size">الحجم {percent}%</string>
+    <string name="tvtools_prayer_opacity">الشفافية {percent}%</string>
+    <string name="tvtools_prayer_kahf">📖 تذكير الجمعة</string>
+    <string name="tvtools_prayer_send">إرسال الإعدادات إلى التلفاز</string>
+    <string name="tvtools_label_prayer">إعدادات مواقيتي</string>
+    <!-- M4 item 34: updates -->
+    <string name="appsettings_update_now">تحديث الآن إلى {version}</string>
+    <string name="appsettings_update_now_note">يُنزَّل ملف التحديث من صفحة الإصدار الرسمية، ثم اضغط «تثبيت». يقبله أندرويد فقط إن كان موقّعًا بنفس مفتاح التطبيق، وتبقى بياناتك.</string>
+    <!-- M4 item 35 -->
+    <string name="manage_row_resetup">🔄 إعادة الإعداد بعد تحديث النظام</string>
+    <string name="manage_row_resetup_sub">بضغطة واحدة: يفحص ما أعاده التحديث ويطفئه من جديد</string>
+    <string name="manage_row_fullrestore">↩️ استعادة كاملة</string>
+    <string name="manage_row_fullrestore_sub">بضغطة واحدة: يُرجع التلفاز كما كان قبل Mi5G بعد تأكيدك</string>
+    <!-- M4 item 33 -->
+    <string name="tvapps_suggested">المقترح</string>
+    <string name="tvapps_profile_detected">تم التعرف على الجهاز: {device} · {count} تطبيقات مقترح إيقافها</string>
+    <string name="tvapps_suggested_hint">تطبيقات إعلانات وتتبّع وتطبيقات مثبّتة مسبقًا يقترح ملف جهازك إيقافها. كل إيقاف يمكن التراجع عنه، ولا يُحذف شيء.</string>
+    <string name="tvtools_install_all">ثبّت كل تطبيقات Mi5G TV على التلفاز</string>
+    <string name="tvtools_label_install_all">تثبيت كل التطبيقات</string>
+    <string name="appsettings_update_help">يتحقق من آخر إصدار للتطبيق على GitHub</string>
+    <string name="appsettings_open_releases">افتح صفحة الإصدارات على GitHub</string>
+    <string name="appsettings_open_releases_note">github.com/al3nkboot/mi5g-tv/releases</string>
+    <!-- 2.0.2 -->
+    <string name="appsettings_update_rate_limited">تجاوزت حد GitHub المؤقت، جرّب بعد قليل أو افتح صفحة الإصدارات</string>
+    <string name="appsettings_update_cannot_install">لا يمكن تثبيت التحديث على هذا الجهاز</string>
+    <string name="appsettings_update_cannot_install_note">لا توجد على هذا الجهاز شاشة لتثبيت ملفات APK. نزّل التحديث من صفحة الإصدارات على الكمبيوتر أو الهاتف، ثم ثبّته من هناك (مثلًا عبر «تثبيت APK» في أدوات التلفاز من تطبيق الهاتف أو عبر adb).</string>
 </resources>
 

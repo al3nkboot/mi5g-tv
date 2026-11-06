@@ -92,7 +92,12 @@ sealed interface UpdateCheck {
     data class Available(val version: String) : UpdateCheck
     data object Latest : UpdateCheck
     data object Failed : UpdateCheck
+    // 2.0.2: GitHub answered 403/429 (its hourly limit for calls without an account).
+    data object RateLimited : UpdateCheck
 }
+
+// 2.0.2: thrown by an UpdateChecker when GitHub refuses the call for its rate limit.
+class UpdateRateLimited : Exception("GitHub rate limit")
 
 data class AppSettingsState(
     val version: String = "",
@@ -116,6 +121,7 @@ enum class AppConfirm { RESET_KEY, DELETE_EVERYTHING }
 sealed interface AppSettingsIntent {
     data class SetHaptics(val on: Boolean) : AppSettingsIntent
     data class SetLargeText(val on: Boolean) : AppSettingsIntent
+    data class SetCardSize(val size: CardSize) : AppSettingsIntent
     data object CheckUpdates : AppSettingsIntent
     data object ReportProblem : AppSettingsIntent     // 0.3.2 B2: the report preview, its own screen
     data class Ask(val what: AppConfirm) : AppSettingsIntent
@@ -162,6 +168,7 @@ class AppSettingsMachine(
         is Loaded -> event.s.copy(update = state.update, confirm = state.confirm)
         is AppSettingsIntent.SetHaptics -> state.copy(prefs = state.prefs.copy(haptics = event.on))
         is AppSettingsIntent.SetLargeText -> state.copy(prefs = state.prefs.copy(largeTextFollowsSystem = event.on))
+        is AppSettingsIntent.SetCardSize -> state.copy(prefs = state.prefs.copy(cardSize = event.size))
         AppSettingsIntent.CheckUpdates -> if (state.updateCheck) state.copy(update = UpdateCheck.Checking) else state
         is Update -> state.copy(update = event.u)
         is AppSettingsIntent.Ask -> state.copy(confirm = event.what)
@@ -172,10 +179,14 @@ class AppSettingsMachine(
 
     override fun handle(event: Any, before: AppSettingsState, after: AppSettingsState) {
         when (event) {
-            is AppSettingsIntent.SetHaptics, is AppSettingsIntent.SetLargeText -> scope.launch { d.appPrefs.save(after.prefs) }
+            is AppSettingsIntent.SetHaptics, is AppSettingsIntent.SetLargeText, is AppSettingsIntent.SetCardSize -> scope.launch { d.appPrefs.save(after.prefs) }
             AppSettingsIntent.CheckUpdates -> if (d.store.updateCheck && before.update != UpdateCheck.Checking) scope.launch {
-                val v = attempt { d.updates.latestNewerThan(d.appVersion) }.getOrNull()
-                send(Update(when { v == null -> UpdateCheck.Failed; v.isEmpty() -> UpdateCheck.Latest; else -> UpdateCheck.Available(v) }))
+                val r = attempt { d.updates.latestNewerThan(d.appVersion) }
+                val v = r.getOrNull()
+                send(Update(when {
+                    r.exceptionOrNull() is UpdateRateLimited -> UpdateCheck.RateLimited
+                    v == null -> UpdateCheck.Failed; v.isEmpty() -> UpdateCheck.Latest; else -> UpdateCheck.Available(v)
+                }))
             }
             AppSettingsIntent.ReportProblem -> effect(ManageEffect.Navigate("report/problem"))
             AppSettingsIntent.ResetKey -> if (!before.working) scope.launch { resetKey() }

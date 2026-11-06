@@ -118,11 +118,15 @@ sealed interface CastMediaStatus {
     data class Failed(val fileName: String) : CastMediaStatus
 }
 
+enum class PowerFailStep { UNREACHABLE, NO_APK, INSTALL, LAUNCH;
+    companion object { fun of(apkFound: Boolean, installed: Boolean) = when { !apkFound -> NO_APK; !installed -> INSTALL; else -> LAUNCH } }
+}
+
 sealed interface PowerToolStatus {
     data object Idle : PowerToolStatus // labels starting with "@" are ids the screen localizes
     data class Working(val label: String) : PowerToolStatus
     data class Done(val label: String) : PowerToolStatus
-    data class Failed(val label: String) : PowerToolStatus
+    data class Failed(val label: String, val step: PowerFailStep? = null, val tvSaid: String? = null) : PowerToolStatus
 }
 
 data class TvToolsState(
@@ -141,6 +145,7 @@ data class TvToolsState(
     val downloaderInput: String = "",
     val tvBannerInput: String = "",
     val powerToolStatus: PowerToolStatus = PowerToolStatus.Idle,
+    val prayer: PrayerTvSettings = PrayerTvSettings(),
 )
 
 sealed interface TvToolsIntent {
@@ -174,6 +179,10 @@ sealed interface TvToolsIntent {
     data class OpenInDownloader(val input: String? = null) : TvToolsIntent
     data class DownloadAndInstallUrlApk(val url: String, val fileName: String) : TvToolsIntent
     data object QuickSettingsOverlay : TvToolsIntent
+    data object KeepMi5gHome : TvToolsIntent
+    data object ReturnToStockHome : TvToolsIntent
+    /** Mi5G 2.0.1: open the launcher's arrange-from-phone QR screen on the TV. */
+    data object ArrangeHomeFromPhone : TvToolsIntent
     data class MapRemoteKey(val keyCode: Int, val targetPkg: String, val label: String) : TvToolsIntent
     data class SetForceLandscape(val landscape: Boolean) : TvToolsIntent
     data object StartClockScreensaver : TvToolsIntent
@@ -181,7 +190,21 @@ sealed interface TvToolsIntent {
     data object SwitchHdmiInput : TvToolsIntent
     data class UpdateTvBannerInput(val text: String) : TvToolsIntent
     data class SendTvBanner(val text: String? = null) : TvToolsIntent
+    // M3 item 27: مواقيتي settings, edited on the phone and pushed to the TV module.
+    data class UpdatePrayer(val settings: PrayerTvSettings) : TvToolsIntent
+    data object SendPrayerSettings : TvToolsIntent
+    // M4 item 32: push every bundled Mi5G TV app over Wi-Fi in one go (skips the ones already there).
+    data object InstallAllMi5gApps : TvToolsIntent
 }
+
+/** M4 item 32: the bundled TV apps the phone can push, as (module id, package). */
+val MI5G_TV_APPS: List<Pair<String, String>> = listOf(
+    "tv-matches" to "com.midroid.mi5gtv.matches",
+    "prayer-weather" to "com.midroid.mi5gtv.prayer",
+    "adguard-dns" to "com.midroid.mi5gtv.dns",
+    "tv-files" to "com.midroid.mi5gtv.files",
+    "tv-speedtest" to "com.midroid.mi5gtv.speedtest",
+)
 
 class TvToolsMachine(
     private val d: ManageDeps,
@@ -242,6 +265,7 @@ class TvToolsMachine(
         is CastMediaUpdate -> state.copy(castMediaStatus = event.status)
         is TvToolsIntent.UpdateDownloaderInput -> state.copy(downloaderInput = event.input.take(ShellRenderer.MAX_URL_LEN))
         is TvToolsIntent.UpdateTvBannerInput -> state.copy(tvBannerInput = event.text.take(160))
+        is TvToolsIntent.UpdatePrayer -> state.copy(prayer = event.settings)
         is PowerToolUpdate -> state.copy(
             powerToolStatus = event.status,
             tvBannerInput = if (event.clearBanner) "" else state.tvBannerInput,
@@ -303,6 +327,9 @@ class TvToolsMachine(
             }
             is TvToolsIntent.MediaPicked -> scope.launch { castMedia(event) }
             TvToolsIntent.OpenAppManager -> effect(ManageEffect.Navigate("apps/${tvId.value}"))
+            TvToolsIntent.InstallAllMi5gApps -> if (before.powerToolStatus !is PowerToolStatus.Working) {
+                scope.launch { installAllMi5gApps() }
+            }
             is TvToolsIntent.LaunchBundledCard -> scope.launch {
                 launchOrInstallBundledCard(event.moduleId, event.pkg, event.label)
             }
@@ -320,6 +347,9 @@ class TvToolsMachine(
             TvToolsIntent.QuickSettingsOverlay -> scope.launch {
                 runPowerLines(ShellRenderer.quickSettingsOverlayLines(), "@settings_overlay")
             }
+            TvToolsIntent.KeepMi5gHome -> scope.launch { keepMi5gHome() }
+            TvToolsIntent.ReturnToStockHome -> scope.launch { returnToStockHome() }
+            TvToolsIntent.ArrangeHomeFromPhone -> scope.launch { runPowerLines(ShellRenderer.arrangeHomeLines(), "@arrange_home") }
             is TvToolsIntent.MapRemoteKey -> scope.launch {
                 mapRemoteKey(event.keyCode, event.targetPkg, event.label)
             }
@@ -340,7 +370,7 @@ class TvToolsMachine(
             is TvToolsIntent.SendTvBanner -> {
                 val msgText = (event.text ?: before.tvBannerInput).trim()
                 if (msgText.isNotEmpty()) scope.launch {
-                    val line = runCatching { ShellRenderer.tvNotificationBannerLine(msgText) }.getOrNull()
+                    val line = runCatching { bannerLine(msgText) }.getOrNull()
                     if (line != null) {
                         runPowerLines(listOf(line), "@banner", clearBanner = true)
                     } else {
@@ -348,7 +378,54 @@ class TvToolsMachine(
                     }
                 }
             }
+            TvToolsIntent.SendPrayerSettings -> scope.launch { sendPrayerSettings(before.prayer) }
             else -> {}
+        }
+    }
+
+    // Arabic text cannot ride an adb shell line (ASCII only); it goes as hex to the prayer module's banner.
+    // Without that module the old notification banner stays the fallback (it keeps only the ASCII part).
+    private suspend fun bannerLine(text: String): tv.cleanyour.core.model.ShellLine {
+        if (ShellRenderer.isAsciiBanner(text)) return ShellRenderer.tvNotificationBannerLine(text)
+        val session = (d.access.session(tvId) as? AccessResult.Ok)?.session
+        return if (session != null && installed(session, ShellRenderer.MI5G_PRAYER)) ShellRenderer.arabicBannerLine(text)
+        else ShellRenderer.tvNotificationBannerLine(text)
+    }
+
+    private suspend fun sendPrayerSettings(settings: PrayerTvSettings) {
+        val label = "@prayer"
+        send(PowerToolUpdate(PowerToolStatus.Working(label)))
+        val session = (d.access.session(tvId) as? AccessResult.Ok)?.session
+        if (session == null) {
+            send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.UNREACHABLE)))
+            return
+        }
+        if (!installed(session, ShellRenderer.MI5G_PRAYER)) {
+            send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.NO_APK)))
+            return
+        }
+        val blob = d.blobs.putBytes(settings.toJson().toByteArray(Charsets.UTF_8))
+        try {
+            attempt { TvShellRunner.run(session, ShellRenderer.mkdirRestoreLine()) }
+            val pushed = attempt { session.push(blob, ShellRenderer.PRAYER_STAGE) {} }.getOrNull()
+            if (pushed == null) {
+                send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.INSTALL)))
+                return
+            }
+            val grants = ShellRenderer.prayerGrantLines().toSet()
+            var ok = true
+            for (line in ShellRenderer.prayerSettingsLines()) {
+                val r = attempt { TvShellRunner.run(session, line) }.getOrNull()
+                if ((r == null || r.exit != 0) && line !in grants) ok = false
+            }
+            if (ok) {
+                send(PowerToolUpdate(PowerToolStatus.Done(label)))
+                effect(ManageEffect.HapticDouble)
+            } else {
+                send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.LAUNCH)))
+            }
+        } finally {
+            withContext(NonCancellable) { attempt { d.blobs.delete(blob.sha256) } }
         }
     }
 
@@ -373,6 +450,84 @@ class TvToolsMachine(
             effect(ManageEffect.HapticDouble)
         } else {
             send(PowerToolUpdate(PowerToolStatus.Failed(label)))
+        }
+    }
+
+    private suspend fun installed(session: tv.cleanyour.core.session.TvSession, pkg: String): Boolean {
+        val r = attempt { TvShellRunner.run(session, ShellRenderer.packagePathLine(pkg)) }.getOrNull()
+        return r != null && r.exit == 0 && "package:" in r.stdout
+    }
+
+    // Item 25: Home, the remote services and media access for the Mi5G launcher, re-applied on demand.
+    // Every step persists across Home presses and reboots (default Home, secure settings, pm state).
+    private suspend fun keepMi5gHome() {
+        val label = "@keep_home"
+        send(PowerToolUpdate(PowerToolStatus.Working(label)))
+        val session = (d.access.session(tvId) as? AccessResult.Ok)?.session
+        if (session == null) {
+            send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.UNREACHABLE)))
+            return
+        }
+        // Without our launcher on the TV nothing may be switched off: the TV would have no Home.
+        if (!installed(session, ShellRenderer.MI5G_HOME)) {
+            send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.NO_APK)))
+            return
+        }
+        val current = attempt { TvShellRunner.run(session, ShellRenderer.getSecureLine("enabled_accessibility_services")) }
+            .getOrNull()?.stdout
+        val lines = ShellRenderer.putAccessibilityLines(ShellRenderer.mergeAccessibility(current, ShellRenderer.MI5G_ACCESSIBILITY)) +
+            ShellRenderer.keepMi5gHomeLines(disableXiaomiHome = ShellRenderer.XIAOMI_HOMES.any { installed(session, it) })
+        var ok = true
+        for (line in lines) {
+            val r = attempt { TvShellRunner.run(session, line) }.getOrNull()
+            if (r == null || r.exit != 0) ok = false
+        }
+        if (ok) {
+            send(PowerToolUpdate(PowerToolStatus.Done(label)))
+            effect(ManageEffect.HapticDouble)
+        } else {
+            send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.LAUNCH)))
+        }
+    }
+
+    // Item 26: back to the TV's own launcher. Re-enables, never uninstalls anything.
+    private suspend fun returnToStockHome() {
+        val label = "@stock_home"
+        send(PowerToolUpdate(PowerToolStatus.Working(label)))
+        val session = (d.access.session(tvId) as? AccessResult.Ok)?.session
+        if (session == null) {
+            send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.UNREACHABLE)))
+            return
+        }
+        val stock = ShellRenderer.STOCK_HOMES.filter { installed(session, it) }
+        if (stock.isEmpty()) {
+            send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.NO_APK)))
+            return
+        }
+        val current = attempt { TvShellRunner.run(session, ShellRenderer.getSecureLine("enabled_accessibility_services")) }
+            .getOrNull()?.stdout
+        var homeComponent: String? = null
+        for (line in ShellRenderer.returnToStockLines(stock)) {
+            val r = attempt { TvShellRunner.run(session, line) }.getOrNull() ?: continue
+            r.stdout.lines().map { it.trim() }.lastOrNull { it.startsWith(stock.first() + "/") }?.let { homeComponent = it }
+        }
+        val home = homeComponent ?: run {
+            send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.LAUNCH)))
+            return
+        }
+        val tail = listOf(ShellRenderer.setHomeActivityLine(home)) +
+            ShellRenderer.putAccessibilityLines(ShellRenderer.mergeAccessibility(current, emptyList(), ShellRenderer.MI5G_ACCESSIBILITY)) +
+            ShellRenderer.startHomeLine()
+        var ok = true
+        for (line in tail) {
+            val r = attempt { TvShellRunner.run(session, line) }.getOrNull()
+            if (r == null || r.exit != 0) ok = false
+        }
+        if (ok) {
+            send(PowerToolUpdate(PowerToolStatus.Done(label)))
+            effect(ManageEffect.HapticDouble)
+        } else {
+            send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.LAUNCH)))
         }
     }
 
@@ -412,7 +567,7 @@ class TvToolsMachine(
         val session = (d.access.session(tvId) as? AccessResult.Ok)?.session
         val pkg = runCatching { PackageName(pkgStr) }.getOrNull()
         if (session == null || pkg == null) {
-            send(PowerToolUpdate(PowerToolStatus.Failed(label)))
+            send(PowerToolUpdate(PowerToolStatus.Failed(label, if (session == null) PowerFailStep.UNREACHABLE else null)))
             return
         }
         val launchLine = ShellRenderer.launchMainActivityLine(pkg)
@@ -433,8 +588,10 @@ class TvToolsMachine(
         val ver = mod?.versions?.firstOrNull()
         val bundledAssetName = ver?.let { "mod-${it.artifact.sha256.hex.take(40)}.apk" }
         val blob = bundledAssetName?.let { name -> runCatching { d.blobs.bundled(name) }.getOrNull() }
+        var installed = false
+        var launchOut: String? = null
         if (blob != null) {
-            val installed = installBlobOnSession(session, blob)
+            installed = installBlobOnSession(session, blob)
             if (installed) {
                 if (pkgStr == "com.midroid.mi5gtv.dns") {
                     for (l in ShellRenderer.applyAdGuardDnsLines().take(1)) {
@@ -442,6 +599,7 @@ class TvToolsMachine(
                     }
                 }
                 val r1 = attempt { TvShellRunner.run(session, launchLine) }.getOrNull()
+                launchOut = r1?.let { it.stdout + "\n" + it.stderr }
                 if (r1 != null && r1.exit == 0) {
                     send(PowerToolUpdate(PowerToolStatus.Done(label)))
                     effect(ManageEffect.HapticDouble)
@@ -449,7 +607,36 @@ class TvToolsMachine(
                 }
             }
         }
-        send(PowerToolUpdate(PowerToolStatus.Failed(label)))
+        // 2.0 item 7: say which step failed ("paired but nothing installs") instead of failing silently.
+        send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.of(blob != null, installed), launchOut?.trim()?.take(240)?.ifBlank { null })))
+    }
+
+    private suspend fun installAllMi5gApps() {
+        val label = "@install_all"
+        send(PowerToolUpdate(PowerToolStatus.Working(label)))
+        val session = (d.access.session(tvId) as? AccessResult.Ok)?.session
+        if (session == null) {
+            send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.UNREACHABLE)))
+            return
+        }
+        var failed = 0
+        var noApk = 0
+        var anyInstalled = false
+        for ((moduleId, pkg) in MI5G_TV_APPS) {
+            if (installed(session, pkg)) continue
+            val ver = d.registry.module(moduleId)?.versions?.firstOrNull()
+            val blob = ver?.let { v -> runCatching { d.blobs.bundled("mod-${v.artifact.sha256.hex.take(40)}.apk") }.getOrNull() }
+            if (blob == null) { noApk++; continue }
+            if (!installBlobOnSession(session, blob)) failed++ else anyInstalled = true
+        }
+        // 2.0.2: TVs that reopen the last app after an install (TCL) were left in the updated app;
+        // go back to the TV's Home (the Mi5G launcher where it is the Home app).
+        if (anyInstalled) attempt { TvShellRunner.run(session, ShellRenderer.backToHomeLine()) }
+        when {
+            failed == 0 && noApk == 0 -> { send(PowerToolUpdate(PowerToolStatus.Done(label))); effect(ManageEffect.HapticDouble) }
+            failed > 0 -> send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.INSTALL)))
+            else -> send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.NO_APK)))
+        }
     }
 
     private suspend fun installBlobOnSession(session: tv.cleanyour.core.session.TvSession, blob: BlobRef): Boolean {
@@ -746,6 +933,7 @@ class TvToolsMachine(
                 }.getOrNull()
                 when (outcome) {
                     InstallOutcome.Installed -> {
+                        attempt { TvShellRunner.run(session, ShellRenderer.backToHomeLine()) }
                         send(SideloadUpdate(SideloadStatus.Installed(ready.fileName)))
                         effect(ManageEffect.HapticDouble)
                     }
@@ -774,6 +962,7 @@ class TvToolsMachine(
                     }.getOrNull()
                     val out = (res?.stdout.orEmpty() + "\n" + res?.stderr.orEmpty())
                     if (res != null && res.exit == 0 && "Success" in out) {
+                        attempt { TvShellRunner.run(session, ShellRenderer.backToHomeLine()) }
                         send(SideloadUpdate(SideloadStatus.Installed(ready.fileName)))
                         effect(ManageEffect.HapticDouble)
                     } else {

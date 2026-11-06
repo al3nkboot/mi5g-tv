@@ -25,13 +25,15 @@ val convertProfiles by tasks.registering(JavaExec::class) {
     val unconverted = layout.projectDirectory.file("upstream-feedback/unconverted.txt")
     val examples = upstream.dir("examples")
     inputs.dir(examples).withPathSensitivity(PathSensitivity.RELATIVE)
+    val mi5gExamples = layout.projectDirectory.dir("mi5g-examples")
+    inputs.dir(mi5gExamples).withPathSensitivity(PathSensitivity.RELATIVE)
     inputs.file(meta).withPathSensitivity(PathSensitivity.RELATIVE)
     inputs.file(unconverted).withPathSensitivity(PathSensitivity.RELATIVE)
     outputs.dir(generatedProfiles)
     classpath(sourceSets.main.map { it.output.classesDirs }, configurations.named("runtimeClasspath"))
     mainClass.set("tv.cleanyour.core.spec.ProfileConverter")
     maxHeapSize = "256m"
-    args(examples.asFile.absolutePath, meta.asFile.absolutePath, upstreamCommit, generatedProfiles.get().asFile.absolutePath, unconverted.asFile.absolutePath)
+    args(examples.asFile.absolutePath, meta.asFile.absolutePath, upstreamCommit, generatedProfiles.get().asFile.absolutePath, unconverted.asFile.absolutePath, mi5gExamples.asFile.absolutePath)
 }
 
 // The three bundled themes, from the pinned upstream themes/ folder.

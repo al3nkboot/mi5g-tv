@@ -107,4 +107,53 @@
     <!-- Cinematic top shelf (cinematic_home): the line under the focused dock app's name; %1$s is when it was
          last opened, e.g. "5 minutes ago" or "yesterday, 9:40 pm". -->
     <string name="last_opened">Last opened %1$s</string>
+    <!-- Mi5G 2.0 -->
+    <string name="mi5g_tile_move">Move</string>
+    <string name="mi5g_tile_remove">Remove from Home</string>
+    <string name="mi5g_tile_info">App info</string>
+    <string name="mi5g_tile_image">Custom image</string>
+    <string name="mi5g_tile_image_reset">Reset image</string>
+    <string name="mi5g_tile_image_hint">Send an image for this tile from the Mi5G phone app</string>
+    <string name="mi5g_tile_removed">Removed from Home. The app is still installed.</string>
+    <string name="mi5g_restore_tiles">Show removed apps</string>
+    <string name="mi5g_cc_title">Control Center</string>
+    <string name="mi5g_cc_nothing_playing">Nothing playing</string>
+    <string name="mi5g_cc_media_off">Allow media access from the Mi5G phone app</string>
+    <string name="mi5g_cc_sleep">Sleep timer</string>
+    <string name="mi5g_cc_sleep_off">Off</string>
+    <string name="mi5g_cc_sleep_in">In %d min</string>
+    <string name="mi5g_cc_off">Turn off</string>
+    <string name="mi5g_cc_recents">Recent apps</string>
+    <string name="mi5g_cc_speed">Speed test</string>
+    <string name="mi5g_cc_wifi">Wi-Fi</string>
+    <string name="mi5g_cc_bluetooth">Bluetooth</string>
+    <string name="mi5g_cc_sound">Sound output</string>
+    <string name="mi5g_cc_ram">Free memory</string>
+    <string name="mi5g_cc_ram_done">Freed %d MB</string>
+    <string name="mi5g_cc_needs_service">Turn on the Mi5G remote service from the phone app</string>
+    <string name="mi5g_settings">Mi5G features</string>
+    <string name="mi5g_mapper">Button mapper</string>
+    <string name="mi5g_mapper_add">Add a button</string>
+    <string name="mi5g_mapper_press">Press the remote button to map…</string>
+    <string name="mi5g_mapper_empty">No buttons mapped yet</string>
+    <string name="mi5g_mapper_youtube">YouTube button → SmartTube</string>
+    <string name="mi5g_mapper_settings_key">Settings button → Control Center</string>
+    <string name="mi5g_press_1">Press</string>
+    <string name="mi5g_press_2">Double press</string>
+    <string name="mi5g_press_3">Triple press</string>
+    <string name="mi5g_press_H">Hold</string>
+    <string name="mi5g_action_none">Nothing</string>
+    <string name="mi5g_action_control_center">Control Center</string>
+    <string name="mi5g_action_settings">TV settings</string>
+    <string name="mi5g_action_home">Home</string>
+    <string name="mi5g_action_back">Back</string>
+    <string name="mi5g_action_recents">Recent apps</string>
+    <string name="mi5g_action_inputs">Inputs</string>
+    <string name="mi5g_wake">Open when the TV wakes</string>
+    <string name="mi5g_wake_home">Home</string>
+    <string name="mi5g_back_clock">Back on Home opens the clock</string>
+    <string name="mi5g_clock_24h">24-hour clock</string>
+    <string name="mi5g_on">On</string>
+    <string name="mi5g_off">Off</string>
+    <string name="mi5g_input_pin">Open this input when the TV wakes</string>
 </resources>

@@ -61,6 +61,7 @@ import tv.cleanyour.core.flows.TvAccess
 import tv.cleanyour.core.flows.TvSettingsMachine
 import tv.cleanyour.core.flows.TvAppManagerMachine
 import tv.cleanyour.core.flows.TvToolsMachine
+import tv.cleanyour.core.flows.RemoteMachine
 import tv.cleanyour.core.model.TvId
 import tv.cleanyour.core.ops.ConfigTransport
 import tv.cleanyour.core.ops.OpRenderer
@@ -93,6 +94,7 @@ import tv.cleanyour.core.trust.TrustRoots
 // off, and the rules the flows follow. Everything else is the same in both builds.
 class AppGraph(context: Context, val appVersion: String = versionOf(context), val store: StorePorts = Store) {
     private val app = context.applicationContext
+    private val remoteFavorites = DataStoreRemoteFavoritesStore(app)
 
     // UI-facing watchers run on the main thread. Sessions, the engine's runs and key creation run
     // on Default: AdbSessionManager runs its handshakes and pumps on its scope's dispatcher.
@@ -177,7 +179,7 @@ class AppGraph(context: Context, val appVersion: String = versionOf(context), va
     val homePrefs = HomePrefs(documents)
     val appPrefs = AppPrefs(documents)
     val openWrites = OpenWrites()                          // one per graph (R5-W8 O2), held by the one ManageDeps
-    val diagnostics = LogDiagnostics { "Clean Your TV $appVersion, Android ${android.os.Build.VERSION.SDK_INT}" }
+    val diagnostics = LogDiagnostics { "Mi5G TV $appVersion, Android ${android.os.Build.VERSION.RELEASE} (SDK ${android.os.Build.VERSION.SDK_INT})" }
     // 0.3.2 B1, B2: what a report says about the app and the phone (no id of the phone: its maker,
     // model and Android version, as a person would type them into the issue form).
     val about = AppAbout(appVersion, store.flavour, phoneName(), "Android ${android.os.Build.VERSION.RELEASE}")
@@ -226,12 +228,13 @@ class AppGraph(context: Context, val appVersion: String = versionOf(context), va
     fun setup(scope: CoroutineScope, start: SetupStart) = SetupMachine(setupDeps, scope, start)
     fun manage(scope: CoroutineScope, tvId: TvId?) = ManageMachine(manageDeps, scope, tvId)
     fun switchedOff(scope: CoroutineScope, tvId: TvId) = SwitchedOffMachine(manageDeps, scope, tvId)
-    fun leftovers(scope: CoroutineScope, tvId: TvId) = LeftoversMachine(manageDeps, scope, tvId)
+    fun leftovers(scope: CoroutineScope, tvId: TvId, auto: Boolean = false) = LeftoversMachine(manageDeps, scope, tvId, auto)
     fun homeScreen(scope: CoroutineScope, tvId: TvId) = HomeScreenMachine(manageDeps, scope, tvId)
     fun modules(scope: CoroutineScope, tvId: TvId) = ModulesMachine(manageDeps, scope, tvId)
-    fun restorePoint(scope: CoroutineScope, tvId: TvId) = RestorePointMachine(manageDeps, scope, tvId)
+    fun restorePoint(scope: CoroutineScope, tvId: TvId, auto: Boolean = false) = RestorePointMachine(manageDeps, scope, tvId, auto)
     fun tvSettings(scope: CoroutineScope, tvId: TvId) = TvSettingsMachine(manageDeps, scope, tvId)
     fun tvTools(scope: CoroutineScope, tvId: TvId) = TvToolsMachine(manageDeps, scope, tvId)
+    fun remote(scope: CoroutineScope, tvId: TvId) = RemoteMachine(manageDeps, scope, tvId, remoteFavorites)
     fun tvApps(scope: CoroutineScope, tvId: TvId) = TvAppManagerMachine(manageDeps, scope, tvId)
     fun appSettings(scope: CoroutineScope) = AppSettingsMachine(manageDeps, scope)
     fun report(scope: CoroutineScope, kind: ReportKind, tvId: TvId?) = ReportMachine(manageDeps, scope, kind, tvId)

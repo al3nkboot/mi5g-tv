@@ -18,7 +18,7 @@
 
     <!-- Credential prompt (D17), raised by "Add to {tv}" -->
     <string name="gate_title">Confirm it\'s you</string>
-    <string name="gate_subtitle">Before we change anything on {tv}</string>
+    <string name="gate_subtitle">Before we change anything on {tv}: confirm with this phone’s screen lock (PIN, pattern or fingerprint). This is not a TV password; the TV has none.</string>
     <string name="gate_negative">Cancel</string>
     <string name="gate_failed">We couldn\'t confirm it\'s you, so nothing was changed.</string>
 
@@ -124,4 +124,9 @@
     <string name="fetch_failure_signer_mismatch">The app is signed by someone other than the author in the list, so we didn\'t install it.</string>
     <string name="fetch_failure_try_again">Try again</string>
 
+    <string name="install_block_not_compatible">This TV can\'t run this module (Android version or processor).</string>
+    <string name="install_block_no_tv">The phone couldn\'t reach the TV. Check both are on the same Wi-Fi and that wireless debugging is allowed on the TV, then try again.</string>
+    <string name="install_block_gate">The phone lock check was cancelled, so nothing was installed.</string>
+    <string name="install_block_refused">The TV refused this add. Details below.</string>
+    <string name="install_block_run_failed">The install on the TV did not finish. Restart the TV and try again; if it repeats, report it with the details below.</string>
 </resources>

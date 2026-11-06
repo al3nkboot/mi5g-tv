@@ -29,6 +29,7 @@ final class WallpaperPlayer {
     private final Random random = new Random();
     private final int width;
     private final int height;
+    private android.widget.VideoView video;
     private boolean active;
     private boolean closed;
     private boolean loading;
@@ -45,7 +46,19 @@ final class WallpaperPlayer {
         image = new ImageView(context);
         image.setScaleType(ImageView.ScaleType.CENTER_CROP);
         image.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-        if (config.wallpaperEnabled && !files.isEmpty()) {
+        // Mi5G 2.0.1: a video sent from the phone plays muted and looped behind Home instead of a picture.
+        File clip = Mi5gWallpapers.video(context);
+        if (clip != null) {
+            video = new android.widget.VideoView(context);
+            video.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+            video.setFocusable(false);
+            video.setVideoPath(clip.getAbsolutePath());
+            video.setOnPreparedListener(mp -> { mp.setLooping(true); mp.setVolume(0f, 0f); if (active) video.start(); });
+            video.setOnErrorListener((mp, what, extra) -> true);   // a clip the TV can't play leaves the plain colour
+            root.addView(video, 0, new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, android.view.Gravity.CENTER));
+            files.clear();
+        } else if (config.wallpaperEnabled && !files.isEmpty()) {
             root.addView(image, 0, new FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             // No shade layer at all when the theme doesn't dim: a full-screen view is overdraw on 1 GB TVs.
@@ -87,15 +100,18 @@ final class WallpaperPlayer {
 
     void start() {
         active = true;
+        if (video != null) video.start();
         update();
     }
 
     void stop() {
         active = false;
+        if (video != null) video.pause();
     }
 
     void close() {
         active = false;
+        if (video != null) video.stopPlayback();
         closed = true;
         decoder.shutdownNow();
     }

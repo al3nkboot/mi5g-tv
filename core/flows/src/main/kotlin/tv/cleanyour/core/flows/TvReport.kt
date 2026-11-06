@@ -101,7 +101,7 @@ object TvReport {
 
     // B1 "Help add this TV": the whole TV report, system packages included, one per line. Share sends it.
     fun text(input: TvReportInput): String = buildString {
-        appendLine("Clean Your TV: TV report")
+        appendLine("Mi5G TV: TV report")
         appendHeader(input.about)
         appendTv(input, Packages.LINES)
     }.trimEnd() + "\n"
@@ -113,7 +113,7 @@ object TvReport {
     // in the first group; one that came back on is in its state's group. Real reports of 110 to 130
     // system packages come to about 5,000 characters encoded, under the link's cap.
     fun compact(input: TvReportInput): String = buildString {
-        appendLine("Clean Your TV: TV report")
+        appendLine("Mi5G TV: TV report")
         appendHeader(input.about)
         appendTv(input, Packages.GROUPED)
     }.trimEnd() + "\n"
@@ -125,7 +125,7 @@ object TvReport {
     // B2 "Report a problem": the TV summary (no package list) when a TV was read, then the redacted
     // diagnostics log (already redacted by the app's logger).
     fun problem(about: AppAbout, input: TvReportInput?, log: String): String = buildString {
-        appendLine("Clean Your TV: problem report")
+        appendLine("Mi5G TV: problem report")
         appendHeader(about)
         if (input != null) appendTv(input, Packages.NONE) else { appendLine(); appendLine("TV: none read yet") }
         appendLine()

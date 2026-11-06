@@ -69,6 +69,10 @@ enum class TvKeyEvent(val keyCode: Int) {
     VOLUME_UP(24),
     VOLUME_DOWN(25),
     VOLUME_MUTE(164),
+    CHANNEL_UP(166), CHANNEL_DOWN(167), SETTINGS(176), POWER(26), SLEEP(223), TV_INPUT(178),
+    MEDIA_REWIND(89), MEDIA_FAST_FORWARD(90), DEL(67),
+    DIGIT_0(7), DIGIT_1(8), DIGIT_2(9), DIGIT_3(10), DIGIT_4(11), DIGIT_5(12),
+    DIGIT_6(13), DIGIT_7(14), DIGIT_8(15), DIGIT_9(16),
 }
 
 enum class TvAnimationScale(val scale: String) {

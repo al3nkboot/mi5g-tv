@@ -12,9 +12,10 @@
 
 ---
 
-## 📥 التحميل المباشر (أحدث إصدار `v1.6.0`)
+## 📥 التحميل المباشر (أحدث إصدار `v2.1.0`)
 
-- **[تحميل تطبيق الهاتف Mi5G TV v1.6.0 (APK)](https://github.com/al3nkboot/mi5g-tv/releases/download/v1.6.0/Mi5G-TV-v1.6.0.apk)**
+- **[تحميل تطبيق الهاتف Mi5G TV v2.1.0 (APK)](https://github.com/al3nkboot/mi5g-tv/releases/download/v2.1.0/Mi5G-TV-v2.1.0.apk)**
+- بصمة التوقيع (SHA-256): `c1f317965f154fe5e79fe7483abd5dd5dec7df57d87f3a645a5fd12f39a5480c`
 - **[صفحة جميع الإصدارات والوحدات الإضافية (Releases)](https://github.com/al3nkboot/mi5g-tv/releases/latest)**
 
 ---
@@ -87,6 +88,19 @@
 
 ---
 
+## 🆕 الجديد في Mi5G TV 2.1
+- ريموت جديد بالكامل وإقران لاسلكي مدمج لأجهزة Android 11 إلى 14 بدون كمبيوتر.
+- رتّب الرئيسية من جوالك عبر QR: مجلدات، مداخل HDMI، خلفيات صور وفيديو، ورسالة على شاشة التوقف.
+- شاشة توقف بالمدينة والطقس، وساعات هادئة، ووضع خفيف للتلفزيونات البطيئة.
+- مواقيتي على التلفاز (الأذان الإجباري، تنبيه قبل الأذان، نافذة عائمة، وخيار العصر حنفي أو شافعي) و Mi5G Score للمباريات.
+- مساعد شاشات سامسونج Tizen و LG webOS، وتثبيت كل تطبيقات Mi5G TV بضغطة واحدة.
+- صف «تابع المشاهدة» اختياري، ونقل ملفات محدود بين الجوال والتلفاز عبر QR.
+- إصلاح أوضح لأجهزة GAORUI، وزر واحد للتحقق من التحديثات.
+
+التفاصيل في [CHANGELOG.md](CHANGELOG.md).
+
+---
+
 ## 🔒 الخصوصية والأمان
 - يتصل التطبيق بتلفازك محلياً عبر شبكة الـ Wi-Fi فقط (`ADB over Wi-Fi`).
 - لا يجمع أي بيانات شخصية، ولا يحتوي على أي إعلانات أو أدوات تتبع.
@@ -105,6 +119,8 @@
 - **[Clean Your TV (phone app)](https://github.com/udhaykumarbala/cleanyourtv-app)** من تطوير **udhaykumarbala** والمساهمين.
 - **[Clean Your TV](https://github.com/Gathin23/cleanyourtv)** (مشروع الشاشة الرئيسية وقوائم التنظيف المجتمعية) من تطوير **Gathin** والمساهمين.
 
+وأفكار وأجزاء مقتبسة مع الإشعارات الكاملة في [THIRD-PARTY-NOTICES](THIRD-PARTY-NOTICES): **tvOS-Launcher** (Apache-2.0)، **OmarchyTV** (MIT)، **talkies** من TechPP (MIT)، **tv-vibehack** من Gathin (MIT)، **Aerial TV** من pengchujin (MIT)، ومكتبة **ZXing** (Apache-2.0)، ومكتبة **adhan-java** وبيانات **GeoNames** والخطوط.
+
 </div>
 
 ---
@@ -113,10 +129,14 @@
 
 **Mi5G TV** (`com.midroid.mi5gtv`) is an Arabic-first Android TV & Google TV cleaner, remote toolkit, and app manager over Wi-Fi (ADB).
 
-- **Debloat & Clean Home Screen:** Safely disables vendor bloatware and ad rows across 138+ verified TV profiles with a one-tap restore point.
+- **Debloat & Clean Home Screen:** Safely disables vendor bloatware and ad rows across 140 TV profiles with a one-tap restore point.
 - **Speed Boost & Quick Cast:** Live RAM/storage monitor, cache trim + background force-stop, animation speed toggle (`0.5x` / `0x` / `1x`), URL/photo/video casting, and remote APK installer.
 - **Full TV App Manager:** Launch, Force Stop, Clear Cache/Data, Uninstall, and pull APK backups from TV to phone.
 - **5 Bundled TV Modules:** Built-in AdGuard DNS switcher, Prayer Times & Weather, TV Speedtest, TV File Manager, and Today's Matches (`tv-matches`) with full Android TV Leanback banner support.
+
+- **New in 2.1:** everything prepared since v1.6.0, including the new phone remote and Wireless Debugging pairing, arrange-Home from the phone via QR, HDMI device-on cards, city screensaver, Mawaqiti (including Shafi/Hanafi Asr) and Mi5G Score on the TV, optional Continue Watching, QR file transfer, and clearer GAORUI and update checks. See [CHANGELOG.md](CHANGELOG.md).
+- **Download:** [Mi5G-TV-v2.1.0.apk](https://github.com/al3nkboot/mi5g-tv/releases/download/v2.1.0/Mi5G-TV-v2.1.0.apk), signer SHA-256 `c1f317965f154fe5e79fe7483abd5dd5dec7df57d87f3a645a5fd12f39a5480c`.
+- **Credits:** Clean Your TV (udhaykumarbala, Gathin), tvOS-Launcher (Apache-2.0), OmarchyTV, talkies (TechPP), tv-vibehack (Gathin), Aerial TV (pengchujin), ZXing, adhan-java, GeoNames and the fonts.
 
 - **Support Development:** [PayPal (@Midroid5G)](https://paypal.me/Midroid5G) · [@midroid5G on X](https://x.com/midroid5G)
 

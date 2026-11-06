@@ -75,6 +75,9 @@ sealed interface ManageIntent {
     data object ToggleEvening : ManageIntent
     data object ApplyDns : ManageIntent
     data object CheckPort853 : ManageIntent
+    // M4 item 35
+    data object ReSetupAfterUpdate : ManageIntent
+    data object FullRestore : ManageIntent
 }
 
 class ManageMachine(
@@ -150,6 +153,8 @@ class ManageMachine(
             }
             is ManageIntent.Open -> if (event.section != ManageSection.MODULES || d.store.addOns) id?.let { effect(ManageEffect.Navigate("${event.section.key}/${it.value}")) }
             ManageIntent.SetUpAnother -> effect(ManageEffect.Navigate("setup"))
+            ManageIntent.ReSetupAfterUpdate -> id?.let { effect(ManageEffect.Navigate("resetup/${it.value}")) }
+            ManageIntent.FullRestore -> id?.let { effect(ManageEffect.Navigate("fullrestore/${it.value}")) }
             ManageIntent.CleanAgain -> id?.let { effect(ManageEffect.Navigate("setup/${it.value}")) }
             ManageIntent.AppSettings -> effect(ManageEffect.Navigate("appsettings"))
             ManageIntent.HelpAddTv -> id?.let { effect(ManageEffect.Navigate("report/tv/${it.value}")) }

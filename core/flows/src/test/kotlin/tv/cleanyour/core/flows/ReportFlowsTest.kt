@@ -175,7 +175,7 @@ class ReportFlowsTest {
         val s = m.state.value
         assertFalse(s.loading)
         assertTrue(s.available)
-        assertTrue(s.text.startsWith("Clean Your TV: TV report\nApp: 0.3.2 (play)\nPhone: Pixel 7, Android 15\n"), s.text)
+        assertTrue(s.text.startsWith("Mi5G TV: TV report\nApp: 0.3.2 (play)\nPhone: Pixel 7, Android 15\n"), s.text)
         assertTrue("Home switch: blocked WIZARD_STAYS_ON" in s.text)
         assertTrue(s.url.contains("template=tv_support.yml"))
         assertFalse(tv.id.value in s.text || tv.facts.serialLast4 in s.text || "192.0.2" in s.text || tv.nickname in s.text)
@@ -183,7 +183,7 @@ class ReportFlowsTest {
         assertTrue(s.url.contains("&report="), s.url)
         assertTrue(s.url.length <= IssueLinks.MAX_URL)
         assertTrue("On, enabled (" in s.text, s.text)
-        assertTrue(s.shareText.startsWith("Clean Your TV: TV report\n") && "On, enabled (" !in s.shareText && " enabled\n" in s.shareText, s.shareText)
+        assertTrue(s.shareText.startsWith("Mi5G TV: TV report\n") && "On, enabled (" !in s.shareText && " enabled\n" in s.shareText, s.shareText)
         m.effects.test {
             m.dispatch(ReportIntent.CopyAndOpen); settle()
             assertEquals(listOf(ManageEffect.Copy(s.text), ManageEffect.OpenUrl(s.url)), drain())
@@ -235,7 +235,7 @@ class ReportFlowsTest {
         val m = ReportMachine(h.manageDeps(), backgroundScope, ReportKind.PROBLEM, null)
         settle()
         val s = m.state.value
-        assertTrue(s.text.startsWith("Clean Your TV: problem report\n"), s.text)
+        assertTrue(s.text.startsWith("Mi5G TV: problem report\n"), s.text)
         assertTrue("Apps: " in s.text && s.text.endsWith("redacted\n"), s.text)
         assertTrue(s.url.contains("template=bug_report.yml") && s.url.contains("&tv="), s.url)
         // 0.3.3 D1: a short problem report rides in the link too.

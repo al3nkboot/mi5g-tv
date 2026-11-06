@@ -1,0 +1,1 @@
+2.0.0: a new phone remote with built-in Wireless Debugging pairing (Android 11 to 14), a smarter TV home (Control Center, button mapper, Xiaomi Home lock with safe return), prayer times and Mi5G Score on the TV, a Samsung and LG helper, one-tap install of every Mi5G TV app, an Updates section, and one-tap re-setup and full restore.

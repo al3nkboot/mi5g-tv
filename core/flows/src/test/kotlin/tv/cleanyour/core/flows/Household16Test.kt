@@ -23,6 +23,7 @@ class Household16Test {
         assertEquals(DnsMode.SAFE, DnsDecision.modeFor(Port853.UNKNOWN))
         assertTrue(ShellRenderer.familyDnsLines(false).none { "hostname" in it.text })
         assertTrue(ShellRenderer.familyDnsLines(true).any { "family.adguard-dns.com" in it.text })
+        assertTrue(ShellRenderer.resetPrivateDnsLines().first().text.let { "revoke" in it && "WRITE_SECURE_SETTINGS" in it })
     }
 
     @Test fun uninstallNeedsWordAndRestorePoint() {

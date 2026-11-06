@@ -1255,6 +1255,53 @@ class SetupMachineTest {
     // the switch, the planner found no stock home among the claimants and refused the whole plan
     // ("plan refused" after every probe). Now the wizard asks the planner's StockHome first: the
     // home screen was already changed, so S3 says so and the real planner makes the clean-up alone.
+    // 2.0.1 field report (GAORUI m7332, SDK 28, no profile): HOME answers to com.gathin.tvhome signed
+    // with another key. 2.0.0 took it for ours, asked the planner to replace it, the planner refused
+    // (D36: only while the TV's own home is in charge) and the card said the TV stopped answering.
+    @Test fun issue201AForeignSignedLauncherAsHomeGetsTheCleanUpNotARefusal() = runTest(timeout = 30.seconds) {
+        val h = Harness()
+        h.sessions.allowPromptFor[HOST] = "AB:CD:7F:2A"
+        h.prober.facts = tv.cleanyour.testing.fixtures.Issue201.facts()
+        h.prober.snapshotFor = { r -> tv.cleanyour.testing.fixtures.Issue201.snapshot(r) }
+        val source = tv.cleanyour.core.spec.BundledProfileSource()
+        h.profiles.resolver = { f, _ -> source.resolveNow(f) }
+        val planner = tv.cleanyour.core.planner.DefaultPlanner(h.clock, tv.cleanyour.testing.fixtures.FakeIdGen(), tv.cleanyour.core.ops.ShellRenderer(),
+            tv.cleanyour.testing.fixtures.FakeConfigTransport(), "2.0.1")
+        h.planner.respond = { request, snap -> planner.plan(request, snap, h.facts, emptyList()) }
+        val m = h.setup(backgroundScope)
+        toFound(h, m)
+        val found = assertIs<SetupState.Found>(m.state.value, h.logLines.joinToString("\n"))
+        assertEquals(HomeBlock.HOME_CHANGED, m.extras.value.homeBlock)
+        assertFalse(m.extras.value.homePossible)
+        assertFalse(m.extras.value.canForceHome, "replacing a foreign-signed Home is refused by D36, so it is not offered")
+        val setup = h.planner.requests.filterIsInstance<PlanRequest.Setup>().last()
+        assertIs<tv.cleanyour.core.spec.ProfileResolution.None>(setup.resolution)
+        assertFalse(setup.choices.installLauncher)
+        assertFalse(setup.choices.takeover)
+        assertTrue(found.plan.sections.isEmpty())
+        val off = found.plan.steps.mapNotNull { (it.op as? Op.Disable)?.pkg?.value }
+        assertTrue("com.ctv.android.tvboot" !in off && "com.gathin.tvhome" !in off && "com.android.vending" !in off, off.toString())
+        assertTrue(h.logLines.none { it.startsWith("setup: plan refused") }, h.logLines.joinToString("\n"))
+    }
+
+    // Any refusal with the home screen in the plan falls back to the clean-up alone; a refusal of the
+    // clean-up itself says so (not "the TV stopped answering").
+    @Test fun aRefusedPlanFallsBackToTheCleanUpThenSaysWhy() = runTest(timeout = 30.seconds) {
+        val h = Harness()
+        h.sessions.allowPromptFor[HOST] = "AB:CD:7F:2A"
+        h.planner.respond = { request, _ ->
+            val s = request as PlanRequest.Setup
+            if (s.choices.installLauncher) PlanResult.Refused(listOf("test: home refused")) else PlanResult.Refused(listOf("test: all refused"))
+        }
+        val m = h.setup(backgroundScope)
+        toFound(h, m)
+        val st = assertIs<SetupState.Stopped>(m.state.value, h.logLines.joinToString("\n"))
+        assertEquals(StopCase.PROBE_FAILED, st.card.case)
+        assertEquals(KeyCopy.text(CopyKey.STOP_PLAN_REFUSED_TITLE, emptyMap()), st.card.title)
+        assertTrue(h.logLines.any { it == "setup: planning the clean-up alone, without the home screen" }, h.logLines.joinToString("\n"))
+        assertTrue(h.planner.requests.filterIsInstance<PlanRequest.Setup>().any { !it.choices.installLauncher })
+    }
+
     @Test fun issue8AHomeScreenAlreadyChangedGetsTheCleanUpAlone() = runTest(timeout = 30.seconds) {
         val h = Harness()
         h.sessions.allowPromptFor[HOST] = "AB:CD:7F:2A"

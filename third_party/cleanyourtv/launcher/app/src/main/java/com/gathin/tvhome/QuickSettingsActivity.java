@@ -26,7 +26,7 @@ public final class QuickSettingsActivity extends Activity {
         findViewById(R.id.scrim).setOnClickListener(v -> finish());
         LinearLayout rows = findViewById(R.id.rows);
         addRow(rows, R.drawable.ic_settings, R.string.tv_settings, 0, new Intent(Settings.ACTION_SETTINGS));
-        addRow(rows, R.drawable.ic_picture, R.string.quick_picture, 0, new Intent(Settings.ACTION_DISPLAY_SETTINGS));
+        addRow(rows, R.drawable.ic_picture, R.string.quick_picture, 0, PictureSettings.target(this));
         addRow(rows, R.drawable.ic_wifi, R.string.quick_network, 0, new Intent(Settings.ACTION_WIFI_SETTINGS));
         addRow(rows, R.drawable.ic_apps, R.string.quick_apps, R.string.quick_apps_hint,
                 new Intent(Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS));
@@ -62,7 +62,7 @@ public final class QuickSettingsActivity extends Activity {
         row.setOnClickListener(v -> {
             try {
                 startActivity(target.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-            } catch (ActivityNotFoundException e) {
+            } catch (ActivityNotFoundException | SecurityException e) {
                 Toast.makeText(this, R.string.not_available, Toast.LENGTH_SHORT).show();
             }
             finish();
