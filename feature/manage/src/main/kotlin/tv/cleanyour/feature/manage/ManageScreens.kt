@@ -269,7 +269,7 @@ internal fun ColumnScope.DebugStepContent(tvName: String, connecting: Boolean, o
 // resume card instead, which owns the home screen check.
 @Composable
 fun OpenWriteSheet(open: OpenWrite, onAction: (OpenWriteAction) -> Unit, onOpenSetup: () -> Unit, onDismiss: () -> Unit, onReport: () -> Unit = {}) {
-    CytBottomSheet(onDismiss) {
+    CytBottomSheet(onDismiss, scrollable = false) {
         Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
             OpenWriteContent(open, onAction, onOpenSetup, onDismiss, onReport = onReport)
         }
@@ -1413,7 +1413,7 @@ fun TvAppManagerScreen(
     }
 
     state.selectedApp?.let { selected ->
-        CytBottomSheet({ onIntent(TvAppManagerIntent.DismissApp) }) {
+        CytBottomSheet({ onIntent(TvAppManagerIntent.DismissApp) }, scrollable = false) {
             Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
                 TvAppActionsContent(
                     app = selected,

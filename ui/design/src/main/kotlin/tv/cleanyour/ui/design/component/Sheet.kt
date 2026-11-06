@@ -49,6 +49,9 @@ fun CytBottomSheet(
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
     sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+    // False when the caller scrolls itself (Customise, dock). Nested verticalScroll inside a
+    // scrollable sheet is measured with infinite height and crashes Compose on Android 15.
+    scrollable: Boolean = true,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val c = CytTheme.colors
@@ -66,7 +69,10 @@ fun CytBottomSheet(
         scrimColor = c.scrim,
         dragHandle = { SheetDragHandle() },
     ) {
-        Column(Modifier.fillMaxWidth().navigationBarsPadding().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp).padding(bottom = 16.dp), content = content)
+        val body = Modifier.fillMaxWidth().navigationBarsPadding()
+            .then(if (scrollable) Modifier.verticalScroll(rememberScrollState()) else Modifier)
+            .padding(horizontal = 20.dp).padding(bottom = 16.dp)
+        Column(body, content = content)
     }
 }
 

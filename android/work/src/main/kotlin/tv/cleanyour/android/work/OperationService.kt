@@ -45,7 +45,7 @@ class OperationService : Service() {
                     stopForeground(STOP_FOREGROUND_REMOVE)
                     stopSelf()
                 } else {
-                    getSystemService(NotificationManager::class.java)?.notify(NOTIFICATION_ID, build(n))
+                    runCatching { getSystemService(NotificationManager::class.java)?.notify(NOTIFICATION_ID, build(n)) }
                 }
             }
         }
@@ -58,8 +58,11 @@ class OperationService : Service() {
     }
 
     private fun startInForeground(n: Notification) {
-        if (Build.VERSION.SDK_INT >= 29) startForeground(NOTIFICATION_ID, n, ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE)
-        else startForeground(NOTIFICATION_ID, n)
+        // OxygenOS 15 can throw if POST_NOTIFICATIONS was just denied while a run starts.
+        runCatching {
+            if (Build.VERSION.SDK_INT >= 29) startForeground(NOTIFICATION_ID, n, ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE)
+            else startForeground(NOTIFICATION_ID, n)
+        }.onFailure { stopSelf() }
     }
 
     private fun build(n: OperationNotice?): Notification {

@@ -426,6 +426,7 @@ class SetupMachine(
                 forceHome = event.on
                 tv?.let { r -> draftJob = scope.launch { replan(r) } }
             }
+            SetupIntent.NotificationPermissionSettled -> askedNotifications = true
             SetupIntent.MakeItClean -> if (after is SetupState.Found && !mutableExtras.value.starting) {
                 mutableExtras.update { it.copy(starting = true) }
                 scope.launch {

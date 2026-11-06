@@ -128,7 +128,7 @@ Home, Undo, Restart, Key, Download, Phone, Delete, Share, Edit, Lock, External, 
 
 | Composable | Parameters |
 | :- | :- |
-| `CytBottomSheet` | `onDismissRequest, modifier, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true), content: ColumnScope` |
+| `CytBottomSheet` | `onDismissRequest, modifier, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true), scrollable = true, content: ColumnScope` |
 | `SheetSurface` | `modifier, content` (the same look inline, for previews and tests) |
 | `SheetHeader` | `title, modifier, trailing: AnnotatedString? = null, subtitle: String? = null` ("Customise", "22 of 23 off") |
 | `SheetDragHandle` | `modifier` |
