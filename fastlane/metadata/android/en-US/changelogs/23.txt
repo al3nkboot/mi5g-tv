@@ -1,0 +1,1 @@
+2.1.0: first public release since 1.6.0. New remote and wireless pairing, arrange Home from your phone via QR, HDMI device-on cards, city screensaver, Mawaqiti (Shafi/Hanafi Asr) and Mi5G Score on the TV, optional Continue Watching, QR file transfer, quieter nights, and clearer update checks.

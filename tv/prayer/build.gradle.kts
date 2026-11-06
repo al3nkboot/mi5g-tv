@@ -9,7 +9,7 @@ android {
     defaultConfig {
         applicationId = "com.midroid.mi5gtv.prayer"
         versionCode = 6
-        versionName = "2.1.0-dev"
+        versionName = "2.1.0"
     }
     testOptions { unitTests { isIncludeAndroidResources = true } }
 }

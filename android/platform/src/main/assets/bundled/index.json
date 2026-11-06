@@ -1,8 +1,8 @@
 {
   "schema": 1,
-  "sequence": 8,
-  "generated": "2026-11-03T00:00:00Z",
-  "expires": "2027-02-01T00:00:00Z",
+  "sequence": 9,
+  "generated": "2026-11-06T00:00:00Z",
+  "expires": "2027-02-04T00:00:00Z",
   "modules": [
     {
       "id": "adguard-dns",
@@ -50,7 +50,7 @@
       "id": "prayer-weather",
       "name": "مواقيتي",
       "one_line": "مواقيت الصلاة والأذان على التلفاز مع إعدادات من الهاتف",
-      "description": "مواقيت الصلاة الخمس والشروق بمحرك مواقيتي وتقويم عُمان، مع الأذان الكامل فوق أي تطبيق (الأذان الإجباري)، وتنبيه قبل الأذان، وودجت عائم اختياري للصلاة القادمة، وتذكير الجمعة بسورة الكهف، وإذاعة القرآن الكريم المباشرة. تُضبط الإعدادات من هاتفك.",
+      "description": "مواقيت الصلاة الخمس والشروق بمحرك مواقيتي وتقويم عُمان، مع الأذان الكامل فوق أي تطبيق (الأذان الإجباري)، وتنبيه قبل الأذان، وودجت عائم اختياري للصلاة القادمة، وتذكير الجمعة بسورة الكهف، وإذاعة القرآن الكريم المباشرة. تُضبط الإعدادات من هاتفك، مع خيار حساب العصر حنفي أو شافعي.",
       "package": "com.midroid.mi5gtv.prayer",
       "type": "card",
       "tier": "verified",
@@ -61,13 +61,13 @@
       "artwork": null,
       "versions": [
         {
-          "version_code": 5,
-          "version_name": "2.0.0",
-          "released": "2026-11-03T00:00:00Z",
+          "version_code": 6,
+          "version_name": "2.1.0",
+          "released": "2026-11-06T00:00:00Z",
           "apk": {
-            "url": "https://github.com/al3nkboot/mi5g-tv/releases/download/v2.0.0/mi5g-tv-prayer.apk",
-            "size": 3003326,
-            "sha256": "cb259bbbe6888723fec4b0fc62382e9f5371bbc0f0205788bf5c32bf2ece1a15",
+            "url": "https://github.com/al3nkboot/mi5g-tv/releases/download/v2.1.0/mi5g-tv-prayer.apk",
+            "size": 3003131,
+            "sha256": "9b790849cffce35fac98750b9d8f24d53976a9fbc1741daa1c9948e730759488",
             "signer_sha256": "c1f317965f154fe5e79fe7483abd5dd5dec7df57d87f3a645a5fd12f39a5480c"
           },
           "permissions": [
@@ -207,7 +207,7 @@
           "version_name": "2.0.0",
           "released": "2026-11-03T00:00:00Z",
           "apk": {
-            "url": "https://github.com/al3nkboot/mi5g-tv/releases/download/v2.0.0/mi5g-tv-score.apk",
+            "url": "https://github.com/al3nkboot/mi5g-tv/releases/download/v2.1.0/mi5g-tv-score.apk",
             "size": 271118,
             "sha256": "cd8c1a21ff75ddd0712f09eeac7fda1896410f94b9ee358aaee4d63d1022416a",
             "signer_sha256": "c1f317965f154fe5e79fe7483abd5dd5dec7df57d87f3a645a5fd12f39a5480c"

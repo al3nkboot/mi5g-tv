@@ -25,16 +25,16 @@ The interrupted changes were reviewed and retained where sound, then completed a
 | 13 | Implemented | Safely resolved Xiaomi picture settings with Android fallback |
 | 14 | Implemented | Remote ignore action |
 | 15 | Implemented | Arabic mirrored top-bar D-pad navigation regression |
-| 16 | Partial packaging | Shafi-default / Hanafi standard Asr calculation settings |
+| 16 | Implemented | Shafi-default / Hanafi standard Asr calculation settings; seed catalog ships prayer v6 |
 | 17 | Implemented | Android 8 MemAvailable fallback |
 | 18 | Implemented | Opt-in Watch Next / real-progress preview row and title dedupe |
 | 19 | Implemented | Opt-in package-only accessibility Home fallback with Arabic disclosure |
 | 20 | Implemented | Persisted 4–6 Home columns and icon sizes |
 | 21 | Implemented | Bounded bidirectional token/subnet-gated QR file transfer, no auto-install |
 
-### Item 16 packaging caveat
+### Item 16 packaging
 
-Phone settings send the Hanafi flag supported by the existing prayer engine. The TV-local Asr selector is implemented and tested in the separately built prayer companion v6 (`Mi5G-Prayer-2.1.apk`). The phone APK's existing signed module seed catalog still points to prayer v5: it was deliberately not re-signed or published in this work. Install the separately supplied prayer companion to use its new TV-local selector. Thus the module catalog integration is not complete.
+The bundled signed seed index now ships prayer v6 / 2.1.0 (sequence 9).
 
 ### Platform permission correction
 

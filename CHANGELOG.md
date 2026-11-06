@@ -2,9 +2,14 @@
 
 All notable changes to the app. Versions follow [semantic versioning](https://semver.org/).
 
-## 2.0.0 (unreleased)
+## 2.1.0 (2026-11-06)
 
-### الجديد في الإصدار 2.0.0
+First public release since v1.6.0. Includes the unpublished 2.0.0 and 2.0.1 work plus 2.1.
+
+### الجديد في الإصدار 2.1.0 (منذ v1.6.0)
+
+#### من 2.0.0
+
 #### الهاتف والريموت
 - ريموت جديد بالكامل: حلقة اتجاهات ذهبية، أزرار الصوت والقنوات، لوحة لمس، لوحة مفاتيح، وتطبيقات مفضلة.
 - إقران لاسلكي مدمج لأجهزة Android 11 إلى 14 (رمز الإقران والمنفذ) بدون كمبيوتر، مع إدخال يدوي للعنوان والمنفذ.
@@ -32,7 +37,29 @@ All notable changes to the app. Versions follow [semantic versioning](https://se
 - إعادة الإعداد بضغطة واحدة بعد تحديث النظام، واستعادة كاملة بضغطة واحدة.
 - صفحة الشكر والتراخيص: tvOS-Launcher و OmarchyTV و talkies (TechPP) و tv-vibehack (Gathin) والخطوط.
 
-### What's new in 2.0.0
+#### من 2.0.1
+- ترتيب الشاشة الرئيسية من الجوال عبر رمز QR: نقل البطاقات، تغيير الاسم والأيقونة، إخفاء التطبيقات، ومجلدات.
+- تثبيت مداخل HDMI في الرئيسية، وخلفيات Bing أو صور وفيديو من الجوال، وخيارات تخطيط الشبكة.
+- شاشة توقف بالمدينة والساعة والتاريخ الهجري والميلادي والصلاة القادمة والطقس (أفكار Aerial TV بترخيص MIT من pengchujin، بدون فيديوهات Apple).
+- إصلاح تلفزيونات GAORUI (MediaTek / SDK 28): لا تُرفض الخطة إذا كان المشغّل موقّعاً بمفتاح آخر، مع مهلات أوضح وحماية `com.ctv.android.tvboot`.
+- زر واحد «التحقق من التحديثات»، وصفحة GitHub كخيار بديل فقط عند الفشل.
+- إشعارات Aerial TV (MIT) و ZXing (Apache-2.0) في التراخيص.
+
+#### من 2.1
+- بطاقة «تشغّل جهاز» عند تشغيل جهاز على HDMI، مع إخفاء المنافذ غير المستخدمة وخيار عرض حالة HDMI عبر CEC فقط.
+- رسالة من الجوال تظهر في سطرين على شاشة التوقف، وساعات هادئة تخفف الإضاءة ليلاً (افتراضي 23:00 إلى 07:00).
+- طقس بدون إعداد من عنوان الإنترنت عند الحاجة، ومصدر احتياطي MET Norway إذا تعطلت Open-Meteo.
+- وضع خفيف تلقائي للتلفزيونات البطيئة، وإخفاء تطبيقات الشركة المصنّعة المزعجة، وحماية حزم TCL الأساسية.
+- رسالة واضحة إذا فشل تثبيت التحديث أو إذا رفض GitHub الطلب بسبب حد الاستعلامات.
+- إعادة رسم الساعة كل دقيقة وعند إضاءة الشاشة (إصلاح توقف الساعة بعد الاستعداد على بعض أجهزة TCL).
+- التحقق من اسم الحزمة قبل أوامر الصدفة، وفتح مدخل HDMI عبر Live TV عند ربط زر ريموت به.
+- خيار حساب العصر حنفي أو شافعي في مواقيتي على التلفاز (الوحدة v6).
+- صف «تابع المشاهدة» اختياري (يحتاج موافقة READ_TV_LISTINGS).
+- مساعد اختياري يحاول إرجاع الرئيسية إلى مشغّل Mi5G، وأعمدة الشبكة من 4 إلى 6 مع حجم الأيقونات.
+- نقل ملفات محدود بين الجوال والتلفاز عبر رمز QR على نفس الشبكة (بدون تثبيت تلقائي).
+- حساب الذاكرة على Android 8 عبر MemAvailable.
+
+### What's new in 2.1.0 (since v1.6.0)
 #### Phone and remote
 - A new remote: gold D-pad ring, volume and channel rockers, trackpad, keyboard and favorite apps.
 - Built-in Wireless Debugging pairing for Android 11 to 14 (pairing code and port), no computer needed, plus manual IP/port entry.
@@ -59,6 +86,28 @@ All notable changes to the app. Versions follow [semantic versioning](https://se
 - Updates section: current and available version, how updating works, and "Update now" opens the update APK in the browser.
 - One-tap re-setup after a system update, and one-tap full restore.
 - Credits and licences: tvOS-Launcher, OmarchyTV, talkies (TechPP), tv-vibehack (Gathin) and the fonts.
+
+#### From 2.0.1
+- Arrange Home from the phone via QR: move tiles, rename, change icons, hide apps, and folders.
+- Pin HDMI inputs on Home, Bing or phone photo/video wallpapers, and grid layout options.
+- City screensaver with the clock, Hijri and Gregorian dates, next prayer and weather (Aerial TV ideas, MIT, pengchujin; no Apple aerial videos).
+- GAORUI (MediaTek / SDK 28) fix: a foreign-signed launcher no longer blocks the cleanup plan; clearer timeouts; `com.ctv.android.tvboot` is protected.
+- One "Check for updates" item, with the GitHub releases page only as a fallback when the check fails.
+- Aerial TV (MIT) and ZXing (Apache-2.0) notices in the licences.
+
+#### From 2.1
+- A "device is on" card when a device wakes on HDMI, plus hiding unused inputs and an optional CEC-only HDMI status.
+- A two-line screensaver message from the phone, and quiet hours that dim the screensaver at night (default 23:00 to 07:00).
+- Weather without setup via an IP location fallback when needed, and MET Norway if Open-Meteo fails.
+- Automatic lite effects on slow TVs, hiding noisy maker extras, and protecting core TCL packages.
+- Clear messages when an update cannot install, or when GitHub rate-limits the check.
+- Clock redraw every minute and when the screen turns on (TCL standby clock fix).
+- Strict shell package-name checks, and Live TV passthrough when a remote button opens an HDMI input.
+- Standard Shafi / Hanafi Asr calculation in Mawaqiti on the TV (module v6).
+- Optional Continue Watching row (asks for READ_TV_LISTINGS).
+- Optional helper to return Home to the Mi5G launcher, and 4 to 6 Home columns with icon sizes.
+- Bounded QR file transfer between phone and TV on the same network (no auto-install).
+- Android 8 memory reading via MemAvailable.
 
 ## 1.5.0 (2026-10-26)
 
