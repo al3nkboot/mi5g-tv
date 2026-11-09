@@ -1,0 +1,1 @@
+2.2.0: ignore channel keys on Home (optional); clear Settings task on gear (optional); clearer inputs status when focused; Gulf debloat profile refresh; Google TV main-user install fix with clearer failure messages.

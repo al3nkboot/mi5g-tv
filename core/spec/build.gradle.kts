@@ -11,7 +11,7 @@ dependencies {
 
 // The upstream launcher repository, pinned by W1 (DECISIONS-W1.md, D-W1-8).
 val upstream = rootProject.layout.projectDirectory.dir("third_party/cleanyourtv")
-val upstreamCommit = "9071ec8"
+val upstreamCommit = "294d3d5"
 
 // D28: profiles are converted at build time from the pinned upstream examples and shipped as
 // data (profiles.json, with the D26 sure sets). The converter is this module's own code, run

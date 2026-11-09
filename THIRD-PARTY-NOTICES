@@ -1,7 +1,7 @@
 Mi5G TV (phone app): third-party notices
 
 Mi5G TV (`com.midroid.mi5gtv`) is an Arabic-first Android edition based on Clean Your TV (phone app)
-by udhaykumarbala (https://github.com/udhaykumarbala/cleanyourtv-app, MIT License) and Clean Your TV
+by udhaykumarbala (https://github.com/udhaykumarbala/cleanyourtv-app, MIT License; Google TV main-user install path compared against v0.4.8) and Clean Your TV
 by Gathin (https://github.com/Gathin23/cleanyourtv, MIT License).
 
 The app is MIT licensed (see LICENSE). It contains, or is built with, the following third-party
@@ -14,7 +14,7 @@ work. The full licence texts are linked or included below.
    (tile menu, Control Center, button mapper, media pill, clock, wake target; all marked "Mi5G 2.0"),
    and signed with this project's release key. The Cairo typeface (3a below) is bundled in it too. The
    upstream repository's per TV clean-up lists, written by its community contributors, are
-   converted into this app's TV profiles, and three of its themes (default, aurora with its
+   converted into this app's TV profiles (Gulf brands refreshed for Mi5G 2.2.0 from upstream commit 294d3d59dc2514e69fed557f46c1ecdfb87a95ec; pin `upstreamCommit` 294d3d5 in profile-meta.json), and three of its themes (default, aurora with its
    wallpaper picture, six-columns) are bundled as they are. Licence: MIT. The aurora wallpaper
    is the upstream author's own work; he confirmed on 2026-10-23 that it is MIT like the rest.
 

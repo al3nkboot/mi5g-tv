@@ -52,7 +52,11 @@ public class HomeKeyService extends AccessibilityService {
             if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
                 Intent open = settingsPanel ? new Intent(this, QuickSettingsActivity.class)
                         : new Intent(Settings.ACTION_SETTINGS);
-                startActivity(open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                int flags = Intent.FLAG_ACTIVITY_NEW_TASK;
+                if (!settingsPanel && LauncherSwitches.settingsKeyClearTask(this)) {
+                    flags |= Intent.FLAG_ACTIVITY_CLEAR_TASK;
+                }
+                startActivity(open.addFlags(flags));
             }
             return true;
         }

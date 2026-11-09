@@ -528,7 +528,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             open(systemIntent(Settings.ACTION_WIFI_SETTINGS));
             return true;
         });
-        btnSettings.setOnClickListener(v -> open(systemIntent(Settings.ACTION_SETTINGS)));
+        btnSettings.setOnClickListener(v -> open(settingsIntent()));
         btnReorder = findViewById(R.id.btnReorder);
         btnReorder.setOnClickListener(v -> toggleReorder());
         btnReorder.setVisibility(cfg.reorderButton ? View.VISIBLE : View.GONE);
@@ -822,7 +822,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             if (event.getKeyCode() != code) continue;
             if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
                 open(settingsKeyPanel ? new Intent(this, QuickSettingsActivity.class)
-                        : systemIntent(Settings.ACTION_SETTINGS));
+                        : settingsIntent());
             }
             return true;
         }
@@ -843,6 +843,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      */
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
+        // Mi5G 2.2 / CleanYourTV home_ignore_channel_keys: swallow Channel Up/Down on Home only.
+        if (LauncherSwitches.homeIgnoreChannelKeys(this) && RemoteKeys.isChannelKey(event.getKeyCode())) return true;
         if (handleSettingsKey(event)) return true;
         if (event.getAction() == KeyEvent.ACTION_DOWN && effectsProbe != null) {
             int k = event.getKeyCode();
@@ -2150,6 +2152,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      * settings app (com.xiaomi.mitv.settings) there, so the Settings and Wi-Fi pills keep working.
      * On firmware with a standard settings handler the behaviour is unchanged.
      */
+    /** TV Settings; optionally clears the Settings task so Back returns Home (Mi5G 2.2). */
+    private Intent settingsIntent() {
+        Intent i = systemIntent(Settings.ACTION_SETTINGS);
+        if (LauncherSwitches.settingsKeyClearTask(this)) {
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        }
+        return i;
+    }
+
     private Intent systemIntent(String standardAction) {
         Intent i = new Intent(standardAction);
         if (i.resolveActivity(getPackageManager()) != null) return i;

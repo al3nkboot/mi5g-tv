@@ -367,6 +367,12 @@ internal fun InstallScreen(step: InstallStep, state: ModulesState, onIntent: (Mo
 @Composable
 internal fun installFailureText(step: InstallStep.Failed): String {
     step.fetch?.let { return fetchFailureText(it) }
+    // Mi5G 2.2 / cleanyourtv-app 0.4.8: Google TV often installs for another user; surface a clear AR/EN line.
+    val detail = step.detail.orEmpty()
+    if ("not installed for user 0" in detail || "no readable apk" in detail) {
+        val why = stringResource(R.string.install_block_wrong_user)
+        return if (detail.isBlank()) why else why + "\n\n" + detail
+    }
     val why = stringResource(when (step.why) {
         InstallBlock.NOT_COMPATIBLE -> R.string.install_block_not_compatible
         InstallBlock.NO_TV -> R.string.install_block_no_tv
@@ -374,7 +380,7 @@ internal fun installFailureText(step: InstallStep.Failed): String {
         InstallBlock.REFUSED -> R.string.install_block_refused
         InstallBlock.RUN_FAILED, null -> R.string.install_block_run_failed
     })
-    return if (step.detail.isNullOrBlank()) why else why + "\n\n" + step.detail
+    return if (detail.isBlank()) why else why + "\n\n" + detail
 }
 
 @Composable

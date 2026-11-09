@@ -77,6 +77,15 @@
          Both keys can also be set from a theme's config.json ("settings_key_keycodes": [83]). -->
     <bool name="settings_key_panel">false</bool>
 
+    <!-- true: Settings buttons clear the TV Settings task before opening Settings (with settings_key_panel
+         off). Back then returns Home instead of landing on Display & Sound on some MediaTek/Skyworth gears
+         (CleanYourTV settings_key_clear_task). Off by default; Mi5G Settings can toggle it. -->
+    <bool name="settings_key_clear_task">false</bool>
+
+    <!-- true: Channel Up/Down do nothing while Home is in front (CleanYourTV home_ignore_channel_keys).
+         Off by default; Mi5G Settings can toggle it. -->
+    <bool name="home_ignore_channel_keys">false</bool>
+
     <!-- More remote buttons that open the input switcher, by Android keycode (INPUT_KEY_SERVICE=1
          build-and-install.sh; KEYCODE_TV always does). For buttons only a disabled app answered: the Xiaomi
          MiTV-AXFR2 remote's PatchWall button is 192 (KEYCODE_BUTTON_5). `dumpsys window policy` lists which

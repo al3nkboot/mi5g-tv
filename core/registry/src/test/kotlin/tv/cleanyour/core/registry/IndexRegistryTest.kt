@@ -132,12 +132,13 @@ class IndexRegistryTest {
     }
 
     @Test fun replayedIndexIsRefusedAlsoAfterARestart() = runBlocking {
-        serve(pub.index(8), pub.keys(1))
+        // Seed is sequence 10: use a higher index so the store keeps it as high-water.
+        serve(pub.index(12), pub.keys(1))
         registry().refresh()
-        serve(pub.index(7), pub.keys(1))
+        serve(pub.index(11), pub.keys(1))
         val fresh = registry()        // new process: high-water comes from the stored copy
         assertEquals(IndexFailure.ROLLBACK, failed(fresh.refresh()).verdict)
-        assertEquals(8, (registry(sources = null).restore() as IndexState.Ready).index.sequence)
+        assertEquals(12, (registry(sources = null).restore() as IndexState.Ready).index.sequence)
     }
 
     @Test fun expiredDownloadIsRefused() = runBlocking {
@@ -187,7 +188,7 @@ class IndexRegistryTest {
         val r = IndexRegistry(http, store, clock, seed, null, TrustRoots.indexVerifier())
         val s = r.restore() as IndexState.Ready
         assertEquals("io.github.udhaykumarbala.retro", r.module("retro")?.pkg?.value)
-        assertEquals(8L, s.index.sequence)
+        assertEquals(10L, s.index.sequence)
         assertEquals(6, s.index.modules.size)
     }
 }

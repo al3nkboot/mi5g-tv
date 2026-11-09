@@ -156,7 +156,9 @@ internal class ConnectionCore private constructor(
         is AdbService.ExecInstall -> {
             if ("cmd" !in features) throw protocolError("the TV has no cmd service for a streamed install")
             if (service.size !in 1..MAX_INSTALL_BYTES) throw protocolError("install size out of range")
-            "exec:cmd package install -S ${service.size}"
+            // RFC-INSTALL-1 (cleanyourtv-app 0.4.8 / Mi5G 2.2): for user 0, as pm install --user 0.
+            // Without a user, Android 11/12 "for all users" can leave user 0 without the APK.
+            "exec:cmd package install --user 0 -S ${service.size}"
         }
         AdbService.Ping -> "exec:echo"
     }

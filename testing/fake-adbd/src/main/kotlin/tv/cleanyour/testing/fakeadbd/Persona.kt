@@ -50,6 +50,8 @@ class FakeTv(
     // What an install of these bytes installs (keyed by sha256 hex of the APK); anything else fails.
     val apkCatalog = ConcurrentHashMap<String, FakePackage>()
     @Volatile var installFailure: String? = null     // e.g. INSTALL_FAILED_INSUFFICIENT_STORAGE, overrides the catalog
+    // RFC-INSTALL-1: packages on the TV but not installed for user 0 (kept by a second user).
+    val notForUser0: MutableSet<String> = ConcurrentHashMap.newKeySet()
 
     // Observations for tests.
     val armedScripts = CopyOnWriteArrayList<String>()
@@ -107,6 +109,7 @@ class FakeTv(
     fun listPackages(flags: Set<String>): String = synchronized(lock) {
         val sb = StringBuilder()
         for (p in packages.values) {
+            if (p.name in notForUser0) continue
             if ("-3" in flags && p.system) continue
             if ("-s" in flags && !p.system) continue
             if ("-d" in flags && p.state == "enabled") continue
@@ -119,10 +122,13 @@ class FakeTv(
     }
 
     // The result line `pm install` or `cmd package install` prints for these APK bytes.
-    fun installApk(bytes: ByteArray): String {
+    fun installApk(bytes: ByteArray, forUser0: Boolean = false): String {
         installFailure?.let { return "Failure [$it]" }
         val entry = apkCatalog[sha256Hex(bytes)] ?: return "Failure [INSTALL_PARSE_FAILED_NOT_APK: not an APK the fake knows]"
-        synchronized(lock) { packages[entry.name] = entry.copy() }
+        synchronized(lock) {
+            packages[entry.name] = entry.copy()
+            if (forUser0 || sdk >= 33) notForUser0.remove(entry.name)
+        }
         return "Success"
     }
 
