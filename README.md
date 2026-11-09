@@ -12,9 +12,9 @@
 
 ---
 
-## 📥 التحميل المباشر (أحدث إصدار `v2.1.1`)
+## 📥 التحميل المباشر (أحدث إصدار `v2.2.0`)
 
-- **[تحميل تطبيق الهاتف Mi5G TV v2.1.1 (APK)](https://github.com/al3nkboot/mi5g-tv/releases/download/v2.1.1/Mi5G-TV-v2.1.1.apk)**
+- **[تحميل تطبيق الهاتف Mi5G TV v2.2.0 (APK)](https://github.com/al3nkboot/mi5g-tv/releases/download/v2.2.0/Mi5G-TV-v2.2.0.apk)**
 - بصمة التوقيع (SHA-256): `c1f317965f154fe5e79fe7483abd5dd5dec7df57d87f3a645a5fd12f39a5480c`
 - **[صفحة جميع الإصدارات والوحدات الإضافية (Releases)](https://github.com/al3nkboot/mi5g-tv/releases/latest)**
 
@@ -134,9 +134,10 @@
 - **Full TV App Manager:** Launch, Force Stop, Clear Cache/Data, Uninstall, and pull APK backups from TV to phone.
 - **5 Bundled TV Modules:** Built-in AdGuard DNS switcher, Prayer Times & Weather, TV Speedtest, TV File Manager, and Today's Matches (`tv-matches`) with full Android TV Leanback banner support.
 
-- **New in 2.1.1:** crash fixes for denying the notification permission during cleanup and for opening Customise on Android 15 (OnePlus 13). See [CHANGELOG.md](CHANGELOG.md).
+- **New in 2.2.0:** optional ignore channel keys on Home; optional clear Settings task on gear; clearer Inputs status when focused; Gulf debloat profile refresh from CleanYourTV (MIT); Google TV main-user install fix with clearer failure messages. See [CHANGELOG.md](CHANGELOG.md).
+- **New in 2.1.1:** crash fixes for denying the notification permission during cleanup and for opening Customise on Android 15 (OnePlus 13).
 - **New in 2.1:** everything prepared since v1.6.0, including the new phone remote and Wireless Debugging pairing, arrange-Home from the phone via QR, HDMI device-on cards, city screensaver, Mawaqiti (including Shafi/Hanafi Asr) and Mi5G Score on the TV, optional Continue Watching, QR file transfer, and clearer GAORUI and update checks.
-- **Download:** [Mi5G-TV-v2.1.1.apk](https://github.com/al3nkboot/mi5g-tv/releases/download/v2.1.1/Mi5G-TV-v2.1.1.apk), signer SHA-256 `c1f317965f154fe5e79fe7483abd5dd5dec7df57d87f3a645a5fd12f39a5480c`.
+- **Download:** [Mi5G-TV-v2.2.0.apk](https://github.com/al3nkboot/mi5g-tv/releases/download/v2.2.0/Mi5G-TV-v2.2.0.apk), signer SHA-256 `c1f317965f154fe5e79fe7483abd5dd5dec7df57d87f3a645a5fd12f39a5480c`.
 - **Credits:** Clean Your TV (udhaykumarbala, Gathin), tvOS-Launcher (Apache-2.0), OmarchyTV, talkies (TechPP), tv-vibehack (Gathin), Aerial TV (pengchujin), ZXing, adhan-java, GeoNames and the fonts.
 
 - **Support Development:** [PayPal (@Midroid5G)](https://paypal.me/Midroid5G) · [@midroid5G on X](https://x.com/midroid5G)
