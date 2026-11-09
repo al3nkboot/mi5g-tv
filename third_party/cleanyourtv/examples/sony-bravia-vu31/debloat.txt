@@ -33,6 +33,60 @@
 # - Sony's Timers & Clock declares two leanback activities with one label, which showed as two tiles
 #   (launcher fix in #298).
 # - Real remote checked after the switch: Home, Input, the mic and the app buttons all work.
+#
+# Third VU31, same build, 2026-10-21: the list above plus the launcher, reboot-checked. On this set the remote's
+# app buttons did NOT work once launcherx was off:
+# - Realtek's com.realtek.advancesetting owns the app buttons (`dumpsys window policy`: KEYCODE_BUTTON_2/4/14/15
+#   go to its GlobalKeyReceiver), but on Google TV it does not open the app itself: Utils.startApp hands every
+#   launch to launcherx's globalbutton.GlobalButtonLaunch_Receiver whenever the
+#   com.google.android.feature.AMATI_EXPERIENCE feature is present. With launcherx disabled that broadcast has no
+#   receiver and the press does nothing; logcat shows "Failed to find provider info for
+#   ...launcherx.coreservices.DeviceModeContentProvider".
+# - Fix for four of them: app_keys in the launcher with INPUT_KEY_SERVICE=1, which catches the keycode first:
+#   201:com.google.android.youtube.tv, 202:com.google.android.youtube.tv (second YouTube button),
+#   191:com.netflix.ninja, 189:com.amazon.amazonvideo.livingroom. Checked with the real remote.
+# - SonyLIV (3004) and JioHotstar (3006) cannot be fixed this way: Realtek's KeyEventManager delivers those Sony
+#   codes to advancesetting only, they never reach Android's input pipeline, so no accessibility service sees
+#   them. Only re-enabling launcherx brings those two buttons back.
+# - InputKeyService also takes the Input key, but com.android.tv.action.VIEW_INPUTS resolves to
+#   com.sony.dtv.smartui/.select.SmartSelectActivity here, the same menu the button opened before.
+# - The Ambient screensaver (dreamx) keeps working with launcherx disabled, for owners who want to keep it.
+# - com.android.camera2 is installed and crashes on open (the set has no camera); safe to disable.
+#
+# Fourth VU31, same build, 2026-10-25/26: most of the list above (Google TV, Apple TV and dreamx kept; Alexa and
+# camera2 off by choice), four batches with a screenshot and crash-log check after each, then the launcher; several
+# reboots. Lived with for 2 days so far. Remote: SONY TV VRC 001 (Bluetooth, mic). Notes from it:
+# - com.sony.dtv.m2.seeds.iot and com.sony.dtv.m2.seeds.iot.remotestart (Alexa) were enabled again after every
+#   reboot, like Eco Dashboard (applicationdisabler presumably; not confirmed). Left alone: harmless while Alexa is
+#   not linked to an account.
+# - The gear (Settings) button sends keycode 83 to advancesetting, which hands it to launcherx like the app buttons
+#   (same DeviceModeContentProvider error), so it does nothing once launcherx is off. 83:settings in app_keys
+#   (INPUT_KEY_SERVICE=1) brings it back. Checked with the real remote.
+# - Holding volume up or down moves one step per press while InputKeyService is bound: the key-repeat trade in
+#   docs/devices/tcl-55p71b-g09-key-repeat.md. consume_volume_keys did not help; empty-service control not run.
+# - The mic button did nothing because Android's microphone privacy toggle was on (dumpsys sensor_privacy, sensor 1;
+#   AtvRemote logged "katniss doesn't have access to the on-remote mic"), not because of a disabled package.
+#   Settings > Privacy > Microphone on (or cmd sensor_privacy disable 0 microphone) fixed it. Whether it was on
+#   before the debloat is not known.
+# - With launcherx off, Down in the Ambient screensaver no longer opens its Screensaver settings panel
+#   (dreamx/.settingsv2.TwoPanelActivity); the same panel is under Settings > System > Ambient screensaver > Settings.
+# - The stock screensaver delay was 10 minutes (screen_off_timeout 600000); Google TV has no on-screen setting for it.
+#
+# Fifth VU31, sold as the BRAVIA 2 K-50S20B (50"), same build, 2026-10-31: the Sony, ad and Google groups above, the
+# launcher, and the three (5th) lines that close the off-by-choice group, in five batches with a screenshot and
+# crash-log check after each, then reboot-checked. Those three are comments here so this shared list keeps Assistant,
+# its Sony glue and YouTube Music on every other VU31; uncomment them to repeat that set. Streaming preloads,
+# Chromecast, AirPlay, Ambient screensaver and the updater kept. Notes from it:
+# - ADB went over Wireless debugging (adb pair, then TV_ADB_BINARY=adb and TV_HOST=<tv ip>:<port> as in
+#   tools/native-adb.md); after the first reboot USB debugging alone answered on 5555, as on the first set.
+# - Unlike the second set, the Input button also did nothing once launcherx was off, like YouTube, Netflix, Prime
+#   Video and the gear. INPUT_KEY_SERVICE=1 with the app_keys of the third and fourth sets brought all five back,
+#   checked with the real remote; holding volume then steps once per press, as on the fourth set.
+# - com.sony.dtv.m2.seeds.iot and .remotestart (Alexa) were disabled and came back at the first reboot, as on the
+#   fourth set.
+# - With ~25 streaming apps in /data, swap was over 80% full and apps opened slowly; disabling or removing the
+#   unused ones freed about 200 MB of swap. Play Store compiling app updates after a reboot (dex2oat) also slows
+#   it for a while.
 
 # Sony promos, store demo and help tiles
 com.sony.dtv.promos                      # My BRAVIA promos
@@ -57,6 +111,7 @@ com.google.android.syncadapters.calendar # calendar sync; also carries Google's 
 com.android.printspooler                 # printing
 android.autoinstalls.config.google.gtvpai # Play partner auto-installs (2nd)
 com.android.gallery3d                    # legacy photo viewer (2nd)
+com.android.camera2                      # crashes on open; no camera on this set
 
 # Screensaver: set `settings put secure screensaver_components com.android.dreams.basic/.Colors` first, or
 # with the launcher installed its clock, com.gathin.tvhome/.ClockDream (2nd; runs in the launcher's process)
@@ -72,6 +127,11 @@ com.suntv.sunnxt                         # Sun NXT
 com.yupptv.scope.tvapp                   # YuppTV
 com.analiti.fastest.android              # analiti speed test
 com.google.android.marvin.talkback       # screen reader, off by choice (2nd)
+com.google.android.tts                   # text-to-speech, off by choice
+com.viacom18.tv.voot                     # Voot streaming preload
+# com.google.android.katniss               # Google Assistant / voice search; the mic button stops working (5th)
+# com.sony.dtv.assistantadapter            # Sony's Assistant setup glue, boot receiver only (5th)
+# com.google.android.youtube.tvmusic       # YouTube Music (system app) (5th)
 
 # Launcher handover (2nd): setupwraith is safe to disable before the launcher (launcherx keeps Home), but
 # only once the Wi-Fi owner check above is clean.

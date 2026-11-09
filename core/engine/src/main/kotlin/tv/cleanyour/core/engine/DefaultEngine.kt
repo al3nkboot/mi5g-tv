@@ -45,6 +45,8 @@ import tv.cleanyour.core.planner.PlanKind
 import tv.cleanyour.core.planner.PlanSummary
 import tv.cleanyour.core.planner.Step
 import tv.cleanyour.core.planner.SwitchOffRule
+import tv.cleanyour.core.probe.InstalledApkReader
+import tv.cleanyour.core.probe.ProbeException
 import tv.cleanyour.core.probe.Prober
 import tv.cleanyour.core.session.BootOutcome
 import tv.cleanyour.core.session.ExecResult
@@ -641,8 +643,18 @@ class DefaultEngine(
         }
         val installed = prober.installedSha256(session, pkg)
         if (installed == expected) return Outcome.Ok
-        val got = installed?.hex ?: "no readable apk"
+        val got = installed?.hex ?: "no readable apk${unreadableApk(session, pkg)?.let { " ($it)" }.orEmpty()}"
         return Outcome.Failed(AdbError.Policy.GuardFailed(-1, "installed apk sha256 ${expected.hex}, got $got"), "verify: installed apk sha256 ${expected.hex}, got $got")
+    }
+
+    // RFC-INSTALL-1 (cleanyourtv-app 0.4.8 / Mi5G 2.2): say why an installed APK hash could not be read.
+    private suspend fun unreadableApk(session: TvSession, pkg: PackageName): String? {
+        val reader = prober as? InstalledApkReader ?: return null
+        return try {
+            reader.installedApk(session, pkg).why()
+        } catch (_: ProbeException) {
+            null
+        }
     }
 
     // Verify and probe reads: idempotent, so the session may retry them.

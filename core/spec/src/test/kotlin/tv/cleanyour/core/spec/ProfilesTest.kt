@@ -24,8 +24,8 @@ class ProfilesTest {
     private fun profile(folder: String) = DebloatTxtParser.parse(examples.first { it.folder == folder }.debloatTxt, folder)
 
     @Test fun everyConvertedUpstreamExampleParsesWithCuratedMetadata() {
-        assertEquals(154, upstream.size)   // pinned upstream; the 2 Mi5G lists live in core/spec/mi5g-examples
-        assertEquals(140, examples.size)
+        assertEquals(167, upstream.size)   // pinned upstream; the 2 Mi5G lists live in core/spec/mi5g-examples
+        assertEquals(152, examples.size)
         for (e in examples) {
             val profile = DebloatTxtParser.parse(e.debloatTxt, e.folder)
             assertEquals(e.folder, profile.id)
@@ -48,7 +48,7 @@ class ProfilesTest {
         val (bundle, problems) = ProfileConverter.convert(
             File(Fixtures.upstreamDir, "examples"),
             File(Fixtures.repoRoot, "core/spec/src/main/resources/tv/cleanyour/core/spec/profile-meta.json"),
-            "9071ec8",
+            "294d3d5",
             unconverted,
             Fixtures.mi5gExamplesDir,
         )
@@ -61,7 +61,7 @@ class ProfilesTest {
     @Test fun theUnconvertedListIsPinnedToTheSubmodule() {
         val meta = ProfileMeta.decode(File(Fixtures.repoRoot, "core/spec/src/main/resources/tv/cleanyour/core/spec/profile-meta.json").readText())
         assertEquals(upstream.map { it.folder }.filter { it !in meta.profiles }.toSet(), unconverted)
-        assertEquals(16, unconverted.size)
+        assertEquals(17, unconverted.size)
         val listed = unconvertedFile.readLines().filter { it.isNotBlank() && !it.startsWith("#") }
         assertEquals(listed.sorted(), listed, "one folder per line, sorted")
         assertTrue('\u2014' !in unconvertedFile.readText() && "-".repeat(2) !in unconvertedFile.readText())
@@ -177,7 +177,7 @@ class ProfilesTest {
     // homePossible); pinned, so a new one is a reviewed decision.
     @Test fun theProfilesWithNoKnownStockLauncher() {
         val none = BundledProfileSource.bundled.profiles.filter { it.stockLaunchers.isEmpty() && it.platform != Platform.FIRE_OS && it.platform != Platform.TCL_CN }
-        assertEquals(setOf("challenger-32t22bt", "freebox-player-pop", "google-tv-streamer-4k-kirkwood", "hisense-e5q-pro", "kalley-43g200",
+        assertEquals(setOf("challenger-32t22bt", "freebox-player-pop", "google-tv-streamer-4k-kirkwood", "hisense-85e7q", "hisense-e5q-pro", "kalley-43g200",
             "stellamore-t950s", "verizon-stream-tv", "vidda-mt9653", "xiaomi-mitv-ansp0", "xiaomi-mitv-astp1", "xiaomi-mitv-mffu0"), none.map { it.id }.toSet())
     }
 
@@ -272,7 +272,7 @@ class ProfilesTest {
 
     @Test fun bundledProfilesEqualAFreshParse() {
         val bundle = BundledProfileSource.bundled
-        assertEquals("9071ec8", bundle.upstreamCommit)
+        assertEquals("294d3d5", bundle.upstreamCommit)
         assertEquals(examples.map { it.folder }, bundle.profiles.map { it.id })
         for (e in examples) assertEquals(DebloatTxtParser.parse(e.debloatTxt, e.folder), bundle.profiles.first { it.id == e.folder }, e.folder)
         assertEquals(SureSetGenerator.generate(bundle.profiles), bundle.sureSets)
@@ -347,7 +347,7 @@ class ProfilesTest {
         fun askRow(id: String, pkg: String) = all.getValue(id).groups.single { g -> g.packages.any { it.name == p(pkg) } }.default
         for (id in listOf("google-chromecast-gtv-4k", "tcl-g05-google-tv", "tcl-g10-google-tv", "xiaomi-mi-box-s", "google-tv-streamer-4k-kirkwood"))
             assertEquals(GroupDefault.ASK, askRow(id, "com.google.android.marvin.talkback"), id)
-        assertEquals(GroupDefault.ASK, askRow("tcl-g10-google-tv", "com.google.android.tv.remote.service"))
+        // tcl-g10-google-tv comments out com.google.android.tv.remote.service (owner keeps the mic); not asserted.
         for (id in listOf("google-chromecast-gtv-4k", "google-tv-streamer-4k-kirkwood"))
             assertEquals(GroupDefault.ASK, askRow(id, "com.google.android.tv.remotecontrol.logging"), id)
     }

@@ -999,3 +999,60 @@ tv.wuaki.apptv	Rakuten TV	Film rental and streaming app	streaming
 tv.yacine.app	ياسين تيفي (Yacine TV)	Arabic live football and sports streaming app	streaming
 uk.co.bbc.iplayer	BBC iPlayer	BBC channels and programmes	streaming
 zeasn.open.technical.tv.store.stellamore.tv	Zeasn App Store	App store tile that shows Google ads	ads
+com.abclocal.kabc.news	News	Listed in a Gulf TV debloat profile (abclocal)	streaming
+com.amazon.dummy.soundpicker	Soundpicker	Listed in a Gulf TV debloat profile (amazon)	other
+com.amazon.firetv.troubleshooting	Troubleshooting	Listed in a Gulf TV debloat profile (amazon)	other
+com.amazon.music.tv	Tv	Listed in a Gulf TV debloat profile (amazon)	streaming
+com.amazon.prism.android.service	Service	Listed in a Gulf TV debloat profile (amazon)	other
+com.amazon.sharingservice.android.client.proxy	Proxy	Listed in a Gulf TV debloat profile (amazon)	other
+com.amazon.tifobserver	Tifobserver	Listed in a Gulf TV debloat profile (amazon)	other
+com.amazon.tv.matter	Matter	Listed in a Gulf TV debloat profile (amazon)	other
+com.clearchannel.iheartradio.tv	Tv	Listed in a Gulf TV debloat profile (clearchannel)	streaming
+com.eltelon.zapping	Zapping	Listed in a Gulf TV debloat profile (eltelon)	other
+com.espn.score_center	Score center	Listed in a Gulf TV debloat profile (espn)	streaming
+com.firestick.shemaroome	Shemaroome	Listed in a Gulf TV debloat profile (firestick)	streaming
+com.gaana.fire_tv	Fire tv	Listed in a Gulf TV debloat profile (gaana)	streaming
+com.hisense.tv.hisremotenowserver	Hisremotenowserver	Listed in a Gulf TV debloat profile (hisense)	other
+com.imdbtv.livingroom	Livingroom	Listed in a Gulf TV debloat profile (imdbtv)	streaming
+com.jamdeo.tv.vod	Vod	Listed in a Gulf TV debloat profile (jamdeo)	other
+com.ju.miguvideoTV.cmcc	Cmcc	Listed in a Gulf TV debloat profile (ju)	other
+com.mediatek.MtkDemo	MtkDemo	Listed in a Gulf TV debloat profile (mediatek)	demo
+com.mediatek.wfd	Wfd	Listed in a Gulf TV debloat profile (mediatek)	other
+com.mirakulo.astrotv.service	Service	Listed in a Gulf TV debloat profile (mirakulo)	other
+com.nvidia.osc	Osc	Listed in a Gulf TV debloat profile (nvidia)	other
+com.sony.dtv.adminpassword	Adminpassword	Listed in a Gulf TV debloat profile (sony)	ads
+com.sony.dtv.b2b.noderuntimeextension.node_20_11_1	Node 20 11 1	Listed in a Gulf TV debloat profile (sony)	other
+com.sony.dtv.deviceadminsettings	Deviceadminsettings	Listed in a Gulf TV debloat profile (sony)	ads
+com.sony.dtv.ecodashboard	Ecodashboard	Listed in a Gulf TV debloat profile (sony)	other
+com.sony.dtv.hbbtvplayer	Hbbtvplayer	Listed in a Gulf TV debloat profile (sony)	other
+com.sony.dtv.lastaccess	Lastaccess	Listed in a Gulf TV debloat profile (sony)	other
+com.sony.dtv.seeds.auth	Auth	Listed in a Gulf TV debloat profile (sony)	other
+com.sony.dtv.seeds.iot.remotestart	Remotestart	Listed in a Gulf TV debloat profile (sony)	other
+com.sony.dtv.sonyloglevelsettingsys	Sonyloglevelsettingsys	Listed in a Gulf TV debloat profile (sony)	other
+com.tcl.partnercustomizer.resource	Resource	Listed in a Gulf TV debloat profile (tcl)	other
+com.tcl.samba	Samba	Listed in a Gulf TV debloat profile (tcl)	other
+com.tcl.tv.tclhome_master	Tclhome master	Listed in a Gulf TV debloat profile (tcl)	other
+com.vt.roomcalibration	Roomcalibration	Listed in a Gulf TV debloat profile (vt)	other
+com.vt.tv.dlna	Dlna	Listed in a Gulf TV debloat profile (vt)	other
+com.vt.tv.mediacenter	Mediacenter	Listed in a Gulf TV debloat profile (vt)	other
+com.vt.tv.mobiledeviceconnectiontips	Mobiledeviceconnectiontips	Listed in a Gulf TV debloat profile (vt)	other
+com.yeelink.yeelightflow.hisense.overseas	Overseas	Listed in a Gulf TV debloat profile (yeelink)	other
+fi.mtv.svod	Svod	Listed in a Gulf TV debloat profile (mtv)	streaming
+mediatek.factorymenu.ui	Ui	Listed in a Gulf TV debloat profile (factorymenu)	demo
+tv.airtel.xstream.tvapp	Tvapp	Listed in a Gulf TV debloat profile (airtel)	streaming
+android.autoinstalls.config.hisense.huangshan	Hisense Huangshan installs	Partner apps installed without asking	ads
+android.autoinstalls.config.hisense.laoshan	Hisense Laoshan installs	Partner apps installed without asking	ads
+com.android.bips	Built-in Print Service	Android print service	other
+com.android.bookmarkprovider	Bookmark Provider	Browser bookmarks provider	other
+com.android.calllogbackup	Call Log Backup	Call history backup helper	other
+com.android.carrierconfig	Carrier Config	Mobile carrier configuration	other
+com.android.mms.service	MMS Service	Multimedia messaging service	other
+com.android.onetimeinitializer	One-time Initializer	First-boot setup helper	other
+com.android.printservice.recommendation	Print Recommendation	Suggests print services	other
+com.android.protips	Protips	Home-screen tip cards	other
+com.android.providers.userdictionary	User Dictionary	Personal dictionary for typing	other
+com.android.safetyregulatoryinfo	Safety info	Regulatory safety information	other
+com.android.settings.intelligence	Settings Intelligence	Settings search and suggestions	other
+com.google.android.backuptransport	Backup Transport	Google backup transport	other
+com.google.android.leanbacklauncher.partnerwidget	Partner Widget	OEM home-screen partner widget	other
+com.android.traceur	System Tracing	System tracing / perfetto helper	other

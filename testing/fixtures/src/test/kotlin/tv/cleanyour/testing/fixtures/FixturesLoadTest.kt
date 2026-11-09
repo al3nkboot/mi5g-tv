@@ -39,7 +39,7 @@ class FixturesLoadTest {
 
     @Test fun upstreamSubmoduleFixturesLoad() {
         val examples = Fixtures.upstreamExamples()
-        assertEquals(154, examples.size, "every upstream examples/*/debloat.txt at the pinned commit (9071ec8, v2.5.0)")
+        assertEquals(167, examples.size, "every upstream examples/*/debloat.txt after Mi5G 2.2 Gulf refresh (profiles pin 294d3d5; launcher still 9071ec8)")
         assertEquals(2, Fixtures.mi5gExamples().size, "Mi5G own lists in core/spec/mi5g-examples")
         assertTrue(examples.all { it.debloatTxt.isNotBlank() })
         assertTrue(examples.any { it.folder == "xiaomi-mitv-axso0" })

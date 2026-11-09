@@ -128,5 +128,6 @@
     <string name="install_block_no_tv">The phone couldn\'t reach the TV. Check both are on the same Wi-Fi and that wireless debugging is allowed on the TV, then try again.</string>
     <string name="install_block_gate">The phone lock check was cancelled, so nothing was installed.</string>
     <string name="install_block_refused">The TV refused this add. Details below.</string>
+    <string name="install_block_wrong_user">The app reached the TV but not the main user (common on Google TV / Chromecast). Reboot the TV, open this phone app again, and install once more.</string>
     <string name="install_block_run_failed">The install on the TV did not finish. Restart the TV and try again; if it repeats, report it with the details below.</string>
 </resources>

@@ -91,6 +91,14 @@ object ProbeScripts {
         return ShellLine("p=\$(pm path ${q(pkg.value)} | grep base.apk | head -n 1); sha256sum \"\${p#package:}\"")
     }
 
+    // RFC-INSTALL-1 (cleanyourtv-app 0.4.8 / Mi5G 2.2): why installedSha256 read nothing, in one read-only script.
+    fun installedApkState(pkg: PackageName): ShellLine {
+        require(PACKAGE_RE.matches(pkg.value))
+        return ShellLine("p=\$(pm path ${q(pkg.value)}); echo \"\$p\" | grep -c base.apk; ${mark("hash")}; " +
+            "b=\$(echo \"\$p\" | grep base.apk | head -n 1); sha256sum \"\${b#package:}\" >/dev/null 2>&1; echo \$?; " +
+            "${mark("current")}; cmd activity get-current-user; ${mark("users")}; dumpsys package ${q(pkg.value)} | grep -E '^ +User [0-9]+: '")
+    }
+
     // A copy of the installed APK in the app's TMP folder, for its signer (ApkSigners): the installed
     // file itself is outside the folders a pull may read (RemotePath). Like installedSha256, the path
     // never leaves the TV. Nothing is copied when the APK is larger than `cap` bytes (RF-LAUNCHER-240

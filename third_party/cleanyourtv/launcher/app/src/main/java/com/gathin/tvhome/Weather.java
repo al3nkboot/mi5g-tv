@@ -26,7 +26,7 @@ import java.util.Locale;
  * Mi5G's own code.
  */
 final class Weather {
-    static final String USER_AGENT = "Mi5G-TV-launcher/2.7-mi5g (+https://github.com/al3nkboot/mi5g-tv)";
+    static final String USER_AGENT = "Mi5G-TV-launcher/2.8-mi5g (+https://github.com/al3nkboot/mi5g-tv)";
     static final long IP_EVERY_MS = 7L * 24 * 60 * 60_000L;
 
     static final String K_USER_NAME = "mi5g_wx_user_name", K_USER_LAT = "mi5g_wx_user_lat", K_USER_LON = "mi5g_wx_user_lon";

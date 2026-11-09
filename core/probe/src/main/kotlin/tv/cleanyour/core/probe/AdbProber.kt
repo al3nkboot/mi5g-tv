@@ -44,7 +44,7 @@ class AdbProber(
     private val clock: Clock,
     private val signed: Set<PackageName> = SIGNED_PACKAGES,
     private val known: Map<Sha256, Sha256> = emptyMap(),
-) : Prober, LaunchableApps, SavedWifiOwners {
+) : Prober, LaunchableApps, SavedWifiOwners, InstalledApkReader {
 
     private suspend fun run(
         session: TvSession, line: ShellLine, stage: ProbeStage, cap: Int, timeoutMs: Long = 60_000, retry: RetryClass = RetryClass.IDEMPOTENT_READ,
@@ -229,6 +229,12 @@ class AdbProber(
 
     override suspend fun fileSha256(session: TvSession, path: RemotePath): Sha256? =
         firstHash(run(session, ProbeScripts.fileSha256(path), ProbeStage.LAUNCHER, 4096))
+
+
+    override suspend fun installedApk(session: TvSession, pkg: PackageName): InstalledApk {
+        val r = run(session, ProbeScripts.installedApkState(pkg), ProbeStage.LAUNCHER, 16 * 1024)
+        return InstalledApkParser.parse(sections(ProbeStage.LAUNCHER, r.stdout, listOf("hash", "current", "users")))
+    }
 
     override suspend fun installedSha256(session: TvSession, pkg: PackageName): Sha256? =
         firstHash(run(session, ProbeScripts.installedSha256(pkg), ProbeStage.LAUNCHER, 4096))

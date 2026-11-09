@@ -2,6 +2,26 @@
 
 All notable changes to the app. Versions follow [semantic versioning](https://semver.org/).
 
+## 2.2.0 (2026-11-09)
+
+### الجديد منذ v2.1.1
+- خيار «تجاهل أزرار القنوات في الرئيسية» (متوقف افتراضياً) في إعدادات Mi5G على التلفاز.
+- خيار «مسح مهمة الإعدادات عند زر الترس» لريموتات MediaTek/Skyworth حتى يرجع زر الرجوع للرئيسية (متوقف افتراضياً).
+- سطر حالة المداخل (مثل متصل) أوضح عند التركيز.
+- تحديث انتقائي لملفات إزالة البرامج الزائدة من CleanYourTV (MIT) للموديلات الشائعة في الخليج: شاومي/Mi TV، TCL، هايسنس، سوني، Google TV/Chromecast وأجهزة شائعة؛ مع الإبقاء على حماية Mi5G (مثل `com.tcl.exhibit`).
+- إصلاح تثبيت Google TV للمستخدم الرئيسي (`cmd package install --user 0`) مع رسائل أوضح بالعربية والإنجليزية عند فشل «لا يوجد APK قابل للقراءة» — قد يعالج بلاغ Chromecast «مقترن لكن لا يثبّت شيئاً».
+
+دعم التطوير: https://paypal.me/Midroid5G · X: @midroid5G
+
+### What's new since v2.1.1
+- Optional “Ignore channel keys on Home” (off by default) in Mi5G Settings on the TV.
+- Optional “Clear Settings task on gear” for MediaTek/Skyworth remotes so Back returns Home (off by default).
+- Inputs list status line is readable when focused.
+- Selective Gulf TV debloat profile refresh from CleanYourTV (MIT) for Xiaomi/Mi TV, TCL, Hisense, Sony, Google TV/Chromecast and popular sticks/boxes; Mi5G denylist protections kept (e.g. `com.tcl.exhibit`).
+- Google TV main-user install fix (`cmd package install --user 0`) with clearer Arabic/English failure messages for the “no readable apk” / wrong-user case — may address Chromecast “paired but nothing installs” reports.
+
+Support: https://paypal.me/Midroid5G · X: @midroid5G
+
 ## 2.1.1 (2026-11-06)
 
 Patch release for two crashes found on OnePlus 13 (Android 15) after v2.1.0.

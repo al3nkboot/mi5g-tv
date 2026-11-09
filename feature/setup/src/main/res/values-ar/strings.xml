@@ -245,6 +245,7 @@
     <!-- Stop: install failure (UX 4.14) -->
     <string name="stop_install_failed_title">تعذّر تثبيت الشاشة الرئيسية الجديدة</string>
     <string name="stop_install_failed_body">لا توجد مساحة كافية على التلفاز: المتاح {free, plural, other {# م.ب}}، والمطلوب {needed, plural, other {# م.ب}}. مسحنا الذاكرة المؤقتة وحاولنا مجددًا دون جدوى. اكتمل التنظيف؛ يمكنك تجربة تثبيت الشاشة الرئيسية لاحقًا من قسم الإدارة بعد تفريغ مساحة من الإعدادات &gt; التخزين.</string>
+    <string name="stop_install_failed_wrong_user_body">وصلت الشاشة الرئيسية إلى التلفاز لكن ليس للمستخدم الرئيسي (شائع على Google TV / Chromecast). اكتمل التنظيف؛ أعد تشغيل التلفاز وجرب الشاشة الرئيسية مرة أخرى من الإدارة.</string>
     <string name="stop_install_failed_generic_body">لم يقبل التلفاز تثبيت الشاشة الرئيسية الجديدة. اكتمل التنظيف؛ ويمكنك تجربة الشاشة الرئيسية لاحقًا من قسم الإدارة.</string>
     <string name="stop_install_failed_primary">حسنًا</string>
     <string name="stop_install_failed_secondary">عرض التفاصيل</string>

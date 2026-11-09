@@ -40,7 +40,7 @@ class UpdateItemScreenshotTest {
 
     private fun state(u: UpdateCheck) = AppSettingsState(
         version = "2.0.1-dev", prefs = AppPrefsValue(haptics = true, largeTextFollowsSystem = true),
-        launcherPkg = "com.gathin.tvhome", launcherVersion = "2.7-mi5g", launcherDigest = "9f2c41d07a6be8135c4d0e72ab19f5c3",
+        launcherPkg = "com.gathin.tvhome", launcherVersion = "2.8-mi5g", launcherDigest = "9f2c41d07a6be8135c4d0e72ab19f5c3",
         keyBacking = "STRONGBOX", keyFingerprint = "AB:CD:EF:01:23:45:67:89", update = u,
     )
 

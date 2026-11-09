@@ -257,6 +257,7 @@
     <!-- Stop: install failure (UX 4.14) -->
     <string name="stop_install_failed_title">The new home screen couldn\'t be installed</string>
     <string name="stop_install_failed_body">The TV is out of space: {free, plural, other {# MB}} free, {needed, plural, other {# MB}} needed. We cleared caches and tried again. Still no. The clean-up is done; try the home screen later from Manage after freeing space in Settings > Storage.</string>
+    <string name="stop_install_failed_wrong_user_body">The home screen reached the TV but not the main user (common on Google TV / Chromecast). The clean-up is done; reboot the TV and try the home screen again from Manage.</string>
     <string name="stop_install_failed_generic_body">The TV wouldn\'t accept the new home screen. The clean-up is done; you can try the home screen again later from Manage.</string>
     <string name="stop_install_failed_primary">OK</string>
     <string name="stop_install_failed_secondary">Show details</string>

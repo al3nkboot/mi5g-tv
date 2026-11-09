@@ -63,4 +63,9 @@ final class RemoteKeys {
         } catch (ActivityNotFoundException ignored) {
         }
     }
+
+    /** Channel Up or Down, for home_ignore_channel_keys (CleanYourTV / Mi5G 2.2). */
+    static boolean isChannelKey(int keyCode) {
+        return keyCode == KeyEvent.KEYCODE_CHANNEL_UP || keyCode == KeyEvent.KEYCODE_CHANNEL_DOWN;
+    }
 }

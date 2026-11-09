@@ -17,13 +17,13 @@ class AppNamesTest {
 
     @Test fun thenTheTvsOwnLabel() {
         assertEquals("System Tracing", name("com.android.traceur", label = "System Tracing"))
-        assertEquals("Traceur", name("com.android.traceur", label = "  "))
+        assertEquals("System Tracing", name("com.android.traceur", label = "  "))  // facts.tsv (Mi5G 2.2 Gulf lists)
     }
 
     @Test fun otherwiseANameFromThePackageWithoutAShellCall() {
         // The emulator TV's two launchable apps.
         assertEquals("Lego", name("com.lego.android.tvleanback"))
-        assertEquals("Traceur", name("com.android.traceur"))
+        assertEquals("System Tracing", name("com.android.traceur"))
         assertEquals("Spotify", AppNames.fromPackage(PackageName("com.spotify.tv.android")))
         assertEquals("Settings", AppNames.fromPackage(PackageName("com.android.tv.settings")))
         assertEquals("Youtube", AppNames.fromPackage(PackageName("com.google.android.youtube.tv")))

@@ -86,6 +86,13 @@ public final class Mi5gSettingsActivity extends Activity {
                 onOff(DeviceOnCard.enabled(this)), () -> { DeviceOnCard.setEnabled(this, !DeviceOnCard.enabled(this)); build(); });
         Rows.add(this, rows, R.drawable.ic_input, getString(R.string.mi5g_cec_only),
                 onOff(DeviceOnCard.cecOnly(this)), () -> { getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE).edit().putBoolean(DeviceOnCard.CEC_ONLY, !DeviceOnCard.cecOnly(this)).apply(); build(); });
+        // Mi5G 2.2 / CleanYourTV
+        Rows.add(this, rows, R.drawable.ic_keys, getString(R.string.mi5g_ignore_channel_keys),
+                onOff(LauncherSwitches.homeIgnoreChannelKeys(this)),
+                () -> { LauncherSwitches.setHomeIgnoreChannelKeys(this, !LauncherSwitches.homeIgnoreChannelKeys(this)); build(); });
+        Rows.add(this, rows, R.drawable.ic_home_settings, getString(R.string.mi5g_settings_clear_task),
+                onOff(LauncherSwitches.settingsKeyClearTask(this)),
+                () -> { LauncherSwitches.setSettingsKeyClearTask(this, !LauncherSwitches.settingsKeyClearTask(this)); build(); });
         Rows.add(this, rows, R.drawable.ic_input, getString(R.string.mi5g_inputs_edit), null,
                 () -> startActivity(new Intent(this, InputsEditActivity.class)));
         Rows.add(this, rows, R.drawable.ic_timer, getString(R.string.mi5g_quiet_hours), quietLabel(), () -> {
