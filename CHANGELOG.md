@@ -2,6 +2,16 @@
 
 All notable changes to the app. Versions follow [semantic versioning](https://semver.org/).
 
+## 2.2.1 (2026-11-10)
+
+### الجديد منذ v2.2.0
+- زر «تخطّي التنظيف» في شاشة «ما وجدناه» بعد الاتصال بالتلفاز (وأثناء القراءة، وعند فشل القراءة أو الخطة): ينقلك للرئيسية وأنت متصل لتستخدم الريموت ومواقيت الصلاة والمباريات وبقية الأدوات.
+- التطبيق يتذكر التخطي لكل تلفاز، فلا تُفرض شاشة التنظيف عند كل فتح أو اتصال؛ والتنظيف متاح دائماً من زر «ابدأ التنظيف الآمن» في الرئيسية.
+
+### What's new since v2.2.0
+- “Skip cleanup” on the “What we found” screen after connecting (and while reading the TV, and when the read or plan fails): opens the home screen, still connected, so the remote, prayer times, matches and other tools work without cleaning.
+- The skip is remembered per TV, so the cleanup screen is not forced on every start or connect; cleaning stays one tap away on the home screen.
+
 ## 2.2.0 (2026-11-09)
 
 ### الجديد منذ v2.1.1

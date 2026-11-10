@@ -72,6 +72,8 @@
     <string name="found_safety">A restore point is saved first, so everything can be put back.</string>
     <string name="found_make_clean">Make it clean</string>
     <string name="found_customise">Customise</string>
+    <string name="found_skip_clean">Skip cleanup</string>
+    <string name="found_skip_clean_hint">Go to the home screen and use the remote, prayer times and other tools now. You can clean the TV later from the home screen.</string>
     <!-- D36 (RF-LAUNCHER-240 F1): the plan replaces a home screen app signed with another key -->
     <string name="found_replaces_launcher">Replaces the home screen app already on this TV. Its look, app order, settings and card answers start fresh.</string>
     <string name="found_lock_note">This phone will ask for its own screen lock (PIN, pattern or fingerprint), not a TV password; the TV has none.</string>

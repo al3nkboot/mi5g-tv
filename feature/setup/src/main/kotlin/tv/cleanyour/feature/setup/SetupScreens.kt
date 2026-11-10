@@ -91,6 +91,7 @@ import tv.cleanyour.ui.design.component.ProgressBar
 import tv.cleanyour.ui.design.component.ProgressNarration
 import tv.cleanyour.ui.design.component.ProtectedGroupSection
 import tv.cleanyour.ui.design.component.SafetyLine
+import tv.cleanyour.ui.design.component.SecondaryButton
 import tv.cleanyour.ui.design.component.ScreenScaffold
 import tv.cleanyour.ui.design.component.ScreenTitle
 import tv.cleanyour.ui.design.component.SheetHeader
@@ -131,7 +132,7 @@ fun SetupFlow(
     onRoute: (String) -> Unit = {},
 ) {
     when (state) {
-        is SetupState.Probing -> ProbingScreen(state, extras, modifier)
+        is SetupState.Probing -> ProbingScreen(state, extras, modifier, onSkip = { actions.intent(SetupIntent.SkipClean) })
         is SetupState.Found -> FoundScreen(state, extras, actions, modifier, onCopyCommands, onHelpAddTv = { onRoute("report/tv/${state.tvId.value}") })
         is SetupState.Working -> WorkingScreen(state, extras, actions, modifier)
         is SetupState.Check -> CheckScreen(state, extras, actions, modifier, nowMs)
@@ -150,13 +151,24 @@ fun dateTime(ms: Long, locale: java.util.Locale): String = SimpleDateFormat("d M
 
 // S2d to S3: the probe's progress while the summary fills in.
 @Composable
-fun ProbingScreen(state: SetupState.Probing, extras: SetupExtras, modifier: Modifier = Modifier) {
+fun ProbingScreen(state: SetupState.Probing, extras: SetupExtras, modifier: Modifier = Modifier, onSkip: () -> Unit = {}) {
     ScreenScaffold(Glow.Tv, modifier, topBar = { TopBar(extras) }) {
         StatusLine(stringResource(R.string.probing_line), Modifier.padding(start = 4.dp, top = 20.dp))
         val stages = tv.cleanyour.core.probe.ProbeStage.entries
         val probingCd = stringResource(R.string.probing_progress_cd)
         ProgressBar((stages.indexOf(state.stage) + 1f) / stages.size, Modifier.padding(top = 16.dp).semantics { contentDescription = probingCd })
+        // 2.2.1: a TV already saved need not wait for the read to finish.
+        if (extras.canSkipClean) SkipCleanButton(onSkip, Modifier.align(Alignment.CenterHorizontally).padding(top = 24.dp))
     }
+}
+
+// 2.2.1 "Skip cleanup": straight to this TV's Manage (remote, prayer times, matches, tools), still
+// connected. The clean stays on Manage's health card; the choice is remembered for this TV.
+@Composable
+internal fun SkipCleanButton(onSkip: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true) {
+    val hint = stringResource(R.string.found_skip_clean_hint)
+    SecondaryButton(stringResource(R.string.found_skip_clean), onSkip,
+        modifier.semantics { contentDescription = hint }, enabled = enabled)
 }
 
 // S3 What we found (D4, D17 grey line, UX 2 rules behind the numbers, UX 4.6).
@@ -183,6 +195,8 @@ fun FoundScreen(
             SafetyLine(stringResource(R.string.found_safety), Modifier.padding(start = 4.dp, end = 4.dp, bottom = 14.dp))
             ActionColumn {
                 PrimaryButton(stringResource(R.string.found_make_clean), { actions.intent(SetupIntent.MakeItClean) }, loading = extras.starting)
+                // 2.2.1: the remote, prayer times and the rest do not need a clean first.
+                if (extras.canSkipClean) SkipCleanButton({ actions.intent(SetupIntent.SkipClean) }, enabled = !extras.starting)
                 TertiaryButton(stringResource(R.string.found_customise), { actions.intent(SetupIntent.Open(Sheet.CUSTOMISE)) })
             }
         },
@@ -578,6 +592,10 @@ fun StoppedScreen(state: SetupState.Stopped, extras: SetupExtras, actions: Setup
         // 0.3.2 B2: a stop the person did not cause offers the report preview under the card.
         if (c.case in REPORT_CASES) {
             TertiaryButton(stringResource(R.string.stop_report), onReport, Modifier.align(Alignment.CenterHorizontally).padding(top = 8.dp))
+        }
+        // 2.2.1: a read or plan that failed does not lock the person out of the app's other tools.
+        if (c.case == StopCase.PROBE_FAILED && extras.canSkipClean) {
+            SkipCleanButton({ actions.intent(SetupIntent.SkipClean) }, Modifier.align(Alignment.CenterHorizontally).padding(top = 8.dp))
         }
     }
     if (details) CytBottomSheet({ details = false }) { DetailsContent(extras.commands) }

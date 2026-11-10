@@ -1,0 +1,1 @@
+2.2.1: “Skip cleanup” after connecting opens the home screen so the remote, prayer times and matches work right away; remembered per TV, and cleaning stays available from the home screen.

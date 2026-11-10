@@ -133,6 +133,7 @@ data class SetupExtras(
     val restartSlow: Boolean = false,            // UX 4.8 at 3 minutes
     val restartReenabled: Int = 0,               // "2 things came back on after the restart; switched off again."
     val doneLines: List<String> = emptyList(),   // refused ops named on Done (UX 4.14)
+    val canSkipClean: Boolean = false,           // 2.2.1: the TV is saved, so "Skip cleanup" can open its Manage
     val doneKept: List<String> = emptyList(),    // RF-LAUNCHER-250 F1: switch-offs kept because they run the TV's inputs
     val doneNothing: Boolean = false,            // 0.3.3 (issue #15): the run changed nothing on the TV, so Done says so
     val doneNothingWhy: NothingWhy = NothingWhy.NOTHING_PLANNED,   // which "nothing was changed" body Done shows
@@ -427,6 +428,7 @@ class SetupMachine(
                 tv?.let { r -> draftJob = scope.launch { replan(r) } }
             }
             SetupIntent.NotificationPermissionSettled -> askedNotifications = true
+            SetupIntent.SkipClean -> if (canSkip(after)) scope.launch { skipClean() }
             SetupIntent.MakeItClean -> if (after is SetupState.Found && !mutableExtras.value.starting) {
                 mutableExtras.update { it.copy(starting = true) }
                 scope.launch {
@@ -636,7 +638,12 @@ class SetupMachine(
                 "${launchable?.size?.let { "$it launchable" } ?: "launchable unknown"}, profile ${LogCodes.profile(res)}, ${LogCodes.tv(facts)}")
             val record = upsertTv(s, facts, res)
             tv = record
-            replan(record)
+            // 2.2.1: a TV whose clean-up was skipped before goes straight to Manage on a plain
+            // connect; the clean opens only from Manage ("setup/<id>", SetupStart.Continue).
+            if (start is SetupStart.Fresh && record.wizard?.cleanSkipped == true) {
+                deps.log.line("setup: clean skipped earlier, opening Manage")
+                effect(SetupEffect.Navigate("manage/${record.id.value}"))
+            } else replan(record)
         }
         ok.exceptionOrNull()?.let { e ->
             deps.log.line("setup: probe failed ${LogCodes.of(e)}")
@@ -662,7 +669,7 @@ class SetupMachine(
             lastSeenAt = now, debugging = DebugState.ON,
         )
         deps.tvs.upsert(tv)
-        mutableExtras.update { it.copy(draft = tv.wizard, tvName = tv.nickname) }
+        mutableExtras.update { it.copy(draft = tv.wizard, tvName = tv.nickname, canSkipClean = true) }
         return tv
     }
 
@@ -1283,12 +1290,32 @@ class SetupMachine(
         effect(SetupEffect.Navigate("manage/${tvId.value}"))
     }
 
+    // 2.2.1 "Skip cleanup": S3, the probe before it, or a probe or plan that failed. The TV record
+    // remembers the choice, so the next start opens Manage instead of this wizard. The session is
+    // not closed and debugging is not switched off, so Manage's remote and tools work at once.
+    private fun canSkip(s: SetupState): Boolean = mutableExtras.value.canSkipClean && !mutableExtras.value.starting && when (s) {
+        is SetupState.Found, is SetupState.Probing -> true
+        is SetupState.Stopped -> s.card.case == StopCase.PROBE_FAILED
+        else -> false
+    }
+
+    private suspend fun skipClean() {
+        val id = tvIdOf(state.value) ?: return
+        val record = tv?.takeIf { it.id == id } ?: deps.tvs.tvs.value.firstOrNull { it.id == id } ?: return
+        draftJob?.cancel()
+        val skipped = record.copy(wizard = (record.wizard ?: draftFor(record)).copy(cleanSkipped = true, updatedAtMs = deps.clock.nowMs()))
+        tv = skipped
+        attempt { deps.tvs.upsert(skipped) }
+        deps.log.line("setup: clean skipped")
+        effect(SetupEffect.Navigate("manage/${id.value}"))
+    }
+
     // start modes
 
     private suspend fun continueDraft(tvId: TvId) {
         val record = deps.tvs.tvs.value.firstOrNull { it.id == tvId } ?: run { send(Ev.ToWelcome); return }
         tv = record
-        mutableExtras.update { it.copy(tvName = record.nickname, draft = record.wizard) }
+        mutableExtras.update { it.copy(tvName = record.nickname, draft = record.wizard, canSkipClean = true) }
         send(Ev.Door(foundOf(record, open = true)))
     }
 
