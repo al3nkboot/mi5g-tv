@@ -336,7 +336,7 @@ com.google.android.sss.authbridge	Phone setup helper	Signs the TV in from a phon
 com.google.android.syncadapters.calendar	Calendar sync	Syncs Google Calendar	other
 com.google.android.syncadapters.contacts	Google contacts sync	Syncs contacts with your Google account	preloads
 com.google.android.tts	Speech Services by Google	Reads text aloud and turns speech into text for voice search in apps	accessibility
-com.google.android.tungsten.setupwraith	Google TV setup wizard	First-run setup, can claim the Home key	home
+com.google.android.tungsten.setupwraith	Google TV setup wizard	First-run setup, claims Home; off, phone casting may stop	home
 com.google.android.tv	Live Channels	Android TV Live Channels app	preloads
 com.google.android.tv.assistant	Assistant light service	Controls the Assistant light and listening	voice
 com.google.android.tv.bugreportsender	Bug report sender	Uploads bug reports to Google	tracking
@@ -782,7 +782,7 @@ com.tcl.tvsmartalbum	TCL smart album	Photo album app	preloads
 com.tcl.tvweishi	TCL TV guard	Cleaner widget service	brand
 com.tcl.ui_mediaCenter	TCL media center	Plays media from USB	preloads
 com.tcl.useragreement	TCL user agreement	End-user agreement screen; some TCL Google TVs need it	other
-com.tcl.usercenter	TCL account	TCL account sign-in	brand
+com.tcl.usercenter	TCL account	TCL account; some TCL sets reboot after standby without it	brand
 com.tcl.versionUpdateApp	TCL updater	TCL firmware updates	updates
 com.tcl.videocall	TCL video calls	Video calling app	preloads
 com.tcl.videoplayer	TCL video player	Plays videos from USB	preloads
@@ -879,7 +879,7 @@ com.xiaomi.mitv.smartshare	Mi SmartShare	Share media from phones	casting
 com.xiaomi.mitv.tvmanager	TV Manager	Cleaner; Xiao Ai voice also opens apps through it	brand
 com.xiaomi.mitv.tvpush.tvpushservice	Xiaomi push service	Delivers Xiaomi push messages and promos	ads
 com.xiaomi.mitv.tvvideocall	MiTime video calls	Video calling app	preloads
-com.xiaomi.mitv.updateservice	Xiaomi updater	Firmware and PatchWall updates	updates
+com.xiaomi.mitv.updateservice	Xiaomi app updater	Updates PatchWall and Mi rows, not firmware; on, PatchWall returns	updates
 com.xiaomi.mitv.upgrade	Xiaomi updater	Downloads and installs firmware updates	updates
 com.xiaomi.screenrecorder	Screen recorder	Records the TV screen	preloads
 com.xiaomi.smarthome.tv	Mi Home	Xiaomi smart home app; also lets a Xiao Ai speaker control the TV	voice

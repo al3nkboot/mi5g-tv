@@ -22,17 +22,17 @@ object TrustRoots {
 
 // The launcher APK bundled in the phone app (D13, Q1): upstream github.com/Gathin23/cleanyourtv at
 // tag v2.5.0 (MIT), commit 9071ec8, plus the Mi5G 2.0 changes in third_party/cleanyourtv/launcher
-// (tile menu, Control Center, button mapper, media pill, clock; Mi5G 2.2 channel-key and settings-clear toggles). `assembleRelease`, re-signed with the
+// (tile menu, Control Center, button mapper, media pill, clock; Mi5G 2.2 channel-key and settings-clear toggles; Mi5G 2.3 helper revival after standby, Home lock, CEC switch). `assembleRelease`, re-signed with the
 // Mi5G release key (the original launcher key is not available), so SIGNER_SHA256 changed in 2.0. The verifyLauncherPin task (part of
 // :core:trust check and of :android:platform preBuild) fails the build when the asset differs.
 object PinnedLauncher {
     const val ASSET_NAME = "cleanyourtv-launcher.apk"
     const val UPSTREAM_COMMIT = "9071ec8d2f41826778f6b4c7f5f42dadc22f5b22"
     const val PACKAGE = "com.gathin.tvhome"
-    const val VERSION_CODE = 10L
-    const val VERSION_NAME = "2.8-mi5g"
+    const val VERSION_CODE = 11L
+    const val VERSION_NAME = "2.9-mi5g"
     const val SIZE = 704889L
-    const val SHA256 = "bbdd994c749514ac76e5af8afaaf1e8fe6352bbadf103ac2e0815cee9672eef4"
+    const val SHA256 = "8714320061f158b88a676f1cfcc0ac80dbbb75731a034f76d482ff4de2f26669"
     // SHA-256 of the signing certificate (DER): the Mi5G release key, v2 and v3.
     const val SIGNER_SHA256 = "c1f317965f154fe5e79fe7483abd5dd5dec7df57d87f3a645a5fd12f39a5480c"
     // The 1.x signer ("O=cleanyourtv, CN=Clean Your TV launcher") of the launcher and the curtain.

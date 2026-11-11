@@ -86,6 +86,9 @@ sealed interface SetupStart {
     data object Fresh : SetupStart
     data class Continue(val tvId: TvId) : SetupStart
     data class Resume(val tvId: TvId, val planId: PlanId) : SetupStart
+    // 2.3: the remote's "Connect" ("pair/<id>"): connect and pair again, then back to Manage,
+    // never the clean-up screen.
+    data class Repair(val tvId: TvId) : SetupStart
 }
 
 data class IdentityCheck(val model: String, val serialLast4: String, val screenshot: ByteArray?)
@@ -277,6 +280,7 @@ class SetupMachine(
         when (start) {
             SetupStart.Fresh -> afterTransition(state.value)
             is SetupStart.Continue -> scope.launch { continueDraft(start.tvId) }
+            is SetupStart.Repair -> scope.launch { continueDraft(start.tvId) }
             is SetupStart.Resume -> scope.launch { resumeRun(start.tvId, start.planId) }
         }
     }
@@ -640,7 +644,10 @@ class SetupMachine(
             tv = record
             // 2.2.1: a TV whose clean-up was skipped before goes straight to Manage on a plain
             // connect; the clean opens only from Manage ("setup/<id>", SetupStart.Continue).
-            if (start is SetupStart.Fresh && record.wizard?.cleanSkipped == true) {
+            if (start is SetupStart.Repair) {
+                deps.log.line("setup: paired again from the remote, opening Manage")
+                effect(SetupEffect.Navigate("manage/${record.id.value}"))
+            } else if (start is SetupStart.Fresh && record.wizard?.cleanSkipped == true) {
                 deps.log.line("setup: clean skipped earlier, opening Manage")
                 effect(SetupEffect.Navigate("manage/${record.id.value}"))
             } else replan(record)
@@ -1485,6 +1492,7 @@ class SetupMachine(
         fun initialState(start: SetupStart): SetupState = when (start) {
             SetupStart.Fresh -> SetupState.Welcome(emptyList(), onWifi = true, looking = true)
             is SetupStart.Continue -> SetupState.Probing(start.tvId, ProbeStage.FACTS, null)
+            is SetupStart.Repair -> SetupState.Probing(start.tvId, ProbeStage.FACTS, null)
             is SetupStart.Resume -> SetupState.Probing(start.tvId, ProbeStage.FACTS, null)
         }
 

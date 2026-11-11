@@ -47,14 +47,48 @@ final class Revival {
         return b.toString();
     }
 
+    /**
+     * Mi5G 2.3: our services are on the list but accessibility_enabled is a confirmed 0. -1 (absent or unreadable)
+     * with a complete list is left alone, as upstream does.
+     */
+    static boolean needsCycle(Set<String> ours, int accessibilityEnabled) {
+        return !ours.isEmpty() && accessibilityEnabled == 0;
+    }
+
+    /** enabled without our own services, other apps' entries kept in order. */
+    static String without(String enabled, String pkg) {
+        if (enabled == null) return "";
+        StringBuilder b = new StringBuilder();
+        Set<String> mine = ours(pkg, enabled);
+        for (String s : enabled.split(":")) {
+            String t = s.trim();
+            if (t.isEmpty()) continue;
+            ComponentName c = ComponentName.unflattenFromString(t);
+            if (c != null && mine.contains(c.flattenToShortString())) continue;
+            if (b.length() > 0) b.append(':');
+            b.append(t);
+        }
+        return b.toString();
+    }
+
     static void restore(Context ctx) {
         try {
             String pkg = ctx.getPackageName();
             String enabled = Settings.Secure.getString(ctx.getContentResolver(), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
             SharedPreferences p = ctx.getSharedPreferences(Config.SETTINGS_NAME, Context.MODE_PRIVATE);
             Set<String> now = ours(pkg, enabled);
-            if (!now.isEmpty()) {   // remember what the owner has on; nothing to put back
+            if (!now.isEmpty()) {   // remember what the owner has on
                 p.edit().putStringSet(WANTED_KEY, now).apply();
+                int flag = Settings.Secure.getInt(ctx.getContentResolver(), Settings.Secure.ACCESSIBILITY_ENABLED, -1);
+                if (!needsCycle(now, flag)) return;
+                if (ctx.checkSelfPermission(Manifest.permission.WRITE_SECURE_SETTINGS) != PackageManager.PERMISSION_GRANTED) return;
+                // Mi5G 2.3: the list still names our helper but the switch reads 0 after standby (Hisense, some TCL and
+                // Xiaomi sets mark the helper crashed). A crashed service is bound again only after it leaves the list
+                // and comes back, so take ours out, put the list back, then the switch on. Ported from CleanYourTV
+                // ServiceRepair, commit 86760c9 (#3404), MIT, Copyright (c) 2026 Gathin.
+                Settings.Secure.putString(ctx.getContentResolver(), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, without(enabled, pkg));
+                Settings.Secure.putString(ctx.getContentResolver(), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, enabled);
+                Settings.Secure.putInt(ctx.getContentResolver(), Settings.Secure.ACCESSIBILITY_ENABLED, 1);
                 return;
             }
             Set<String> wanted = p.getStringSet(WANTED_KEY, java.util.Collections.emptySet());

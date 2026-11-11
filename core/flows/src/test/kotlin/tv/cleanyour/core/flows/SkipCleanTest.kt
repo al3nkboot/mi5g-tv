@@ -85,4 +85,20 @@ class SkipCleanTest {
         assertEquals(tv, TvJson.decode(TvJson.encode(tv)))
         assertEquals(true, TvJson.decode(TvJson.encode(tv)).wizard?.cleanSkipped)
     }
+
+    // 2.3: the remote's re-pair (SetupStart.Repair) connects and returns to Manage, never the
+    // clean-up screen, also for a TV whose clean-up was never skipped.
+    @Test fun theRemotesRePairReturnsToManageNotTheCleanUp() = runTest(timeout = 30.seconds) {
+        val h = Harness()
+        val tv = Samples.tv().copy(wizard = WizardDraft(3, Level.SIMPLE, emptySet(), emptySet(), null, null, false, null, 0))
+        h.tvs.upsert(tv)
+        h.discovery.open5555[HOST] = true
+        val m = h.setup(backgroundScope, SetupStart.Repair(tv.id))
+        m.effects.test {
+            settle(); settle(700)
+            assertEquals(SetupEffect.Navigate("manage/${tv.id.value}"), drain().last())
+        }
+        assertFalse(m.state.value is SetupState.Found)
+        assertFalse(h.planner.requests.any { it == PlanRequest.DebugOff })
+    }
 }

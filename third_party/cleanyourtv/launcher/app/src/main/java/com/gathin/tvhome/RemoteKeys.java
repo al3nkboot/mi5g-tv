@@ -53,14 +53,18 @@ final class RemoteKeys {
         return keys;
     }
 
-    /** Opens an app from a remote button: its TV entry if it has one, else its phone entry. */
+    /**
+     * Opens an app from a remote button: its TV entry if it has one, else its phone entry. A SecurityException (an
+     * activity that isn't exported or needs a permission) is caught like a missing one, so the bound helper is not
+     * killed (Mi5G 2.3, after CleanYourTV PR #3636, commit 4a78ec26, MIT, Copyright (c) 2026 Gathin).
+     */
     static void launch(Context ctx, String pkg) {
         Intent open = ctx.getPackageManager().getLeanbackLaunchIntentForPackage(pkg);
         if (open == null) open = ctx.getPackageManager().getLaunchIntentForPackage(pkg);
         if (open == null) return;
         try {
             ctx.startActivity(open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-        } catch (ActivityNotFoundException ignored) {
+        } catch (ActivityNotFoundException | SecurityException ignored) {
         }
     }
 

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="mi5g_home_lock">قفل ترتيب الرئيسية</string>
+    <string name="mi5g_home_locked_hint">الرئيسية مقفلة. افتح القفل من إعدادات Mi5G.</string>
+    <string name="mi5g_cec_switch">التحويل لجهاز يُشغَّل عبر HDMI-CEC</string>
+</resources>

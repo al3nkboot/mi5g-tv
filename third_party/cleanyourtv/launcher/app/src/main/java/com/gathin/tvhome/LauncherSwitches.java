@@ -39,4 +39,26 @@ final class LauncherSwitches {
     static void setSettingsKeyClearTask(Context ctx, boolean on) {
         prefs(ctx).edit().putBoolean(CLEAR_TASK, on).apply();
     }
+
+    // Mi5G 2.3, after Aerial TV 1.89 (MIT, Copyright (c) 2026 pengchujin): both off by default.
+    static final String HOME_LOCK = "mi5g_home_lock";
+    static final String CEC_SWITCH = "mi5g_cec_switch";
+
+    /** Home lock: holding OK on a tile or in the library does nothing until unlocked in Mi5G settings. */
+    static boolean homeLocked(Context ctx) {
+        return prefs(ctx).getBoolean(HOME_LOCK, false);
+    }
+
+    static void setHomeLocked(Context ctx, boolean on) {
+        prefs(ctx).edit().putBoolean(HOME_LOCK, on).apply();
+    }
+
+    /** Switch to the input an HDMI-CEC device was turned on from (Amlogic's broadcast only). */
+    static boolean cecSwitch(Context ctx) {
+        return prefs(ctx).getBoolean(CEC_SWITCH, false);
+    }
+
+    static void setCecSwitch(Context ctx, boolean on) {
+        prefs(ctx).edit().putBoolean(CEC_SWITCH, on).apply();
+    }
 }

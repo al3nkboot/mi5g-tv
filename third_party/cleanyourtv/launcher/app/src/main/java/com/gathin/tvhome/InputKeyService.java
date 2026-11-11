@@ -41,6 +41,7 @@ public class InputKeyService extends AccessibilityService {
         appKeys = RemoteKeys.parseAppKeys(config.appKeys);
         instance = this;
         reloadMap();
+        CecSwitch.register(this);   // Mi5G 2.3: this helper stays bound, so it hears One Touch Play outside Home too
         // Item 17: this service stays bound across app switches, so it is where the wake is heard.
         if (screenOn == null) {
             screenOn = new android.content.BroadcastReceiver() {
@@ -75,13 +76,13 @@ public class InputKeyService extends AccessibilityService {
             case "settings":
                 try {
                     startActivity(new Intent(android.provider.Settings.ACTION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                } catch (ActivityNotFoundException ignored) {
+                } catch (ActivityNotFoundException | SecurityException ignored) {
                 }
                 break;
             case "inputs":
                 try {
                     startActivity(new Intent(ACTION_VIEW_INPUTS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                } catch (ActivityNotFoundException ignored) {
+                } catch (ActivityNotFoundException | SecurityException ignored) {
                 }
                 break;
             default:
@@ -133,7 +134,7 @@ public class InputKeyService extends AccessibilityService {
             } else {
                 try {
                     startActivity(new Intent(ACTION_VIEW_INPUTS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                } catch (ActivityNotFoundException ignored) {
+                } catch (ActivityNotFoundException | SecurityException ignored) {
                 }
             }
         }

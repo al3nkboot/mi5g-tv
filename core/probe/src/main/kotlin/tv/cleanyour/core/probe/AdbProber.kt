@@ -44,6 +44,8 @@ class AdbProber(
     private val clock: Clock,
     private val signed: Set<PackageName> = SIGNED_PACKAGES,
     private val known: Map<Sha256, Sha256> = emptyMap(),
+    // Mi5G 2.3 (cleanyourtv-app 0.4.9, #3436): which package list answered, when `pm list packages` did not.
+    private val log: (String) -> Unit = {},
 ) : Prober, LaunchableApps, SavedWifiOwners, InstalledApkReader {
 
     private suspend fun run(
@@ -103,12 +105,17 @@ class AdbProber(
         val facts = facts(session)
 
         onStage(ProbeStage.PACKAGES)
-        val listed = run(session, ProbeScripts.PACKAGES, ProbeStage.PACKAGES, 4 * 1024 * 1024).also { check(it, ProbeStage.PACKAGES) }
-        val disabled = run(session, ProbeScripts.DISABLED, ProbeStage.PACKAGES, 4 * 1024 * 1024).also { check(it, ProbeStage.PACKAGES) }
+        val listed = firstList(session, PACKAGE_LISTS)
+        val disabled = firstList(session, DISABLED_LISTS)
         val flags = run(session, ProbeScripts.PACKAGE_FLAGS, ProbeStage.PACKAGES, 4 * 1024 * 1024)
-        val all = PackagesParser.parse(lines(listed.stdout))
-        val off = PackagesParser.parse(lines(disabled.stdout)).map { it.name }.toSet()
         val info = DumpsysPackageParser.parse(lines(flags.stdout))
+        // The last fallback: the flags dump's own packages (user 0's, where it says) and states.
+        val all = listed.found ?: info.values.filter { it.installed != false }.map { PackagesParser.Listed(it.name, null) }
+            .takeIf { it.isNotEmpty() } ?: throw listed.failure(log, "package list")
+        val off = disabled.found?.map { it.name }?.toSet() ?: info.values.filter { it.enabled in OFF_CODES }.map { it.name }.toSet()
+            .takeIf { info.isNotEmpty() } ?: throw disabled.failure(log, "disabled list")
+        listed.note(log, "package list")
+        disabled.note(log, "disabled list")
 
         onStage(ProbeStage.HOME)
         val home = homeNow(session)
@@ -164,6 +171,35 @@ class AdbProber(
 
     private fun check(r: ExecResult, stage: ProbeStage) {
         if (r.exit != 0) throw ProbeException(stage, "exit ${r.exit}: ${r.stderr.take(200)}")
+    }
+
+    // Mi5G 2.3, ported from cleanyourtv-app 074fa8e (MIT). A list of the PACKAGES stage: the first of
+    // `tries` that answered (exit 0; a fallback must also list something), the name of each that did
+    // not with its exit code, and the first failure, which is the one reported when nothing answers.
+    private class ListRead(val found: List<PackagesParser.Listed>?, val source: String?, val failed: List<String>, val first: ProbeException?) {
+        fun failure(log: (String) -> Unit, what: String): ProbeException {
+            log("probe: $what failed: ${(failed + "dumpsys package listed nothing").joinToString(", ")}")
+            return first ?: ProbeException(ProbeStage.PACKAGES, "no $what")
+        }
+
+        fun note(log: (String) -> Unit, what: String) {
+            if (failed.isEmpty()) return
+            log("probe: $what from ${source ?: "dumpsys package"} after ${failed.joinToString(", ")}")
+        }
+    }
+
+    private suspend fun firstList(session: TvSession, tries: List<Pair<String, ShellLine>>): ListRead {
+        val failed = mutableListOf<String>()
+        var first: ProbeException? = null
+        for ((i, t) in tries.withIndex()) {
+            val (name, line) = t
+            val r = run(session, line, ProbeStage.PACKAGES, 4 * 1024 * 1024)
+            val listed = if (r.exit == 0) PackagesParser.parse(lines(r.stdout)) else null
+            if (listed != null && (i == 0 || listed.isNotEmpty())) return ListRead(listed, name, failed, first)
+            if (first == null) first = ProbeException(ProbeStage.PACKAGES, "exit ${r.exit}: ${r.stderr.take(200)}")
+            failed += if (r.exit == 0) "$name listed nothing" else "$name exit ${r.exit}"
+        }
+        return ListRead(null, null, failed, first)
     }
 
     override suspend fun homeNow(session: TvSession): HomeResolution {
@@ -319,6 +355,20 @@ class AdbProber(
         private val BOOT_ID_RE = Regex("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
         private val PNG_SIGNATURE = byteArrayOf(0x89.toByte(), 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A)
         private val SYSTEM_PATHS = listOf("/system/", "/product/", "/vendor/", "/odm/", "/system_ext/", "/apex/")
+
+        // Mi5G 2.3 (cleanyourtv-app 074fa8e): the package lists in the order tried, each with its log name.
+        val PACKAGE_LISTS: List<Pair<String, ShellLine>> = listOf(
+            "pm list packages -f" to ProbeScripts.PACKAGES,
+            "cmd package list packages -f for user 0" to ProbeScripts.PACKAGES_CMD_USER0,
+            "pm list packages for user 0" to ProbeScripts.PACKAGES_USER0,
+        )
+        val DISABLED_LISTS: List<Pair<String, ShellLine>> = listOf(
+            "pm list packages -d" to ProbeScripts.DISABLED,
+            "cmd package list packages -d for user 0" to ProbeScripts.DISABLED_CMD_USER0,
+            "pm list packages -d for user 0" to ProbeScripts.DISABLED_USER0,
+        )
+        // User 0's enabled codes in the flags dump that mean off: disabled, disabled by the user, disabled until used.
+        private val OFF_CODES = setOf(2, 3, 4)
 
         // User 0's state: 1 enabled, 2 disabled, 3 disabled by the user (pm disable-user), 4
         // disabled until used, 0 the manifest default; `pm list packages -d` is the ground truth

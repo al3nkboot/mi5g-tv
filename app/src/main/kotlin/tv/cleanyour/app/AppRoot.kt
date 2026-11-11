@@ -90,7 +90,7 @@ import tv.cleanyour.ui.design.theme.LocalCardScale
 // Navigation 3 keys (ARCHITECTURE 2.2): serializable, ids only, never payloads, so the back stack
 // itself survives process death and every screen rebuilds its state from disk.
 @Serializable sealed interface Dest : NavKey {
-    @Serializable data class Setup(val tvId: String? = null, val planId: String? = null) : Dest
+    @Serializable data class Setup(val tvId: String? = null, val planId: String? = null, val repair: Boolean = false) : Dest
     @Serializable data class Manage(val tvId: String? = null) : Dest
     @Serializable data class SwitchedOff(val tvId: String) : Dest
     @Serializable data class Leftovers(val tvId: String, val auto: Boolean = false) : Dest
@@ -125,6 +125,7 @@ internal fun applyRoute(stack: MutableList<NavKey>, route: String, noTvs: Boolea
         "manage" -> Dest.Manage(id)
         "returning" -> { stack.add(Dest.Manage(null)); return true }
         "setup" -> Dest.Setup(id)
+        "pair" -> id?.let { Dest.Setup(it, repair = true) }   // 2.3: the remote's re-pair, back to Manage after
         "resume" -> id?.let { t -> parts.getOrNull(2)?.let { p -> Dest.Setup(t, p) } }
         "modules" -> if (addOns) id?.let { Dest.Modules(it) } else null
         "home" -> if (id != null) Dest.Home(id) else null
@@ -252,10 +253,11 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
                 entry<Dest.Setup> { key ->
                     val start = when {
                         key.planId != null && key.tvId != null -> SetupStart.Resume(TvId(key.tvId), PlanId(key.planId))
+                        key.repair && key.tvId != null -> SetupStart.Repair(TvId(key.tvId))
                         key.tvId != null -> SetupStart.Continue(TvId(key.tvId))
                         else -> SetupStart.Fresh
                     }
-                    val m = rememberMachine("setup:${key.tvId}:${key.planId}") { graph.setup(it, start) }
+                    val m = rememberMachine("setup:${key.tvId}:${key.planId}:${key.repair}") { graph.setup(it, start) }
                     val state by m.state.collectAsStateWithLifecycle()
                     val extras by m.extras.collectAsStateWithLifecycle()
                     var pendingStartClean by rememberSaveable { mutableStateOf(false) }

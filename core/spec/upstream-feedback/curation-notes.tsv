@@ -522,3 +522,6 @@ xiaomi-mitv-mffu0	com.xiaomi.gamecenter.sdk.service.mibox	Xiaomi store games may
 xiaomi-mitv-mosr4	fusion.android.tv.demo	ask row: on MediaTek MTC builds this retail display app also handles the Input key and remote pairing (hitachi-65qledsm20), and this header did not check either with it off (RF-PROFILES-63 P6)
 xiaomi-mitv-mssp3-android9	(header)	v2.5.0 notes for the older PI.4663 firmware (upstream #494, alessandrodauria): no package change; there the old leanback home is installed next to tvlauncher, and the home screen switch turns off only the one that holds Home
 xiaomi-mitv-mssp3-android9	com.google.android.katniss	the header says the firmware turns it back on at every boot (REENABLED_AT_BOOT)
+tcl-g03-google-tv	com.tcl.usercenter	Mi5G 2.3: never-disable; a TCL 43C641 (G03_4K_GB, BeyondTV4) reboots on every wake from standby with it off (upstream #3533, 3c6e873)
+tcl-g05-google-tv	com.tcl.usercenter	Mi5G 2.3: never-disable instead of the upstream default-off brand row; same TCL standby-reboot risk as #3533
+tcl-65c735	com.tcl.usercenter	Mi5G 2.3: never-disable (G05 class), same TCL standby-reboot risk as #3533
