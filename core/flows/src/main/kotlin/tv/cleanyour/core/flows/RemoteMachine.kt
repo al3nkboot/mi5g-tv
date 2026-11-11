@@ -73,7 +73,7 @@ class RemoteMachine(private val d: ManageDeps, scope: CoroutineScope, private va
                 plan.latinToken?.let { send(ShellRenderer.inputTextLine(state.textInput)); send(TextSent) }
             }
             RemoteIntent.Reconnect -> probe()
-            RemoteIntent.OpenPairing -> effect(ManageEffect.Navigate("setup/${tvId.value}"))
+            RemoteIntent.OpenPairing -> effect(ManageEffect.Navigate("pair/${tvId.value}"))   // 2.3: pair, then Manage
             RemoteIntent.RefreshApps -> refreshApps()
             is RemoteIntent.ToggleFavorite -> scopeRef.launch { val next = if (intent.pkg in before.favorites) before.favorites - intent.pkg else before.favorites + intent.pkg; favoritesStore.save(tvId, next); send(FavoritesUpdate(next)) }
             is RemoteIntent.LaunchApp -> scopeRef.launch { accessRun { TvShellRunner.run(it, ShellRenderer.launchPackageLine(intent.pkg)) } }

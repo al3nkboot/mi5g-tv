@@ -55,6 +55,9 @@ enum class CopyKey(val res: String) {
     STOP_HOME_UNKNOWN_PRIMARY("stop_home_unknown_primary"), STOP_HOME_UNKNOWN_SECONDARY("stop_home_unknown_secondary"),
     STOP_HOME_USER_SAID_NO_TITLE("stop_home_user_said_no_title"), STOP_HOME_USER_SAID_NO_BODY("stop_home_user_said_no_body"),
     STOP_HOME_USER_SAID_NO_PRIMARY("stop_home_user_said_no_primary"), STOP_HOME_USER_SAID_NO_SECONDARY("stop_home_user_said_no_secondary"),
+    STOP_HOME_KEEP_OWN("stop_home_keep_own"),   // 2.3, cleanyourtv-app #3760
+    STOP_HOME_CHOOSER_BODY("stop_home_chooser_body"),   // 2.3 {names} {count}, cleanyourtv-app #3301
+    STOP_LOW_STORAGE_BODY("stop_low_storage_body"),   // 2.3 {free}, cleanyourtv-app #2851
     STOP_HOME_TIMED_OUT_TITLE("stop_home_timed_out_title"), STOP_HOME_TIMED_OUT_BODY("stop_home_timed_out_body"),
     STOP_HOME_TIMED_OUT_PRIMARY("stop_home_timed_out_primary"), STOP_HOME_TIMED_OUT_SECONDARY("stop_home_timed_out_secondary"),
     STOP_CONNECTION_LOST_TITLE("stop_connection_lost_title"), STOP_CONNECTION_LOST_BODY("stop_connection_lost_body"),   // {done} {total}

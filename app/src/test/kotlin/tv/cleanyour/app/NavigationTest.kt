@@ -27,6 +27,18 @@ class NavigationTest {
         assertEquals(listOf<NavKey>(Dest.Setup()), stack)
     }
 
+    // 2.3: the remote's re-pair has its own route; after pairing, Manage replaces the stack.
+    @Test fun theRemotesRePairOpensSetupInRepairModeAndEndsOnManage() {
+        val id = "0123456789abcdef"
+        val stack = mutableListOf<NavKey>(Dest.Manage(id), Dest.Remote(id))
+        assertTrue(applyRoute(stack, "pair/$id", noTvs = false))
+        assertEquals(Dest.Setup(id, repair = true), stack.last())
+        applyRoute(stack, "manage/$id", noTvs = false)
+        assertEquals(listOf<NavKey>(Dest.Manage(id)), stack)
+        assertTrue(applyRoute(stack, "pair", noTvs = false))   // no id: nothing opens
+        assertEquals(listOf<NavKey>(Dest.Manage(id)), stack)
+    }
+
     // STORES-PLAN 1: without add-ons (the Play build) the modules route opens nothing.
     @Test fun theModulesRouteNeedsAddOns() {
         val stack = mutableListOf<NavKey>(Dest.Manage("0123456789abcdef"))

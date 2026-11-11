@@ -77,7 +77,7 @@ object TvJson {
             "kept" to JsonArray(w.kept.map { p(it.value) }), "extraOff" to JsonArray(w.extraOff.map { p(it.value) }),
             "dock" to (w.dock?.let { d -> JsonArray(d.map { p(it.value) }) } ?: JsonNull), "themeId" to p(w.themeId),
             "keepDebuggingOn" to p(w.keepDebuggingOn), "planId" to p(w.planId?.value), "updatedAtMs" to p(w.updatedAtMs),
-            "curtain" to p(w.curtain)) } ?: JsonNull),
+            "curtain" to p(w.curtain), "cleanSkipped" to p(w.cleanSkipped)) } ?: JsonNull),
         "lastSeenAt" to p(tv.lastSeenAt), "debugging" to p(tv.debugging.name),
     )).encodeToByteArray()
 
@@ -98,7 +98,7 @@ object TvJson {
                 w.strings("kept").map(::PackageName).toSet(), w.strings("extraOff").map(::PackageName).toSet(),
                 if (w["dock"] is JsonArray) w.strings("dock").map(::PackageName) else null, w.str("themeId"),
                 w.bool("keepDebuggingOn") ?: false, w.str("planId")?.let(::PlanId), w.long("updatedAtMs") ?: 0,
-                curtain = w.bool("curtain") ?: true) },   // RFC-CURTAIN-1: a draft written before the switch existed shows the curtain
+                curtain = w.bool("curtain") ?: true, cleanSkipped = w.bool("cleanSkipped") ?: false) },   // RFC-CURTAIN-1: a draft written before the switch existed shows the curtain
             lastSeenAt = o.long("lastSeenAt") ?: 0, debugging = DebugState.valueOf(o.str("debugging") ?: "UNKNOWN"),
         )
     }

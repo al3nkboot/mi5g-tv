@@ -513,6 +513,12 @@ class DefaultPlanner(
 
         // ---- Manage ------------------------------------------------------------------------------
 
+        // Mi5G 2.3 (#3578): the TV's own home screens that are off and stay off in this plan. The setup
+        // wizard never comes back on while one of them is off: its RecoveryActivity takes Home then.
+        fun stockHomesOff(): List<PackageName> =
+            (managedStockLaunchers.map { it.pkg } + STOCK_HOME_PKGS).distinct()
+                .filter { it != launcher.pkg && installed(it) && isOff(it) && !putBackPlanned(it) }
+
         fun putBack(pkg: PackageName) {
             if (!installed(pkg)) { refuse("${pkg.value} is not on this TV"); return }
             if (!isOff(pkg)) return   // already on
@@ -521,6 +527,9 @@ class DefaultPlanner(
             val profile = managedProfile
             if (profile != null && Denylist.isWizardAllowed(pkg, profile) && snapshot.home.resolved == launcher) {
                 refuse("${name(pkg)} cannot be switched back on while the new home screen is in charge: $REASON_WIZARD_WHILE_OURS"); return
+            }
+            if (pkg.value in Denylist.setupWizards && stockHomesOff().isNotEmpty()) {
+                refuse("${name(pkg)} cannot be switched back on while the TV's own home screen is off: $REASON_WIZARD_BEFORE_STOCK"); return
             }
             val change = journals.filter { it.op is Op.Disable && (it.op as Op.Disable).pkg == pkg }.maxByOrNull { it.atMs }
             val op = change?.let { renderer.inverse(it.op, it.prior ?: Prior()) } ?: Op.Enable(pkg)
@@ -677,6 +686,9 @@ class DefaultPlanner(
                         val original = prior.packageState ?: continue
                         if (current.enabled == original) continue
                         val inverse = renderer.inverse(c.op, prior) ?: continue
+                        // #3578: a stock home this app did not switch off stays off, so the wizard does too.
+                        if (t.pkg.value in Denylist.setupWizards && original != EnabledState.DISABLED_USER && original != EnabledState.DISABLED &&
+                            stockHomesOff().isNotEmpty()) continue
                         step(inverse, Prior(packageState = current.enabled), GROUP_UNDO, undoNarration(inverse, t.pkg), FailurePolicy.CONTINUE)
                     }
                     is UndoOrder.Target.Setting -> {
@@ -724,6 +736,8 @@ class DefaultPlanner(
             if (originalHome != null && originalHome != launcher) {
                 useStockHome(originalHome, wizard)
             } else if (wizard != null && installed(wizard) && isOff(wizard)) {
+                // #3578: the TV's own home screen first, then the wizard.
+                stockHomesOff().forEach { enable(it, GROUP_HOME, "Switching the TV's own home screen back on") }
                 enable(wizard, GROUP_HOME, "Switching the setup wizard back on")
             }
         }
@@ -829,6 +843,10 @@ class DefaultPlanner(
         // need Android 8. Below it a Setup is the clean-up alone: no install, no look, no curtain, no switch.
         const val TV_MIN_SDK = 26
         const val REASON_OLD_ANDROID = "the new home screen needs Android 8 or newer, and this TV has an older Android"
+        // Mi5G 2.3 (#3578): switch the TV's own home screen back on before the setup wizard.
+        const val REASON_WIZARD_BEFORE_STOCK = "switch the TV's own home screen back on first; with it off the setup wizard takes the Home button and the TV may not start"
+        val STOCK_HOME_PKGS: List<PackageName> = listOf(
+            PackageName("com.google.android.apps.tv.launcherx"), PackageName("com.google.android.tvlauncher"), PackageName("com.google.android.leanbacklauncher"))
         const val REASON_WIZARD_WHILE_OURS = "on this TV the first-run setup wizard takes the Home button back; use the TV's own home screen first"
         const val REASON_HOME_SCREEN = "it is the TV's own home screen; only the home screen switch changes it"
         // Issue #2: Fire OS and the China-market TCL firmware take no other home screen.

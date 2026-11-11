@@ -67,7 +67,9 @@ object SwitchOffRule {
         if (!isHomeScreen(pkg, snapshot)) return false
         // Google's and Amazon's own TV home screens are never the person's, even when an update put
         // them under /data and the system flag reads wrong.
-        if (pkg in KnownLaunchers.byPackage) return false
+        // 2.3 (cleanyourtv-app #5539): except Google TV's home screen put on an Android TV set by the person.
+        if (pkg in KnownLaunchers.byPackage &&
+            !(pkg == KnownLaunchers.LAUNCHERX.pkg && KnownLaunchers.sideloadedGoogleTvHome(snapshot.home, snapshot.packages))) return false
         if (pkg == OUR_LAUNCHER) return false
         val known = state ?: snapshot.packages[pkg]
         return known?.system != true && known?.installedByUs != true
@@ -82,7 +84,10 @@ object StockHome {
     // launcher is verified on a real TV for every profile, the class is not. Either way the component
     // is the claimant the TV itself reported. Null: no HOME claimant is one of `stockLaunchers`.
     fun of(snapshot: Snapshot, stockLaunchers: List<Component>): Component? {
-        val claimants = snapshot.home.claimants.map { it.component }
+        // 2.3 (cleanyourtv-app #5539): a Google TV home screen the person put on an Android TV set is
+        // theirs, never the TV's own to hand Home back to.
+        val sideloaded = KnownLaunchers.sideloadedGoogleTvHome(snapshot.home, snapshot.packages)
+        val claimants = snapshot.home.claimants.map { it.component }.filter { !(sideloaded && it.pkg == KnownLaunchers.LAUNCHERX.pkg) }
         val resolved = snapshot.home.resolved
         fun stockPkg(c: Component) = stockLaunchers.any { it.pkg == c.pkg }
         return claimants.firstOrNull { it == resolved && it in stockLaunchers }

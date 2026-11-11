@@ -637,6 +637,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     protected void onResume() {
         super.onResume();
         isResumedNow = true;
+        // Mi5G 2.3: Home coming back after standby puts the key helpers back (and cycles one the TV left at 0),
+        // and listens for HDMI-CEC One Touch Play while the owner has it on.
+        Revival.restore(this);
+        CecSwitch.register(this);
         if (layoutChanged) {   // Mi5G 2.0.1: arranged from the phone while Home was behind
             layoutChanged = false;
             recreate();

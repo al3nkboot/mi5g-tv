@@ -433,8 +433,10 @@ class PlannerTest {
         val ours = snapshot(disabled = setOf(wizard.value, stock.pkg.value), home = launcher, claimants = listOf(launcher), extra = mapOf(installedLauncher()))
         assertTrue(refusedBy(PlanRequest.PutBack(wizard), ours).single().contains(DefaultPlanner.REASON_WIZARD_WHILE_OURS))
         assertEquals(listOf<Op>(Op.Enable(wizard)), ops(plan(PlanRequest.PutBack(wizard), snapshot(disabled = setOf(wizard.value)), planner = withProfile)))
-        // The R0: 15 constructor still compiles and plans without a profile.
-        assertEquals(listOf<Op>(Op.Enable(wizard)), ops(plan(PlanRequest.PutBack(wizard), ours)))
+        // The R0: 15 constructor still compiles; Mi5G 2.3 (#3578): with the TV's own home screen off the
+        // wizard stays off even without a profile, and comes back once that home screen is on.
+        assertTrue(PlannerFixtures.refused(PlanRequest.PutBack(wizard), ours).single().contains(DefaultPlanner.REASON_WIZARD_BEFORE_STOCK))
+        assertEquals(listOf<Op>(Op.Enable(wizard)), ops(plan(PlanRequest.PutBack(wizard), snapshot(disabled = setOf(wizard.value)))))
     }
 
     // R1 R-10: a stock launcher whose state before this app was DEFAULT ends DEFAULT, not ENABLED.

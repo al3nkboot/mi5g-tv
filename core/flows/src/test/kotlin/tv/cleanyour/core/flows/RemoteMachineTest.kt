@@ -1,6 +1,7 @@
 package tv.cleanyour.core.flows
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -26,5 +27,19 @@ class RemoteMachineTest {
         runCurrent()
         assertTrue("com.netflix.ninja" in machine.state.value.favorites)
         assertEquals(setOf("com.netflix.ninja"), favorites.load(tv.id))
+    }
+
+    // 2.3: Connect on the remote opens the re-pair route, not "setup/<id>" (the clean-up screen).
+    @Test fun connectOpensThePairRoute() = runTest {
+        val h = Harness()
+        val tv = h.knownTv()
+        val machine = RemoteMachine(h.manageDeps(), backgroundScope, tv.id, InMemoryRemoteFavoritesStore())
+        runCurrent()
+        val seen = mutableListOf<ManageEffect>()
+        backgroundScope.launch { machine.effects.collect { seen += it } }
+        runCurrent()
+        machine.dispatch(RemoteIntent.OpenPairing)
+        runCurrent()
+        assertEquals(ManageEffect.Navigate("pair/${tv.id.value}"), seen.last())
     }
 }

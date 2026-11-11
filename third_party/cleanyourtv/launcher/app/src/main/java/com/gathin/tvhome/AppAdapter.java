@@ -495,6 +495,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         h.card.setOnLongClickListener(v -> {
             if (e.kind == Entry.FOLDER || e.kind == Entry.INPUT) return false;
+            // Mi5G 2.3 Home lock (after Aerial TV 1.89): holding OK changes nothing until unlocked.
+            if (LauncherSwitches.homeLocked(ctx)) { lockedHint(ctx); return true; }
             // Mi5G 2.0: hold OK opens the tile menu (Move, Remove from Home, App info, custom image).
             if (e.kind == Entry.APP && listener != null && listener.onTileMenu(e.pkg, e.name)) return true;
             Intent i = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + e.pkg));
@@ -505,6 +507,11 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
             return true;
         });
+    }
+
+    /** Says where the Home lock is undone, once per hold. */
+    static void lockedHint(Context ctx) {
+        android.widget.Toast.makeText(ctx, R.string.mi5g_home_locked_hint, android.widget.Toast.LENGTH_SHORT).show();
     }
 
     /** Opens the tile's activity by explicit component, with no extras: a card can name nothing else. */

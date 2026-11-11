@@ -504,7 +504,11 @@ final class AppLibraryDialog {
                 if (onHome.test(pkg)) open(app);
                 else changeHome(app, true);
             });
-            holder.itemView.setOnLongClickListener(v -> { showActions(app, v); return true; });
+            holder.itemView.setOnLongClickListener(v -> {
+                if (LauncherSwitches.homeLocked(v.getContext())) { AppAdapter.lockedHint(v.getContext()); return true; }
+                showActions(app, v);
+                return true;
+            });
             holder.itemView.setOnFocusChangeListener((v, focused) -> {
                 if (focused) {
                     selectedPackage = pkg;

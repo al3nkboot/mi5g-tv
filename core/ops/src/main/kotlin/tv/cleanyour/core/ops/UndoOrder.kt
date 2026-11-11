@@ -64,6 +64,18 @@ object UndoOrder {
     // turns each record into its inverse with OpRenderer.inverse(record.op, record.prior).
     fun undoOrder(changes: List<ChangeRecord>): List<ChangeRecord> {
         val first = earliest(changes)
-        return Phase.entries.flatMap { phase -> first.filter { target(it.op)!!.phase == phase }.asReversed() }
+        return Phase.entries.flatMap { phase ->
+            val inPhase = first.filter { target(it.op)!!.phase == phase }.asReversed()
+            if (phase == Phase.PACKAGES) wizardsLast(inPhase) else inPhase
+        }
+    }
+
+    // Mi5G 2.3 (upstream Gathin23/cleanyourtv #3578, PR #3653, MIT): the setup wizard comes back on
+    // only after every other package state, so the TV's own home screen (launcherx) is on first.
+    // With launcherx off and setupwraith on, its RecoveryActivity takes Home, and a MiTV-MOEU0
+    // rebooted into a boot loop that only a factory reset cleared. Stable: the rest keeps its order.
+    fun wizardsLast(records: List<ChangeRecord>): List<ChangeRecord> {
+        fun isWizard(c: ChangeRecord) = (target(c.op) as? Target.PackageEnabled)?.pkg?.value in Denylist.setupWizards
+        return records.filterNot(::isWizard) + records.filter(::isWizard)
     }
 }

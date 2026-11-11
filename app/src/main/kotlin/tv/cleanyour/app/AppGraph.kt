@@ -123,7 +123,7 @@ class AppGraph(context: Context, val appVersion: String = versionOf(context), va
     val prober: Prober = AdbProber(clock, known = mapOf(
         tv.cleanyour.core.model.Sha256(PinnedLauncher.SHA256) to tv.cleanyour.core.model.Sha256(PinnedLauncher.SIGNER_SHA256),
         tv.cleanyour.core.model.Sha256(PinnedCurtain.SHA256) to tv.cleanyour.core.model.Sha256(PinnedCurtain.SIGNER_SHA256),
-    ))
+    ), log = { CytLog.i(it) })   // 2.3: which package list answered when `pm list packages` did not (#3436)
     val profiles = BundledProfileSource()
     val facts = BundledFactsTable()
 

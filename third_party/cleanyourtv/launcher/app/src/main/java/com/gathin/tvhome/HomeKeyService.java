@@ -56,7 +56,7 @@ public class HomeKeyService extends AccessibilityService {
                 if (!settingsPanel && LauncherSwitches.settingsKeyClearTask(this)) {
                     flags |= Intent.FLAG_ACTIVITY_CLEAR_TASK;
                 }
-                startActivity(open.addFlags(flags));
+                startSafely(open.addFlags(flags));
             }
             return true;
         }
@@ -71,9 +71,20 @@ public class HomeKeyService extends AccessibilityService {
                     .addCategory(Intent.CATEGORY_HOME)
                     .setPackage(getPackageName())
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-            startActivity(home);
+            startSafely(home);
         }
         return true;
+    }
+
+    /**
+     * Mi5G 2.3: a target that can't start (not exported, refused, gone) must not throw out of onKeyEvent, which kills
+     * this helper until the next boot. After CleanYourTV PR #3636 (commit 4a78ec26), MIT, Copyright (c) 2026 Gathin.
+     */
+    private void startSafely(Intent intent) {
+        try {
+            startActivity(intent);
+        } catch (android.content.ActivityNotFoundException | SecurityException ignored) {
+        }
     }
 
     @Override

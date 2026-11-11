@@ -47,7 +47,8 @@ sealed interface StartDestination {
 suspend fun resolveStart(tvs: List<Tv>, journal: Journal): StartDestination {
     val byRecent = tvs.sortedByDescending { it.lastSeenAt }
     for (tv in byRecent) journal.openRuns(tv.id).firstOrNull()?.let { return StartDestination.ResumeRun(tv.id, it) }
-    byRecent.firstOrNull { it.wizard != null }?.let { return StartDestination.ContinueSetup(it.id) }
+    // 2.2.1: a TV whose clean-up was skipped is not forced back into the wizard; Manage offers it.
+    byRecent.firstOrNull { it.wizard != null && !it.wizard!!.cleanSkipped }?.let { return StartDestination.ContinueSetup(it.id) }
     return byRecent.firstOrNull()?.let { StartDestination.Manage(it.id) } ?: StartDestination.Welcome
 }
 

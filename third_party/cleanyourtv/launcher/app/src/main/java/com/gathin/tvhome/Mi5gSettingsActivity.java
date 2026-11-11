@@ -93,6 +93,12 @@ public final class Mi5gSettingsActivity extends Activity {
         Rows.add(this, rows, R.drawable.ic_home_settings, getString(R.string.mi5g_settings_clear_task),
                 onOff(LauncherSwitches.settingsKeyClearTask(this)),
                 () -> { LauncherSwitches.setSettingsKeyClearTask(this, !LauncherSwitches.settingsKeyClearTask(this)); build(); });
+        Rows.add(this, rows, R.drawable.ic_lock, getString(R.string.mi5g_home_lock),
+                onOff(LauncherSwitches.homeLocked(this)),
+                () -> { LauncherSwitches.setHomeLocked(this, !LauncherSwitches.homeLocked(this)); build(); });
+        Rows.add(this, rows, R.drawable.ic_input, getString(R.string.mi5g_cec_switch),
+                onOff(LauncherSwitches.cecSwitch(this)),
+                () -> { LauncherSwitches.setCecSwitch(this, !LauncherSwitches.cecSwitch(this)); build(); });
         Rows.add(this, rows, R.drawable.ic_input, getString(R.string.mi5g_inputs_edit), null,
                 () -> startActivity(new Intent(this, InputsEditActivity.class)));
         Rows.add(this, rows, R.drawable.ic_timer, getString(R.string.mi5g_quiet_hours), quietLabel(), () -> {

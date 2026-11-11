@@ -86,6 +86,9 @@ sealed interface SetupStart {
     data object Fresh : SetupStart
     data class Continue(val tvId: TvId) : SetupStart
     data class Resume(val tvId: TvId, val planId: PlanId) : SetupStart
+    // 2.3: the remote's "Connect" ("pair/<id>"): connect and pair again, then back to Manage,
+    // never the clean-up screen.
+    data class Repair(val tvId: TvId) : SetupStart
 }
 
 data class IdentityCheck(val model: String, val serialLast4: String, val screenshot: ByteArray?)
@@ -133,6 +136,7 @@ data class SetupExtras(
     val restartSlow: Boolean = false,            // UX 4.8 at 3 minutes
     val restartReenabled: Int = 0,               // "2 things came back on after the restart; switched off again."
     val doneLines: List<String> = emptyList(),   // refused ops named on Done (UX 4.14)
+    val canSkipClean: Boolean = false,           // 2.2.1: the TV is saved, so "Skip cleanup" can open its Manage
     val doneKept: List<String> = emptyList(),    // RF-LAUNCHER-250 F1: switch-offs kept because they run the TV's inputs
     val doneNothing: Boolean = false,            // 0.3.3 (issue #15): the run changed nothing on the TV, so Done says so
     val doneNothingWhy: NothingWhy = NothingWhy.NOTHING_PLANNED,   // which "nothing was changed" body Done shows
@@ -276,6 +280,7 @@ class SetupMachine(
         when (start) {
             SetupStart.Fresh -> afterTransition(state.value)
             is SetupStart.Continue -> scope.launch { continueDraft(start.tvId) }
+            is SetupStart.Repair -> scope.launch { continueDraft(start.tvId) }
             is SetupStart.Resume -> scope.launch { resumeRun(start.tvId, start.planId) }
         }
     }
@@ -416,7 +421,9 @@ class SetupMachine(
             is Ev.OpenFailed -> onOpenFailed(event.error)
             is SetupIntent.Keep -> editDraft { d ->
                 if (event.keep) d.copy(kept = d.kept + event.pkg, extraOff = d.extraOff - event.pkg)
-                else if (event.pkg in d.kept) d.copy(kept = d.kept - event.pkg) else d.copy(extraOff = d.extraOff + event.pkg)
+                // 2.3 (cleanyourtv-app 0.4.9, #1222): off is one tap from any state; a row kept by an earlier
+                // tap also goes to extraOff, so a row the list leaves on to ask does not stay on "Kept".
+                else d.copy(kept = d.kept - event.pkg, extraOff = d.extraOff + event.pkg)
             }
             is SetupIntent.SetDock -> editDraft { it.copy(dock = DockLayers.trim(event.dock, dockColumns(it.themeId))) }
             is SetupIntent.SetTheme -> editDraft { it.copy(themeId = event.id) }
@@ -427,6 +434,7 @@ class SetupMachine(
                 tv?.let { r -> draftJob = scope.launch { replan(r) } }
             }
             SetupIntent.NotificationPermissionSettled -> askedNotifications = true
+            SetupIntent.SkipClean -> if (canSkip(after)) scope.launch { skipClean() }
             SetupIntent.MakeItClean -> if (after is SetupState.Found && !mutableExtras.value.starting) {
                 mutableExtras.update { it.copy(starting = true) }
                 scope.launch {
@@ -636,7 +644,15 @@ class SetupMachine(
                 "${launchable?.size?.let { "$it launchable" } ?: "launchable unknown"}, profile ${LogCodes.profile(res)}, ${LogCodes.tv(facts)}")
             val record = upsertTv(s, facts, res)
             tv = record
-            replan(record)
+            // 2.2.1: a TV whose clean-up was skipped before goes straight to Manage on a plain
+            // connect; the clean opens only from Manage ("setup/<id>", SetupStart.Continue).
+            if (start is SetupStart.Repair) {
+                deps.log.line("setup: paired again from the remote, opening Manage")
+                effect(SetupEffect.Navigate("manage/${record.id.value}"))
+            } else if (start is SetupStart.Fresh && record.wizard?.cleanSkipped == true) {
+                deps.log.line("setup: clean skipped earlier, opening Manage")
+                effect(SetupEffect.Navigate("manage/${record.id.value}"))
+            } else replan(record)
         }
         ok.exceptionOrNull()?.let { e ->
             deps.log.line("setup: probe failed ${LogCodes.of(e)}")
@@ -662,7 +678,7 @@ class SetupMachine(
             lastSeenAt = now, debugging = DebugState.ON,
         )
         deps.tvs.upsert(tv)
-        mutableExtras.update { it.copy(draft = tv.wizard, tvName = tv.nickname) }
+        mutableExtras.update { it.copy(draft = tv.wizard, tvName = tv.nickname, canSkipClean = true) }
         return tv
     }
 
@@ -930,7 +946,9 @@ class SetupMachine(
             PauseReason.STEP_FAILED -> {
                 val failed = p.plan.steps.getOrNull(p.at)?.op
                 val case = if (failed is Op.Install || failed is Op.InstallStream || p.error is AdbError.Device) StopCase.INSTALL_FAILED else StopCase.STEP_FAILED
-                send(Ev.Stop(tvId, card(case, p.plan.id, args = c)))
+                // 2.3 (#2851): a launcher install the TV ended on a TV clearly low on space says so.
+                val free = if (case == StopCase.INSTALL_FAILED) lowStorageMb(failed) else null
+                send(Ev.Stop(tvId, if (free != null) card(case, p.plan.id, args = c + ("free" to free), body = CopyKey.STOP_LOW_STORAGE_BODY) else card(case, p.plan.id, args = c)))
             }
             PauseReason.STALE -> {
                 // The engine paused before any write; the run is still open, so it is ended here or the
@@ -971,7 +989,10 @@ class SetupMachine(
             f.status == RunStatus.ABANDONED && f.home == HomeOutcome.CONNECTION_LOST && f.plan.steps.isEmpty() ->
                 send(Ev.Stop(tvId, homePutBackCard(f.plan.id)))
             f.status == RunStatus.ABANDONED -> effect(SetupEffect.Navigate("manage/${tvId.value}"))
-            f.home != null && f.home != HomeOutcome.CONFIRMED -> send(Ev.Stop(tvId, homeCard(f)))
+            f.home != null && f.home != HomeOutcome.CONFIRMED -> {
+                val failure = if (f.home == HomeOutcome.VERIFY_FAILED) attempt { deps.ledger.homeSwitchFailure(f.plan) }.getOrNull() else null
+                send(Ev.Stop(tvId, homeCard(f, failure, lowStorageMb(failure?.op))))
+            }
             else -> {
                 val directHome = f.plan.sections.isEmpty() && f.plan.steps.any { it.op is Op.SetHome } && f.status != RunStatus.ABANDONED
                 showDone(tvId, f, homeOn = (f.plan.sections.isNotEmpty() && f.home == HomeOutcome.CONFIRMED) || directHome)
@@ -1110,7 +1131,12 @@ class SetupMachine(
             }
             StopCase.HOME_OTHER_LAUNCHER -> if (action == StopAction.PRIMARY) scope.launch { tv?.let { retakeover(it) } } else send(SetupIntent.LeaveOldHome)
             StopCase.HOME_UNKNOWN -> if (action == StopAction.PRIMARY) shareDiagnostics() else send(SetupIntent.LeaveOldHome)
-            StopCase.HOME_USER_SAID_NO -> if (action == StopAction.PRIMARY) scope.launch { tv?.let { retakeover(it) } } else shareDiagnostics()
+            // 2.3 (cleanyourtv-app 0.5.0, #3760): the third button keeps the TV's own home screen and goes on to Done.
+            StopCase.HOME_USER_SAID_NO -> when (action) {
+                StopAction.PRIMARY -> scope.launch { tv?.let { retakeover(it) } }
+                StopAction.SECONDARY -> shareDiagnostics()
+                StopAction.TERTIARY -> send(SetupIntent.LeaveOldHome)
+            }
             StopCase.HOME_TIMED_OUT -> if (action == StopAction.PRIMARY) scope.launch { tv?.let { retakeover(it) } } else send(SetupIntent.LeaveOldHome)
             StopCase.CONNECTION_LOST, StopCase.STEP_FAILED -> when (action) {
                 StopAction.PRIMARY -> send(SetupIntent.CarryOn)
@@ -1283,12 +1309,32 @@ class SetupMachine(
         effect(SetupEffect.Navigate("manage/${tvId.value}"))
     }
 
+    // 2.2.1 "Skip cleanup": S3, the probe before it, or a probe or plan that failed. The TV record
+    // remembers the choice, so the next start opens Manage instead of this wizard. The session is
+    // not closed and debugging is not switched off, so Manage's remote and tools work at once.
+    private fun canSkip(s: SetupState): Boolean = mutableExtras.value.canSkipClean && !mutableExtras.value.starting && when (s) {
+        is SetupState.Found, is SetupState.Probing -> true
+        is SetupState.Stopped -> s.card.case == StopCase.PROBE_FAILED
+        else -> false
+    }
+
+    private suspend fun skipClean() {
+        val id = tvIdOf(state.value) ?: return
+        val record = tv?.takeIf { it.id == id } ?: deps.tvs.tvs.value.firstOrNull { it.id == id } ?: return
+        draftJob?.cancel()
+        val skipped = record.copy(wizard = (record.wizard ?: draftFor(record)).copy(cleanSkipped = true, updatedAtMs = deps.clock.nowMs()))
+        tv = skipped
+        attempt { deps.tvs.upsert(skipped) }
+        deps.log.line("setup: clean skipped")
+        effect(SetupEffect.Navigate("manage/${id.value}"))
+    }
+
     // start modes
 
     private suspend fun continueDraft(tvId: TvId) {
         val record = deps.tvs.tvs.value.firstOrNull { it.id == tvId } ?: run { send(Ev.ToWelcome); return }
         tv = record
-        mutableExtras.update { it.copy(tvName = record.nickname, draft = record.wizard) }
+        mutableExtras.update { it.copy(tvName = record.nickname, draft = record.wizard, canSkipClean = true) }
         send(Ev.Door(foundOf(record, open = true)))
     }
 
@@ -1333,7 +1379,13 @@ class SetupMachine(
     // "We put the old home screen back": step R ran after the connection was lost (UX 4.7, 4.9).
     private fun homePutBackCard(planId: PlanId?): StopCard = card(StopCase.HOME_PUT_BACK, planId, args = mapOf("tv" to (tv?.nickname ?: "")))
 
-    private fun homeCard(f: RunState.Finished): StopCard {
+    // `failure`: the step the switch stopped at when it ended VERIFY_FAILED; `lowFree`: the TV's free MB
+    // when the launcher's install failed and the TV is clearly low on storage (2.3, #2851).
+    private fun homeCard(f: RunState.Finished, failure: LastFailure? = null, lowFree: Int? = null): StopCard {
+        lowFree?.let { free ->
+            wifiCard = false
+            return card(StopCase.HOME_UNKNOWN, f.plan.id, args = mapOf("free" to free), body = CopyKey.STOP_LOW_STORAGE_BODY)
+        }
         val other = otherLauncherName()
         val case = when (f.home) {
             HomeOutcome.USER_SAID_NO -> StopCase.HOME_USER_SAID_NO
@@ -1355,7 +1407,46 @@ class SetupMachine(
             val body = if (wizardWifi == WizardWifi.OWNER) CopyKey.STOP_HOME_SETUPWRAITH_WIFI_BODY else CopyKey.STOP_HOME_SETUPWRAITH_WIFI_UNKNOWN_BODY
             return card(case, f.plan.id, body = body, primary = CopyKey.STOP_HOME_SETUPWRAITH_WIFI_PRIMARY)
         }
+        // 2.3 (cleanyourtv-app 0.5.0, #3301): Home answered with Android's chooser because home screen
+        // apps the person installed tie with ours; the card names them and says what to do. Words only.
+        if (case == StopCase.HOME_OTHER_LAUNCHER || case == StopCase.HOME_UNKNOWN) {
+            val theirs = chooserApps(failure)
+            if (theirs.isNotEmpty()) return card(case, f.plan.id, body = CopyKey.STOP_HOME_CHOOSER_BODY,
+                args = mapOf("launcher" to (other ?: ""), "names" to theirs.joinToString(", "), "count" to theirs.size))
+        }
         return card(case, f.plan.id, args = mapOf("launcher" to (other ?: "")))
+    }
+
+    // The home screen apps the person installed that claim Home, when the switch's check read the
+    // chooser: not ours, not the TV's own, not a system app, not a FallbackHome placeholder. By label,
+    // else package name. Never logged. Ported from cleanyourtv-app 80ddcd7 (MIT).
+    private fun chooserApps(failure: LastFailure?): List<String> {
+        if (failure == null || (failure.op !is Op.SetHome && failure.op !is Op.VerifyHome)) return emptyList()
+        if (!failure.stderrHead.trim().endsWith("got $HOME_CHOOSER")) return emptyList()
+        val s = snapshot ?: return emptyList()
+        val stock = profile()?.stockLaunchers?.map { it.pkg }.orEmpty().toSet()
+        return s.home.claimants.map { it.component }
+            .filter { c -> c.pkg != Launcher.pkg && c.pkg !in stock && s.packages[c.pkg]?.system != true && !c.cls.endsWith("FallbackHome") }
+            .map { it.pkg }.distinct()
+            .map { pkg -> s.packages[pkg]?.label?.trim()?.takeIf { it.isNotEmpty() } ?: pkg.value }
+    }
+
+    // 2.3 (cleanyourtv-app 0.4.8, #2851): the free MB on /data after the launcher's install failed, when
+    // that is clearly low for its APK (InstallStorage.low); null when not an install of ours, not low,
+    // or unreadable. One df read; it never changes the outcome.
+    private suspend fun lowStorageMb(op: Op?): Int? {
+        val (pkg, bytes) = when (op) {
+            is Op.InstallStream -> op.pkg to op.blob.size
+            is Op.Install -> op.pkg to 0L
+            else -> return null
+        }
+        if (pkg != Launcher.pkg) return null
+        val live = session ?: return null
+        val free = attempt { deps.prober.freeDataMb(live) }.getOrNull() ?: run {
+            deps.log.line("setup: install failed, the TV's free storage could not be read"); return null
+        }
+        deps.log.line("setup: install failed, TV storage $free MB free")
+        return free.takeIf { InstallStorage.low(it, bytes) }
     }
 
     private fun wraithClaims(): Boolean {
@@ -1458,6 +1549,7 @@ class SetupMachine(
         fun initialState(start: SetupStart): SetupState = when (start) {
             SetupStart.Fresh -> SetupState.Welcome(emptyList(), onWifi = true, looking = true)
             is SetupStart.Continue -> SetupState.Probing(start.tvId, ProbeStage.FACTS, null)
+            is SetupStart.Repair -> SetupState.Probing(start.tvId, ProbeStage.FACTS, null)
             is SetupStart.Resume -> SetupState.Probing(start.tvId, ProbeStage.FACTS, null)
         }
 
@@ -1491,7 +1583,9 @@ internal fun stopKeys(case: StopCase): StopKeys = when (case) {
     StopCase.HOME_SETUPWRAITH -> StopKeys(CopyKey.STOP_HOME_SETUPWRAITH_TITLE, CopyKey.STOP_HOME_SETUPWRAITH_BODY, CopyKey.STOP_HOME_SETUPWRAITH_PRIMARY, CopyKey.STOP_HOME_SETUPWRAITH_SECONDARY)
     StopCase.HOME_OTHER_LAUNCHER -> StopKeys(CopyKey.STOP_HOME_OTHER_LAUNCHER_TITLE, CopyKey.STOP_HOME_OTHER_LAUNCHER_BODY, CopyKey.STOP_HOME_OTHER_LAUNCHER_PRIMARY, CopyKey.STOP_HOME_OTHER_LAUNCHER_SECONDARY)
     StopCase.HOME_UNKNOWN -> StopKeys(CopyKey.STOP_HOME_UNKNOWN_TITLE, CopyKey.STOP_HOME_UNKNOWN_BODY, CopyKey.STOP_HOME_UNKNOWN_PRIMARY, CopyKey.STOP_HOME_UNKNOWN_SECONDARY)
-    StopCase.HOME_USER_SAID_NO -> StopKeys(CopyKey.STOP_HOME_USER_SAID_NO_TITLE, CopyKey.STOP_HOME_USER_SAID_NO_BODY, CopyKey.STOP_HOME_USER_SAID_NO_PRIMARY, CopyKey.STOP_HOME_USER_SAID_NO_SECONDARY)
+    // 2.3 (#3760): a way out after saying no: "Keep the TV's own home screen" goes on to Done, clean-up kept.
+    StopCase.HOME_USER_SAID_NO -> StopKeys(CopyKey.STOP_HOME_USER_SAID_NO_TITLE, CopyKey.STOP_HOME_USER_SAID_NO_BODY, CopyKey.STOP_HOME_USER_SAID_NO_PRIMARY,
+        CopyKey.STOP_HOME_USER_SAID_NO_SECONDARY, CopyKey.STOP_HOME_KEEP_OWN)
     StopCase.HOME_TIMED_OUT -> StopKeys(CopyKey.STOP_HOME_TIMED_OUT_TITLE, CopyKey.STOP_HOME_TIMED_OUT_BODY, CopyKey.STOP_HOME_TIMED_OUT_PRIMARY, CopyKey.STOP_HOME_TIMED_OUT_SECONDARY)
     StopCase.CONNECTION_LOST -> StopKeys(CopyKey.STOP_CONNECTION_LOST_TITLE, CopyKey.STOP_CONNECTION_LOST_BODY, CopyKey.STOP_CONNECTION_LOST_PRIMARY, CopyKey.STOP_CONNECTION_LOST_SECONDARY, CopyKey.STOP_CONNECTION_LOST_TERTIARY)
     StopCase.STEP_FAILED -> StopKeys(CopyKey.STOP_STEP_FAILED_TITLE, CopyKey.STOP_STEP_FAILED_BODY, CopyKey.STOP_CONNECTION_LOST_PRIMARY, CopyKey.STOP_CONNECTION_LOST_SECONDARY, CopyKey.STOP_CONNECTION_LOST_TERTIARY)
@@ -1507,3 +1601,6 @@ internal fun stopKeys(case: StopCase): StopKeys = when (case) {
     StopCase.TV_NOT_SUPPORTED -> StopKeys(CopyKey.STOP_TV_NOT_SUPPORTED_TITLE, CopyKey.STOP_TV_NOT_SUPPORTED_BODY, CopyKey.STOP_TV_NOT_SUPPORTED_PRIMARY, null)
     StopCase.TV_REFUSES_HOME, StopCase.PAIRING_NEEDED -> StopKeys(CopyKey.STOP_HOME_UNKNOWN_TITLE, CopyKey.STOP_HOME_UNKNOWN_BODY, CopyKey.STOP_HOME_UNKNOWN_SECONDARY, null)
 }
+
+// What the home check reads when Android's chooser answers Home (cleanyourtv-app #3301).
+private const val HOME_CHOOSER = "android/com.android.internal.app.ResolverActivity"

@@ -8655,7 +8655,8 @@
         "com.tcl.UpdatePeripheral",
         "com.tcl.t_solo",
         "com.tcl.android.webview",
-        "com.tcl.exhibit"
+        "com.tcl.exhibit",
+        "com.tcl.usercenter"
       ],
       "suggestedDock": [],
       "tested": {
@@ -9300,7 +9301,8 @@
         "com.tcl.hearaid",
         "com.tcl.t_solo",
         "com.google.android.apps.nbu.smartconnect.tv",
-        "com.tcl.exhibit"
+        "com.tcl.exhibit",
+        "com.tcl.usercenter"
       ],
       "suggestedDock": [],
       "tested": {
@@ -9450,7 +9452,8 @@
         "com.tcl.autopair",
         "com.tcl.tcl_bt_rcu_service",
         "com.tcl.providers.config",
-        "com.tcl.exhibit"
+        "com.tcl.exhibit",
+        "com.tcl.usercenter"
       ],
       "suggestedDock": [],
       "tested": {
@@ -9495,8 +9498,8 @@
           "ask": true
         },
         "com.tcl.usercenter": {
-          "category": "brand",
-          "ask": false
+          "category": "other",
+          "ask": true
         },
         "com.tcl.suspension": {
           "category": "brand",

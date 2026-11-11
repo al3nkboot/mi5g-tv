@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="mi5g_home_lock">Lock Home layout</string>
+    <string name="mi5g_home_locked_hint">Home is locked. Unlock it in Mi5G settings.</string>
+    <string name="mi5g_cec_switch">Switch to a device turned on over HDMI-CEC</string>
+</resources>

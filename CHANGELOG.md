@@ -2,6 +2,40 @@
 
 All notable changes to the app. Versions follow [semantic versioning](https://semver.org/).
 
+## 2.3.0 (2026-11-11)
+
+### الجديد منذ v2.2.1
+- حماية `com.tcl.usercenter` في قوائم TCL G03 وG05 و65C735 (بعض أجهزة TCL تعيد التشغيل بعد الاستعداد بدونه)، وتحويل استثناء tcl-g05 إلى «اسأل».
+- لا يُعاد تشغيل معالج الإعداد (setupwraith) ما دامت الشاشة الرئيسية الأصلية (launcherx) متوقفة؛ التراجع يعيد الشاشة الأصلية أولاً.
+- وصف أوضح لتكلفة إيقاف setupwraith على البث (G10) ولخدمة تحديث شاومي في MiTV-MOOR2.
+- قراءة قائمة التطبيقات بطريقة بديلة عند فشل `pm list packages` (cmd package ثم المستخدم الرئيسي).
+- الشاشة الرئيسية 2.9-mi5g: يعيد مساعد زر الرئيسية بعد الاستعداد حتى لو بقي مفعّلاً بالاسم والمفتاح على 0، ولا يتوقف المساعد إذا تعذّر فتح تطبيق مربوط بزر، مع «قفل ترتيب الرئيسية» و«التحويل لجهاز يُشغَّل عبر HDMI-CEC» (متوقفان افتراضياً).
+- رسالة واضحة عند امتلاء تخزين التلفاز أثناء تثبيت الشاشة الرئيسية، وتسمية تطبيقات الشاشة الرئيسية الأخرى عندما يسأل أندرويد أيها يستخدم، وزر ثالث «الإبقاء على الشاشة الرئيسية الأصلية للتلفاز» بعد الرفض.
+- شاشة Google TV المثبتة يدوياً على Android TV لا تجعل التلفاز Google TV.
+- «ما وجدناه» يوضح وجود تطبيقات تُركت لاختيارك، وإيقاف صف «محفوظ» بلمسة واحدة.
+- زر «اتصال» في الريموت يقترن ثم يرجعك للرئيسية مباشرة بدل شاشة التنظيف.
+
+### What's new since v2.2.1
+- TCL usercenter protected on G03, G05 and 65C735 lists; tcl-g05 override now asks.
+- The setup wizard is never switched back on while the TV's own home (launcherx) stays off; undo puts the stock home back first.
+- Clearer notes for the G10 casting cost of setupwraith and the MiTV-MOOR2 Xiaomi updater.
+- App list fallback when `pm list packages` fails (cmd package, then the main user).
+- Bundled launcher 2.9-mi5g: the Home helper comes back after standby also when the switch reads 0, a mapped app that can't start no longer stops the helper, plus optional Home lock and HDMI-CEC One Touch Play switch (both off by default).
+- Clear card when the TV is out of space for the home screen install, the chooser card names the other Home apps, and a third button keeps the TV's own home screen after saying no.
+- A Google TV home screen installed by hand on an Android TV set no longer makes it a Google TV.
+- What we found says when apps are left on for you to choose; a Kept row goes off in one tap.
+- The remote's Connect pairs and returns to the home screen, not the cleanup screen.
+
+## 2.2.1 (2026-11-10)
+
+### الجديد منذ v2.2.0
+- زر «تخطّي التنظيف» في شاشة «ما وجدناه» بعد الاتصال بالتلفاز (وأثناء القراءة، وعند فشل القراءة أو الخطة): ينقلك للرئيسية وأنت متصل لتستخدم الريموت ومواقيت الصلاة والمباريات وبقية الأدوات.
+- التطبيق يتذكر التخطي لكل تلفاز، فلا تُفرض شاشة التنظيف عند كل فتح أو اتصال؛ والتنظيف متاح دائماً من زر «ابدأ التنظيف الآمن» في الرئيسية.
+
+### What's new since v2.2.0
+- “Skip cleanup” on the “What we found” screen after connecting (and while reading the TV, and when the read or plan fails): opens the home screen, still connected, so the remote, prayer times, matches and other tools work without cleaning.
+- The skip is remembered per TV, so the cleanup screen is not forced on every start or connect; cleaning stays one tap away on the home screen.
+
 ## 2.2.0 (2026-11-09)
 
 ### الجديد منذ v2.1.1
