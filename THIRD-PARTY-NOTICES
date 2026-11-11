@@ -18,6 +18,18 @@ work. The full licence texts are linked or included below.
    wallpaper picture, six-columns) are bundled as they are. Licence: MIT. The aurora wallpaper
    is the upstream author's own work; he confirmed on 2026-10-23 that it is MIT like the rest.
 
+   Mi5G TV 2.3.0 adds selected changes from that repository after 294d3d5, ported by hand (not merged):
+   the TCL usercenter protection and the tcl-g05 override (3c6e873f, #3533), the setup wizard only after
+   launcherx is back (3c63429d, PR #3653, #3578), the G10 casting note (ac182aba, #3446), the MiTV-MOOR2
+   updateservice label (2ec24ba3, PR #3656), the launcher helper cycle when accessibility_enabled reads 0
+   (86760c90, #3404) and SecurityException handling in the key helpers (4a78ec26, PR #3636). The bundled
+   launcher is 2.9-mi5g (versionCode 11).
+   From Clean Your TV (phone app, MIT, Copyright (c) 2026 udhaykumarbala) Mi5G TV 2.3.0 ports: the
+   package-list fallback (074fa8ea, #3436), the low storage card (73cbee18, #2851), the chooser card
+   (80ddcd7b, #3301), the third button after saying no (85d36930, #3760), the sideloaded Google TV home
+   rule (f8cb15f4, #5539), the run ledger's home switch failure, and Customise on empty plans with Kept
+   off in one tap (797279c2, 85bf95df, #1222).
+
      MIT License
 
      Copyright (c) 2026 Gathin
@@ -140,6 +152,8 @@ Aerial TV — https://github.com/pengchujin/aerial-tv
   a phone over the local network with a QR code, pinned TV inputs, app folders, the Bing photo of the day
   and phone uploads as wallpaper, layout options, the boot / standby revival approach and a city
   screensaver. The code is Mi5G's own and the look is Mi5G's (teal and gold, Arabic RTL, Cairo font).
+  Mi5G TV 2.3.0 ports code from it into the bundled launcher: the HDMI-CEC One Touch Play switch
+  (CecSwitch, v1.89, commit 3a09e7d, #1020, off by default) and the idea of the Home lock (v1.89).
   No Apple aerial videos are included. Aerial TV's own font (Inter) is under the SIL Open Font License
   1.1 and is not included in Mi5G TV.
 

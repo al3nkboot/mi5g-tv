@@ -1,0 +1,1 @@
+2.3.0: safer TCL and Xiaomi lists, sturdier app-list reads, the Home helper comes back after standby, optional Home lock and HDMI-CEC auto-switch, clearer cards for a full TV or another home screen app, and the remote's Connect returns to the home screen.
