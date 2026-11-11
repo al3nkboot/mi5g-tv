@@ -1,6 +1,9 @@
 package tv.cleanyour.core.spec
 
 import tv.cleanyour.core.model.Component
+import tv.cleanyour.core.model.EnabledState
+import tv.cleanyour.core.model.HomeResolution
+import tv.cleanyour.core.model.PackageState
 import tv.cleanyour.core.model.GroupDefault
 import tv.cleanyour.core.model.PackageGroup
 import tv.cleanyour.core.model.PackageName
@@ -93,4 +96,22 @@ object KnownLaunchers {
     val generic: List<Component> = listOf(TVLAUNCHER, LEANBACK, LAUNCHERX)
 
     val SETUPWRAITH = PackageName("com.google.android.tungsten.setupwraith")
+
+    // 2.3: Google TV's home screen installed by the person on an Android TV (Leanback) set, where it
+    // claims Home next to the TV's own tvlauncher. Only when every sign agrees, so a real Google TV is
+    // never taken for one: launcherx listed with its details read and not a system app, on, not what
+    // Home answers to, every claim at priority 0 or less (Android caps a non-system app at 0), and
+    // tvlauncher or leanback on the TV as a system app or claiming Home above 0. `packages` null is
+    // never one. Ported from cleanyourtv-app HomeFit.sideloadedGoogleTvHome (0.5.0, commit f8cb15f,
+    // issues #5539, #5744, #5911, #4177, #4551), MIT, Copyright (c) 2026 udhaykumarbala.
+    fun sideloadedGoogleTvHome(home: HomeResolution, packages: Map<PackageName, PackageState>?): Boolean {
+        val state = packages?.get(LAUNCHERX.pkg) ?: return false
+        if (state.system || state.versionCode <= 0) return false
+        if (state.enabled == EnabledState.DISABLED_USER || state.enabled == EnabledState.DISABLED) return false
+        if (home.resolved?.pkg == LAUNCHERX.pkg) return false
+        if (home.claimants.any { it.component.pkg == LAUNCHERX.pkg && it.priority > 0 }) return false
+        return listOf(TVLAUNCHER.pkg, LEANBACK.pkg).any { p ->
+            packages[p]?.system == true || home.claimants.any { it.component.pkg == p && it.priority > 0 }
+        }
+    }
 }

@@ -50,6 +50,8 @@
     <string name="found_headline">{count, plural, =0 {Nothing to switch off. Want the new home screen?} one {thing to switch off} other {things to switch off}}</string>
     <string name="found_overline">We found</string>
     <string name="found_zero_body">This TV is already tidy.</string>
+    <!-- 2.3 (cleanyourtv-app #1222): nothing off by default, but rows left on for the person to choose -->
+    <string name="found_zero_choices">Some apps are left on for you to choose. Customise lists them.</string>
     <string name="found_group_ads">Adverts and sponsored rows</string>
     <string name="found_group_tracking">Tracking and analytics</string>
     <string name="found_group_nobody">Apps nobody asked for</string>
@@ -217,6 +219,10 @@
     <string name="stop_home_user_said_no_body">Put back. Was something wrong, or did you just want to look first?</string>
     <string name="stop_home_user_said_no_primary">Try again</string>
     <string name="stop_home_user_said_no_secondary">Something looked wrong</string>
+    <!-- 2.3 (cleanyourtv-app #3760, #3301, #2851) -->
+    <string name="stop_home_keep_own">Keep the TV\'s own home screen</string>
+    <string name="stop_home_chooser_body">{count, plural, one {Another home screen app is installed on the TV ({names}), so Android asked which home screen to use and the switch couldn\'t finish. We put the TV\'s own home screen back. Uninstall that app on the TV, then try again.} other {Other home screen apps are installed on the TV ({names}), so Android asked which home screen to use and the switch couldn\'t finish. We put the TV\'s own home screen back. Uninstall them on the TV, then try again.}}</string>
+    <string name="stop_low_storage_body">The TV is almost out of space ({free, plural, other {# MB}} free), so the new home screen couldn\'t be installed. The TV\'s own home screen stays, and the clean-up so far is kept. Free some space in Settings > Storage, then try the home screen again from Manage.</string>
     <string name="stop_home_timed_out_title">The old home screen is back</string>
     <string name="stop_home_timed_out_body">Putting the old home screen back... Done. Your TV is as it was. You can try again from Manage.</string>
     <string name="stop_home_timed_out_primary">OK</string>

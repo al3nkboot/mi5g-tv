@@ -44,6 +44,8 @@
     <string name="found_headline">{count, plural, =0 {لا يوجد شيء لإيقافه. هل تريد الشاشة الرئيسية الجديدة؟} one {عنصر لإيقافه} two {عنصران لإيقافهما} few {عناصر لإيقافها} many {عنصرًا لإيقافه} other {عنصر لإيقافه}}</string>
     <string name="found_overline">وجدنا</string>
     <string name="found_zero_body">هذا التلفاز مرتّب بالفعل.</string>
+    <!-- 2.3 (cleanyourtv-app #1222) -->
+    <string name="found_zero_choices">تركنا بعض التطبيقات تعمل لتختار أنت. تجدها في «تخصيص».</string>
     <string name="found_group_ads">الإعلانات والصفوف الممولة</string>
     <string name="found_group_tracking">التتبع والتحليلات</string>
     <string name="found_group_nobody">تطبيقات لم يطلبها أحد</string>
@@ -205,6 +207,10 @@
     <string name="stop_home_user_said_no_body">تمت إعادتها. هل كانت هناك مشكلة، أم أردت إلقاء نظرة أولًا؟</string>
     <string name="stop_home_user_said_no_primary">حاول مرة أخرى</string>
     <string name="stop_home_user_said_no_secondary">بدا أن هناك مشكلة</string>
+    <!-- 2.3 (cleanyourtv-app #3760, #3301, #2851) -->
+    <string name="stop_home_keep_own">الإبقاء على الشاشة الرئيسية الأصلية للتلفاز</string>
+    <string name="stop_home_chooser_body">{count, plural, one {يوجد على التلفاز تطبيق شاشة رئيسية آخر ({names})، فسأل أندرويد أي شاشة رئيسية يستخدم ولم يكتمل التبديل. أعدنا الشاشة الرئيسية الأصلية للتلفاز. احذف هذا التطبيق من التلفاز ثم حاول مرة أخرى.} other {توجد على التلفاز تطبيقات شاشة رئيسية أخرى ({names})، فسأل أندرويد أي شاشة رئيسية يستخدم ولم يكتمل التبديل. أعدنا الشاشة الرئيسية الأصلية للتلفاز. احذفها من التلفاز ثم حاول مرة أخرى.}}</string>
+    <string name="stop_low_storage_body">مساحة التلفاز شبه ممتلئة (المتاح {free, plural, other {# م.ب}})، لذلك لم نتمكن من تثبيت الشاشة الرئيسية الجديدة. تبقى الشاشة الرئيسية الأصلية للتلفاز، ويبقى ما تم من التنظيف. فرّغ بعض المساحة من الإعدادات &gt; التخزين، ثم جرّب الشاشة الرئيسية من جديد من قسم الإدارة.</string>
     <string name="stop_home_timed_out_title">عادت الشاشة الرئيسية القديمة</string>
     <string name="stop_home_timed_out_body">جارٍ استعادة الشاشة الرئيسية القديمة... تم. عاد تلفازك كما كان. يمكنك المحاولة مرة أخرى من قسم الإدارة.</string>
     <string name="stop_home_timed_out_primary">حسنًا</string>

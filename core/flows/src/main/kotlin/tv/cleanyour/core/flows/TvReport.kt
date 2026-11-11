@@ -260,7 +260,8 @@ object TvReport {
         return when {
             f.manufacturer.equals("Amazon", true) || f.brand.equals("Amazon", true) || f.model.startsWith("AFT", true) ||
                 has("com.amazon.tv.launcher") || has("com.amazon.firehomestarter") -> "Fire TV"
-            has("com.google.android.apps.tv.launcherx") -> "Google TV"
+            // 2.3 (cleanyourtv-app #5539): not a Google TV home screen the person put on an Android TV set.
+            has("com.google.android.apps.tv.launcherx") && !tv.cleanyour.core.spec.KnownLaunchers.sideloadedGoogleTvHome(s.home, s.packages) -> "Google TV"
             has("com.google.android.tvlauncher") || has("com.google.android.leanbacklauncher") -> "Android TV (Leanback)"
             claimants.any { it != Launcher.pkg.value && !it.startsWith("com.google.") && !it.startsWith("com.android.") && "setupwraith" !in it } -> "The maker's own launcher"
             else -> "Not sure"

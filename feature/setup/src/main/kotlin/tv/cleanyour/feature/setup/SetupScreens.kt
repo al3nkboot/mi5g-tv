@@ -207,6 +207,8 @@ fun FoundScreen(
         } else {
             ScreenTitle(msg(if (extras.unknownModel) R.string.found_unknown_title else R.string.found_title, "count" to 0), Modifier.padding(top = 8.dp))
             if (!extras.unknownModel) Body(stringResource(R.string.found_zero_body), Modifier.padding(start = 4.dp, top = 8.dp))
+            // 2.3 (cleanyourtv-app 0.4.9, #1222): an empty plan can still have rows left on to choose.
+            if (summary.hasChoices) Body(stringResource(R.string.found_zero_choices), Modifier.padding(start = 4.dp, top = 8.dp))
         }
         if (extras.unknownModel) {
             Body(stringResource(R.string.found_unknown_body), Modifier.padding(start = 4.dp, top = 12.dp))
@@ -710,3 +712,7 @@ private fun RestartCard(state: SetupState.Done, extras: SetupExtras, actions: Se
         }
     }
 }
+
+// 2.3 (cleanyourtv-app 797279c, #1222): a row the person can switch off in Customise, neither off
+// nor protected (left on to ask, or kept by an earlier choice).
+internal val tv.cleanyour.core.planner.PlanSummary.hasChoices: Boolean get() = groups.any { g -> g.rows.any { !it.off && !it.protected } }

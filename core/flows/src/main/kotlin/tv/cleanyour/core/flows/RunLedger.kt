@@ -132,6 +132,33 @@ class RunLedger(private val store: DocumentStore, private val journal: Journal) 
         return if (endsWithPause) paused else if (stepR) stepRFailure else atFailure
     }
 
+    // 2.3: why a home screen switch ended VERIFY_FAILED: the first failed step the switch stands on,
+    // from the journal (a step inside the guarded section before its rollback, or, when the section
+    // never opened, the install or the first start of the new home screen). Null when the journal
+    // shows none. Ported from cleanyourtv-app RunLedger.homeSwitchFailure (issue #338), MIT,
+    // Copyright (c) 2026 udhaykumarbala.
+    suspend fun homeSwitchFailure(plan: Plan): LastFailure? {
+        val section = plan.sections.firstOrNull() ?: return null
+        val launcher = section.expectedHome
+        fun standsOn(i: Int, op: Op): Boolean = i in section.from..section.to || when (op) {
+            is Op.Install -> op.pkg == launcher.pkg
+            is Op.InstallStream -> op.pkg == launcher.pkg
+            is Op.StartActivity -> op.component == launcher
+            else -> false
+        }
+        var begun: JournalRecord.Begin? = null
+        for (r in journal.read(plan.id)) when (r) {
+            is JournalRecord.Begin -> begun = r
+            is JournalRecord.Rollback -> return null
+            is JournalRecord.Failed -> {
+                val b = begun?.takeIf { it.i == r.i }
+                if (b != null && r.error != DefaultEngine.KEPT_TV_INPUT && standsOn(b.i, b.op)) return LastFailure(b.op, r.exit, r.stderrHead.ifEmpty { r.error }, undo = false)
+            }
+            else -> {}
+        }
+        return null
+    }
+
     // The packages this app switched off and has not put back since, in the order they went off.
     suspend fun switchedOffByUs(tvId: TvId): List<PackageName> {
         val off = LinkedHashSet<PackageName>()
