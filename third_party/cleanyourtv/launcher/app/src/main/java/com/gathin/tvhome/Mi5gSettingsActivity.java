@@ -114,6 +114,9 @@ public final class Mi5gSettingsActivity extends Activity {
             Sounds.click(this);
             build();
         });
+        // 2.4 M3 (backlog 15): a QR that connects the Mi5G TV phone app to this TV.
+        Rows.add(this, rows, R.drawable.ic_home_settings, getString(R.string.mi5g_connect_phone), null,
+                () -> startActivity(new Intent(this, PhoneConnectActivity.class)));
         Rows.add(this, rows, R.drawable.ic_apps, getString(R.string.mi5g_all_apps), null,
                 () -> startActivity(new Intent(this, AllAppsActivity.class)));
         Rows.add(this, rows, R.drawable.ic_home_settings, getString(R.string.mi5g_safe_mode),

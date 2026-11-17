@@ -73,8 +73,9 @@ footer .primary { flex:1; }
   </section>
   <section id="wallpaper">
     <div class="grid" id="wpGrid"></div>
-    <p class="note">أرسل صورة أو فيديو (MP4) من هاتفك ليكون خلفية.</p>
-    <input type="file" id="wpFile" accept="image/jpeg,image/png,image/webp,video/mp4">
+    <p class="note">أرسل حتى 20 صورة أو فيديو (MP4) من هاتفك. يظهر «تم الحفظ على التلفاز» لكل ملف بعد أن يتأكد التلفاز من حفظه، وآخر ملف يصبح الخلفية.</p>
+    <input type="file" id="wpFile" accept="image/jpeg,image/png,image/webp,video/mp4" multiple>
+    <div id="wpSaved" class="note"></div>
   </section>
   <section id="look">
     <div id="opts"></div>
@@ -217,11 +218,21 @@ function renderWallpaper() {
   w.uploads.forEach((u, k) => add(u, (u.endsWith(".mp4") ? "فيديو " : "صورة ") + (k + 1) + " من الهاتف", "#12302E"));
 }
 async function chooseWp(id) { try { await api("api/wallpaper/choose?name=" + encodeURIComponent(id), { method: "POST" }); S.wallpapers.choice = id; renderWallpaper(); toast("تم تغيير الخلفية"); } catch (_) { toast("تعذّر تغيير الخلفية"); } }
+// 2.4 M3 (backlog 19): up to 20 files, one after another; each is "saved on TV" only when the TV read back its size.
 $("#wpFile").onchange = async e => {
-  const f = e.target.files[0]; e.target.value = ""; if (!f) return;
-  if (f.size > 80 * 1024 * 1024) { toast("الملف أكبر من 80 ميغابايت"); return; }
-  toast("جارٍ الإرسال…");
-  try { await api("api/wallpaper", { method: "POST", body: f }); await load(); toast("تم إرسال الخلفية"); } catch (_) { toast("تعذّر إرسال الملف"); }
+  const files = Array.from(e.target.files).slice(0, 20); e.target.value = ""; if (!files.length) return;
+  const box = $("#wpSaved"); box.replaceChildren(); let saved = 0;
+  for (const f of files) {
+    const row = el("div", { text: f.name + " · جارٍ الإرسال…" }); box.appendChild(row);
+    if (f.size > 80 * 1024 * 1024) { row.textContent = f.name + " · أكبر من 80 ميغابايت"; continue; }
+    try {
+      const r = await api("api/wallpaper", { method: "POST", body: f });
+      if (r.saved && r.bytes === f.size) { saved++; row.textContent = f.name + " · ✓ تم الحفظ على التلفاز"; }
+      else row.textContent = f.name + " · لم يُحفظ";
+    } catch (_) { row.textContent = f.name + " · تعذّر الإرسال"; }
+  }
+  toast("تم الحفظ على التلفاز: " + saved + " من " + files.length);
+  try { await load(); } catch (_) {}
 };
 
 const OPTS = [

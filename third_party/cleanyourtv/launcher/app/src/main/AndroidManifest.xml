@@ -112,7 +112,11 @@
         <!-- Mi5G 2.0.2 -->
         <activity android:name=".InputsEditActivity" android:exported="false" android:excludeFromRecents="true" android:screenOrientation="landscape" />
         <!-- 2.4 M2: All apps grid with search. -->
-        <activity android:name=".AllAppsActivity" android:exported="false" android:excludeFromRecents="true" android:screenOrientation="landscape" android:windowSoftInputMode="stateHidden|adjustPan" />
+        <!-- 2.4 M3: also opened by the phone remote over adb, so exported to DUMP holders (the adb shell) only. -->
+        <activity android:name=".AllAppsActivity" android:exported="true" android:permission="android.permission.DUMP" android:excludeFromRecents="true" android:screenOrientation="landscape" android:windowSoftInputMode="stateHidden|adjustPan" />
+        <!-- 2.4 M3: a live message or drawing from the phone (adb shell only), and the "Connect a phone" QR. -->
+        <activity android:name=".LiveBoardActivity" android:exported="true" android:permission="android.permission.DUMP" android:launchMode="singleTop" android:excludeFromRecents="true" android:screenOrientation="landscape" android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen" />
+        <activity android:name=".PhoneConnectActivity" android:exported="false" android:screenOrientation="landscape" android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen" />
         <activity android:name=".HiddenAppsActivity" android:exported="false" android:excludeFromRecents="true" android:screenOrientation="landscape" />
         <activity android:name=".WeatherPlaceActivity" android:exported="false" android:excludeFromRecents="true" android:screenOrientation="landscape" />
         <activity

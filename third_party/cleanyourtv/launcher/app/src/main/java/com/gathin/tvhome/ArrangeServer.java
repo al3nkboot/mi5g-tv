@@ -135,6 +135,12 @@ final class ArrangeServer {
         return ip == null ? null : "http://" + ip + ":" + socket.getLocalPort() + "/" + token + "/";
     }
 
+    /** 2.4 M3: http://<TV address>:<port>/connect, the token-free "Connect a phone" page, or null. */
+    String connectUrl() {
+        String ip = localAddress();
+        return ip == null ? null : "http://" + ip + ":" + socket.getLocalPort() + "/connect";
+    }
+
     /**
      * The TV's IPv4 address for the QR code. Mi5G 2.0.2: a private address first, then any other IPv4
      * address on a working interface, as some routers hand out addresses outside the usual private
@@ -264,6 +270,14 @@ final class ArrangeServer {
             }
             Request r = parseLine(first, headers);
             if (r == null) { respond(out, 400, "text/plain", "bad request".getBytes()); return; }
+            // 2.4 M3: the "Connect a phone" page carries only the TV's address, so it needs no token (and the
+            // token-free path reaches nothing else).
+            if ("GET".equals(r.method) && "/connect".equals(r.path)) {
+                lastUse = System.currentTimeMillis();
+                String ip = localAddress();
+                respond(out, 200, "text/html; charset=utf-8", PhoneConnectActivity.page(ip == null ? "" : ip, PhoneConnectActivity.tvName()));
+                return;
+            }
             String prefix = "/" + token + "/";
             String[] seg = r.path.split("/", 3);   // "", token, rest
             if (seg.length < 2 || !tokenMatches(token, seg[1])) { respond(out, 404, "text/plain", "not found".getBytes()); return; }
@@ -344,8 +358,14 @@ final class ArrangeServer {
                 return;
             }
             case "api/wallpaper": {
+                // 2.4 M3 (backlog 19, Teevy idea): the reply says what the TV saved (name and size read back from
+                // its storage), so the phone shows "saved on TV" only for files that are really there.
                 byte[] data = readBody(in, length, MAX_WALLPAPER);
-                ok(out, Mi5gWallpapers.saveUpload(ctx, data) != null && changedTrue());
+                String name = Mi5gWallpapers.saveUpload(ctx, data);
+                long saved = name == null ? -1 : Mi5gWallpapers.savedSize(ctx, name);
+                boolean ok = name != null && saved == data.length;
+                if (ok) changed();
+                respond(out, ok ? 200 : 400, "application/json", savedReply(ok, name, saved).getBytes(StandardCharsets.UTF_8));
                 return;
             }
             case "api/wallpaper/choose":
@@ -384,6 +404,13 @@ final class ArrangeServer {
     /** 2.4: the POST paths that change the Home layout (refused while Home is locked). */
     static boolean lockedEdit(String path) {
         return "api/layout".equals(path) || "api/icon".equals(path) || "api/icon/reset".equals(path);
+    }
+
+    /** 2.4 M3: {"saved":true,"name":"phone-1.jpg","bytes":1234} or {"saved":false}. */
+    static String savedReply(boolean ok, String name, long bytes) {
+        if (!ok || name == null) return "{\"saved\":false}";
+        try { return new JSONObject().put("saved", true).put("name", name).put("bytes", bytes).toString(); }
+        catch (org.json.JSONException e) { return "{\"saved\":false}"; }
     }
 
     private boolean changedTrue() { changed(); return true; }

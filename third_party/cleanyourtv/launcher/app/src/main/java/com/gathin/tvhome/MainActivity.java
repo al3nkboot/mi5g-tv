@@ -911,6 +911,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // Mi5G 2.2 / CleanYourTV home_ignore_channel_keys: swallow Channel Up/Down on Home only.
         if (LauncherSwitches.homeIgnoreChannelKeys(this) && RemoteKeys.isChannelKey(event.getKeyCode())) return true;
         if (handleSettingsKey(event)) return true;
+        // 2.4 M3 (backlog 4): the remote's Search key on Home opens All apps with its search box.
+        if (event.getKeyCode() == KeyEvent.KEYCODE_SEARCH && !reordering) {
+            if (event.getAction() == KeyEvent.ACTION_UP) startActivity(new Intent(this, AllAppsActivity.class));
+            return true;
+        }
         if (event.getAction() == KeyEvent.ACTION_DOWN && effectsProbe != null) {
             int k = event.getKeyCode();
             if (k == KeyEvent.KEYCODE_DPAD_LEFT || k == KeyEvent.KEYCODE_DPAD_RIGHT || k == KeyEvent.KEYCODE_DPAD_UP || k == KeyEvent.KEYCODE_DPAD_DOWN) effectsProbe.onMove();

@@ -24,4 +24,8 @@
     <string name="mi5g_dock_rows">صفوف الشريط السفلي</string>
     <string name="mi5g_always_on_home">الإعدادات ومتجر بلاي يبقيان دائماً في الشاشة الرئيسية.</string>
     <string name="mi5g_hidden_removed_title">مخفية من الشاشة الرئيسية</string>
+    <!-- 2.4 M3 -->
+    <string name="mi5g_connect_phone">اربط جوالاً</string>
+    <string name="mi5g_connect_phone_body">امسح هذا الرمز بكاميرا الجوال وافتح الصفحة ثم اضغط «افتح تطبيق Mi5G TV». يسألك التطبيق قبل الاتصال، ويطلب منك التلفاز السماح للجوال. على شبكة الواي فاي نفسها فقط.</string>
+    <string name="mi5g_live_hint">من تطبيق Mi5G TV على الجوال. اضغط رجوع للإغلاق.</string>
 </resources>

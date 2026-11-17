@@ -35,7 +35,7 @@ final class Mi5gWallpapers {
     static final String BING_KEY = "mi5g_bing_at";
     static final String BING_FILE = "bing.jpg";
     static final List<String> BUILTINS = Arrays.asList("mi5g-teal.png", "mi5g-gold.png", "mi5g-night.png");
-    static final int MAX_UPLOADS = 12;
+    static final int MAX_UPLOADS = 20;   // 2.4 M3 (backlog 19): up to 20 photos or videos from the phone
     private static final long BING_EVERY_MS = 12 * 3_600_000L;
 
     private Mi5gWallpapers() {}
@@ -74,6 +74,14 @@ final class Mi5gWallpapers {
             return null;
         }
         return choose(ctx, name) ? name : null;
+    }
+
+    /** 2.4 M3: the size of a saved upload as read back from the TV's storage, or -1. */
+    static long savedSize(Context ctx, String name) {
+        File d = dir(ctx);
+        if (d == null || !safeName(name)) return -1;
+        File f = new File(d, name);
+        return f.isFile() ? f.length() : -1;
     }
 
     /** Keeps at most MAX_UPLOADS - 1 earlier phone uploads, oldest out first. */

@@ -24,4 +24,8 @@
     <string name="mi5g_dock_rows">Dock rows</string>
     <string name="mi5g_always_on_home">Settings and the Play Store always stay on Home.</string>
     <string name="mi5g_hidden_removed_title">Hidden from Home</string>
+    <!-- 2.4 M3 -->
+    <string name="mi5g_connect_phone">Connect a phone</string>
+    <string name="mi5g_connect_phone_body">Scan this code with the phone\'s camera, open the page, then tap Open Mi5G TV. The app asks before it connects, and the TV asks you to allow the phone. Same Wi-Fi only.</string>
+    <string name="mi5g_live_hint">From the Mi5G TV phone app. Press Back to close.</string>
 </resources>
