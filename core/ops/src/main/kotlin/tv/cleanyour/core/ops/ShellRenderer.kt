@@ -770,6 +770,31 @@ class ShellRenderer(private val watchdogVariant: WatchdogVariant = WatchdogVaria
         fun revokeHomeSecureSettingsLine(): ShellLine =
             ShellLine(ShellTokens.line(listOf(PM, "revoke", MI5G_HOME, "android.permission.WRITE_SECURE_SETTINGS")))
 
+        const val PLAY_STORE = "com.android.vending"
+
+        /**
+         * 2.4 (Teevy idea 22, own code): open the Play Store on the TV from the phone remote. The store's own
+         * category first (works where the store hides from the app list, as on Google TV), then its TV entry.
+         */
+        fun openPlayStoreLines(): List<ShellLine> = listOf(
+            ShellLine(ShellTokens.line(listOf(AM, "start", "-a", "android.intent.action.MAIN", "-c", "android.intent.category.APP_MARKET"))),
+            ShellLine(ShellTokens.line(listOf("monkey", "-p", PLAY_STORE, "-c", "android.intent.category.LEANBACK_LAUNCHER", "1"))),
+        )
+
+        /**
+         * 2.4 (v1.7 item 5): keep the Play Store from running in the background. It still opens and updates apps
+         * when opened; only its background runs and wake-ups stop. Not a switch-off: nothing is disabled, and
+         * [stop] false puts the defaults back.
+         */
+        fun playStoreBackgroundLines(stop: Boolean): List<ShellLine> {
+            val mode = if (stop) "ignore" else "default"
+            return buildList {
+                add(ShellLine(ShellTokens.line(listOf(CMD, "appops", "set", PLAY_STORE, "RUN_IN_BACKGROUND", mode))))
+                add(ShellLine(ShellTokens.line(listOf(CMD, "appops", "set", PLAY_STORE, "RUN_ANY_IN_BACKGROUND", mode))))
+                if (stop) add(ShellLine(ShellTokens.line(listOf(AM, "force-stop", PLAY_STORE))))
+            }
+        }
+
         /**
          * 2.4 (Keep Alive, Xiaomi): "Re-apply home screen". Makes Mi5G the default Home again and gives the launcher
          * back WRITE_SECURE_SETTINGS, which its Keep Alive needs to put the Home-key helper back after standby. The

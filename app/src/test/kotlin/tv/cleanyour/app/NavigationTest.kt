@@ -98,4 +98,17 @@ class NavigationTest {
         assertTrue(applyRoute(stack, "back", noTvs = false))
         assertEquals(Dest.TvTools("0123456789abcdef"), stack.last())
     }
+
+    // 2.4: "Use as a remote only": after pairing the wizard is replaced by the TV's Manage with its remote on top,
+    // so Back from the remote lands where the full setup ("Clean this TV") stays one tap away.
+    @Test fun remoteOnlyOpensTheRemoteOverManage() {
+        val id = "0123456789abcdef"
+        val stack = mutableListOf<NavKey>(Dest.Setup())
+        assertTrue(applyRoute(stack, "remoteonly/$id", noTvs = false))
+        assertEquals(listOf<NavKey>(Dest.Manage(id), Dest.Remote(id)), stack)
+        assertTrue(applyRoute(stack, "back", noTvs = false))
+        assertEquals(listOf<NavKey>(Dest.Manage(id)), stack)
+        assertTrue(applyRoute(stack, "remoteonly", noTvs = false))   // no id: nothing opens
+        assertEquals(listOf<NavKey>(Dest.Manage(id)), stack)
+    }
 }

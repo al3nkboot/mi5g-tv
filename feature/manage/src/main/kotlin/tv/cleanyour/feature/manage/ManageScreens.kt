@@ -821,6 +821,17 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
                 { onIntent(TvToolsIntent.ReapplyHome) },
                 enabled = !powerWorking,
             )
+            // 2.4 (v1.7 item 5): the Play Store stops running in the background; it still opens and updates apps.
+            SecondaryButton(
+                stringResource(R.string.tvtools_play_store_bg_stop),
+                { onIntent(TvToolsIntent.PlayStoreBackground(stop = true)) },
+                enabled = !powerWorking,
+            )
+            TertiaryButton(
+                stringResource(R.string.tvtools_play_store_bg_allow),
+                { onIntent(TvToolsIntent.PlayStoreBackground(stop = false)) },
+                enabled = !powerWorking,
+            )
             SecondaryButton(
                 stringResource(R.string.tvtools_stock_home),
                 { onIntent(TvToolsIntent.ReturnToStockHome) },
@@ -1602,6 +1613,8 @@ private fun powerLabel(raw: String): String = when {
     raw == "@banner" -> stringResource(R.string.tvtools_label_banner)
     raw == "@keep_home" -> stringResource(R.string.tvtools_label_keep_home)
     raw == "@reapply_home" -> stringResource(R.string.tvtools_label_reapply_home)
+    raw == "@play_store_bg_stop" -> stringResource(R.string.tvtools_label_play_store_bg_stop)
+    raw == "@play_store_bg_allow" -> stringResource(R.string.tvtools_label_play_store_bg_allow)
     raw == "@prayer" -> stringResource(R.string.tvtools_label_prayer)
     raw == "@install_all" -> stringResource(R.string.tvtools_label_install_all)
     raw == "@stock_home" -> stringResource(R.string.tvtools_label_stock_home)

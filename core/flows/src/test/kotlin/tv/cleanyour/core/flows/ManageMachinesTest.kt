@@ -1233,6 +1233,27 @@ class ManageMachinesTest {
         assertIs<SideloadStatus.Failed>(sideloadStatus)
         assertEquals("UNREACHABLE", sideloadStatus.detail)
     }
+
+    // 2.4 (v1.7 item 5): TV tools keep the Play Store from running in the background, and let it again.
+    @Test fun playStoreBackgroundRunsOnlyItsAppopsLines() = runTest(timeout = 30.seconds) {
+        val h = Harness()
+        val known = h.knownTv()
+        for (op in listOf("RUN_IN_BACKGROUND", "RUN_ANY_IN_BACKGROUND")) for (mode in listOf("ignore", "default")) {
+            h.session.recording.on("'cmd' 'appops' 'set' 'com.android.vending' '$op' '$mode'", "")
+        }
+        val tools = TvToolsMachine(h.manageDeps(), backgroundScope, known.id)
+        settle()
+        tools.dispatch(TvToolsIntent.PlayStoreBackground(stop = true))
+        settle(2_500)
+        assertIs<PowerToolStatus.Done>(tools.state.value.powerToolStatus)
+        val lines = h.session.execLines.map { tv.cleanyour.core.ops.ShellTokens.tokenize(it) }
+        assertTrue(lines.contains(listOf("cmd", "appops", "set", "com.android.vending", "RUN_ANY_IN_BACKGROUND", "ignore")))
+        assertTrue(lines.none { "disable-user" in it || "uninstall" in it })
+        tools.dispatch(TvToolsIntent.PlayStoreBackground(stop = false))
+        settle(2_500)
+        val after = h.session.execLines.map { tv.cleanyour.core.ops.ShellTokens.tokenize(it) }
+        assertTrue(after.contains(listOf("cmd", "appops", "set", "com.android.vending", "RUN_ANY_IN_BACKGROUND", "default")))
+    }
 }
 
 private fun kotlinx.coroutines.CoroutineScope.launchAccess(h: Harness, tv: Tv, done: (AccessResult) -> Unit) =

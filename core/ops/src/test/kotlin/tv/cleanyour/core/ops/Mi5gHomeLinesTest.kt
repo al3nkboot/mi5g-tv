@@ -63,4 +63,27 @@ class Mi5gHomeLinesTest {
         assertEquals(listOf("am", "start", "-n", "com.gathin.tvhome/.MainActivity"),
             ShellTokens.tokenize(ShellRenderer.backToHomeLine().text))
     }
+
+    // 2.4: the remote's Play Store button opens the store, nothing else.
+    @Test fun openPlayStoreOnlyStartsTheStore() {
+        val lines = ShellRenderer.openPlayStoreLines().map { ShellTokens.tokenize(it.text) }
+        assertEquals(listOf("am", "start", "-a", "android.intent.action.MAIN", "-c", "android.intent.category.APP_MARKET"), lines[0])
+        assertEquals(listOf("monkey", "-p", "com.android.vending", "-c", "android.intent.category.LEANBACK_LAUNCHER", "1"), lines[1])
+    }
+
+    // 2.4 (v1.7 item 5): the Play Store stops running in the background without being switched off, and comes back.
+    @Test fun playStoreBackgroundIsRestrictedNotDisabled() {
+        val stop = ShellRenderer.playStoreBackgroundLines(true).map { ShellTokens.tokenize(it.text) }
+        assertEquals(listOf(
+            listOf("cmd", "appops", "set", "com.android.vending", "RUN_IN_BACKGROUND", "ignore"),
+            listOf("cmd", "appops", "set", "com.android.vending", "RUN_ANY_IN_BACKGROUND", "ignore"),
+            listOf("am", "force-stop", "com.android.vending"),
+        ), stop)
+        val allow = ShellRenderer.playStoreBackgroundLines(false).map { ShellTokens.tokenize(it.text) }
+        assertEquals(listOf(
+            listOf("cmd", "appops", "set", "com.android.vending", "RUN_IN_BACKGROUND", "default"),
+            listOf("cmd", "appops", "set", "com.android.vending", "RUN_ANY_IN_BACKGROUND", "default"),
+        ), allow)
+        assertTrue((stop + allow).none { "disable-user" in it || "uninstall" in it })
+    }
 }

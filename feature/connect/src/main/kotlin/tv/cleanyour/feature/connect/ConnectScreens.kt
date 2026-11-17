@@ -168,6 +168,11 @@ fun WelcomeScreen(state: SetupState.Welcome, extras: SetupExtras, actions: Setup
             ScreenTitle(stringResource(R.string.welcome_title), Modifier.padding(top = if (compact) 20.dp else 40.dp), size = TitleSize.DISPLAY)
             Lead(stringResource(R.string.welcome_body), Modifier.padding(top = 12.dp))
             InlineCard(extras, actions)
+            // 2.4: pair and go straight to the remote, no clean-up or home setup. Under the body, not in the
+            // pinned bar, so the promise and the live line still fit the first view on a short phone.
+            TertiaryButton(stringResource(R.string.remote_only_action), {
+                actions.intent(SetupIntent.RemoteOnly(true)); actions.intent(SetupIntent.Start)
+            }, Modifier.padding(top = 8.dp), quiet = true)
         }
         if (showQuickStart) {
             CytBottomSheet({ showQuickStart = false }) {
@@ -207,6 +212,18 @@ internal fun QuickStartSheetContent() {
     )
 }
 
+// 2.4: "Use as a remote only" on the connect screens. On: a note says what happens after pairing (the remote
+// opens; the full setup stays on the TV's page) with a way back to the full setup. Off: one quiet link turns it on.
+@Composable
+internal fun RemoteOnlyChoice(extras: SetupExtras, actions: SetupActions) {
+    if (extras.remoteOnly) {
+        Banner(stringResource(R.string.remote_only_banner), BannerTone.INFO, Modifier.padding(top = 16.dp))
+        TertiaryButton(stringResource(R.string.remote_only_full_setup), { actions.intent(SetupIntent.RemoteOnly(false)) }, Modifier.padding(top = 4.dp))
+    } else {
+        TertiaryButton(stringResource(R.string.remote_only_action), { actions.intent(SetupIntent.RemoteOnly(true)) }, Modifier.padding(top = 8.dp), quiet = true)
+    }
+}
+
 private val WELCOME_COMPACT_BELOW = 680.dp
 
 @Composable
@@ -243,6 +260,7 @@ fun PickerScreen(state: SetupState.Picker, extras: SetupExtras, actions: SetupAc
         ChoiceList(options, chosen?.host, { selected = it.key })
         Banner(stringResource(R.string.picker_footer), BannerTone.INFO, Modifier.padding(top = 20.dp))
         InlineCard(extras, actions)
+        RemoteOnlyChoice(extras, actions)
     }
 }
 
@@ -292,6 +310,7 @@ fun DoorScreen(state: SetupState.OpenDoor, extras: SetupExtras, actions: SetupAc
             }
         }
         InlineCard(extras, actions)
+        if (state.phase != DoorPhase.IDENTITY) RemoteOnlyChoice(extras, actions)
         Gap(16.dp)
     }
     if (showNotSeen) {
@@ -514,6 +533,7 @@ fun PairingScreen(state: SetupState.PairingNeeded, extras: SetupExtras, actions:
             Modifier.padding(top = 16.dp),
             guardObscured = false,
         )
+        RemoteOnlyChoice(extras, actions)
         Gap(24.dp)
     }
     if (steps) CytBottomSheet({ steps = false }) { PairingStepsContent() }

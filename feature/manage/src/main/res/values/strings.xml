@@ -515,5 +515,11 @@
     <string name="appsettings_update_rate_limited">GitHub\'s temporary limit was reached. Try again shortly or open the releases page</string>
     <string name="appsettings_update_cannot_install">The update can\'t be installed on this device</string>
     <string name="appsettings_update_cannot_install_note">This device has no screen for installing APK files. Download the update from the releases page on a computer or phone and install it from there (for example with Install APK in the phone app\'s TV tools, or with adb).</string>
+    <!-- 2.4 -->
+    <string name="remote_play_store">Play Store</string>
+    <string name="tvtools_play_store_bg_stop">Stop the Play Store running in the background</string>
+    <string name="tvtools_play_store_bg_allow">Let the Play Store run in the background again</string>
+    <string name="tvtools_label_play_store_bg_stop">Stopping the Play Store in the background</string>
+    <string name="tvtools_label_play_store_bg_allow">Letting the Play Store run in the background</string>
 </resources>
 

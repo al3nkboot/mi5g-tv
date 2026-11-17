@@ -223,4 +223,8 @@ Samsung (Tizen) and LG (webOS) do not use Android APK files, but you can block s
     <string name="quick_start_step3">Connect phone and TV to the same Wi-Fi.</string>
     <string name="quick_start_step4">Tap Start and accept the prompt on the TV.</string>
     <string name="quick_start_video">Watch the video</string>
+    <!-- 2.4: use the app as a remote only -->
+    <string name="remote_only_action">Use as a remote only</string>
+    <string name="remote_only_banner">Remote only: once the TV is paired, the remote opens. No clean-up and no home screen changes. You can run the full setup later from the TV\'s page.</string>
+    <string name="remote_only_full_setup">Full setup instead</string>
 </resources>

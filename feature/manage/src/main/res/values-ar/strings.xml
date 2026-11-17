@@ -508,5 +508,11 @@
     <string name="appsettings_update_rate_limited">تجاوزت حد GitHub المؤقت، جرّب بعد قليل أو افتح صفحة الإصدارات</string>
     <string name="appsettings_update_cannot_install">لا يمكن تثبيت التحديث على هذا الجهاز</string>
     <string name="appsettings_update_cannot_install_note">لا توجد على هذا الجهاز شاشة لتثبيت ملفات APK. نزّل التحديث من صفحة الإصدارات على الكمبيوتر أو الهاتف، ثم ثبّته من هناك (مثلًا عبر «تثبيت APK» في أدوات التلفاز من تطبيق الهاتف أو عبر adb).</string>
+    <!-- 2.4 -->
+    <string name="remote_play_store">متجر بلاي</string>
+    <string name="tvtools_play_store_bg_stop">منع متجر بلاي من العمل في الخلفية</string>
+    <string name="tvtools_play_store_bg_allow">السماح لمتجر بلاي بالعمل في الخلفية مرة أخرى</string>
+    <string name="tvtools_label_play_store_bg_stop">منع متجر بلاي من العمل في الخلفية</string>
+    <string name="tvtools_label_play_store_bg_allow">السماح لمتجر بلاي بالعمل في الخلفية</string>
 </resources>
 

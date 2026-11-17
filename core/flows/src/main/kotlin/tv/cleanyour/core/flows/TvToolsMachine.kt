@@ -185,6 +185,8 @@ sealed interface TvToolsIntent {
     data object ArrangeHomeFromPhone : TvToolsIntent
     /** 2.4: Keep Alive (Xiaomi): make Mi5G the default Home again and put its Home-key helper back. */
     data object ReapplyHome : TvToolsIntent
+    /** 2.4 (v1.7 item 5): keep the Play Store from running in the background, or let it again. Nothing is disabled. */
+    data class PlayStoreBackground(val stop: Boolean) : TvToolsIntent
     data class MapRemoteKey(val keyCode: Int, val targetPkg: String, val label: String) : TvToolsIntent
     data class SetForceLandscape(val landscape: Boolean) : TvToolsIntent
     data object StartClockScreensaver : TvToolsIntent
@@ -353,6 +355,7 @@ class TvToolsMachine(
             TvToolsIntent.ReturnToStockHome -> scope.launch { returnToStockHome() }
             TvToolsIntent.ArrangeHomeFromPhone -> scope.launch { runPowerLines(ShellRenderer.arrangeHomeLines(), "@arrange_home") }
             TvToolsIntent.ReapplyHome -> scope.launch { keepMi5gHome(reapply = true) }
+            is TvToolsIntent.PlayStoreBackground -> scope.launch { runPowerLines(ShellRenderer.playStoreBackgroundLines(event.stop), if (event.stop) "@play_store_bg_stop" else "@play_store_bg_allow") }
             is TvToolsIntent.MapRemoteKey -> scope.launch {
                 mapRemoteKey(event.keyCode, event.targetPkg, event.label)
             }

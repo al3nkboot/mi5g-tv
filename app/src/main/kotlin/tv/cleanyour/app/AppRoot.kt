@@ -137,6 +137,8 @@ internal fun applyRoute(stack: MutableList<NavKey>, route: String, noTvs: Boolea
         "tvsettings" -> id?.let { Dest.TvSettings(it) }
         "tools" -> id?.let { Dest.TvTools(it) }
         "remote" -> id?.let { Dest.Remote(it) }
+        // 2.4: "Use as a remote only": the TV's Manage under its remote, so Back lands where the full setup is.
+        "remoteonly" -> id?.let { stack.clear(); stack.add(Dest.Manage(it)); stack.add(Dest.Remote(it)); return true }
         "apps" -> id?.let { Dest.TvApps(it) }
         "appsettings" -> Dest.AppSettings
         "report" -> id?.let { k -> ReportKind.of(k) }?.let { k -> if (k == ReportKind.TV && parts.getOrNull(2) == null) null else Dest.Report(k.key, parts.getOrNull(2)) }

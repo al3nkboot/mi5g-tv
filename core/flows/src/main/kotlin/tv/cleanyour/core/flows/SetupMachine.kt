@@ -137,6 +137,7 @@ data class SetupExtras(
     val restartReenabled: Int = 0,               // "2 things came back on after the restart; switched off again."
     val doneLines: List<String> = emptyList(),   // refused ops named on Done (UX 4.14)
     val canSkipClean: Boolean = false,           // 2.2.1: the TV is saved, so "Skip cleanup" can open its Manage
+    val remoteOnly: Boolean = false,             // 2.4: "Use as a remote only": after pairing the remote opens, no clean-up or home setup
     val doneKept: List<String> = emptyList(),    // RF-LAUNCHER-250 F1: switch-offs kept because they run the TV's inputs
     val doneNothing: Boolean = false,            // 0.3.3 (issue #15): the run changed nothing on the TV, so Done says so
     val doneNothingWhy: NothingWhy = NothingWhy.NOTHING_PLANNED,   // which "nothing was changed" body Done shows
@@ -435,6 +436,7 @@ class SetupMachine(
             }
             SetupIntent.NotificationPermissionSettled -> askedNotifications = true
             SetupIntent.SkipClean -> if (canSkip(after)) scope.launch { skipClean() }
+            is SetupIntent.RemoteOnly -> mutableExtras.update { it.copy(remoteOnly = event.on) }
             SetupIntent.MakeItClean -> if (after is SetupState.Found && !mutableExtras.value.starting) {
                 mutableExtras.update { it.copy(starting = true) }
                 scope.launch {
@@ -646,7 +648,15 @@ class SetupMachine(
             tv = record
             // 2.2.1: a TV whose clean-up was skipped before goes straight to Manage on a plain
             // connect; the clean opens only from Manage ("setup/<id>", SetupStart.Continue).
-            if (start is SetupStart.Repair) {
+            if (mutableExtras.value.remoteOnly && start !is SetupStart.Repair) {
+                // 2.4: "Use as a remote only": the TV is saved like "Skip cleanup" (so the next connect opens
+                // Manage, where the full setup stays one tap away), and its remote opens at once.
+                val remote = record.copy(wizard = (record.wizard ?: draftFor(record)).copy(cleanSkipped = true, updatedAtMs = deps.clock.nowMs()))
+                tv = remote
+                attempt { deps.tvs.upsert(remote) }
+                deps.log.line("setup: remote only, opening the remote")
+                effect(SetupEffect.Navigate("remoteonly/${record.id.value}"))
+            } else if (start is SetupStart.Repair) {
                 deps.log.line("setup: paired again from the remote, opening Manage")
                 effect(SetupEffect.Navigate("manage/${record.id.value}"))
             } else if (start is SetupStart.Fresh && record.wizard?.cleanSkipped == true) {

@@ -214,4 +214,8 @@
     <string name="quick_start_step3">صِل الجوال والتلفاز بنفس شبكة Wi-Fi.</string>
     <string name="quick_start_step4">اضغط «البدء» ووافق على رسالة التأكيد على شاشة التلفاز.</string>
     <string name="quick_start_video">شاهد الفيديو</string>
+    <!-- 2.4: استخدام التطبيق كريموت فقط -->
+    <string name="remote_only_action">استخدمه كريموت بس</string>
+    <string name="remote_only_banner">ريموت فقط: بعد ربط التلفاز يفتح الريموت مباشرة، بدون تنظيف وبدون تغيير الشاشة الرئيسية. تقدر تكمل الإعداد الكامل لاحقاً من صفحة التلفاز.</string>
+    <string name="remote_only_full_setup">الإعداد الكامل بدلاً من ذلك</string>
 </resources>

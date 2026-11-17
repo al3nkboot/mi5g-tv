@@ -42,4 +42,15 @@ class RemoteMachineTest {
         runCurrent()
         assertEquals(ManageEffect.Navigate("pair/${tv.id.value}"), seen.last())
     }
+
+    // 2.4: the Play Store button opens the store on the TV through its APP_MARKET category.
+    @Test fun playStoreButtonOpensTheStore() = runTest {
+        val h = Harness()
+        val tv = h.knownTv()
+        val machine = RemoteMachine(h.manageDeps(), backgroundScope, tv.id, InMemoryRemoteFavoritesStore())
+        runCurrent()
+        machine.dispatch(RemoteIntent.OpenPlayStore)
+        runCurrent()
+        assertTrue(h.session.execLines.any { ShellTokens.tokenize(it).containsAll(listOf("am", "start", "android.intent.category.APP_MARKET")) })
+    }
 }

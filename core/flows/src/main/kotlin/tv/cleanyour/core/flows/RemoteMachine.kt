@@ -37,6 +37,7 @@ sealed interface RemoteIntent {
     data object SendText : RemoteIntent; data object Backspace : RemoteIntent; data object RefreshApps : RemoteIntent
     data class ToggleFavorite(val pkg: String) : RemoteIntent; data class LaunchApp(val pkg: String) : RemoteIntent
     data object Reconnect : RemoteIntent; data object OpenPairing : RemoteIntent
+    data object OpenPlayStore : RemoteIntent   // 2.4: open the Play Store on the TV (also where it hides from the app list)
 }
 
 class RemoteMachine(private val d: ManageDeps, scope: CoroutineScope, private val tvId: TvId, private val favoritesStore: RemoteFavoritesStore = InMemoryRemoteFavoritesStore()) : Machine<RemoteState, RemoteIntent, ManageEffect>(RemoteState(favorites = favoritesStore.load(tvId)), scope) {
@@ -77,6 +78,17 @@ class RemoteMachine(private val d: ManageDeps, scope: CoroutineScope, private va
             RemoteIntent.RefreshApps -> refreshApps()
             is RemoteIntent.ToggleFavorite -> scopeRef.launch { val next = if (intent.pkg in before.favorites) before.favorites - intent.pkg else before.favorites + intent.pkg; favoritesStore.save(tvId, next); send(FavoritesUpdate(next)) }
             is RemoteIntent.LaunchApp -> scopeRef.launch { accessRun { TvShellRunner.run(it, ShellRenderer.launchPackageLine(intent.pkg)) } }
+            RemoteIntent.OpenPlayStore -> scopeRef.launch {
+                effect(ManageEffect.HapticLight)
+                accessRun { session ->
+                    // The store's own category first; its TV entry when the TV has no default store for it.
+                    for (line in ShellRenderer.openPlayStoreLines()) {
+                        val r = TvShellRunner.run(session, line)
+                        if (r.exit == 0 && !r.stdout.contains("Error", ignoreCase = true) && !r.stderr.contains("Error", ignoreCase = true)
+                            && !r.stdout.contains("No activities found", ignoreCase = true)) break
+                    }
+                }
+            }
             else -> Unit
         }
     }

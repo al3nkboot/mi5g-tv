@@ -108,7 +108,7 @@ fun RemoteScreen(state: RemoteState, onIntent: (RemoteIntent) -> Unit, onBack: (
                 RemoteTab.Remote -> {
                     ModeSwitch(state.mode, onIntent)
                     when (state.mode) {
-                        RemoteMode.Buttons -> ButtonsPane(press, onMore = { moreOpen = true })
+                        RemoteMode.Buttons -> ButtonsPane(press, onMore = { moreOpen = true }, onPlayStore = { onIntent(RemoteIntent.OpenPlayStore) })
                         RemoteMode.Trackpad -> TrackpadPane(press)
                         RemoteMode.Keyboard -> KeyboardPane(state, onIntent)
                     }
@@ -177,7 +177,7 @@ private fun ModeSwitch(mode: RemoteMode, onIntent: (RemoteIntent) -> Unit) {
 }
 
 @Composable
-private fun ColumnScope.ButtonsPane(press: (RemoteButton) -> Unit, onMore: () -> Unit) {
+private fun ColumnScope.ButtonsPane(press: (RemoteButton) -> Unit, onMore: () -> Unit, onPlayStore: () -> Unit = {}) {
     BoxWithConstraints(Modifier.weight(1f).fillMaxWidth()) {
     val ring = if (maxHeight > 560.dp) 236.dp else 196.dp
     Column(Modifier.fillMaxWidth().heightIn(min = maxHeight).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.SpaceEvenly, horizontalAlignment = Alignment.CenterHorizontally) {
@@ -199,7 +199,11 @@ private fun ColumnScope.ButtonsPane(press: (RemoteButton) -> Unit, onMore: () ->
             }
         }
         Spacer(Modifier.height(8.dp))
-        GoldPill(stringResource(R.string.remote_more), filled = false, onClick = onMore)
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
+            GoldPill(stringResource(R.string.remote_more), filled = false, onClick = onMore)
+            // 2.4: open the Play Store on the TV, also on Google TV where it hides from the app list.
+            GoldPill(stringResource(R.string.remote_play_store), filled = false, onClick = onPlayStore)
+        }
         Spacer(Modifier.height(8.dp))
     }
     }
