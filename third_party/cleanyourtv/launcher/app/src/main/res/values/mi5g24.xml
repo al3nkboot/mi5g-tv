@@ -9,4 +9,19 @@
     <string name="mi5g_caffeine_4h">4 hours</string>
     <string name="mi5g_caffeine_forever">Until turned off</string>
     <string name="mi5g_caffeine_note">The screen stays awake</string>
+    <!-- 2.4 M2 -->
+    <string name="mi5g_safe_mode">Safe mode</string>
+    <string name="mi5g_safe_mode_status_on">On, after Home stopped twice</string>
+    <string name="mi5g_safe_mode_on">Safe mode: Home stopped twice, so it started with the extras off. Turn it off in Mi5G settings.</string>
+    <string name="mi5g_safe_handover">Mi5G Home did not start. The TV\'s own home screen opens for the next five minutes.</string>
+    <string name="mi5g_minimal">Clean mode</string>
+    <string name="mi5g_arabic_names">Arabic app names</string>
+    <string name="mi5g_sounds">Navigation sounds</string>
+    <string name="mi5g_all_apps">All apps</string>
+    <string name="mi5g_all_apps_search">Search apps</string>
+    <string name="mi5g_all_apps_none">No app matches.</string>
+    <string name="mi5g_play_store">Play Store</string>
+    <string name="mi5g_dock_rows">Dock rows</string>
+    <string name="mi5g_always_on_home">Settings and the Play Store always stay on Home.</string>
+    <string name="mi5g_hidden_removed_title">Hidden from Home</string>
 </resources>

@@ -47,6 +47,24 @@ final class KeepAlive {
         LauncherSwitches.prefs(app).edit().putBoolean(LOST_KEY, !home).apply();
     }
 
+    // 2.4 M2 (Teevy idea 23, own code): a system update (Philips and others) can hand Home back to the stock
+    // launcher. The build fingerprint changes with every update, so the first boot after one is known.
+    static final String FINGERPRINT_KEY = "mi5g_build_fingerprint";
+
+    /** True when a fingerprint was seen before and now differs (the system was updated in between). */
+    static boolean updatedSince(String was, String now) {
+        return was != null && now != null && !was.isEmpty() && !was.equals(now);
+    }
+
+    /** Once per system update: remembers the current fingerprint and says whether it changed since the last boot. */
+    static boolean systemUpdated(Context ctx) {
+        Context app = ctx.getApplicationContext();
+        String now = Build.FINGERPRINT;
+        String was = LauncherSwitches.prefs(app).getString(FINGERPRINT_KEY, null);
+        if (now != null && !now.equals(was)) LauncherSwitches.prefs(app).edit().putString(FINGERPRINT_KEY, now).apply();
+        return updatedSince(was, now);
+    }
+
     /** Home was taken by another launcher at the last check (Keep Alive on). */
     static boolean homeLost(Context ctx) {
         return LauncherSwitches.keepAlive(ctx) && LauncherSwitches.prefs(ctx).getBoolean(LOST_KEY, false);

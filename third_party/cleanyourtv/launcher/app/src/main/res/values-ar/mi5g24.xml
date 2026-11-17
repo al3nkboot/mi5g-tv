@@ -9,4 +9,19 @@
     <string name="mi5g_caffeine_4h">أربع ساعات</string>
     <string name="mi5g_caffeine_forever">حتى الإيقاف</string>
     <string name="mi5g_caffeine_note">الشاشة ستبقى مستيقظة</string>
+    <!-- 2.4 M2 -->
+    <string name="mi5g_safe_mode">الوضع الآمن</string>
+    <string name="mi5g_safe_mode_status_on">مفعّل بعد توقف الشاشة الرئيسية مرتين</string>
+    <string name="mi5g_safe_mode_on">الوضع الآمن: توقفت الشاشة الرئيسية مرتين، فبدأت بدون الإضافات. أوقفه من إعدادات Mi5G.</string>
+    <string name="mi5g_safe_handover">لم تبدأ الشاشة الرئيسية، فتفتح الشاشة الأصلية للتلفاز خلال الدقائق الخمس القادمة.</string>
+    <string name="mi5g_minimal">الوضع البسيط</string>
+    <string name="mi5g_arabic_names">أسماء التطبيقات بالعربي</string>
+    <string name="mi5g_sounds">أصوات التنقل</string>
+    <string name="mi5g_all_apps">كل التطبيقات</string>
+    <string name="mi5g_all_apps_search">ابحث عن تطبيق</string>
+    <string name="mi5g_all_apps_none">لا يوجد تطبيق بهذا الاسم.</string>
+    <string name="mi5g_play_store">متجر بلاي</string>
+    <string name="mi5g_dock_rows">صفوف الشريط السفلي</string>
+    <string name="mi5g_always_on_home">الإعدادات ومتجر بلاي يبقيان دائماً في الشاشة الرئيسية.</string>
+    <string name="mi5g_hidden_removed_title">مخفية من الشاشة الرئيسية</string>
 </resources>

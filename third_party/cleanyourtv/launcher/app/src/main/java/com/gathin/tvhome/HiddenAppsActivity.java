@@ -69,6 +69,31 @@ public final class HiddenAppsActivity extends Activity {
                 build();
             });
         }
+        // 2.4 M2 (backlog 21): apps hidden with Remove from Home (or from the phone) are listed here; OK shows one
+        // again. They stay installed and enabled; Settings and the Play Store can never be hidden.
+        Set<String> removed = TileMenu.removed(this);
+        if (!removed.isEmpty()) {
+            Rows.add(this, rows, R.drawable.ic_remove, getString(R.string.mi5g_hidden_removed_title), null, () -> { });
+            for (String pkg : new java.util.TreeSet<>(removed)) {
+                Rows.add(this, rows, 0, label(pkg), getString(R.string.mi5g_hidden_app_hidden), () -> {
+                    if (LauncherSwitches.refuseIfLocked(this)) return;   // 2.4: Home lock
+                    TileMenu.restore(this, pkg);
+                    setResult(RESULT_OK);
+                    HomeLayout.changed();
+                    build();
+                });
+            }
+        }
         rows.getChildAt(0).requestFocus();
+    }
+
+    private String label(String pkg) {
+        if (testApps != null) for (String[] a : testApps) if (a[0].equals(pkg)) return a[1];
+        try {
+            PackageManager pm = getPackageManager();
+            return String.valueOf(pm.getApplicationLabel(pm.getApplicationInfo(pkg, 0)));
+        } catch (Exception e) {
+            return pkg;
+        }
     }
 }

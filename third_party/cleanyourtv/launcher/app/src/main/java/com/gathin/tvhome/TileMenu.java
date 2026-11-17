@@ -52,10 +52,19 @@ final class TileMenu {
         return ctx.getSharedPreferences(Config.SETTINGS_NAME, Context.MODE_PRIVATE);
     }
 
-    static void remove(Context ctx, String pkg) {
+    /** 2.4 M2: false (nothing hidden) for Settings and the Play Store, which always stay on Home. */
+    static boolean remove(Context ctx, String pkg) {
+        if (LauncherSwitches.alwaysVisible(pkg)) return false;
         Set<String> s = new HashSet<>(prefs(ctx).getStringSet(REMOVED_KEY, new HashSet<>()));
         s.add(pkg);
         prefs(ctx).edit().putStringSet(REMOVED_KEY, s).apply();
+        return true;
+    }
+
+    /** 2.4 M2: one hidden app back on Home (Mi5G settings > Hidden apps). */
+    static void restore(Context ctx, String pkg) {
+        Set<String> s = new HashSet<>(prefs(ctx).getStringSet(REMOVED_KEY, new HashSet<>()));
+        if (s.remove(pkg)) prefs(ctx).edit().putStringSet(REMOVED_KEY, s).apply();
     }
 
     static Set<String> removed(Context ctx) { return prefs(ctx).getStringSet(REMOVED_KEY, new HashSet<>()); }
@@ -96,7 +105,10 @@ final class TileMenu {
         Rows.add(a, rows, R.drawable.ic_swap_vert, a.getString(R.string.mi5g_tile_move), null, () -> { d.dismiss(); move.run(); });
         Rows.add(a, rows, R.drawable.ic_remove, a.getString(R.string.mi5g_tile_remove), null, () -> {
             d.dismiss();
-            remove(a, pkg);
+            if (!remove(a, pkg)) {   // 2.4 M2: Settings and the Play Store always stay on Home
+                Toast.makeText(a, R.string.mi5g_always_on_home, Toast.LENGTH_LONG).show();
+                return;
+            }
             Toast.makeText(a, R.string.mi5g_tile_removed, Toast.LENGTH_LONG).show();
             reload.run();
         });

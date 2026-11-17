@@ -560,7 +560,7 @@ final class ArrangeServer {
             Set<String> s = new HashSet<>();
             for (int i = 0; i < hidden.length() && s.size() < 1000; i++) {
                 String p = hidden.optString(i);
-                if (HomeLayout.validPackage(p)) s.add(p);
+                if (HomeLayout.validPackage(p) && !LauncherSwitches.alwaysVisible(p)) s.add(p);   // 2.4 M2
             }
             TileMenu.prefs(ctx).edit().putStringSet(TileMenu.REMOVED_KEY, s).apply();
         }

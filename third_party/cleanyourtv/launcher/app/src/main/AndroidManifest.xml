@@ -111,6 +111,8 @@
         <activity android:name=".GridSettingsActivity" android:exported="false" android:screenOrientation="landscape" />
         <!-- Mi5G 2.0.2 -->
         <activity android:name=".InputsEditActivity" android:exported="false" android:excludeFromRecents="true" android:screenOrientation="landscape" />
+        <!-- 2.4 M2: All apps grid with search. -->
+        <activity android:name=".AllAppsActivity" android:exported="false" android:excludeFromRecents="true" android:screenOrientation="landscape" android:windowSoftInputMode="stateHidden|adjustPan" />
         <activity android:name=".HiddenAppsActivity" android:exported="false" android:excludeFromRecents="true" android:screenOrientation="landscape" />
         <activity android:name=".WeatherPlaceActivity" android:exported="false" android:excludeFromRecents="true" android:screenOrientation="landscape" />
         <activity

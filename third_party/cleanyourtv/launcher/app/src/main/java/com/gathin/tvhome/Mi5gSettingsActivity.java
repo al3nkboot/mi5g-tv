@@ -96,6 +96,33 @@ public final class Mi5gSettingsActivity extends Activity {
         Rows.add(this, rows, R.drawable.ic_lock, getString(R.string.mi5g_home_lock),
                 onOff(LauncherSwitches.homeLocked(this)),
                 () -> { LauncherSwitches.setHomeLocked(this, !LauncherSwitches.homeLocked(this)); build(); });
+        // 2.4 M2: home screen polish (own code). Clean mode, Arabic names, sounds, All apps, safe mode.
+        Rows.add(this, rows, R.drawable.ic_apps, getString(R.string.mi5g_minimal), onOff(LauncherSwitches.minimal(this)), () -> {
+            LauncherSwitches.setMinimal(this, !LauncherSwitches.minimal(this));
+            setResult(RESULT_OK);
+            HomeLayout.changed();
+            build();
+        });
+        Rows.add(this, rows, R.drawable.ic_apps, getString(R.string.mi5g_arabic_names), onOff(LauncherSwitches.arabicNames(this)), () -> {
+            LauncherSwitches.setArabicNames(this, !LauncherSwitches.arabicNames(this));
+            setResult(RESULT_OK);
+            HomeLayout.changed();
+            build();
+        });
+        Rows.add(this, rows, R.drawable.ic_speaker, getString(R.string.mi5g_sounds), onOff(LauncherSwitches.sounds(this)), () -> {
+            LauncherSwitches.setSounds(this, !LauncherSwitches.sounds(this));
+            Sounds.click(this);
+            build();
+        });
+        Rows.add(this, rows, R.drawable.ic_apps, getString(R.string.mi5g_all_apps), null,
+                () -> startActivity(new Intent(this, AllAppsActivity.class)));
+        Rows.add(this, rows, R.drawable.ic_home_settings, getString(R.string.mi5g_safe_mode),
+                SafeMode.active(this) ? getString(R.string.mi5g_safe_mode_status_on) : onOff(false), () -> {
+                    SafeMode.setActive(this, !SafeMode.active(this));
+                    setResult(RESULT_OK);
+                    HomeLayout.changed();
+                    build();
+                });
         // 2.4: Keep Alive (on by default on Xiaomi) and Keep screen awake, ideas from tvOS-Launcher (Apache-2.0).
         Rows.add(this, rows, R.drawable.ic_home_settings, getString(R.string.mi5g_keep_alive),
                 KeepAlive.homeLost(this) ? getString(R.string.mi5g_keep_alive_lost) : onOff(LauncherSwitches.keepAlive(this)),

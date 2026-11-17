@@ -95,6 +95,10 @@ public final class ControlCenterActivity extends Activity {
             if (!global(this, AccessibilityService.GLOBAL_ACTION_RECENTS)) needsService();
             finish();
         });
+        // 2.4 M2: All apps with search (backlog 25) and the Play Store (backlog 22).
+        Rows.add(this, rows, R.drawable.ic_apps, getString(R.string.mi5g_all_apps), null,
+                () -> start(new Intent(this, AllAppsActivity.class)));
+        Rows.add(this, rows, R.drawable.ic_apps, getString(R.string.mi5g_play_store), null, this::openPlayStore);
         Rows.add(this, rows, R.drawable.ic_speed, getString(R.string.mi5g_cc_speed), null,
                 () -> start(new Intent(Intent.ACTION_VIEW, Uri.parse("https://fast.com"))));
         Rows.add(this, rows, R.drawable.ic_wifi, getString(R.string.mi5g_cc_wifi), null,
@@ -118,6 +122,15 @@ public final class ControlCenterActivity extends Activity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         finish();   // the mapped button again closes the panel
+    }
+
+    /** 2.4 M2: the store's own category first (Google TV hides its tile), then its TV entry. */
+    private void openPlayStore() {
+        Intent market = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_APP_MARKET).setPackage("com.android.vending");
+        Intent tv = getPackageManager().getLeanbackLaunchIntentForPackage("com.android.vending");
+        if (getPackageManager().resolveActivity(market, 0) != null) start(market);
+        else if (tv != null) start(tv);
+        else android.widget.Toast.makeText(this, R.string.not_available, android.widget.Toast.LENGTH_SHORT).show();
     }
 
     private void refreshMedia() {

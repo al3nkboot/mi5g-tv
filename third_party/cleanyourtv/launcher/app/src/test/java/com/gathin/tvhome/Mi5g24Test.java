@@ -12,7 +12,7 @@ import org.robolectric.annotation.Config;
 public class Mi5g24Test {
   private Context ctx() { return RuntimeEnvironment.getApplication(); }
 
-  @Test public void keepAliveIsOnByDefaultOnlyOnXiaomi() {
+  @Test public void keepAliveIsOnByDefaultOnXiaomi() {
     assertTrue(LauncherSwitches.keepAliveDefault("Xiaomi"));
     assertTrue(LauncherSwitches.keepAliveDefault(" xiaomi "));
     assertFalse(LauncherSwitches.keepAliveDefault("Sony"));

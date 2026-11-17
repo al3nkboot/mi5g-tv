@@ -75,9 +75,14 @@ final class LauncherSwitches {
     // 2.4: Keep Alive, idea from tvOS-Launcher (Apache-2.0, techgenius1); own code.
     static final String KEEP_ALIVE = "mi5g_keep_alive";
 
-    /** Xiaomi sets (PatchWall, Mi Box S) take Home back after standby: on by default there only. */
+    /**
+     * Xiaomi sets (PatchWall, Mi Box S) take Home back after standby, and Philips sets (TP Vision) after a system
+     * update (2.4 M2, Teevy idea 23): on by default there only.
+     */
     static boolean keepAliveDefault(String manufacturer) {
-        return manufacturer != null && manufacturer.trim().equalsIgnoreCase("xiaomi");
+        if (manufacturer == null) return false;
+        String m = manufacturer.trim().toLowerCase(java.util.Locale.ROOT);
+        return m.equals("xiaomi") || m.equals("philips") || m.equals("tpv") || m.startsWith("tp vision");
     }
 
     static boolean keepAlive(Context ctx) {
@@ -89,4 +94,43 @@ final class LauncherSwitches {
     static void setKeepAlive(Context ctx, boolean on) {
         prefs(ctx).edit().putBoolean(KEEP_ALIVE, on).apply();
     }
+
+    // 2.4 M2: home screen polish. All own code; ideas noted per switch.
+    static final String MINIMAL = "mi5g_minimal_home";
+    static final String ARABIC_NAMES = "mi5g_arabic_names";
+    static final String SOUNDS = "mi5g_nav_sounds";
+    static final String DOCK_ROWS = "mi5g_dock_rows";
+
+    /** Clean mode (backlog 6): only the clock, the dock and the apps; greeting, race, stats, cards and sky stay off. */
+    static boolean minimal(Context ctx) { return prefs(ctx).getBoolean(MINIMAL, false); }
+
+    static void setMinimal(Context ctx, boolean on) { prefs(ctx).edit().putBoolean(MINIMAL, on).apply(); }
+
+    /** Arabic app names on the tiles (v1.7 #3): on by default, used only while the TV speaks Arabic. */
+    static boolean arabicNames(Context ctx) { return prefs(ctx).getBoolean(ARABIC_NAMES, true); }
+
+    static void setArabicNames(Context ctx, boolean on) { prefs(ctx).edit().putBoolean(ARABIC_NAMES, on).apply(); }
+
+    /** Our own soft navigation and click sounds (backlog 28): off by default. */
+    static boolean sounds(Context ctx) { return prefs(ctx).getBoolean(SOUNDS, false); }
+
+    static void setSounds(Context ctx, boolean on) { prefs(ctx).edit().putBoolean(SOUNDS, on).apply(); }
+
+    /** Dock rows (backlog 24): 1 (as before), 2 or 3. */
+    static int dockRows(Context ctx) { return clampDockRows(prefs(ctx).getInt(DOCK_ROWS, 1)); }
+
+    static int clampDockRows(int rows) { return Math.max(1, Math.min(3, rows)); }
+
+    static int nextDockRows(int rows) { return rows >= 3 ? 1 : clampDockRows(rows) + 1; }
+
+    static void setDockRows(Context ctx, int rows) { prefs(ctx).edit().putInt(DOCK_ROWS, clampDockRows(rows)).apply(); }
+
+    /**
+     * Apps that always stay on Home and in All apps (backlog 21 and 22): the TV's Settings and the Play Store. Hiding
+     * them is refused, so there is always a way back to the settings and to new apps.
+     */
+    static final java.util.Set<String> ALWAYS_VISIBLE = java.util.Collections.unmodifiableSet(new java.util.HashSet<>(java.util.Arrays.asList(
+            "com.android.vending", "com.android.tv.settings", "com.google.android.tv.settings", "com.android.settings")));
+
+    static boolean alwaysVisible(String pkg) { return pkg != null && ALWAYS_VISIBLE.contains(pkg); }
 }

@@ -185,6 +185,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private boolean reordering;
     private final TileListener listener;
     private final int dockSize;
+    /** 2.4 M2: tiles per row; dockSize is columns times the dock rows (1 to 3). */
+    private final int columns;
     /** config dock_row: false makes the dock apps the first tiles of one plain grid (names shown, no empty slots). */
     private final boolean dockRow;
     /** cinematic_home: only then does a launch record the last-opened app the shelf uses. */
@@ -215,8 +217,13 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final List<Entry> items = new ArrayList<>();
 
     AppAdapter(Context ctx, TileListener listener, int dockSize, Config cfg) {
+        this(ctx, listener, dockSize, dockSize, cfg);
+    }
+
+    AppAdapter(Context ctx, TileListener listener, int columns, int dockSize, Config cfg) {
         this.ctx = ctx;
         this.listener = listener;
+        this.columns = Math.max(1, columns);
         this.dockSize = dockSize;
         this.favourites = cfg.dockApps;
         this.fillDock = cfg.fillDock;
@@ -271,8 +278,10 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         for (ResolveInfo ri : found) {
             if (ri.activityInfo == null) continue;
             String pkg = ri.activityInfo.packageName;
+            // 2.4 M2: Settings and the Play Store always stay on Home (backlog 21, 22).
+            boolean always = LauncherSwitches.alwaysVisible(pkg);
             if (pkg.equals(ctx.getPackageName()) || !ri.activityInfo.exported
-                    || !LibraryApps.visible(tvPackages.contains(pkg), hidden.contains(pkg), added.contains(pkg), removed.contains(pkg))) continue;
+                    || !LibraryApps.visible(tvPackages.contains(pkg), !always && hidden.contains(pkg), added.contains(pkg), !always && removed.contains(pkg))) continue;
             ComponentName component = new ComponentName(pkg, ri.activityInfo.name);
             Cards.Card card = cardByPkg.get(pkg);
             if (card != null && !card.component.equals(component)) continue;   // the card stands in for this tile
@@ -280,7 +289,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             // redraw the tile name as something else (#117).
             String label = card != null ? card.label : Cards.cleanLabel(
                     layout.names.containsKey(pkg) ? layout.names.get(pkg)   // Mi5G 2.0.1: renamed on the phone
-                    : appLabels.containsKey(pkg) ? appLabels.get(pkg) : String.valueOf(ri.loadLabel(pm)), pkg);
+                    : appLabels.containsKey(pkg) ? appLabels.get(pkg)
+                    : arabicOr(pkg, ri, pm), pkg);   // 2.4 M2: Arabic names (v1.7 #3)
             if (!seen.add(pkg + '\n' + label)) continue;
             Drawable banner = TileMenu.customImage(ctx, pkg);
             if (banner == null) banner = bundledBanner(appBanners.get(pkg));
@@ -298,6 +308,9 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 fresh.add(entry);
             }
         }
+        // 2.4 M2 (backlog 22): the Play Store stays on Home also where it has no TV entry in the app list (Google TV).
+        Entry store = playStoreEntry(pm, fresh);
+        if (store != null) fresh.add(store);
         for (HomeLayout.Folder folder : layout.folders) {
             List<Entry> in = folderApps.get(folder.id);
             if (in == null || in.isEmpty()) continue;
@@ -343,6 +356,35 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         items.clear();
         items.addAll(fresh);
         notifyDataSetChanged();
+    }
+
+    private String arabicOr(String pkg, ResolveInfo ri, PackageManager pm) {
+        String ar = ArabicNames.of(ctx, pkg);
+        return ar != null ? ar : String.valueOf(ri.loadLabel(pm));
+    }
+
+    /** A Play Store tile when none is on Home yet and the store is installed; null otherwise. */
+    private Entry playStoreEntry(PackageManager pm, List<Entry> fresh) {
+        String store = "com.android.vending";
+        for (Entry e : fresh) if (store.equals(e.pkg)) return null;
+        for (List<Entry> in : folderApps.values()) for (Entry e : in) if (store.equals(e.pkg)) return null;
+        Intent[] tries = {
+                new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER).setPackage(store),
+                new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_APP_MARKET).setPackage(store),
+                new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER).setPackage(store),
+        };
+        for (Intent t : tries) {
+            ResolveInfo ri;
+            try { ri = pm.resolveActivity(t, 0); } catch (RuntimeException e) { ri = null; }
+            if (ri == null || ri.activityInfo == null || !ri.activityInfo.exported) continue;
+            String label = Cards.cleanLabel(layout.names.containsKey(store) ? layout.names.get(store) : arabicOr(store, ri, pm), store);
+            Drawable banner = TileMenu.customImage(ctx, store);
+            if (banner == null) banner = loadBanner(pm, ri);
+            Drawable icon;
+            try { icon = ri.loadIcon(pm); } catch (RuntimeException e) { icon = null; }
+            return new Entry(label, new ComponentName(store, ri.activityInfo.name), banner, icon);
+        }
+        return null;
     }
 
     /** Mi5G 2.0.1: the inputs pinned from the phone that the TV still lists. */
@@ -419,7 +461,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         float density = parent.getResources().getDisplayMetrics().density;
         int width = parent.getWidth() > 0 ? parent.getWidth() : parent.getMeasuredWidth();
         int inner = width - parent.getPaddingLeft() - parent.getPaddingRight();
-        int w = tileWidthPx(inner, parent.getHeight(), dockSize, rowsBelowDock, dockTitle, dockRow, density), h = tileHeightPx(w);
+        int w = tileWidthPx(inner, parent.getHeight(), columns, rowsBelowDock + dockSize / columns - 1, dockTitle, dockRow, density), h = tileHeightPx(w);
         w=Math.round(w*("s".equals(layout.options.iconSize)?0.75f:"l".equals(layout.options.iconSize)?1f:0.9f));
         h=tileHeightPx(w);
         View card = v.findViewById(R.id.card);
@@ -460,7 +502,10 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         h.card.setVisibility(View.VISIBLE);
         h.card.setFocusable(true);
         h.name.setText(e.name);
-        h.name.setVisibility(dockRow && position < dockSize ? View.INVISIBLE : View.VISIBLE);   // the dock has no labels
+        // The dock has no labels, except 2.4 M2 name tooltips: with 2 or 3 dock rows, or no name above the dock,
+        // the focused dock tile shows its name under it (backlog 24).
+        boolean dockTooltips = dockSize > columns || !dockTitle;
+        h.name.setVisibility(dockRow && position < dockSize && !dockTooltips ? View.INVISIBLE : View.VISIBLE);
         h.opts = layout.options;
         if ("never".equals(h.opts.names)) h.name.setVisibility(View.INVISIBLE);
         boolean focused = h.card.isFocused();   // a rebind after reload() can hit the focused tile
@@ -516,6 +561,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     /** Opens the tile's activity by explicit component, with no extras: a card can name nothing else. */
     void launch(Entry e) {
+        Sounds.click(ctx);   // 2.4 M2: optional, off by default
         if (e.kind == Entry.INPUT) {
             // Mi5G 2.0.1: a pinned input opens like the input switcher does (passthrough channel URI).
             try {
@@ -824,6 +870,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             .translationY(focused || always ? density * 4f : -density * 6f)
                             .setDuration(220).start();
                 }
+                if (focused) Sounds.nav(view.getContext());   // 2.4 M2: optional, off by default
                 int pos = getBindingAdapterPosition();
                 if (focused && listener != null && pos != RecyclerView.NO_POSITION) {
                     listener.onTileFocused(pos, view);
