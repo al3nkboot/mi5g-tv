@@ -1,8 +1,8 @@
 {
   "schema": 1,
-  "sequence": 10,
-  "generated": "2026-11-06T00:00:00Z",
-  "expires": "2027-02-04T00:00:00Z",
+  "sequence": 11,
+  "generated": "2026-11-17T00:00:00Z",
+  "expires": "2027-02-15T00:00:00Z",
   "modules": [
     {
       "id": "adguard-dns",
@@ -50,7 +50,7 @@
       "id": "prayer-weather",
       "name": "مواقيتي",
       "one_line": "مواقيت الصلاة والأذان على التلفاز مع إعدادات من الهاتف",
-      "description": "مواقيت الصلاة الخمس والشروق بمحرك مواقيتي وتقويم عُمان، مع الأذان الكامل فوق أي تطبيق (الأذان الإجباري)، وتنبيه قبل الأذان، وودجت عائم اختياري للصلاة القادمة، وتذكير الجمعة بسورة الكهف، وإذاعة القرآن الكريم المباشرة. تُضبط الإعدادات من هاتفك، مع خيار حساب العصر حنفي أو شافعي.",
+      "description": "مواقيت الصلاة الخمس والشروق بمحرك مواقيتي وتقويم عُمان، مع الأذان الكامل فوق أي تطبيق (الأذان الإجباري)، وتنبيه قبل الأذان، وودجت عائم اختياري للصلاة القادمة، وتذكير الجمعة بسورة الكهف، وإذاعة القرآن الكريم المباشرة. تُضبط الإعدادات من هاتفك، مع خيار حساب العصر حنفي أو شافعي، وتعديل وتنبيه لكل صلاة على حدة، وأذان فجر منفصل.",
       "package": "com.midroid.mi5gtv.prayer",
       "type": "card",
       "tier": "verified",
@@ -61,13 +61,13 @@
       "artwork": null,
       "versions": [
         {
-          "version_code": 6,
-          "version_name": "2.1.0",
-          "released": "2026-11-06T00:00:00Z",
+          "version_code": 7,
+          "version_name": "2.2.0",
+          "released": "2026-11-18T00:00:00Z",
           "apk": {
-            "url": "https://github.com/al3nkboot/mi5g-tv/releases/download/v2.1.0/mi5g-tv-prayer.apk",
+            "url": "https://github.com/al3nkboot/mi5g-tv/releases/download/v2.4.0/mi5g-tv-prayer.apk",
             "size": 3003131,
-            "sha256": "9b790849cffce35fac98750b9d8f24d53976a9fbc1741daa1c9948e730759488",
+            "sha256": "bbcabb48567c3de5da15bfac9fad5cbd815380b2896f8825ec6a8f9d81725fcf",
             "signer_sha256": "c1f317965f154fe5e79fe7483abd5dd5dec7df57d87f3a645a5fd12f39a5480c"
           },
           "permissions": [
@@ -192,7 +192,7 @@
       "id": "tv-matches",
       "name": "Mi5G Score",
       "one_line": "نتائج ومواعيد فرقك المفضلة وجداول الترتيب",
-      "description": "بطاقة وتطبيق رياضي مصمم لشاشة التلفاز والريموت يعرض نتائج ومواعيد مباريات اليوم والغد مباشرةً بالتوقيت المحلي، مع إمكانية اختيار فرقك ودورياتك المفضلة (دوري روشن السعودي، دوري أبطال أوروبا، الدوري الإنجليزي، الإسباني، الإيطالي، المصري، القطري، الإماراتي، ودوري أبطال آسيا) بضغطة زر.",
+      "description": "بطاقة وتطبيق رياضي مصمم لشاشة التلفاز والريموت يعرض نتائج ومواعيد مباريات اليوم والغد مباشرةً بالتوقيت المحلي، مع إمكانية اختيار فرقك ودورياتك المفضلة (دوري روشن السعودي، دوري أبطال أوروبا، الدوري الإنجليزي، الإسباني، الإيطالي، المصري، القطري، الإماراتي، ودوري أبطال آسيا) بضغطة زر، مع البطولات الكبرى، وتذكير قبل انطلاق المباراة، وملاحظة عند تعارضها مع وقت الصلاة، ونتيجة مباشرة مثبّتة في زاوية الشاشة.",
       "package": "com.midroid.mi5gtv.matches",
       "type": "card",
       "tier": "verified",
@@ -203,19 +203,39 @@
       "artwork": null,
       "versions": [
         {
-          "version_code": 3,
-          "version_name": "2.0.0",
-          "released": "2026-11-03T00:00:00Z",
+          "version_code": 4,
+          "version_name": "2.1.0",
+          "released": "2026-11-18T00:00:00Z",
           "apk": {
-            "url": "https://github.com/al3nkboot/mi5g-tv/releases/download/v2.1.0/mi5g-tv-score.apk",
-            "size": 271118,
-            "sha256": "cd8c1a21ff75ddd0712f09eeac7fda1896410f94b9ee358aaee4d63d1022416a",
+            "url": "https://github.com/al3nkboot/mi5g-tv/releases/download/v2.4.0/mi5g-tv-score.apk",
+            "size": 283211,
+            "sha256": "94e4a0ecbef15760e79e025214bd9d66ee5c577138ba30b71ff3286b689b7d6e",
             "signer_sha256": "c1f317965f154fe5e79fe7483abd5dd5dec7df57d87f3a645a5fd12f39a5480c"
           },
           "permissions": [
             {
               "permission": "android.permission.INTERNET",
               "plain_words": "يجلب نتائج ومواعيد المباريات وجداول الترتيب من ESPN."
+            },
+            {
+              "permission": "android.permission.SYSTEM_ALERT_WINDOW",
+              "plain_words": "يعرض النتيجة المثبّتة وتنبيه انطلاق المباراة فوق أي تطبيق."
+            },
+            {
+              "permission": "android.permission.SCHEDULE_EXACT_ALARM",
+              "plain_words": "يضبط منبّهًا دقيقًا قبل انطلاق المباراة التي طلبت التذكير بها."
+            },
+            {
+              "permission": "android.permission.RECEIVE_BOOT_COMPLETED",
+              "plain_words": "يعيد جدولة تذكيرات المباريات بعد تشغيل التلفاز."
+            },
+            {
+              "permission": "android.permission.FOREGROUND_SERVICE",
+              "plain_words": "يبقي النتيجة المثبّتة تتحدّث أثناء استخدام تطبيقات أخرى."
+            },
+            {
+              "permission": "android.permission.POST_NOTIFICATIONS",
+              "plain_words": "يعرض إشعار التذكير إذا تعذّر عرضه فوق الشاشة."
             }
           ],
           "network": "يجلب النتائج والمواعيد وجداول الترتيب من واجهة ESPN العامة فقط.",

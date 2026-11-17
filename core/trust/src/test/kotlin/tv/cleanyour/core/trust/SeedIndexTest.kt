@@ -19,11 +19,11 @@ class SeedIndexTest {
     @Test fun seedVerifiesAgainstTheCompiledRoot() {
         val verdict = TrustRoots.indexVerifier().verify(index, indexSig, keys, keysSig, null, MinisignIndexVerifier.VERIFY_IGNORING_EXPIRY)
         val ok = verdict as? IndexVerdict.Ok ?: error("seed does not verify: $verdict")
-        assertEquals(10, ok.index.sequence)
-        // 2.1: prayer 2.1.0 / versionCode 6 (Shafi/Hanafi Asr selector).
+        assertEquals(11, ok.index.sequence)
+        // 2.4: prayer 2.2.0 / versionCode 7 (per-prayer offsets and alerts, separate Fajr adhan).
         val prayer = ok.index.modules.first { it.id == "prayer-weather" }.versions.single()
-        assertEquals(6L, prayer.versionCode)
-        assertEquals(Sha256("9b790849cffce35fac98750b9d8f24d53976a9fbc1741daa1c9948e730759488"), prayer.artifact.sha256)
+        assertEquals(7L, prayer.versionCode)
+        assertEquals(Sha256("bbcabb48567c3de5da15bfac9fad5cbd815380b2896f8825ec6a8f9d81725fcf"), prayer.artifact.sha256)
         assertEquals(listOf("adguard-dns", "prayer-weather", "tv-speedtest", "tv-files", "tv-matches", "retro"), ok.index.modules.map { it.id })
         val retro = ok.index.modules.first { it.id == "retro" }
         assertEquals("retro", retro.id)
