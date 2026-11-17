@@ -126,6 +126,27 @@ public final class Mi5gSettingsActivity extends Activity {
                     HomeLayout.changed();
                     build();
                 });
+        // 2.4 M4: Home widgets (backlog 26), the screensaver's calendar line (backlog 5), reminders (backlog 30)
+        // and the weekly sleep and wake schedule (backlog 34). Reminders and the week are set on the phone page.
+        Rows.add(this, rows, R.drawable.ic_swap_vert, getString(R.string.mi5g_widgets), null,
+                () -> startActivity(new Intent(this, HomeWidgetsActivity.class)));
+        Rows.add(this, rows, R.drawable.ic_clock, getString(R.string.mi5g_saver_info), onOff(Occasions.saverInfoOn(this)), () -> {
+            Occasions.setSaverInfo(this, !Occasions.saverInfoOn(this));
+            build();
+        });
+        int reminders = Reminders.load(this).size();
+        Rows.add(this, rows, R.drawable.ic_timer, getString(R.string.mi5g_reminders),
+                reminders == 0 ? getString(R.string.mi5g_reminders_none) : getResources().getQuantityString(R.plurals.mi5g_reminders_count, reminders, reminders),
+                this::showReminders);
+        Rows.add(this, rows, R.drawable.ic_wake, getString(R.string.mi5g_schedule),
+                Schedule.load(this).empty() ? getString(R.string.mi5g_schedule_empty) : onOff(Schedule.on(this)), () -> {
+                    if (Schedule.load(this).empty()) {
+                        android.widget.Toast.makeText(this, R.string.mi5g_set_on_phone, android.widget.Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    Schedule.setOn(this, !Schedule.on(this));
+                    build();
+                });
         // 2.4: Keep Alive (on by default on Xiaomi) and Keep screen awake, ideas from tvOS-Launcher (Apache-2.0).
         Rows.add(this, rows, R.drawable.ic_home_settings, getString(R.string.mi5g_keep_alive),
                 KeepAlive.homeLost(this) ? getString(R.string.mi5g_keep_alive_lost) : onOff(LauncherSwitches.keepAlive(this)),
@@ -197,6 +218,32 @@ public final class Mi5gSettingsActivity extends Activity {
         if (EffectsMode.FULL.equals(m)) return getString(R.string.mi5g_effects_full);
         if (EffectsMode.LITE.equals(m)) return getString(R.string.mi5g_effects_lite);
         return getString(EffectsMode.lite(this) ? R.string.mi5g_effects_auto_lite : R.string.mi5g_effects_auto);
+    }
+
+    /** 2.4 M4: the reminders, OK turns one on or off; new ones come from the phone's arrange page. */
+    private void showReminders() {
+        List<Reminders.Item> items = Reminders.load(this);
+        if (items.isEmpty()) {
+            android.widget.Toast.makeText(this, R.string.mi5g_set_on_phone, android.widget.Toast.LENGTH_LONG).show();
+            return;
+        }
+        LinearLayout[] r = new LinearLayout[1];
+        android.app.Dialog d = TileMenu.panel(this, getString(R.string.mi5g_reminders), r);
+        for (int i = 0; i < items.size(); i++) {
+            final int k = i;
+            Reminders.Item it = items.get(i);
+            Rows.add(this, r[0], R.drawable.ic_timer, Schedule.hhmm(it.minute) + "  " + it.text, onOff(it.on), () -> {
+                List<Reminders.Item> now = Reminders.load(this);
+                if (k < now.size()) {
+                    Reminders.Item x = now.get(k);
+                    now.set(k, new Reminders.Item(x.text, x.minute, x.days, !x.on));
+                    Reminders.save(this, now);
+                }
+                d.dismiss();
+                build();
+            });
+        }
+        d.show();
     }
 
     private String onOff(boolean on) { return getString(on ? R.string.mi5g_on : R.string.mi5g_off); }

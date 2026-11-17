@@ -95,6 +95,9 @@ public final class ControlCenterActivity extends Activity {
             if (!global(this, AccessibilityService.GLOBAL_ACTION_RECENTS)) needsService();
             finish();
         });
+        // 2.4 M4: the TV's inputs (backlog 27) and the apps Home opened last (backlog 11), over any app.
+        Rows.add(this, rows, R.drawable.ic_input, getString(R.string.mi5g_cc_inputs), null, () -> showInputs(rows, title));
+        Rows.add(this, rows, R.drawable.ic_apps, getString(R.string.mi5g_cc_recent_apps), null, () -> showRecentApps(rows, title));
         // 2.4 M2: All apps with search (backlog 25) and the Play Store (backlog 22).
         Rows.add(this, rows, R.drawable.ic_apps, getString(R.string.mi5g_all_apps), null,
                 () -> start(new Intent(this, AllAppsActivity.class)));
@@ -122,6 +125,44 @@ public final class ControlCenterActivity extends Activity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         finish();   // the mapped button again closes the panel
+    }
+
+    /** 2.4 M4: the panel lists the TV's inputs (names and hiding from Inputs on Home); OK switches. */
+    private void showInputs(LinearLayout rows, TextView title) {
+        rows.removeAllViews();
+        title.setText(R.string.mi5g_cc_inputs);
+        HomeLayout layout = HomeLayout.load(this);
+        for (ArrangeServer.InputRow in : ArrangeServer.inputs(this)) {
+            if (layout.hiddenInputs.contains(in.id)) continue;
+            String name = layout.inputName(in.id);
+            Rows.add(this, rows, in.hdmi ? R.drawable.ic_input : R.drawable.ic_av, name.isEmpty() ? in.label : name, null, () -> {
+                if (!InputLauncher.open(this, in.id)) Toast.makeText(this, R.string.not_available, Toast.LENGTH_SHORT).show();
+                finish();
+            });
+        }
+        if (rows.getChildCount() == 0) Rows.add(this, rows, R.drawable.ic_info, getString(R.string.mi5g_cc_no_inputs), null, () -> { });
+        rows.getChildAt(0).requestFocus();
+    }
+
+    /** 2.4 M4: the last apps Home or All apps opened, newest first; OK opens one. */
+    private void showRecentApps(LinearLayout rows, TextView title) {
+        rows.removeAllViews();
+        title.setText(R.string.mi5g_cc_recent_apps);
+        android.content.pm.PackageManager pm = getPackageManager();
+        for (String pkg : LastOpened.recent(this, 8)) {
+            Intent launch = pm.getLeanbackLaunchIntentForPackage(pkg);
+            if (launch == null) launch = pm.getLaunchIntentForPackage(pkg);
+            if (launch == null) continue;
+            CharSequence label;
+            try { label = pm.getApplicationLabel(pm.getApplicationInfo(pkg, 0)); } catch (Exception e) { continue; }
+            final Intent open = launch;
+            Rows.add(this, rows, R.drawable.ic_apps, label, LastOpened.describe(this, LastOpened.get(this, pkg)), () -> {
+                LastOpened.record(this, pkg);
+                start(open);
+            });
+        }
+        if (rows.getChildCount() == 0) Rows.add(this, rows, R.drawable.ic_info, getString(R.string.mi5g_cc_no_recent), null, () -> { });
+        rows.getChildAt(0).requestFocus();
     }
 
     /** 2.4 M2: the store's own category first (Google TV hides its tile), then its TV entry. */

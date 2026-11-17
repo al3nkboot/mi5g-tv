@@ -55,6 +55,7 @@ footer .primary { flex:1; }
     <button data-tab="message">رسالة شاشة التوقف</button>
     <button data-tab="weather">موقع الطقس</button>
     <button data-tab="files">نقل الملفات</button>
+    <button data-tab="plans">التذكيرات والجدول</button>
   </nav>
 </header>
 <main>
@@ -98,6 +99,14 @@ footer .primary { flex:1; }
   <section id="files"><h2>نقل الملفات</h2><p class="note">على الشبكة نفسها فقط. الحد 64 ميغابايت للملف. يُحفظ في Downloads/Mi5G. لا تُثبّت ملفات APK تلقائيًا. أغلق شاشة QR على التلفاز لإيقاف النقل.</p>
     <div class="opt"><label>من الهاتف إلى التلفاز <input type="file" id="transferFile"></label><button id="uploadFile">إرسال الملف</button></div>
     <h3>الملفات المستلمة / من التلفاز للهاتف</h3><p class="note">لمشاركة ملف آخر، اختره بزر «اختر ملفًا من التلفاز للهاتف» على شاشة QR.</p><button id="refreshFiles">تحديث القائمة</button><div id="fileList"></div>
+  </section>
+  <section id="plans"><h2>التذكيرات</h2><p class="note">تظهر على التلفاز في وقتها. إن وافق التذكير وقت الأذان (من دقيقتين قبله إلى عشرين دقيقة بعده) يظهر بعد ذلك. أوقات الصلاة من وحدة الصلاة في Mi5G إن كانت مثبتة. الحد 12 تذكيرًا و40 حرفًا.</p>
+    <div id="reminderList"></div>
+    <button id="addReminder">إضافة تذكير</button> <button id="saveReminders">حفظ التذكيرات</button>
+    <h2>جدول النوم والتشغيل الأسبوعي</h2><p class="note">عند وقت النوم تظهر رسالة لمدة دقيقة مع زر إلغاء ثم ينام التلفاز. التشغيل محاولة فقط، وكثير من أجهزة التلفاز لا تسمح به. اترك الخانة فارغة لتجاهل اليوم.</p>
+    <label><input type="checkbox" id="scheduleOn"> تفعيل الجدول</label>
+    <div id="scheduleDays"></div>
+    <button id="saveSchedule">حفظ الجدول</button>
   </section>
 </main>
 <footer>
@@ -263,7 +272,7 @@ $("#save").onclick = async () => {
   catch (_) { toast("تعذّر الحفظ"); }
 };
 $("#stop").onclick = async () => { try { await api("api/stop", { method: "POST" }); } catch (_) {} document.body.innerHTML = "<main><h1 style='color:#D4AF37'>تم. أُغلق الاتصال بالتلفاز.</h1></main>"; };
-async function postJSON(path,body){const result=await api(path,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});if(!result.ok)throw new Error("failed");}
+async function postJSON(path,body){const result=await api(path,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});if(!result.ok&&!result.saved)throw new Error("failed");}
 $("#saveMessage").onclick=async()=>{try{await postJSON("api/message",{line1:$("#line1").value,line2:$("#line2").value});toast("تم حفظ الرسالة");}catch(_){toast("تعذّر الحفظ");}};
 $("#saveQuiet").onclick=async()=>{try{await postJSON("api/quiet",{hours:$("#quietOn").checked?$("#quietStart").value+"-"+$("#quietEnd").value:"off"});toast("تم حفظ ساعات الهدوء");}catch(_){toast("تحقق من الوقت وحاول مجددًا");}};
 async function weatherSave(city){try{await postJSON("api/weather",{city,auto:$("#weatherAuto").checked});toast("تم حفظ الموقع");await load();}catch(_){toast("تعذّر العثور على المدينة أو حفظ الموقع");}}
@@ -271,6 +280,35 @@ $("#saveWeather").onclick=()=>weatherSave($("#weatherCity").value);$("#clearWeat
 async function refreshFiles(){try{const list=await api("api/files");const box=$("#fileList");box.replaceChildren();list.forEach(f=>box.appendChild(el("div",{class:"row"},el("a",{href:"api/files/download?id="+encodeURIComponent(f.id),download:"",text:f.name+(f.size>=0?" · "+Math.ceil(f.size/1024)+" KB":""),style:"color:#D4AF37"}))));}catch(_){toast("تعذّر عرض الملفات");}}
 $("#refreshFiles").onclick=refreshFiles;
 $("#uploadFile").onclick=async()=>{const f=$("#transferFile").files[0];if(!f)return;if(f.size<=0||f.size>64*1024*1024){toast("الحد 64 ميغابايت للملف");return;}$("#uploadFile").disabled=true;try{const r=await api("api/files/upload?name="+encodeURIComponent(f.name),{method:"POST",body:f});if(!r.ok)throw new Error();toast("تم إرسال الملف إلى التنزيلات");await refreshFiles();}catch(_){toast("تعذّر النقل. تحقق من مساحة التخزين وإذن التنزيلات على التلفاز");}finally{$("#uploadFile").disabled=false;}};
+// 2.4 M4: reminders (backlog 30) and the weekly sleep and wake schedule (backlog 34).
+const DAYS=["الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت","الأحد"];
+let P={reminders:[],schedule:{sleep:[],wake:[]},scheduleOn:false,max:12,maxText:40};
+const hhmm=m=>String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
+const mins=t=>{const p=(t||"").split(":");return p.length<2?-1:(+p[0])*60+(+p[1]);};
+function renderPlans(){
+ const box=$("#reminderList");box.replaceChildren();
+ P.reminders.forEach((x,i)=>{
+  const days=el("div",{class:"choices"});
+  DAYS.forEach((d,k)=>days.appendChild(el("button",{class:(x.days>>k)&1?"on":"",text:d,onclick:()=>{x.days^=1<<k;if(!x.days)x.days=1<<k;renderPlans();}})));
+  box.appendChild(el("div",{class:"opt"},
+   el("label",{text:"النص "},el("input",{type:"text",maxlength:String(P.maxText),value:x.text,oninput:e=>x.text=e.target.value})),
+   el("label",{text:" الوقت "},el("input",{type:"time",value:hhmm(x.minute),onchange:e=>{const m=mins(e.target.value);if(m>=0)x.minute=m;}})),
+   el("label",{},el("input",Object.assign({type:"checkbox",onchange:e=>x.on=e.target.checked},x.on?{checked:""}:{})),document.createTextNode(" مفعّل")),
+   days,
+   el("button",{text:"حذف",onclick:()=>{P.reminders.splice(i,1);renderPlans();}})));
+ });
+ $("#addReminder").disabled=P.reminders.length>=P.max;
+ $("#scheduleOn").checked=P.scheduleOn;
+ const sd=$("#scheduleDays");sd.replaceChildren();
+ DAYS.forEach((d,k)=>sd.appendChild(el("div",{class:"opt"},el("h3",{text:d}),
+  el("label",{text:"النوم "},el("input",{type:"time",id:"sl"+k,value:P.schedule.sleep[k]||""})),
+  el("label",{text:" التشغيل "},el("input",{type:"time",id:"wk"+k,value:P.schedule.wake[k]||""})))));
+}
+async function loadPlans(){try{P=await api("api/reminders");renderPlans();}catch(_){}}
+$("#addReminder").onclick=()=>{if(P.reminders.length<P.max){P.reminders.push({text:"",minute:20*60,days:127,on:true});renderPlans();}};
+$("#saveReminders").onclick=async()=>{const list=P.reminders.filter(x=>x.text.trim());try{await postJSON("api/reminders",{reminders:list});toast("تم حفظ التذكيرات");await loadPlans();}catch(_){toast("تعذّر الحفظ");}};
+$("#saveSchedule").onclick=async()=>{const sleep=DAYS.map((_,k)=>$("#sl"+k).value),wake=DAYS.map((_,k)=>$("#wk"+k).value);try{await postJSON("api/schedule",{sleep,wake,on:$("#scheduleOn").checked});toast("تم حفظ الجدول");await loadPlans();}catch(_){toast("تعذّر الحفظ");}};
+loadPlans();
 load().catch(() => toast("تعذّر الوصول إلى التلفاز"));
 </script>
 </body>

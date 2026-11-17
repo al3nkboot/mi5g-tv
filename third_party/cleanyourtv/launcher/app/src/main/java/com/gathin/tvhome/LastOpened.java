@@ -46,6 +46,21 @@ final class LastOpened {
         return day + ", " + DateUtils.formatDateTime(ctx, when, DateUtils.FORMAT_SHOW_TIME);
     }
 
+    /** 2.4 M4: the packages Home opened most recently, newest first, at most n. */
+    static java.util.List<String> recent(Context ctx, int n) {
+        java.util.List<java.util.Map.Entry<String, ?>> all = new java.util.ArrayList<>(prefs(ctx).getAll().entrySet());
+        java.util.List<String> out = new java.util.ArrayList<>();
+        all.sort((a, b) -> Long.compare(asLong(b.getValue()), asLong(a.getValue())));
+        for (java.util.Map.Entry<String, ?> e : all) {
+            if (out.size() >= n) break;
+            if (!(e.getValue() instanceof Long) || e.getKey().equals(ctx.getPackageName())) continue;
+            out.add(e.getKey());
+        }
+        return out;
+    }
+
+    private static long asLong(Object o) { return o instanceof Long ? (Long) o : 0L; }
+
     private static SharedPreferences prefs(Context ctx) {
         return ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
     }

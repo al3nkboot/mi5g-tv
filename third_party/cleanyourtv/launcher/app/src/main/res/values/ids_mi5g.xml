@@ -2,4 +2,5 @@
 <resources>
     <!-- Mi5G 2.0.1 -->
     <item name="mi5g_qr" type="id" />
+    <item name="mi5gInfoLines" type="id" />
 </resources>

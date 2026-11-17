@@ -215,6 +215,7 @@ public final class AllAppsActivity extends Activity {
         if (a.launch == null) return;
         try {
             startActivity(a.launch);
+            LastOpened.record(this, a.pkg);
         } catch (RuntimeException e) {
             Toast.makeText(this, getString(R.string.cant_open, a.label), Toast.LENGTH_SHORT).show();
         }

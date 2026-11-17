@@ -47,11 +47,13 @@ final class CityScreen {
         /** Mi5G 2.0.2: the two lines typed on the phone, and quiet hours (dimmed). */
         String line1 = "", line2 = "";
         boolean quiet;
+        /** 2.4 M4 (backlog 5): the optional Islamic calendar line (off by default). */
+        String info = "";
     }
 
     final View root;
     final LinearLayout block;
-    final TextView hijri, gregorian, prayer, weather, city, line1, line2;
+    final TextView hijri, gregorian, prayer, weather, city, line1, line2, info;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Random random = new Random();
     private final Context ctx;
@@ -80,6 +82,7 @@ final class CityScreen {
         gregorian = add(cairo, 22, 0xCCFFFFFF);
         prayer = add(cairo, 26, 0xFF7FE0D6);
         weather = add(cairo, 22, 0xCCFFFFFF);
+        info = add(cairo, 22, 0xFFE8D9A8);
         line1 = add(cairo, 30, 0xFFD4AF37);
         line2 = add(cairo, 24, 0xFFE8D9A8);
         ((LinearLayout.LayoutParams) line1.getLayoutParams()).topMargin = (int) (14 * d);
@@ -122,6 +125,7 @@ final class CityScreen {
         show(city, data.city);
         show(prayer, data.prayer.isEmpty() ? "" : ctx.getString(R.string.mi5g_city_next_prayer, data.prayer));
         show(weather, data.weather);
+        show(info, data.info);
         show(line1, data.line1);
         show(line2, data.line2);
         // Mi5G 2.0.2: quiet hours dim the whole screen (the TV's own backlight is left alone).
@@ -186,6 +190,7 @@ final class CityScreen {
         data.line1 = msg[0];
         data.line2 = msg[1];
         data.quiet = QuietHours.quietNow(ctx);
+        if (Occasions.saverInfoOn(ctx)) data.info = Occasions.saverLine(ctx, java.time.LocalDate.now());
         return data;
     }
 

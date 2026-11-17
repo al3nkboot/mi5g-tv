@@ -23,6 +23,8 @@ public class BootReceiver extends BroadcastReceiver {
                 Revival.restore(app);
                 KeepAlive.register(app);   // 2.4: hear standby wake from now on
                 KeepAlive.onEvent(app);
+                Reminders.schedule(app);   // 2.4 M4: alarms do not survive a reboot
+                Schedule.arm(app);
                 // 2.4 M2: after a system update (Philips) Mi5G comes to the front once even when the update gave
                 // Home back to the stock launcher; the Home-key helper put back above keeps the Home button ours.
                 boolean updated = KeepAlive.systemUpdated(app) && LauncherSwitches.keepAlive(app);

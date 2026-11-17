@@ -294,6 +294,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         public void run() {
             updateGreeting();
             updateRace();
+            updateInfoLines();
             updateWifiLabel();
             sky.update();
             wallpaperPlayer.update();
@@ -425,6 +426,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             sky.setVisibility(View.GONE);
         }
         if (safeMode) Toast.makeText(this, R.string.mi5g_safe_mode_on, Toast.LENGTH_LONG).show();
+        // 2.4 M4 (backlog 26): Home widgets hidden in Mi5G settings, and the info lines under the date.
+        if (!HomeWidgets.shown(this, HomeWidgets.STATS)) {
+            showStats = false;
+            if (stats != null) stats.setVisibility(View.GONE);
+        }
+        if (!HomeWidgets.shown(this, HomeWidgets.RACE)) {
+            raceCalendar = Collections.emptyList();
+            racePanel.setVisibility(View.GONE);
+        }
+        if (!calm) addInfoLines();
 
         grid = findViewById(R.id.grid);
         rtlAppGrid = getResources().getBoolean(R.bool.rtl_app_grid);
@@ -712,6 +723,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         rebuildOnResume = false;
         updateGreeting();
         updateRace();
+        updateInfoLines();
         updateWifiLabel();
         updateInputsButton();
         seedDeviceStates();   // Mi5G 2.0.2
@@ -2049,6 +2061,44 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      * Shows or hides the race-weekend panel for this minute. Text only, set once a minute with the clock:
      * nothing animates, so the panel costs the GPU nothing between ticks.
      */
+    // ---- 2.4 M4: Home info lines (countdowns, next reminder, score, headline) ------------------------
+    private TextView infoLines;
+
+    private void addInfoLines() {
+        View date = findViewById(R.id.date);
+        if (date == null || !(date.getParent() instanceof LinearLayout)) return;
+        LinearLayout col = (LinearLayout) date.getParent();
+        infoLines = new TextView(this);
+        infoLines.setId(R.id.mi5gInfoLines);
+        infoLines.setTextColor(0xD9FFE8A8);
+        infoLines.setTextSize(13f);
+        infoLines.setMaxLines(HomeWidgets.MAX_LINES);
+        infoLines.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        infoLines.setTypeface(getResources().getFont(R.font.cairo));
+        infoLines.setTextDirection(View.TEXT_DIRECTION_LOCALE);
+        infoLines.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
+        infoLines.setFocusable(false);
+        infoLines.setVisibility(View.GONE);
+        col.addView(infoLines, col.indexOfChild(date) + 1,
+                new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+    }
+
+    private void updateInfoLines() {
+        if (infoLines == null) return;
+        final android.content.Context app = getApplicationContext();
+        final java.lang.ref.WeakReference<MainActivity> self = new java.lang.ref.WeakReference<>(this);
+        new Thread(() -> {
+            List<String> lines = HomeWidgets.lines(app, Weather.HTTP, System.currentTimeMillis());
+            final String text = String.join("\n", lines);
+            handler.post(() -> {
+                MainActivity a = self.get();
+                if (a == null || a.isDestroyed() || a.infoLines == null) return;
+                a.infoLines.setText(text);
+                a.infoLines.setVisibility(text.isEmpty() ? View.GONE : View.VISIBLE);
+            });
+        }, "Mi5gInfo").start();
+    }
+
     private void updateRace() {
         if (raceCalendar.isEmpty()) return;
         RaceWeekend.State s = RaceWeekend.at(raceCalendar, java.time.Instant.now());

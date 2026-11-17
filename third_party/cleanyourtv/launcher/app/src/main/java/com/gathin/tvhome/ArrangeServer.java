@@ -320,6 +320,9 @@ final class ArrangeServer {
             case "api/state":
                 respond(out, 200, "application/json", state().toString().getBytes(StandardCharsets.UTF_8));
                 return;
+            case "api/reminders":
+                if (!post) { respond(out, 200, "application/json", plans(ctx).toString().getBytes(StandardCharsets.UTF_8)); return; }
+                break;
             case "api/tile.png": {
                 byte[] png = tilePng(r.query.get("key"));
                 if (png == null) respond(out, 404, "text/plain", new byte[0]); else respond(out, 200, "image/png", png);
@@ -392,6 +395,18 @@ final class ArrangeServer {
                 ok(out, applyWeather(ctx, body, Weather.HTTP));
                 return;
             }
+            case "api/reminders": {
+                // 2.4 M4 (backlog 30): the whole list, replaced; bad entries are dropped.
+                JSONObject body = new JSONObject(new String(readBody(in, length, 16384), StandardCharsets.UTF_8));
+                ok(out, applyReminders(ctx, body));
+                return;
+            }
+            case "api/schedule": {
+                // 2.4 M4 (backlog 34): seven sleep and seven wake times ("" for none) and the switch.
+                JSONObject body = new JSONObject(new String(readBody(in, length, 4096), StandardCharsets.UTF_8));
+                ok(out, applySchedule(ctx, body));
+                return;
+            }
             case "api/stop":
                 ok(out, true);
                 main.post(this::stop);
@@ -399,6 +414,28 @@ final class ArrangeServer {
             default:
                 respond(out, 404, "text/plain", "not found".getBytes());
         }
+    }
+
+    /** 2.4 M4: reminders and the weekly schedule for the phone page. */
+    static JSONObject plans(Context ctx) throws org.json.JSONException {
+        return new JSONObject()
+                .put("reminders", new org.json.JSONArray(Reminders.toJson(Reminders.load(ctx))))
+                .put("schedule", new JSONObject(Schedule.load(ctx).toJson()))
+                .put("scheduleOn", Schedule.on(ctx))
+                .put("max", Reminders.MAX).put("maxText", Reminders.MAX_TEXT);
+    }
+
+    static boolean applyReminders(Context ctx, JSONObject body) {
+        org.json.JSONArray a = body.optJSONArray("reminders");
+        if (a == null || a.length() > Reminders.MAX) return false;
+        Reminders.save(ctx, Reminders.parse(a.toString()));
+        return true;
+    }
+
+    static boolean applySchedule(Context ctx, JSONObject body) {
+        if (body.optJSONArray("sleep") == null && body.optJSONArray("wake") == null) return false;
+        Schedule.save(ctx, Schedule.parse(body.toString()), body.optBoolean("on", true));
+        return true;
     }
 
     /** 2.4: the POST paths that change the Home layout (refused while Home is locked). */
