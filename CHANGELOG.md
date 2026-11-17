@@ -42,6 +42,10 @@ All notable changes to the app. Versions follow [semantic versioning](https://se
 - أدوات الشاشة الرئيسية: إظهار وإخفاء العد التنازلي والتذكير التالي ونتيجة كرة القدم وعنوان إخباري من بي بي سي عربي والإحصاءات والسباقات، والضغط المطوّل لنقل الأداة للأعلى.
 - مركز التحكم: قائمة المداخل للتبديل من فوق أي تطبيق، وقائمة التطبيقات المفتوحة مؤخراً.
 - إصلاح حفظ رسالة شاشة التوقف وساعات الهدوء وموقع الطقس من صفحة الترتيب، إذ كانت تُحفظ وتظهر رسالة فشل.
+- مواقيتي على التلفاز ٢: من الجوال تختار لكل صلاة أذاناً أو تنبيهاً أو إيقافاً، وتقدّم وقتها أو تؤخره حتى عشر دقائق.
+- صوت الأذان من تسجيل تختاره من الجوال، وأذان خاص للفجر، مع بقاء الأذان المرفق احتياطاً إن لم يعمل الملف على التلفاز.
+- الإبقاء نشطاً لوحدة الصلاة: تعيد ضبط مواعيد الأذان كل ست ساعات وكلما عادت الشاشة الرئيسية بعد التشغيل أو الاستعداد، حتى لو أوقفها التلفاز.
+- الأذان الإجباري باقٍ ومفعّل افتراضياً، والشروق لا يكون عليه أذان أبداً.
 - الشاشة الرئيسية المرفقة 2.10.
 
 </div>
@@ -82,6 +86,10 @@ All notable changes to the app. Versions follow [semantic versioning](https://se
 - Home widgets screen: show/hide countdowns, next reminder, a football score (ESPN public scoreboard, cached 10 min), a BBC Arabic headline (RSS, credited, cached 30 min), stats and the race panel; hold OK to move one up. A movies widget is not included (no keyless legal source).
 - Control Center: an Inputs panel that switches HDMI/AV over any app (names and hiding from Inputs), and Recently opened apps (tvOS-Launcher idea, Apache-2.0).
 - Fixed: saving the screensaver message, quiet hours and weather place from the arrange page showed "couldn't save" even though it saved.
+- Prayer module 2 (مواقيتي on the TV, module 2.2.0): from the phone, each prayer can be adhan, banner or off, with its own minute offset (±10); the TV re-checks every value.
+- Adhan sound: the built-in recording or one picked on the phone (up to 12 MB), plus a separate Fajr adhan; a file the TV can't play falls back to the built-in adhan.
+- Keep Alive for the prayer module: it re-arms its alarms every 6 hours and whenever Mi5G Home comes back after boot or standby (works even after a force stop). Idea from tvOS-Launcher (Apache-2.0).
+- Forced adhan stays, on by default; sunrise never gets an adhan.
 - Bundled launcher 2.10-mi5g (source; the bundled APK is rebuilt and pinned at release).
 
 ## 2.3.0 (2026-11-11)

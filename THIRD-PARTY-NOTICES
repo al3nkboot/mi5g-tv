@@ -149,6 +149,9 @@ tvOS Launcher — https://github.com/techgenius1/tvOS-Launcher
   Mi5G Score does (unofficial, not affiliated with ESPN); the optional news line shows the headline of the
   public BBC Arabic RSS feed (feeds.bbci.co.uk/arabic) credited to BBC Arabic, not affiliated with the BBC.
   Hijri dates come from the Umm al-Qura calendar in Android's ICU (Unicode License).
+  Mi5G TV 2.4.0 (M5): the prayer module's Keep Alive re-arm follows the same tvOS Launcher idea (Apache-2.0),
+  with Mi5G's own code; prayer times stay on adhan-java (MIT, Batoul Apps). Adhan recordings the owner picks on the
+  phone are copied only to their own TV and are not part of this project.
 
 OmarchyTV — https://github.com/piermark/omarchytv
   MIT License. Copyright (c) 2026 Marco Porro (x.com/MarcoPorro · www.marcoporro.it).
