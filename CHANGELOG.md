@@ -29,6 +29,12 @@ All notable changes to the app. Versions follow [semantic versioning](https://se
 - أصوات اختيارية للتنقل والنقر من صنعنا، متوقفة افتراضياً.
 - إيقاف عمل متجر بلاي في الخلفية من أدوات التلفاز في الهاتف، مع زر للسماح به مجدداً، بدون تعطيل المتجر.
 - خيار «استخدمه كريموت بس» في شاشات الاتصال: بعد الاقتران يفتح الريموت مباشرة بدون التنظيف وإعداد الشاشة الرئيسية، ويبقى الإعداد الكامل في صفحة التلفاز.
+- ربط الجوال بالتلفاز برمز سريع: خيار «اربط جوالاً» في إعدادات الشاشة الرئيسية يعرض رمزاً تمسحه كاميرا الجوال فيفتح التطبيق على عنوان التلفاز، ويسألك التطبيق قبل الاتصال.
+- التبديل بين أجهزة التلفاز المحفوظة من أعلى الريموت مباشرة.
+- زر «كل تطبيقات التلفاز» في الريموت وزر البحث في ريموت التلفاز يفتحان شبكة كل التطبيقات مع مربع البحث.
+- المتجر المصغّر في أدوات التلفاز: تطبيقات معروفة ومرخّصة تُفتح صفحتها في متجر بلاي على التلفاز للتثبيت من هناك.
+- رسالة أو رسمة بالإصبع من الجوال تظهر على التلفاز فوراً فوق أي تطبيق، مع زر لإزالتها، وتُغلق وحدها بعد عشر دقائق.
+- إرسال حتى عشرين صورة أو فيديو دفعة واحدة كخلفية، مع تأكيد «تم الحفظ على التلفاز» لكل ملف بعد أن يتحقق التلفاز من حفظه.
 - الشاشة الرئيسية المرفقة 2.10.
 
 </div>
@@ -56,6 +62,12 @@ All notable changes to the app. Versions follow [semantic versioning](https://se
 - Optional navigation/click sounds (own tones), off by default.
 - TV tools: stop the Play Store running in the background (appops, not disabled), and allow it again.
 - "Use as a remote only" on the connect screens: after pairing the remote opens straight away, no clean-up or home setup; the full setup stays on the TV's page.
+- Connect a phone by QR: "Connect a phone" in the launcher's Mi5G settings shows a code; the phone camera opens a small page on the TV whose button opens the Mi5G TV app with that TV's address. The app asks before it connects (mi5gtv://connect, home-network addresses only). SUL idea, own code.
+- Switch between saved TVs from the remote's title.
+- "All apps on TV" in the phone remote, and the TV remote's Search key on Home, open the All apps grid with search.
+- Mini store in TV tools: well-known legal apps open on their Play Store page on the TV.
+- Live message or finger drawing from the phone, shown at once over any app by Mi5G Home, with "Take it off"; closes by itself after 10 minutes. UrTV idea, own code.
+- Send up to 20 photos/videos at once as wallpapers from the arrange page; each shows "saved on TV" only after the TV read back its size (Teevy idea). Up to 20 phone uploads are kept (was 12).
 - Bundled launcher 2.10-mi5g (source; the bundled APK is rebuilt and pinned at release).
 
 ## 2.3.0 (2026-11-11)

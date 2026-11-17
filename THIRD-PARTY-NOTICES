@@ -141,6 +141,8 @@ tvOS Launcher — https://github.com/techgenius1/tvOS-Launcher
   a home-screen safe mode, Arabic app names, clean mode, hiding apps without disabling them, the Play Store
   always on Home, restoring Home after system updates, a multi-row dock, an All apps grid with search,
   navigation sounds (Mi5G's own generated tones) and a remote-only setup path.
+  Mi5G TV 2.4.0 (M3), ideas only, never code: connecting the phone by a QR on the TV and the mini store (SUL),
+  a live phone message or drawing on the TV (UrTV), and the "saved on TV" confirmation for uploads (Teevy).
 
 OmarchyTV — https://github.com/piermark/omarchytv
   MIT License. Copyright (c) 2026 Marco Porro (x.com/MarcoPorro · www.marcoporro.it).
