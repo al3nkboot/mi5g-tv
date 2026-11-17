@@ -35,6 +35,13 @@ All notable changes to the app. Versions follow [semantic versioning](https://se
 - المتجر المصغّر في أدوات التلفاز: تطبيقات معروفة ومرخّصة تُفتح صفحتها في متجر بلاي على التلفاز للتثبيت من هناك.
 - رسالة أو رسمة بالإصبع من الجوال تظهر على التلفاز فوراً فوق أي تطبيق، مع زر لإزالتها، وتُغلق وحدها بعد عشر دقائق.
 - إرسال حتى عشرين صورة أو فيديو دفعة واحدة كخلفية، مع تأكيد «تم الحفظ على التلفاز» لكل ملف بعد أن يتحقق التلفاز من حفظه.
+- عدّ تنازلي اختياري في الشاشة الرئيسية لرمضان وعيد الفطر ويوم عرفة وعيد الأضحى، ولليوم الوطني لدولتك الخليجية (عُمان 20 نوفمبر)، والتواريخ الهجرية تقريبية حسب تقويم أم القرى.
+- سطر اختياري للتقويم الهجري على شاشة التوقف: اليوم من رمضان والأيام البيض أو أقرب مناسبة، متوقف افتراضياً.
+- تذكيرات بمواعيد تكتبها من صفحة الترتيب على الجوال، تظهر على التلفاز في وقتها، وإن وافقت وقت الأذان تنتظر حتى ينتهي.
+- جدول أسبوعي للنوم والتشغيل: رسالة لمدة دقيقة مع زر إلغاء ثم ينام التلفاز، والتشغيل محاولة حسب الجهاز.
+- أدوات الشاشة الرئيسية: إظهار وإخفاء العد التنازلي والتذكير التالي ونتيجة كرة القدم وعنوان إخباري من بي بي سي عربي والإحصاءات والسباقات، والضغط المطوّل لنقل الأداة للأعلى.
+- مركز التحكم: قائمة المداخل للتبديل من فوق أي تطبيق، وقائمة التطبيقات المفتوحة مؤخراً.
+- إصلاح حفظ رسالة شاشة التوقف وساعات الهدوء وموقع الطقس من صفحة الترتيب، إذ كانت تُحفظ وتظهر رسالة فشل.
 - الشاشة الرئيسية المرفقة 2.10.
 
 </div>
@@ -68,6 +75,13 @@ All notable changes to the app. Versions follow [semantic versioning](https://se
 - Mini store in TV tools: well-known legal apps open on their Play Store page on the TV.
 - Live message or finger drawing from the phone, shown at once over any app by Mi5G Home, with "Take it off"; closes by itself after 10 minutes. UrTV idea, own code.
 - Send up to 20 photos/videos at once as wallpapers from the arrange page; each shows "saved on TV" only after the TV read back its size (Teevy idea). Up to 20 phone uploads are kept (was 12).
+- Home countdowns (off by default): Ramadan, Eid al-Fitr, the Day of Arafah (Hajj), Eid al-Adha and a chosen Gulf national day (Oman 20 November); Hijri dates are Umm al-Qura and shown as approximate. Dates and names only.
+- Optional Hijri line on the city screensaver (off by default): the day of Ramadan, the white days, or the nearest occasion.
+- Timed reminders typed on the phone's arrange page (up to 12, weekdays each); one that falls on an adhan (2 min before to 20 min after, from the Mi5G prayer module) waits until it has passed. UrTV idea, own code.
+- Weekly sleep and wake schedule: a one-minute card with Cancel, then the TV sleeps; waking is best effort and depends on the TV. CleanYourTV 3.5 idea, own code.
+- Home widgets screen: show/hide countdowns, next reminder, a football score (ESPN public scoreboard, cached 10 min), a BBC Arabic headline (RSS, credited, cached 30 min), stats and the race panel; hold OK to move one up. A movies widget is not included (no keyless legal source).
+- Control Center: an Inputs panel that switches HDMI/AV over any app (names and hiding from Inputs), and Recently opened apps (tvOS-Launcher idea, Apache-2.0).
+- Fixed: saving the screensaver message, quiet hours and weather place from the arrange page showed "couldn't save" even though it saved.
 - Bundled launcher 2.10-mi5g (source; the bundled APK is rebuilt and pinned at release).
 
 ## 2.3.0 (2026-11-11)

@@ -143,6 +143,12 @@ tvOS Launcher — https://github.com/techgenius1/tvOS-Launcher
   navigation sounds (Mi5G's own generated tones) and a remote-only setup path.
   Mi5G TV 2.4.0 (M3), ideas only, never code: connecting the phone by a QR on the TV and the mini store (SUL),
   a live phone message or drawing on the TV (UrTV), and the "saved on TV" confirmation for uploads (Teevy).
+  Mi5G TV 2.4.0 (M4), ideas only, never code: timed reminders that wait for the adhan (UrTV), a weekly
+  sleep and wake schedule (CleanYourTV 3.5), and an inputs and recent-apps panel in Control Center
+  (tvOS Launcher, Apache-2.0, credited above). The Home football line reads ESPN's public scoreboard as
+  Mi5G Score does (unofficial, not affiliated with ESPN); the optional news line shows the headline of the
+  public BBC Arabic RSS feed (feeds.bbci.co.uk/arabic) credited to BBC Arabic, not affiliated with the BBC.
+  Hijri dates come from the Umm al-Qura calendar in Android's ICU (Unicode License).
 
 OmarchyTV — https://github.com/piermark/omarchytv
   MIT License. Copyright (c) 2026 Marco Porro (x.com/MarcoPorro · www.marcoporro.it).
