@@ -156,6 +156,9 @@ tvOS Launcher — https://github.com/techgenius1/tvOS-Launcher
   tournaments (UrTV), and the live score pinned in a corner over any app (talkies, MIT, credited below).
   Tournament, match and score data come from ESPN's public JSON endpoints (unofficial, not affiliated with
   ESPN); no streams. Prayer-clash notes read today's times from the Mi5G prayer module on the same TV.
+  Mi5G TV 2.4.0 (M7), ideas only, never code: the family quiz answered from phones (UrTV; the questions are
+  Mi5G's own), and the Advanced page's permission status list and "before uninstalling" step (tvOS Launcher
+  2.2.0, Apache-2.0, credited above). The kids profile and time-of-day order are Mi5G's own.
 
 OmarchyTV — https://github.com/piermark/omarchytv
   MIT License. Copyright (c) 2026 Marco Porro (x.com/MarcoPorro · www.marcoporro.it).

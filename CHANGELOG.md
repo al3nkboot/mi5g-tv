@@ -51,6 +51,10 @@ All notable changes to the app. Versions follow [semantic versioning](https://se
 - ملاحظة على بطاقة المباراة إن وقعت صلاة أثناءها، من مواقيت وحدة الصلاة على التلفاز نفسه، والشروق لا يُحسب.
 - تثبيت النتيجة المباشرة في زاوية الشاشة فوق أي تطبيق، تتحدث كل خمس وأربعين ثانية وتختفي وحدها بعد نهاية المباراة بثلاث دقائق.
 - فتح تطبيق النتائج من أدوات التلفاز في الجوال يمنحه إذن الظهور فوق التطبيقات والتنبيهات في وقتها.
+- مسابقة العائلة على التلفاز: أسئلة بأربعة خيارات أو صح وخطأ، يجيب عليها كل لاعب من جواله بعد مسح الرمز على نفس الشبكة، مع النقاط والترتيب. الأسئلة من إعدادنا وبدون أي محتوى ديني.
+- ملف الأطفال: تعرض الشاشة الرئيسية التطبيقات المسموحة فقط ويُقفل تعديلها، وتطلب الإعدادات ومركز التحكم والترتيب من الجوال رمزاً سرياً من أربعة أرقام، مع إيقاف مؤقت بعد خمس محاولات خاطئة.
+- ترتيب التطبيقات حسب وقت اليوم، متوقف افتراضياً: التطبيقات الأكثر فتحاً في الصباح أو الظهيرة أو المساء أو الليل تأتي أولاً، والمرسى يبقى مكانه، والعدّاد يبقى على التلفاز ويمكن مسحه.
+- إعدادات متقدمة: قائمة بما سُمح للشاشة الرئيسية به، كل سطر يفتح شاشة التلفاز التي تغيّره، وخطوة «قبل إلغاء التثبيت» توقف مساعداتها ثم تفتح صفحة التطبيق.
 - الشاشة الرئيسية المرفقة 2.10.
 
 </div>
@@ -100,6 +104,10 @@ All notable changes to the app. Versions follow [semantic versioning](https://se
 - Prayer-clash notes on match cards: any prayer from 10 minutes before kick-off to the end of the match, read from the Mi5G prayer module on the same TV (sunrise is skipped).
 - Pin the live score in a corner over any app; it refreshes every 45 s and goes away 3 minutes after full time. talkies idea (MIT), own code.
 - Opening Mi5G Score from the phone's TV tools grants it the overlay, exact alarms and notifications (best effort). Favourite clubs and leagues were already in Mi5G Score 2.0.
+- Family quiz on the TV (Mi5G settings): four-choice or true-or-false rounds of 10 questions, answered from each player's phone after scanning the TV's QR (same Wi-Fi, token protected, up to 8 players), with speed points and standings. Own questions, no religious content. UrTV idea, own code.
+- Kids profile: Home, the dock, All apps and the library show only the allowed apps; Home edits are locked; Mi5G settings, Control Center and arrange-from-phone ask for a 4-digit PIN (salted hash, a 1-minute lockout after 5 wrong tries). A simple Home lock, not device security.
+- Order apps by time of day (off by default): apps opened most in the morning, afternoon, evening or night come first; the dock keeps its place; counts stay on the TV and can be cleared.
+- Advanced settings: what Mi5G Home is allowed to do (Home app, key helper, secure settings, notification access, overlay, exact alarms), each opening the TV screen that changes it, and "Before uninstalling" that turns its helpers off and opens its app page. Ideas from tvOS-Launcher 2.2.0 (Apache-2.0), own code.
 - Bundled launcher 2.10-mi5g (source; the bundled APK is rebuilt and pinned at release).
 
 ## 2.3.0 (2026-11-11)
