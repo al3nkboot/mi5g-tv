@@ -769,6 +769,16 @@ class ShellRenderer(private val watchdogVariant: WatchdogVariant = WatchdogVaria
             listOf(PM, "grant", MI5G_PRAYER, "android.permission.POST_NOTIFICATIONS"),
         ).map { ShellLine(ShellTokens.line(it)) }
 
+        // ---- 2.4 M6: Mi5G Score's kick-off reminders and the live score pinned over any app ----
+        const val MI5G_SCORE = "com.midroid.mi5gtv.matches"
+
+        /** Best effort, like [prayerGrantLines]: overlay, exact alarms and notifications for Mi5G Score. */
+        fun scoreGrantLines(): List<ShellLine> = listOf(
+            listOf("appops", "set", MI5G_SCORE, "SYSTEM_ALERT_WINDOW", "allow"),
+            listOf("appops", "set", MI5G_SCORE, "SCHEDULE_EXACT_ALARM", "allow"),
+            listOf(PM, "grant", MI5G_SCORE, "android.permission.POST_NOTIFICATIONS"),
+        ).map { ShellLine(ShellTokens.line(it)) }
+
         /**
          * Mi5G 2.0.1: lets the launcher put its key services back after a Xiaomi/TCL standby force stop
          * (WRITE_SECURE_SETTINGS, granted over adb only), then opens its arrange-from-phone QR screen.

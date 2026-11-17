@@ -1336,6 +1336,31 @@ class ManageMachinesTest {
         assertEquals(FajrSound.SAME, tools.state.value.prayer.fajrSound)
         assertEquals(null, tools.state.value.prayerFajrFile)
     }
+
+    // 2.4 M6: opening Mi5G Score from the phone also gives it the overlay, exact-alarm and notification grants
+    // its kick-off reminders and pinned corner score need; other bundled apps get nothing extra.
+    @Test fun openingScoreGrantsItsOverlay() = runTest(timeout = 30.seconds) {
+        val h = Harness()
+        val known = h.knownTv()
+        val grants = listOf("appops set com.midroid.mi5gtv.matches SYSTEM_ALERT_WINDOW allow",
+            "appops set com.midroid.mi5gtv.matches SCHEDULE_EXACT_ALARM allow",
+            "pm grant com.midroid.mi5gtv.matches android.permission.POST_NOTIFICATIONS")
+        for (line in listOf("am start -n com.midroid.mi5gtv.matches/.MainActivity", "am start -n com.midroid.mi5gtv.quran/.MainActivity") + grants) {
+            h.session.recording.on(line, "")
+        }
+        val tools = TvToolsMachine(h.manageDeps(), backgroundScope, known.id)
+        settle()
+        tools.dispatch(TvToolsIntent.LaunchBundledCard("tv-matches", "com.midroid.mi5gtv.matches", "@score"))
+        settle(5_000)
+        assertEquals(PowerToolStatus.Done("@score"), tools.state.value.powerToolStatus)
+        val lines = h.session.execLines.map { OpsTokens.tokenize(it).joinToString(" ") }
+        val start = lines.indexOf("am start -n com.midroid.mi5gtv.matches/.MainActivity")
+        assertTrue(start >= 0, lines.toString())
+        assertEquals(grants, lines.drop(start + 1))
+        tools.dispatch(TvToolsIntent.LaunchBundledCard("tv-quran", "com.midroid.mi5gtv.quran", "@quran"))
+        settle(5_000)
+        assertEquals("am start -n com.midroid.mi5gtv.quran/.MainActivity", OpsTokens.tokenize(h.session.execLines.last()).joinToString(" "))
+    }
 }
 
 private fun kotlinx.coroutines.CoroutineScope.launchAccess(h: Harness, tv: Tv, done: (AccessResult) -> Unit) =

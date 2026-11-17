@@ -40,4 +40,15 @@ class PrayerLinesTest {
         assertEquals("/sdcard/cleanyourtv/mi5g_adhan.audio", ShellRenderer.prayerSoundStage(false).absolute)
         assertTrue(main.all { it.all { c -> c in ' '..'~' } })
     }
+
+    // 2.4 M6: Mi5G Score's grants for the kick-off banner and the pinned corner score.
+    @Test fun scoreGrantLinesAllowOverlayAlarmsAndNotifications() {
+        val l = ShellRenderer.scoreGrantLines().map { it.text }
+        assertEquals(listOf(
+            "'appops' 'set' 'com.midroid.mi5gtv.matches' 'SYSTEM_ALERT_WINDOW' 'allow'",
+            "'appops' 'set' 'com.midroid.mi5gtv.matches' 'SCHEDULE_EXACT_ALARM' 'allow'",
+            "'pm' 'grant' 'com.midroid.mi5gtv.matches' 'android.permission.POST_NOTIFICATIONS'",
+        ), l)
+        assertTrue(l.all { line -> line.all { it.code < 128 } })
+    }
 }

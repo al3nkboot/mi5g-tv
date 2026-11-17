@@ -639,11 +639,7 @@ class TvToolsMachine(
         val r0 = attempt { TvShellRunner.run(session, launchLine) }.getOrNull()
         val out0 = (r0?.stdout.orEmpty() + "\n" + r0?.stderr.orEmpty())
         if (r0 != null && r0.exit == 0 && "Error:" !in out0 && "does not exist" !in out0) {
-            if (pkgStr == "com.midroid.mi5gtv.dns") {
-                for (l in ShellRenderer.applyAdGuardDnsLines().take(1)) {
-                    attempt { TvShellRunner.run(session, l) }
-                }
-            }
+            afterBundledLaunch(session, pkgStr)
             send(PowerToolUpdate(PowerToolStatus.Done(label)))
             effect(ManageEffect.HapticDouble)
             return
@@ -658,11 +654,7 @@ class TvToolsMachine(
         if (blob != null) {
             installed = installBlobOnSession(session, blob)
             if (installed) {
-                if (pkgStr == "com.midroid.mi5gtv.dns") {
-                    for (l in ShellRenderer.applyAdGuardDnsLines().take(1)) {
-                        attempt { TvShellRunner.run(session, l) }
-                    }
-                }
+                afterBundledLaunch(session, pkgStr)
                 val r1 = attempt { TvShellRunner.run(session, launchLine) }.getOrNull()
                 launchOut = r1?.let { it.stdout + "\n" + it.stderr }
                 if (r1 != null && r1.exit == 0) {
@@ -674,6 +666,16 @@ class TvToolsMachine(
         }
         // 2.0 item 7: say which step failed ("paired but nothing installs") instead of failing silently.
         send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.of(blob != null, installed), launchOut?.trim()?.take(240)?.ifBlank { null })))
+    }
+
+    /** Per-app follow-up when a bundled TV app is opened: DNS applies AdGuard; Score (2.4 M6) gets its overlay grants. */
+    private suspend fun afterBundledLaunch(session: tv.cleanyour.core.session.TvSession, pkgStr: String) {
+        val lines = when (pkgStr) {
+            "com.midroid.mi5gtv.dns" -> ShellRenderer.applyAdGuardDnsLines().take(1)
+            ShellRenderer.MI5G_SCORE -> ShellRenderer.scoreGrantLines()
+            else -> emptyList()
+        }
+        for (l in lines) attempt { TvShellRunner.run(session, l) }
     }
 
     private suspend fun installAllMi5gApps() {
