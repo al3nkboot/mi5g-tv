@@ -254,6 +254,8 @@ final class HomeLayout {
     // ---- change listener (the Home screen reloads when the phone saves) -----------------------------
 
     private static volatile Runnable listener;
-    static void setListener(Runnable r) { listener = r; }
+    static synchronized void setListener(Runnable r) { listener = r; }
+    /** 2.4: clears the listener only when it is still r (a recreated Home may have set its own already). */
+    static synchronized void clearListener(Runnable r) { if (listener == r) listener = null; }
     static void changed() { Runnable r = listener; if (r != null) r.run(); }
 }

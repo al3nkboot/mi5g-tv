@@ -21,6 +21,8 @@ public class BootReceiver extends BroadcastReceiver {
         new Thread(() -> {
             try {
                 Revival.restore(app);
+                KeepAlive.register(app);   // 2.4: hear standby wake from now on
+                KeepAlive.onEvent(app);
                 if (isDefaultHome(app)) {
                     app.startActivity(new Intent(app, MainActivity.class)
                             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED));

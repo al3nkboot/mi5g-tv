@@ -315,6 +315,12 @@ final class ArrangeServer {
                 break;
         }
         if (!post) { respond(out, 405, "text/plain", "method".getBytes()); return; }
+        // 2.4: Home lock refuses layout and tile-image edits from the phone (423 Locked) and says so on the TV.
+        if (lockedEdit(rest) && LauncherSwitches.homeLocked(ctx)) {
+            main.post(() -> LauncherSwitches.refuseIfLocked(ctx));
+            respond(out, 423, "application/json", "{\"ok\":false,\"locked\":true}".getBytes(StandardCharsets.UTF_8));
+            return;
+        }
         switch (rest) {
             case "api/layout": {
                 JSONObject body = new JSONObject(new String(readBody(in, length, MAX_JSON), StandardCharsets.UTF_8));
@@ -373,6 +379,11 @@ final class ArrangeServer {
             default:
                 respond(out, 404, "text/plain", "not found".getBytes());
         }
+    }
+
+    /** 2.4: the POST paths that change the Home layout (refused while Home is locked). */
+    static boolean lockedEdit(String path) {
+        return "api/layout".equals(path) || "api/icon".equals(path) || "api/icon/reset".equals(path);
     }
 
     private boolean changedTrue() { changed(); return true; }

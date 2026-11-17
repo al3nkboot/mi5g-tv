@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Mi5G 2.4 launcher strings. -->
+<resources>
+    <string name="mi5g_keep_alive">Keep Home screen</string>
+    <string name="mi5g_keep_alive_lost">Another home screen took over. Use Re-apply home screen on the phone.</string>
+    <string name="mi5g_caffeine">Keep screen awake</string>
+    <string name="mi5g_caffeine_1h">1 hour</string>
+    <string name="mi5g_caffeine_2h">2 hours</string>
+    <string name="mi5g_caffeine_4h">4 hours</string>
+    <string name="mi5g_caffeine_forever">Until turned off</string>
+    <string name="mi5g_caffeine_note">The screen stays awake</string>
+</resources>

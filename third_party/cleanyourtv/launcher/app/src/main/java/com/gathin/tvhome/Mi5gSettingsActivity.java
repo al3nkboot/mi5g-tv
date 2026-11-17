@@ -54,7 +54,7 @@ public final class Mi5gSettingsActivity extends Activity {
         rows.removeAllViews();
         SharedPreferences p = getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE);
         // Mi5G 2.0.1: credits for the projects this launcher builds on.
-        Rows.add(this, rows, R.drawable.ic_home_settings, getString(R.string.mi5g_credits), "Aerial TV · Clean Your TV · tv-vibehack · talkies",
+        Rows.add(this, rows, R.drawable.ic_home_settings, getString(R.string.mi5g_credits), "Aerial TV · Clean Your TV · tv-vibehack · talkies · tvOS Launcher",
                 () -> new android.app.AlertDialog.Builder(this).setTitle(R.string.mi5g_credits)
                         .setMessage(R.string.mi5g_credits_body).setPositiveButton(android.R.string.ok, null).show());
         // Mi5G 2.0.1: arrange Home from a phone on the same Wi-Fi (QR code, off when this screen closes).
@@ -96,6 +96,12 @@ public final class Mi5gSettingsActivity extends Activity {
         Rows.add(this, rows, R.drawable.ic_lock, getString(R.string.mi5g_home_lock),
                 onOff(LauncherSwitches.homeLocked(this)),
                 () -> { LauncherSwitches.setHomeLocked(this, !LauncherSwitches.homeLocked(this)); build(); });
+        // 2.4: Keep Alive (on by default on Xiaomi) and Keep screen awake, ideas from tvOS-Launcher (Apache-2.0).
+        Rows.add(this, rows, R.drawable.ic_home_settings, getString(R.string.mi5g_keep_alive),
+                KeepAlive.homeLost(this) ? getString(R.string.mi5g_keep_alive_lost) : onOff(LauncherSwitches.keepAlive(this)),
+                () -> { LauncherSwitches.setKeepAlive(this, !LauncherSwitches.keepAlive(this)); KeepAlive.onEvent(this); build(); });
+        Rows.add(this, rows, R.drawable.ic_timer, getString(R.string.mi5g_caffeine), getString(Caffeine.labelRes(Caffeine.choice(this))),
+                () -> { Caffeine.set(this, Caffeine.next(Caffeine.choice(this))); build(); });
         Rows.add(this, rows, R.drawable.ic_input, getString(R.string.mi5g_cec_switch),
                 onOff(LauncherSwitches.cecSwitch(this)),
                 () -> { LauncherSwitches.setCecSwitch(this, !LauncherSwitches.cecSwitch(this)); build(); });

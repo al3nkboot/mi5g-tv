@@ -81,6 +81,12 @@ public final class ControlCenterActivity extends Activity {
             refreshMedia();
         });
         sleepRow = Rows.add(this, rows, R.drawable.ic_timer, getString(R.string.mi5g_cc_sleep), null, this::cycleSleep);
+        // 2.4: Keep screen awake tile; OK cycles Off, 1 h, 2 h, 4 h, until turned off.
+        View caffeineRow = Rows.add(this, rows, R.drawable.ic_timer, getString(R.string.mi5g_caffeine), getString(Caffeine.labelRes(Caffeine.choice(this))), null);
+        caffeineRow.setOnClickListener(v -> {
+            Caffeine.set(this, Caffeine.next(Caffeine.choice(this)));
+            Rows.setStatus(caffeineRow, getString(Caffeine.labelRes(Caffeine.choice(this))));
+        });
         Rows.add(this, rows, R.drawable.ic_power, getString(R.string.mi5g_cc_off), null, () -> {
             if (!global(this, AccessibilityService.GLOBAL_ACTION_LOCK_SCREEN)) needsService();
             finish();

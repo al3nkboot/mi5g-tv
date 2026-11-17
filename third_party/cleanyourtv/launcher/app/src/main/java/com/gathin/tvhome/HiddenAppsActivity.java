@@ -64,6 +64,7 @@ public final class HiddenAppsActivity extends Activity {
         for (String[] a : extras) {
             boolean visible = !on || shown.contains(a[0]);
             Rows.add(this, rows, 0, a[1], getString(visible ? R.string.mi5g_hidden_app_shown : R.string.mi5g_hidden_app_hidden), () -> {
+                if (LauncherSwitches.refuseIfLocked(this)) return;   // 2.4: Home lock
                 MakerExtras.setShown(this, a[0], !MakerExtras.shownAgain(this).contains(a[0]));
                 build();
             });

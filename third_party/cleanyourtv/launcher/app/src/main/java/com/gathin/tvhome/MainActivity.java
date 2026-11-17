@@ -220,6 +220,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private RecyclerView.OnScrollListener pendingFocusScroll;
 
     private final Handler handler = new Handler(Looper.getMainLooper());
+    /** 2.4 (leak fix): kept so onDestroy clears only our own listener, not the one a recreated Home just set. */
+    private final Runnable layoutListener = () -> { if (this.isResumedNow && !isDestroyed()) recreate(); else this.layoutChanged = true; };
     /** Refreshes the network pill when the connection changes: at boot Wi-Fi often connects after Home is shown. */
     private final ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback() {
         @Override
@@ -299,7 +301,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         setContentView(R.layout.activity_main);
         density = getResources().getDisplayMetrics().density;
         // Mi5G 2.0.1: a layout saved from the phone rebuilds Home (now, or when it comes back to the front).
-        HomeLayout.setListener(() -> { if (isResumedNow) recreate(); else layoutChanged = true; });
+        HomeLayout.setListener(layoutListener);
         applyClockOptions(HomeLayout.load(this).options);
         // config.xml, overlaid by config.json from a pushed theme (see Config and tools/theme.sh).
         Config cfg = Config.load(this);
@@ -641,12 +643,24 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // and listens for HDMI-CEC One Touch Play while the owner has it on.
         Revival.restore(this);
         CecSwitch.register(this);
+        // 2.4: Keep Alive (Xiaomi) checks Home and the helper once per resume; caffeine keeps the window on.
+        KeepAlive.register(this);
+        KeepAlive.onEvent(this);
+        Caffeine.sync(this);
+        if (Caffeine.active(this)) getWindow().addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        else getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         if (layoutChanged) {   // Mi5G 2.0.1: arranged from the phone while Home was behind
             layoutChanged = false;
             recreate();
             return;
         }
-        Mi5gWallpapers.refreshBingAsync(this, () -> { if (isResumedNow) recreate(); else layoutChanged = true; });
+        // 2.4 (leak fix): the download thread holds Home only weakly; a Home closed meanwhile is left alone.
+        final java.lang.ref.WeakReference<MainActivity> self = new java.lang.ref.WeakReference<>(this);
+        Mi5gWallpapers.refreshBingAsync(this, () -> {
+            MainActivity a = self.get();
+            if (a == null || a.isDestroyed()) return;
+            if (a.isResumedNow) a.recreate(); else a.layoutChanged = true;
+        });
         // A festival that started or ended while Home was in the background: rebuild with or without it.
         if (festive != festival.active(LocalDate.now())) {
             recreate();
@@ -804,7 +818,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        HomeLayout.setListener(null);   // Mi5G 2.0.1
+        HomeLayout.clearListener(layoutListener);   // Mi5G 2.0.1; 2.4: only ours
+        // 2.4 (leak fix): nothing posted (minute tick, clock check, petal shower, network refreshes) outlives Home,
+        // and no dialog keeps the destroyed window.
+        handler.removeCallbacksAndMessages(null);
+        stopStats();
+        if (cardPrompt != null) cardPrompt.dismiss();
+        if (appLibrary != null) appLibrary.close();
+        if (openPopup != null) openPopup.dismiss();
+        if (deviceOn != null) deviceOn.dismiss();
         wallpaperPlayer.close();
         ConnectivityManager cm = getSystemService(ConnectivityManager.class);
         TvInputManager tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);
@@ -901,6 +923,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     /** The reorder button: turns the mode on (focus goes back to the last tile), or off again. */
     private void toggleReorder() {
+        if (!reordering && LauncherSwitches.refuseIfLocked(this)) return;   // 2.4: Home lock
         if (reordering) {
             endReorder();
             return;
@@ -924,6 +947,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     /** Edit dock (Settings menu): focus goes to the first dock place, which OK then chooses. */
     private void startDockEdit() {
+        if (LauncherSwitches.refuseIfLocked(this)) return;   // 2.4: Home lock
         if (reordering) endReorder();
         if (!beginReorder()) return;
         dockEditing = true;
@@ -1195,6 +1219,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     public boolean onTileMenu(String pkg, String name) {
         if (reordering) return false;
+        if (LauncherSwitches.refuseIfLocked(this)) return true;   // 2.4: Home lock (move, remove)
         TileMenu.show(this, pkg, name, this::toggleReorder, this::recreate);
         return true;
     }
@@ -2681,6 +2706,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 // The list stays open; the decision is for the card as it is now, not as it was listed.
                 Cards.Card now = cardFor(pkg);
                 if (now == null) return null;
+                if (LauncherSwitches.refuseIfLocked(this)) return null;   // 2.4: Home lock (show / hide a card)
                 decideCard(now, now.state != Cards.State.SHOWN);
                 // Every row, not only this one: a toggle can move another card across the limit of 8.
                 updateCardStates(rows);

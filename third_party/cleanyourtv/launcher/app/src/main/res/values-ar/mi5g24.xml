@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Mi5G 2.4 launcher strings. -->
+<resources>
+    <string name="mi5g_keep_alive">إبقاء الشاشة الرئيسية</string>
+    <string name="mi5g_keep_alive_lost">شاشة رئيسية أخرى أخذت مكانها. أعد تثبيت الشاشة الرئيسية من تطبيق الهاتف.</string>
+    <string name="mi5g_caffeine">إبقاء الشاشة مستيقظة</string>
+    <string name="mi5g_caffeine_1h">ساعة واحدة</string>
+    <string name="mi5g_caffeine_2h">ساعتان</string>
+    <string name="mi5g_caffeine_4h">أربع ساعات</string>
+    <string name="mi5g_caffeine_forever">حتى الإيقاف</string>
+    <string name="mi5g_caffeine_note">الشاشة ستبقى مستيقظة</string>
+</resources>
