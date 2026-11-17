@@ -10,4 +10,9 @@
     <string name="app_channel_setup_name">Setting up a TV</string>
     <string name="app_channel_setup_description">Shows progress while the phone changes things on your TV, and tells you when to look at the TV.</string>
     <string name="app_restore_read_failed">Something went wrong reading the restore point</string>
+    <!-- 2.4 M3: the TV's "Connect a phone" QR -->
+    <string name="app_connect_link_title">Connect to this TV?</string>
+    <string name="app_connect_link_body">{name} at {ip}. The TV will ask you to allow this phone.</string>
+    <string name="app_connect_link_yes">Connect</string>
+    <string name="app_connect_link_no">Not now</string>
 </resources>

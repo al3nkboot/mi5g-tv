@@ -23,8 +23,9 @@ import tv.cleanyour.android.platform.AndroidCredentialGate
 import tv.cleanyour.core.flows.resolveStart
 import tv.cleanyour.ui.design.theme.CytTheme
 
-// The one exported component (SECURITY 4.2). It reads no extras and no data URI: every start
-// opens the destination decided from disk.
+// The one exported component (SECURITY 4.2). It reads no extras. Every start opens the destination decided
+// from disk; the one data URI read is 2.4 M3's mi5gtv://connect (ConnectLink), which only offers a home-network
+// TV address and connects nothing until the person says yes.
 class MainActivity : ComponentActivity() {
     private val graph get() = (application as CytApplication).graph
 
@@ -41,6 +42,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         ArabicLocale.apply(this)
         graph.credentialGate.attach(this)
+        if (savedInstanceState == null) PendingConnect.offer(intent?.dataString)
         setContent {
             // D-W8-27: 0.1 is always the dark, black-and-glass design (mockups, DESIGN-SYSTEM 2),
             // whatever the phone's own mode. The light tokens stay in :ui:design, unused.
@@ -58,6 +60,11 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        PendingConnect.offer(intent.dataString)
     }
 
     override fun onStart() { super.onStart(); graph.foreground.set(true) }

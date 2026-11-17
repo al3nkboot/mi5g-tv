@@ -23,11 +23,14 @@ sealed interface RemoteConnection { data object Connected : RemoteConnection; da
 enum class RemoteMode { Buttons, Trackpad, Keyboard }
 enum class RemoteTab { Remote, Apps, Cast, Settings }
 data class RemoteApp(val pkg: String, val label: String = pkg)
+/** 2.4 M3 (backlog 20): another saved TV the remote can switch to. */
+data class RemoteTvChoice(val id: String, val name: String)
 data class RemoteState(
     val tvName: String = "", val connection: RemoteConnection = RemoteConnection.Connecting,
     val lastStatus: String? = null, val textInput: String = "", val mode: RemoteMode = RemoteMode.Buttons,
     val tab: RemoteTab = RemoteTab.Remote, val installedApps: List<RemoteApp> = emptyList(),
     val favorites: Set<String> = emptySet(), val appsLoading: Boolean = false, val unicodeWarning: Boolean = false, val showMoreSheet: Boolean = false,
+    val otherTvs: List<RemoteTvChoice> = emptyList(),
 )
 sealed interface RemoteIntent {
     data class Press(val button: RemoteButton) : RemoteIntent
@@ -38,6 +41,8 @@ sealed interface RemoteIntent {
     data class ToggleFavorite(val pkg: String) : RemoteIntent; data class LaunchApp(val pkg: String) : RemoteIntent
     data object Reconnect : RemoteIntent; data object OpenPairing : RemoteIntent
     data object OpenPlayStore : RemoteIntent   // 2.4: open the Play Store on the TV (also where it hides from the app list)
+    data object OpenTvAllApps : RemoteIntent   // 2.4 M3 (backlog 4): the launcher's All apps grid with search
+    data class SwitchTv(val tvId: String) : RemoteIntent   // 2.4 M3 (backlog 20): the remote for another saved TV
 }
 
 class RemoteMachine(private val d: ManageDeps, scope: CoroutineScope, private val tvId: TvId, private val favoritesStore: RemoteFavoritesStore = InMemoryRemoteFavoritesStore()) : Machine<RemoteState, RemoteIntent, ManageEffect>(RemoteState(favorites = favoritesStore.load(tvId)), scope) {
@@ -45,7 +50,10 @@ class RemoteMachine(private val d: ManageDeps, scope: CoroutineScope, private va
     private val known = listOf("com.google.android.youtube.tv", "com.netflix.ninja", "net.mbc.shahidTV", "com.teamsmart.videomanager.tv", "com.amazon.amazonvideo.livingroom", "com.disney.disneyplus")
     private val knownLabels = mapOf("com.google.android.youtube.tv" to "YouTube", "com.netflix.ninja" to "Netflix", "net.mbc.shahidTV" to "Shahid", "com.teamsmart.videomanager.tv" to "SmartTube", "com.amazon.amazonvideo.livingroom" to "Prime Video", "com.disney.disneyplus" to "Disney Plus")
     init {
-        scope.launch { d.tvs.tvs.collect { tvs -> tvs.firstOrNull { it.id == tvId }?.let { send(NameUpdate(it.nickname)) } } }
+        scope.launch { d.tvs.tvs.collect { tvs ->
+            tvs.firstOrNull { it.id == tvId }?.let { send(NameUpdate(it.nickname)) }
+            send(OthersUpdate(tvs.filter { it.id != tvId }.map { RemoteTvChoice(it.id.value, it.nickname) }))
+        } }
         dispatch(RemoteIntent.Reconnect)
     }
     override fun reduce(state: RemoteState, event: Any): RemoteState = when (event) {
@@ -58,6 +66,7 @@ class RemoteMachine(private val d: ManageDeps, scope: CoroutineScope, private va
         is AppsUpdate -> state.copy(appsLoading = false, installedApps = event.apps)
         is FavoritesUpdate -> state.copy(favorites = event.values)
         is NameUpdate -> state.copy(tvName = event.name)
+        is OthersUpdate -> state.copy(otherTvs = event.tvs)
         is WarningUpdate -> state.copy(unicodeWarning = event.warning)
         is LoadingApps -> state.copy(appsLoading = true)
         is TextSent -> state.copy(textInput = "", unicodeWarning = false)
@@ -89,6 +98,8 @@ class RemoteMachine(private val d: ManageDeps, scope: CoroutineScope, private va
                     }
                 }
             }
+            RemoteIntent.OpenTvAllApps -> scopeRef.launch { effect(ManageEffect.HapticLight); send(ShellRenderer.tvAllAppsLine()) }
+            is RemoteIntent.SwitchTv -> if (intent.tvId != tvId.value && before.otherTvs.any { it.id == intent.tvId }) effect(ManageEffect.Navigate("remoteswitch/${intent.tvId}"))
             else -> Unit
         }
     }
@@ -107,5 +118,5 @@ class RemoteMachine(private val d: ManageDeps, scope: CoroutineScope, private va
         send(AppsUpdate((out + known.filter { it in out }).map { RemoteApp(it, knownLabels[it] ?: it) }.sortedBy { it.label.lowercase() }))
     } }
     private data class ConnectionUpdate(val connection: RemoteConnection, val status: String?)
-    private data class AppsUpdate(val apps: List<RemoteApp>); private data object LoadingApps; private data object TextSent; private data class FavoritesUpdate(val values: Set<String>); private data class NameUpdate(val name: String); private data class WarningUpdate(val warning: Boolean)
+    private data class AppsUpdate(val apps: List<RemoteApp>); private data object LoadingApps; private data object TextSent; private data class FavoritesUpdate(val values: Set<String>); private data class NameUpdate(val name: String); private data class WarningUpdate(val warning: Boolean); private data class OthersUpdate(val tvs: List<RemoteTvChoice>)
 }

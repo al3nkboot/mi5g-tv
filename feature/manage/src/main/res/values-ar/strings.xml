@@ -514,5 +514,20 @@
     <string name="tvtools_play_store_bg_allow">السماح لمتجر بلاي بالعمل في الخلفية مرة أخرى</string>
     <string name="tvtools_label_play_store_bg_stop">منع متجر بلاي من العمل في الخلفية</string>
     <string name="tvtools_label_play_store_bg_allow">السماح لمتجر بلاي بالعمل في الخلفية</string>
+    <!-- 2.4 M3: رفيق الجوال -->
+    <string name="remote_tv_all_apps">كل تطبيقات التلفاز</string>
+    <string name="remote_switch_tv">تبديل التلفاز</string>
+    <string name="tvtools_store_section">المتجر المصغّر</string>
+    <string name="tvtools_store_note">يفتح صفحة التطبيق في متجر بلاي على التلفاز، وثبّته من هناك بريموت التلفاز.</string>
+    <string name="tvtools_label_store_open">جارٍ فتح صفحة المتجر على التلفاز</string>
+    <string name="tvtools_live_section">رسالة أو رسمة على التلفاز الآن</string>
+    <string name="tvtools_live_note">اكتب رسالة قصيرة أو ارسم بإصبعك أو الاثنين معاً. تظهر على التلفاز فوراً عبر الشاشة الرئيسية حتى يُضغط زر الرجوع هناك أو تزيلها من هنا.</string>
+    <string name="tvtools_live_text_label">الرسالة (اختياري)</string>
+    <string name="tvtools_live_pad_cd">لوحة الرسم. ارسم بإصبع واحد.</string>
+    <string name="tvtools_live_send">اعرض على التلفاز</string>
+    <string name="tvtools_live_clear_pad">مسح</string>
+    <string name="tvtools_live_close">إزالتها من التلفاز</string>
+    <string name="tvtools_label_live_board">جارٍ العرض على التلفاز</string>
+    <string name="tvtools_label_live_board_close">جارٍ الإزالة من التلفاز</string>
 </resources>
 

@@ -187,6 +187,11 @@ sealed interface TvToolsIntent {
     data object ReapplyHome : TvToolsIntent
     /** 2.4 (v1.7 item 5): keep the Play Store from running in the background, or let it again. Nothing is disabled. */
     data class PlayStoreBackground(val stop: Boolean) : TvToolsIntent
+    /** 2.4 M3 (backlog 17): the mini store, an app's Play Store page opened on the TV. */
+    data class OpenStorePage(val pkg: String) : TvToolsIntent
+    /** 2.4 M3 (backlog 32): a drawing (LiveBoard token) and/or a short message shown on the TV now; Close takes it off. */
+    data class SendLiveBoard(val strokes: List<List<Pair<Float, Float>>>, val text: String) : TvToolsIntent
+    data object CloseLiveBoard : TvToolsIntent
     data class MapRemoteKey(val keyCode: Int, val targetPkg: String, val label: String) : TvToolsIntent
     data class SetForceLandscape(val landscape: Boolean) : TvToolsIntent
     data object StartClockScreensaver : TvToolsIntent
@@ -356,6 +361,15 @@ class TvToolsMachine(
             TvToolsIntent.ArrangeHomeFromPhone -> scope.launch { runPowerLines(ShellRenderer.arrangeHomeLines(), "@arrange_home") }
             TvToolsIntent.ReapplyHome -> scope.launch { keepMi5gHome(reapply = true) }
             is TvToolsIntent.PlayStoreBackground -> scope.launch { runPowerLines(ShellRenderer.playStoreBackgroundLines(event.stop), if (event.stop) "@play_store_bg_stop" else "@play_store_bg_allow") }
+            is TvToolsIntent.OpenStorePage -> scope.launch {
+                val line = runCatching { ShellRenderer.playStorePageLine(event.pkg) }.getOrNull()
+                if (line != null) runPowerLines(listOf(line), "@store_open") else send(PowerToolUpdate(PowerToolStatus.Failed("@store_open")))
+            }
+            is TvToolsIntent.SendLiveBoard -> scope.launch {
+                val line = runCatching { ShellRenderer.liveBoardLine(tv.cleanyour.core.ops.LiveBoard.encode(event.strokes), event.text) }.getOrNull()
+                if (line != null) runPowerLines(listOf(line), "@live_board") else send(PowerToolUpdate(PowerToolStatus.Failed("@live_board")))
+            }
+            TvToolsIntent.CloseLiveBoard -> scope.launch { runPowerLines(listOf(ShellRenderer.liveBoardCloseLine()), "@live_board_close") }
             is TvToolsIntent.MapRemoteKey -> scope.launch {
                 mapRemoteKey(event.keyCode, event.targetPkg, event.label)
             }

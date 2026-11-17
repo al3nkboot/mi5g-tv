@@ -791,6 +791,8 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
             )
         }
         Banner(stringResource(R.string.tvtools_smarttube_tip), BannerTone.INFO, Modifier.padding(top = 12.dp))
+        // 2.4 M3 (backlog 17): the mini store beside the Downloader codes.
+        MiniStoreSection(enabled = !powerWorking, onIntent = onIntent)
 
         // The mapper and screensaver actions remain available through their next home surfaces.
         ActionColumn {
@@ -939,6 +941,9 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
                 )
             }
         }
+
+        // 2.4 M3 (backlog 32): a live message or drawing on the TV.
+        LiveBoardSection(enabled = !powerWorking, onIntent = onIntent)
 
         SectionLabel(stringResource(R.string.tvtools_cast_section))
         Body(stringResource(R.string.tvtools_cast_url_note), Modifier.padding(bottom = 8.dp, start = 4.dp, end = 4.dp))
@@ -1614,6 +1619,9 @@ private fun powerLabel(raw: String): String = when {
     raw == "@keep_home" -> stringResource(R.string.tvtools_label_keep_home)
     raw == "@reapply_home" -> stringResource(R.string.tvtools_label_reapply_home)
     raw == "@play_store_bg_stop" -> stringResource(R.string.tvtools_label_play_store_bg_stop)
+    raw == "@store_open" -> stringResource(R.string.tvtools_label_store_open)
+    raw == "@live_board" -> stringResource(R.string.tvtools_label_live_board)
+    raw == "@live_board_close" -> stringResource(R.string.tvtools_label_live_board_close)
     raw == "@play_store_bg_allow" -> stringResource(R.string.tvtools_label_play_store_bg_allow)
     raw == "@prayer" -> stringResource(R.string.tvtools_label_prayer)
     raw == "@install_all" -> stringResource(R.string.tvtools_label_install_all)

@@ -7,4 +7,9 @@
     <string name="app_channel_setup_name">إعداد تلفاز</string>
     <string name="app_channel_setup_description">يعرض التقدم أثناء إجراء الهاتف للتغييرات على التلفاز، ويخبرك متى تنظر إلى شاشة التلفاز.</string>
     <string name="app_restore_read_failed">حدث خطأ أثناء قراءة نقطة الاستعادة</string>
+    <!-- 2.4 M3: رمز «اربط جوالاً» على التلفاز -->
+    <string name="app_connect_link_title">الاتصال بهذا التلفاز؟</string>
+    <string name="app_connect_link_body">{name} على العنوان {ip}. سيطلب منك التلفاز السماح لهذا الجوال.</string>
+    <string name="app_connect_link_yes">اتصال</string>
+    <string name="app_connect_link_no">ليس الآن</string>
 </resources>

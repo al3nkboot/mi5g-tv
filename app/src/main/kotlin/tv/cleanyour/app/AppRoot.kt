@@ -138,6 +138,8 @@ internal fun applyRoute(stack: MutableList<NavKey>, route: String, noTvs: Boolea
         "tools" -> id?.let { Dest.TvTools(it) }
         "remote" -> id?.let { Dest.Remote(it) }
         // 2.4: "Use as a remote only": the TV's Manage under its remote, so Back lands where the full setup is.
+        // 2.4 M3 (backlog 20): the remote for another saved TV replaces the current remote, so Back still leaves it.
+        "remoteswitch" -> id?.let { if (stack.lastOrNull() is Dest.Remote) stack.removeAt(stack.lastIndex); stack.add(Dest.Remote(it)); return true }
         "remoteonly" -> id?.let { stack.clear(); stack.add(Dest.Manage(it)); stack.add(Dest.Remote(it)); return true }
         "apps" -> id?.let { Dest.TvApps(it) }
         "appsettings" -> Dest.AppSettings
@@ -260,6 +262,12 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
                         else -> SetupStart.Fresh
                     }
                     val m = rememberMachine("setup:${key.tvId}:${key.planId}:${key.repair}") { graph.setup(it, start) }
+                    if (key.tvId == null && key.planId == null) LaunchedEffect(m) {
+                        // 2.4 M3: the address from the TV's QR, after the person's yes.
+                        PendingConnect.confirmed.collect { t ->
+                            if (t != null) { PendingConnect.confirmed.value = null; m.dispatch(SetupIntent.EnterAddress(t.host, t.port)) }
+                        }
+                    }
                     val state by m.state.collectAsStateWithLifecycle()
                     val extras by m.extras.collectAsStateWithLifecycle()
                     var pendingStartClean by rememberSaveable { mutableStateOf(false) }
@@ -438,6 +446,31 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
         val reach by graph.access.reach.collectAsStateWithLifecycle()
         if (reach !is Reach.Idle) DebugStepSheet(reach) { graph.access.cancelWaiting() }
         SnackbarHost(snack, Modifier.align(Alignment.BottomCenter).padding(16.dp))
+        // 2.4 M3 (backlog 15): a TV from the launcher's "Connect a phone" QR; nothing connects before the yes.
+        val offered by PendingConnect.offered.collectAsStateWithLifecycle()
+        offered?.let { t ->
+            androidx.compose.material3.AlertDialog(
+                onDismissRequest = { PendingConnect.offered.value = null },
+                title = { androidx.compose.material3.Text(androidx.compose.ui.res.stringResource(R.string.app_connect_link_title)) },
+                text = {
+                    androidx.compose.material3.Text(
+                        ResourceFlowCopy.format(context, R.string.app_connect_link_body, mapOf("name" to t.name.ifBlank { t.host }, "ip" to t.host)),
+                    )
+                },
+                confirmButton = {
+                    androidx.compose.material3.TextButton({
+                        PendingConnect.offered.value = null
+                        PendingConnect.confirmed.value = t
+                        applyConnect(backStack)
+                    }) { androidx.compose.material3.Text(androidx.compose.ui.res.stringResource(R.string.app_connect_link_yes)) }
+                },
+                dismissButton = {
+                    androidx.compose.material3.TextButton({ PendingConnect.offered.value = null }) {
+                        androidx.compose.material3.Text(androidx.compose.ui.res.stringResource(R.string.app_connect_link_no))
+                    }
+                },
+            )
+        }
     }
 }
 

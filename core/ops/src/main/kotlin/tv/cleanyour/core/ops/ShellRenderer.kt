@@ -795,6 +795,35 @@ class ShellRenderer(private val watchdogVariant: WatchdogVariant = WatchdogVaria
             }
         }
 
+        // ---- 2.4 M3: phone companion ----------------------------------------------------------------------
+
+        /** 2.4 M3 (backlog 4): the launcher's All apps grid with search, opened on the TV from the phone remote. */
+        fun tvAllAppsLine(): ShellLine = ShellLine(ShellTokens.line(listOf(AM, "start", "-n", "$MI5G_HOME/.AllAppsActivity")))
+
+        /** 2.4 M3 (backlog 17, mini store): an app's Play Store page on the TV; the person installs it there. */
+        fun playStorePageLine(pkg: String): ShellLine {
+            require(PACKAGE_RE.matches(pkg) && pkg.length <= 200) { "invalid package" }
+            return ShellLine(ShellTokens.line(listOf(AM, "start", "-a", "android.intent.action.VIEW", "-d", "market://details?id=$pkg", "-p", PLAY_STORE)))
+        }
+
+        /**
+         * 2.4 M3 (backlog 32, UrTV idea, own code): a drawing and/or a short message from the phone, shown at once on
+         * the TV by the launcher's LiveBoardActivity (shell-only: it needs DUMP). Strokes come from [LiveBoard.encode];
+         * the text travels as UTF-8 hex, as the Arabic banner does, because shell lines are ASCII only.
+         */
+        fun liveBoardLine(strokes: String, text: String): ShellLine {
+            require(strokes.isEmpty() || LiveBoard.valid(strokes)) { "invalid strokes" }
+            val clean = text.trim().filter { !it.isISOControl() }.take(LiveBoard.MAX_TEXT)
+            require(strokes.isNotEmpty() || clean.isNotEmpty()) { "nothing to show" }
+            val argv = mutableListOf(AM, "start", "-n", "$MI5G_HOME/.LiveBoardActivity")
+            if (strokes.isNotEmpty()) argv += listOf("--es", "strokes", strokes)
+            if (clean.isNotEmpty()) argv += listOf("--es", "hex", clean.toByteArray(Charsets.UTF_8).joinToString("") { "%02x".format(it.toInt() and 0xff) })
+            return ShellLine(ShellTokens.line(argv))
+        }
+
+        /** 2.4 M3: takes the live drawing or message off the TV. */
+        fun liveBoardCloseLine(): ShellLine = ShellLine(ShellTokens.line(listOf(AM, "start", "-n", "$MI5G_HOME/.LiveBoardActivity", "--ez", "close", "true")))
+
         /**
          * 2.4 (Keep Alive, Xiaomi): "Re-apply home screen". Makes Mi5G the default Home again and gives the launcher
          * back WRITE_SECURE_SETTINGS, which its Keep Alive needs to put the Home-key helper back after standby. The

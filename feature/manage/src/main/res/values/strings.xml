@@ -521,5 +521,20 @@
     <string name="tvtools_play_store_bg_allow">Let the Play Store run in the background again</string>
     <string name="tvtools_label_play_store_bg_stop">Stopping the Play Store in the background</string>
     <string name="tvtools_label_play_store_bg_allow">Letting the Play Store run in the background</string>
+    <!-- 2.4 M3: phone companion -->
+    <string name="remote_tv_all_apps">All apps on TV</string>
+    <string name="remote_switch_tv">Switch TV</string>
+    <string name="tvtools_store_section">Mini store</string>
+    <string name="tvtools_store_note">Opens the app\'s Play Store page on the TV; install it there with the TV remote.</string>
+    <string name="tvtools_label_store_open">Opening the store page on the TV</string>
+    <string name="tvtools_live_section">Message or drawing on the TV now</string>
+    <string name="tvtools_live_note">Write a short message, draw with your finger, or both. It shows on the TV straight away (Mi5G Home), until Back is pressed there or you take it off.</string>
+    <string name="tvtools_live_text_label">Message (optional)</string>
+    <string name="tvtools_live_pad_cd">Drawing pad. Draw with one finger.</string>
+    <string name="tvtools_live_send">Show on TV</string>
+    <string name="tvtools_live_clear_pad">Clear</string>
+    <string name="tvtools_live_close">Take it off</string>
+    <string name="tvtools_label_live_board">Showing it on the TV</string>
+    <string name="tvtools_label_live_board_close">Taking it off the TV</string>
 </resources>
 

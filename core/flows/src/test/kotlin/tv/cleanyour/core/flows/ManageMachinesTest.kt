@@ -1,5 +1,6 @@
 package tv.cleanyour.core.flows
 
+import tv.cleanyour.core.ops.ShellTokens as OpsTokens
 import app.cash.turbine.test
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -1257,4 +1258,32 @@ class ManageMachinesTest {
 }
 
 private fun kotlinx.coroutines.CoroutineScope.launchAccess(h: Harness, tv: Tv, done: (AccessResult) -> Unit) =
-    launch { done(h.access.session(tv.id)) }
+    launch { done(h.access.session(tv.id)) 
+    // 2.4 M3 (backlog 17 and 32): the mini store opens a store page; the live board draws and closes on the TV.
+    @Test fun miniStoreAndLiveBoardRunTheirLines() = runTest(timeout = 30.seconds) {
+        val h = Harness()
+        val known = h.knownTv()
+        h.session.recording.on("'am' 'start' '-a' 'android.intent.action.VIEW' '-d' 'market://details?id=org.videolan.vlc' '-p' 'com.android.vending'", "Starting: Intent")
+        val tools = TvToolsMachine(h.manageDeps(), backgroundScope, known.id)
+        settle()
+        tools.dispatch(TvToolsIntent.OpenStorePage("org.videolan.vlc"))
+        settle()
+        assertEquals(PowerToolStatus.Done("@store_open"), tools.state.value.powerToolStatus)
+        tools.dispatch(TvToolsIntent.OpenStorePage("bad pkg; reboot"))
+        settle()
+        assertEquals(PowerToolStatus.Failed("@store_open"), tools.state.value.powerToolStatus)
+        assertTrue(h.session.execLines.none { "reboot" in it })
+
+        tools.dispatch(TvToolsIntent.SendLiveBoard(listOf(listOf(0f to 0f, 1f to 1f)), "مرحبا"))
+        settle()
+        val line = OpsTokens.tokenize(h.session.execLines.last())
+        assertEquals(listOf("am", "start", "-n", "com.gathin.tvhome/.LiveBoardActivity", "--es", "strokes", "000000999999", "--es", "hex"), line.take(9))
+        tools.dispatch(TvToolsIntent.SendLiveBoard(emptyList(), "  "))
+        settle()
+        assertEquals(PowerToolStatus.Failed("@live_board"), tools.state.value.powerToolStatus)
+        tools.dispatch(TvToolsIntent.CloseLiveBoard)
+        settle()
+        assertEquals(listOf("am", "start", "-n", "com.gathin.tvhome/.LiveBoardActivity", "--ez", "close", "true"),
+            OpsTokens.tokenize(h.session.execLines.last()))
+    }
+}
