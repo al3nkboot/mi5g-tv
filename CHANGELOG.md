@@ -46,6 +46,11 @@ All notable changes to the app. Versions follow [semantic versioning](https://se
 - صوت الأذان من تسجيل تختاره من الجوال، وأذان خاص للفجر، مع بقاء الأذان المرفق احتياطاً إن لم يعمل الملف على التلفاز.
 - الإبقاء نشطاً لوحدة الصلاة: تعيد ضبط مواعيد الأذان كل ست ساعات وكلما عادت الشاشة الرئيسية بعد التشغيل أو الاستعداد، حتى لو أوقفها التلفاز.
 - الأذان الإجباري باقٍ ومفعّل افتراضياً، والشروق لا يكون عليه أذان أبداً.
+- تطبيق النتائج على التلفاز: تبويب «البطولات الكبرى» لكأس العالم وتصفياتها الآسيوية وكأس العالم للأندية وكأس آسيا وكأس الأمم الأفريقية وكأس أمم أوروبا وكوبا أمريكا ودوري الأمم الأوروبية ودوري الأبطال، بالجولة الحالية أو القادمة، من بيانات النتائج العامة فقط وبدون أي بث.
+- تذكير قبل انطلاق المباراة بعشر دقائق يظهر في زاوية الشاشة فوق أي تطبيق، أو كإشعار إن لم يُسمح بالظهور فوق التطبيقات، ويُعاد ضبطه بعد إعادة التشغيل.
+- ملاحظة على بطاقة المباراة إن وقعت صلاة أثناءها، من مواقيت وحدة الصلاة على التلفاز نفسه، والشروق لا يُحسب.
+- تثبيت النتيجة المباشرة في زاوية الشاشة فوق أي تطبيق، تتحدث كل خمس وأربعين ثانية وتختفي وحدها بعد نهاية المباراة بثلاث دقائق.
+- فتح تطبيق النتائج من أدوات التلفاز في الجوال يمنحه إذن الظهور فوق التطبيقات والتنبيهات في وقتها.
 - الشاشة الرئيسية المرفقة 2.10.
 
 </div>
@@ -90,6 +95,11 @@ All notable changes to the app. Versions follow [semantic versioning](https://se
 - Adhan sound: the built-in recording or one picked on the phone (up to 12 MB), plus a separate Fajr adhan; a file the TV can't play falls back to the built-in adhan.
 - Keep Alive for the prayer module: it re-arms its alarms every 6 hours and whenever Mi5G Home comes back after boot or standby (works even after a force stop). Idea from tvOS-Launcher (Apache-2.0).
 - Forced adhan stays, on by default; sunrise never gets an adhan.
+- Mi5G Score 2.1.0 (TV module): a Big tournaments tab (World Cup, AFC World Cup qualifiers, Club World Cup, Asian Cup, AFCON, Euro, Copa América, UEFA Nations League, Champions League, AFC Champions League Elite) with each one's current or next round; ESPN's public scoreboard only, no streams. UrTV idea, own code.
+- Kick-off reminders: 10 minutes before kick-off a corner banner over any app (a notification when the overlay isn't allowed); re-armed after a reboot or update.
+- Prayer-clash notes on match cards: any prayer from 10 minutes before kick-off to the end of the match, read from the Mi5G prayer module on the same TV (sunrise is skipped).
+- Pin the live score in a corner over any app; it refreshes every 45 s and goes away 3 minutes after full time. talkies idea (MIT), own code.
+- Opening Mi5G Score from the phone's TV tools grants it the overlay, exact alarms and notifications (best effort). Favourite clubs and leagues were already in Mi5G Score 2.0.
 - Bundled launcher 2.10-mi5g (source; the bundled APK is rebuilt and pinned at release).
 
 ## 2.3.0 (2026-11-11)

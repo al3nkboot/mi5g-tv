@@ -152,6 +152,10 @@ tvOS Launcher — https://github.com/techgenius1/tvOS-Launcher
   Mi5G TV 2.4.0 (M5): the prayer module's Keep Alive re-arm follows the same tvOS Launcher idea (Apache-2.0),
   with Mi5G's own code; prayer times stay on adhan-java (MIT, Batoul Apps). Adhan recordings the owner picks on the
   phone are copied only to their own TV and are not part of this project.
+  Mi5G TV 2.4.0 (M6), ideas only, never code: Mi5G Score's football home with kick-off reminders and big
+  tournaments (UrTV), and the live score pinned in a corner over any app (talkies, MIT, credited below).
+  Tournament, match and score data come from ESPN's public JSON endpoints (unofficial, not affiliated with
+  ESPN); no streams. Prayer-clash notes read today's times from the Mi5G prayer module on the same TV.
 
 OmarchyTV — https://github.com/piermark/omarchytv
   MIT License. Copyright (c) 2026 Marco Porro (x.com/MarcoPorro · www.marcoporro.it).
@@ -160,6 +164,7 @@ OmarchyTV — https://github.com/piermark/omarchytv
 talkies v1.2.8 — https://github.com/rajupp/talkies
   MIT License. Copyright (c) 2026 TechPP.
   Mi5G 2.1 keeps this notice; the added device/input, screensaver and weather implementations are our own.
+  Mi5G TV 2.4.0 (M6): the idea of a small score card pinned over any app; Mi5G Score's corner card is our own code.
 
 tv-vibehack — https://github.com/samdegan2311/tv-vibehack
   MIT License. Copyright (c) 2026 Gathin. The launcher Control Center is adapted from it.
