@@ -135,6 +135,7 @@ import tv.cleanyour.ui.design.theme.CytTheme
 import tv.cleanyour.ui.design.theme.Glow
 import tv.cleanyour.ui.design.theme.LocalCardScale
 import tv.cleanyour.core.flows.PowerFailStep
+import tv.cleanyour.core.flows.QUICK_START_VIDEO_URL
 
 // Screens M1, M1a, M4, M5, M7 and M8 (PRODUCT-SPEC 4, UX 4.3, 4.11, 4.13, 6.1), built from the
 // :ui:design components (ui/design/API.md). Each sheet keeps its body in an internal *Content
@@ -579,7 +580,6 @@ fun AppSettingsScreen(
     }
 }
 
-const val QUICK_START_VIDEO_URL = "https://github.com/al3nkboot/mi5g-tv#quick-start"
 
 @Composable
 internal fun QuickStartContent() {
@@ -813,6 +813,12 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
             PrimaryButton(
                 stringResource(R.string.tvtools_keep_home),
                 { onIntent(TvToolsIntent.KeepMi5gHome) },
+                enabled = !powerWorking,
+            )
+            // 2.4: Keep Alive (Xiaomi PatchWall, Mi Box S): put Mi5G back as Home without switching anything off.
+            SecondaryButton(
+                stringResource(R.string.tvtools_reapply_home),
+                { onIntent(TvToolsIntent.ReapplyHome) },
                 enabled = !powerWorking,
             )
             SecondaryButton(
@@ -1237,7 +1243,10 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
                 SecondaryButton(stringResource(R.string.tvtools_apk_pick), { onIntent(TvToolsIntent.PickApk) }, Modifier.padding(top = 12.dp))
             }
             is SideloadStatus.Failed -> {
-                Body(msg(R.string.tvtools_apk_failed, "name" to s.fileName), Modifier.padding(top = 8.dp, start = 4.dp), color = CytTheme.colors.danger)
+                val isAr = LocalConfiguration.current.locales[0].language == "ar"
+                val mapped = s.detail?.let { tv.cleanyour.core.flows.PmInstallErrors.format(it, isAr) }
+                val errorMsg = mapped ?: (msg(R.string.tvtools_apk_failed, "name" to s.fileName) + (s.detail?.let { "\n$it" } ?: ""))
+                Body(errorMsg, Modifier.padding(top = 8.dp, start = 4.dp), color = CytTheme.colors.danger)
                 SecondaryButton(stringResource(R.string.tvtools_apk_pick), { onIntent(TvToolsIntent.PickApk) }, Modifier.padding(top = 12.dp))
             }
         }
@@ -1592,6 +1601,7 @@ private fun powerLabel(raw: String): String = when {
     raw == "@hdmi" -> stringResource(R.string.tvtools_label_hdmi)
     raw == "@banner" -> stringResource(R.string.tvtools_label_banner)
     raw == "@keep_home" -> stringResource(R.string.tvtools_label_keep_home)
+    raw == "@reapply_home" -> stringResource(R.string.tvtools_label_reapply_home)
     raw == "@prayer" -> stringResource(R.string.tvtools_label_prayer)
     raw == "@install_all" -> stringResource(R.string.tvtools_label_install_all)
     raw == "@stock_home" -> stringResource(R.string.tvtools_label_stock_home)

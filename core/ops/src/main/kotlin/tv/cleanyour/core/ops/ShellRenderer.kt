@@ -707,6 +707,8 @@ class ShellRenderer(private val watchdogVariant: WatchdogVariant = WatchdogVaria
             }
             add(ShellLine(ShellTokens.line(listOf(CMD, "notification", "disallow_listener", MI5G_MEDIA_LISTENER))))
             add(ShellLine(ShellTokens.line(listOf(CMD, "deviceidle", "whitelist", "-$MI5G_HOME"))))
+            // 2.4: revoke WRITE_SECURE_SETTINGS from launcher on return to stock (M1 item 7)
+            add(revokeHomeSecureSettingsLine())
             installedStock.firstOrNull()?.let {
                 add(ShellLine(ShellTokens.line(listOf(CMD, "package", "resolve-activity", "--brief", "-a", "android.intent.action.MAIN", "-c", "android.intent.category.HOME", it))))
             }
@@ -759,6 +761,27 @@ class ShellRenderer(private val watchdogVariant: WatchdogVariant = WatchdogVaria
         fun arrangeHomeLines(): List<ShellLine> = listOf(
             ShellLine(ShellTokens.line(listOf(PM, "grant", MI5G_HOME, "android.permission.WRITE_SECURE_SETTINGS"))),
             ShellLine(ShellTokens.line(listOf(AM, "start", "-n", "$MI5G_HOME/.ArrangeActivity"))),
+        )
+
+        /**
+         * 2.4: Revoke WRITE_SECURE_SETTINGS from com.gathin.tvhome (M1 item 7).
+         * Granted for arrange-from-phone; revoked when arrange-from-phone is turned off and on return to stock home.
+         */
+        fun revokeHomeSecureSettingsLine(): ShellLine =
+            ShellLine(ShellTokens.line(listOf(PM, "revoke", MI5G_HOME, "android.permission.WRITE_SECURE_SETTINGS")))
+
+        /**
+         * 2.4 (Keep Alive, Xiaomi): "Re-apply home screen". Makes Mi5G the default Home again and gives the launcher
+         * back WRITE_SECURE_SETTINGS, which its Keep Alive needs to put the Home-key helper back after standby. The
+         * helper itself is merged in by putAccessibilityLines before these. Nothing is switched off here (the stock
+         * home stays as it is), so the one-tap return to the stock home is unchanged.
+         */
+        fun reapplyHomeLines(): List<ShellLine> = listOf(
+            ShellLine(ShellTokens.line(listOf(CMD, "package", "set-home-activity", MI5G_HOME_ACTIVITY))),
+            ShellLine(ShellTokens.line(listOf(PM, "grant", MI5G_HOME, "android.permission.WRITE_SECURE_SETTINGS"))),
+            ShellLine(ShellTokens.line(listOf(CMD, "appops", "set", MI5G_HOME, "RUN_IN_BACKGROUND", "allow"))),
+            ShellLine(ShellTokens.line(listOf(CMD, "deviceidle", "whitelist", "+$MI5G_HOME"))),
+            ShellLine(ShellTokens.line(listOf(AM, "start", "-a", "android.intent.action.MAIN", "-c", "android.intent.category.HOME", "-n", MI5G_HOME_ACTIVITY))),
         )
 
         fun startHomeLine(): ShellLine =

@@ -51,7 +51,8 @@ object GoldenCases {
     val all: List<GoldenCase> = listOf(
         GoldenCase("01-disable", "Disable a package the profile lists; it was enabled", Op.Disable(p("com.miui.tv.analytics")), Prior(packageState = EnabledState.ENABLED)),
         GoldenCase("02-disable-prior-default", "Disable a package whose state was the default", Op.Disable(p("com.xiaomi.statistic")), Prior(packageState = EnabledState.DEFAULT)),
-        GoldenCase("03-enable", "Put back a package we switched off", Op.Enable(p("com.google.android.katniss")), Prior(packageState = EnabledState.DISABLED_USER)),
+        // 2.4: katniss is protected (core voice assistant), so 03-enable uses tvrecommendations
+        GoldenCase("03-enable", "Put back a package we switched off", Op.Enable(p("com.google.android.tvrecommendations")), Prior(packageState = EnabledState.DISABLED_USER)),
         GoldenCase("04-default-state", "Return a package to its default state", Op.DefaultState(p("com.xiaomi.mitv.handbook")), Prior(packageState = EnabledState.ENABLED)),
         GoldenCase("05-install-replace", "Install the launcher from tmp with -r; it was absent, so the undo removes it", Op.Install(apkPath, apkSha, launcher.pkg, 1, signer, setOf(InstallFlag.REPLACE)), Prior(present = false)),
         GoldenCase("06-install-fresh", "Install the launcher from tmp, no flags, it was present (no undo)", Op.Install(apkPath, apkSha, launcher.pkg, 1, signer, emptySet()), Prior(present = true)),

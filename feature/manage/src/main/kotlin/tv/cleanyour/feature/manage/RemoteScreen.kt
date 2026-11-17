@@ -151,7 +151,9 @@ private fun RemoteTopBar(state: RemoteState, onIntent: (RemoteIntent) -> Unit, o
 private fun NotConnectedCard(onIntent: (RemoteIntent) -> Unit) {
     Surface(Modifier.fillMaxWidth().padding(bottom = 12.dp), shape = RoundedCornerShape(20.dp), color = CytTheme.colors.surface2, border = BorderStroke(1.dp, Gold.copy(alpha = .5f))) {
         Column(Modifier.padding(16.dp)) {
-            Text(stringResource(R.string.remote_connect_prompt), color = CytTheme.colors.textPrimary, style = MaterialTheme.typography.bodyLarge)
+            Text(stringResource(R.string.manage_unreachable_title), color = CytTheme.colors.textPrimary, style = MaterialTheme.typography.titleMedium)
+            Spacer(Modifier.height(4.dp))
+            Text(stringResource(R.string.manage_unreachable_body), color = CytTheme.colors.textSecondary, style = MaterialTheme.typography.bodyMedium)
             Spacer(Modifier.height(12.dp))
             GoldPill(stringResource(R.string.remote_connect), filled = true) { onIntent(RemoteIntent.OpenPairing) }
         }

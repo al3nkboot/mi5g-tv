@@ -475,6 +475,8 @@
     <string name="tvtools_arrange_home">Arrange Home from the phone</string>
     <string name="tvtools_label_arrange_home">Open the arrange QR code on the TV</string>
     <string name="tvtools_keep_home">Lock Home to Mi5G</string>
+    <string name="tvtools_reapply_home">Re-apply home screen</string>
+    <string name="tvtools_label_reapply_home">Re-applying the Mi5G home screen</string>
     <string name="tvtools_stock_home">Return to the TV launcher</string>
     <string name="tvtools_label_keep_home">Locking Home to Mi5G</string>
     <string name="tvtools_label_stock_home">Returning to the TV launcher</string>

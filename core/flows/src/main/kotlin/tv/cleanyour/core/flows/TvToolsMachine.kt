@@ -183,6 +183,8 @@ sealed interface TvToolsIntent {
     data object ReturnToStockHome : TvToolsIntent
     /** Mi5G 2.0.1: open the launcher's arrange-from-phone QR screen on the TV. */
     data object ArrangeHomeFromPhone : TvToolsIntent
+    /** 2.4: Keep Alive (Xiaomi): make Mi5G the default Home again and put its Home-key helper back. */
+    data object ReapplyHome : TvToolsIntent
     data class MapRemoteKey(val keyCode: Int, val targetPkg: String, val label: String) : TvToolsIntent
     data class SetForceLandscape(val landscape: Boolean) : TvToolsIntent
     data object StartClockScreensaver : TvToolsIntent
@@ -350,6 +352,7 @@ class TvToolsMachine(
             TvToolsIntent.KeepMi5gHome -> scope.launch { keepMi5gHome() }
             TvToolsIntent.ReturnToStockHome -> scope.launch { returnToStockHome() }
             TvToolsIntent.ArrangeHomeFromPhone -> scope.launch { runPowerLines(ShellRenderer.arrangeHomeLines(), "@arrange_home") }
+            TvToolsIntent.ReapplyHome -> scope.launch { keepMi5gHome(reapply = true) }
             is TvToolsIntent.MapRemoteKey -> scope.launch {
                 mapRemoteKey(event.keyCode, event.targetPkg, event.label)
             }
@@ -437,7 +440,7 @@ class TvToolsMachine(
         send(PowerToolUpdate(PowerToolStatus.Working(label)))
         val session = (d.access.session(tvId) as? AccessResult.Ok)?.session
         if (session == null) {
-            send(PowerToolUpdate(PowerToolStatus.Failed(label)))
+            send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.UNREACHABLE)))
             return
         }
         var anyOk = false
@@ -449,7 +452,8 @@ class TvToolsMachine(
             send(PowerToolUpdate(PowerToolStatus.Done(label), clearBanner = clearBanner))
             effect(ManageEffect.HapticDouble)
         } else {
-            send(PowerToolUpdate(PowerToolStatus.Failed(label)))
+            val unreachable = d.access.live(tvId) == null
+            send(PowerToolUpdate(PowerToolStatus.Failed(label, if (unreachable) PowerFailStep.UNREACHABLE else null)))
         }
     }
 
@@ -460,8 +464,10 @@ class TvToolsMachine(
 
     // Item 25: Home, the remote services and media access for the Mi5G launcher, re-applied on demand.
     // Every step persists across Home presses and reboots (default Home, secure settings, pm state).
-    private suspend fun keepMi5gHome() {
-        val label = "@keep_home"
+    // 2.4: reapply = "Re-apply home screen" (Keep Alive): the same checks, ShellRenderer.reapplyHomeLines instead
+    // of the lock, so the stock home is never switched off from here.
+    private suspend fun keepMi5gHome(reapply: Boolean = false) {
+        val label = if (reapply) "@reapply_home" else "@keep_home"
         send(PowerToolUpdate(PowerToolStatus.Working(label)))
         val session = (d.access.session(tvId) as? AccessResult.Ok)?.session
         if (session == null) {
@@ -476,7 +482,8 @@ class TvToolsMachine(
         val current = attempt { TvShellRunner.run(session, ShellRenderer.getSecureLine("enabled_accessibility_services")) }
             .getOrNull()?.stdout
         val lines = ShellRenderer.putAccessibilityLines(ShellRenderer.mergeAccessibility(current, ShellRenderer.MI5G_ACCESSIBILITY)) +
-            ShellRenderer.keepMi5gHomeLines(disableXiaomiHome = ShellRenderer.XIAOMI_HOMES.any { installed(session, it) })
+            if (reapply) ShellRenderer.reapplyHomeLines()
+            else ShellRenderer.keepMi5gHomeLines(disableXiaomiHome = ShellRenderer.XIAOMI_HOMES.any { installed(session, it) })
         var ok = true
         for (line in lines) {
             val r = attempt { TvShellRunner.run(session, line) }.getOrNull()
@@ -541,7 +548,7 @@ class TvToolsMachine(
         }
         val session = (d.access.session(tvId) as? AccessResult.Ok)?.session
         if (session == null) {
-            send(PowerToolUpdate(PowerToolStatus.Failed(label)))
+            send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.UNREACHABLE)))
             return
         }
         // Try Downloader package first; if not installed, open in TV browser
@@ -662,7 +669,11 @@ class TvToolsMachine(
     private suspend fun mapRemoteKey(keyCode: Int, targetPkg: String, label: String) {
         send(PowerToolUpdate(PowerToolStatus.Working(label)))
         val session = (d.access.session(tvId) as? AccessResult.Ok)?.session
-        if (session == null || !PACKAGE_RE.matches(targetPkg)) {
+        if (session == null) {
+            send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.UNREACHABLE)))
+            return
+        }
+        if (!PACKAGE_RE.matches(targetPkg)) {
             send(PowerToolUpdate(PowerToolStatus.Failed(label)))
             return
         }
@@ -751,6 +762,7 @@ class TvToolsMachine(
         val session = (d.access.session(tvId) as? AccessResult.Ok)?.session
         if (session == null) {
             send(SpeedBoostUpdate(SpeedBoostStatus.Failed))
+            effect(ManageEffect.Snackbar(SnackKind.UNREACHABLE, "", false))
             return
         }
         val trimRes = attempt { TvShellRunner.run(session, ShellRenderer.trimCachesLine()) }.getOrNull()
@@ -795,6 +807,7 @@ class TvToolsMachine(
         val session = (d.access.session(tvId) as? AccessResult.Ok)?.session
         if (session == null) {
             send(AnimationScaleUpdate(fallback, AnimationScaleStatus.Failed))
+            effect(ManageEffect.Snackbar(SnackKind.UNREACHABLE, "", false))
             return
         }
         val lines = ShellRenderer.setAnimationScaleLines(scale)
@@ -819,6 +832,7 @@ class TvToolsMachine(
         val session = (d.access.session(tvId) as? AccessResult.Ok)?.session
         if (session == null) {
             send(CastUrlUpdate(CastUrlStatus.Failed))
+            effect(ManageEffect.Snackbar(SnackKind.UNREACHABLE, "", false))
             return
         }
         val res = attempt { TvShellRunner.run(session, line) }.getOrNull()
@@ -837,6 +851,7 @@ class TvToolsMachine(
         if (session == null) {
             attempt { d.blobs.delete(media.blob.sha256) }
             send(CastMediaUpdate(CastMediaStatus.Failed(media.fileName)))
+            effect(ManageEffect.Snackbar(SnackKind.UNREACHABLE, "", false))
             return
         }
         val cleanExt = media.ext.lowercase()
@@ -886,6 +901,7 @@ class TvToolsMachine(
         val session = (d.access.session(tvId) as? AccessResult.Ok)?.session
         if (session == null) {
             send(RemoteUpdate(RemoteStatus.Failed))
+            effect(ManageEffect.Snackbar(SnackKind.UNREACHABLE, "", false))
             return
         }
         val res = attempt { TvShellRunner.run(session, line) }.getOrNull()
@@ -902,6 +918,7 @@ class TvToolsMachine(
         val session = (d.access.session(tvId) as? AccessResult.Ok)?.session
         if (session == null) {
             send(ScreenshotUpdate(ScreenshotStatus.Failed))
+            effect(ManageEffect.Snackbar(SnackKind.UNREACHABLE, "", false))
             return
         }
         val png = attempt { d.prober.screenshot(session) }.getOrNull()
@@ -918,7 +935,7 @@ class TvToolsMachine(
         send(SideloadUpdate(SideloadStatus.Installing(ready.fileName, 0)))
         val session = (d.access.session(tvId) as? AccessResult.Ok)?.session
         if (session == null) {
-            send(SideloadUpdate(SideloadStatus.Failed(ready.fileName)))
+            send(SideloadUpdate(SideloadStatus.Failed(ready.fileName, "UNREACHABLE")))
             return
         }
         d.sessionEnd.touched(tvId)
@@ -966,7 +983,8 @@ class TvToolsMachine(
                         send(SideloadUpdate(SideloadStatus.Installed(ready.fileName)))
                         effect(ManageEffect.HapticDouble)
                     } else {
-                        send(SideloadUpdate(SideloadStatus.Failed(ready.fileName)))
+                        val errCode = PmInstallErrors.extractCode(out) ?: out.trim().take(120)
+                        send(SideloadUpdate(SideloadStatus.Failed(ready.fileName, errCode.ifBlank { null })))
                     }
                 } finally {
                     withContext(NonCancellable) {

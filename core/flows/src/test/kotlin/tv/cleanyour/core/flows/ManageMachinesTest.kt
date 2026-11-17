@@ -1205,6 +1205,34 @@ class ManageMachinesTest {
         assertFalse(appMgr.state.value.apps.any { it.pkg == kodiApp.pkg })
         assertNull(appMgr.state.value.selectedApp)
     }
+
+    @Test fun unreachableTvInTvToolsReportsClearUnreachableError() = runTest(timeout = 30.seconds) {
+        val h = Harness()
+        val unreachableTv = h.knownTv().copy(id = tv.cleanyour.core.model.TvId("0123456789abcdef"), nickname = "Unreachable TV").also { h.tvs.upsert(it) }
+        val tools = TvToolsMachine(h.manageDeps(), backgroundScope, unreachableTv.id)
+        settle()
+
+        // 1. Power lines (ArrangeHomeFromPhone)
+        tools.dispatch(TvToolsIntent.ArrangeHomeFromPhone)
+        settle()
+        h.access.cancelWaiting()
+        settle(2_500)
+        val powerStatus = tools.state.value.powerToolStatus
+        assertIs<PowerToolStatus.Failed>(powerStatus)
+        assertEquals(PowerFailStep.UNREACHABLE, powerStatus.step)
+
+        val apkBytes = "fake apk".encodeToByteArray()
+        val blob = h.blobs.put(sha256Of(apkBytes), apkBytes.inputStream(), apkBytes.size.toLong())
+        tools.dispatch(TvToolsIntent.ApkPicked("app.apk", blob.size, blob))
+        settle()
+        tools.dispatch(TvToolsIntent.InstallApk)
+        settle()
+        h.access.cancelWaiting()
+        settle(2_500)
+        val sideloadStatus = tools.state.value.sideloadStatus
+        assertIs<SideloadStatus.Failed>(sideloadStatus)
+        assertEquals("UNREACHABLE", sideloadStatus.detail)
+    }
 }
 
 private fun kotlinx.coroutines.CoroutineScope.launchAccess(h: Harness, tv: Tv, done: (AccessResult) -> Unit) =

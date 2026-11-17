@@ -23,7 +23,19 @@ class Mi5gHomeLinesTest {
         val lines = ShellRenderer.returnToStockLines(listOf("com.google.android.tvlauncher")).map { it.text }
         assertTrue(lines.none { "uninstall" in it || "disable-user" in it })
         assertTrue(lines.any { "enable" in it && "tvlauncher" in it })
+        // 2.4: verifies WRITE_SECURE_SETTINGS is revoked from com.gathin.tvhome (M1 item 7)
+        assertTrue(lines.any { "revoke" in it && "com.gathin.tvhome" in it && "WRITE_SECURE_SETTINGS" in it })
         assertFailsWith<IllegalArgumentException> { ShellRenderer.returnToStockLines(listOf("com.evil")) }
+    }
+
+    // 2.4 (Keep Alive): Re-apply home screen sets Home, gives the launcher back the grant its helper revival needs,
+    // and never switches the stock home off or uninstalls anything.
+    @Test fun reapplyHomeSetsHomeAndGrantsTheRevival() {
+        val lines = ShellRenderer.reapplyHomeLines().map { ShellTokens.tokenize(it.text) }
+        assertEquals(listOf("cmd", "package", "set-home-activity", "com.gathin.tvhome/.MainActivity"), lines[0])
+        assertEquals(listOf("pm", "grant", "com.gathin.tvhome", "android.permission.WRITE_SECURE_SETTINGS"), lines[1])
+        assertTrue(lines.last().containsAll(listOf("am", "start", "android.intent.category.HOME", "com.gathin.tvhome/.MainActivity")))
+        assertTrue(lines.none { "disable-user" in it || "uninstall" in it || "revoke" in it })
     }
 
     @Test fun lockDisablesXiaomiHomeOnlyWhenAsked() {

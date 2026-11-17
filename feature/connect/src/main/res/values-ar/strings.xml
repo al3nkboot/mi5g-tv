@@ -207,4 +207,11 @@
     <string name="smarttv_ads_samsung">• الإعدادات ← الدعم ← الشروط والخصوصية: أوقف «الإعلانات حسب الاهتمامات» و«خدمات المعلومات المشاهدة».\n• الإعدادات ← عام ← ميزات Smart: أوقف «تشغيل Smart Hub تلقائيًا» و«تشغيل آخر تطبيق تلقائيًا».\n• Samsung TV Plus: من الإعدادات ← البث أوقف «تشغيل Samsung TV Plus تلقائيًا».</string>
     <string name="smarttv_ads_lg">• الإعدادات ← عام ← النظام ← إعدادات إضافية ← إعدادات الشاشة الرئيسية: أوقف «ترويج الشاشة الرئيسية» و«توصيات المحتوى».\n• الإعدادات ← عام ← النظام ← إعدادات إضافية: أوقف «Live Plus».\n• الإعدادات ← الدعم ← اتفاقيات المستخدم: ألغِ «معلومات المشاهدة» و«الإعلانات حسب الاهتمامات».</string>
     <string name="smarttv_ads_note">تختلف أسماء القوائم قليلًا حسب السنة والطراز. لا يغيّر Mi5G TV شيئًا على هذه الشاشات بنفسه.</string>
+    <!-- 2.4: Quick-start guide (task 11) -->
+    <string name="quick_start_title">دليل البدء السريع</string>
+    <string name="quick_start_step1">فعّل خيارات المطور في التلفاز.</string>
+    <string name="quick_start_step2">فعّل تصحيح أخطاء الشبكة أو USB.</string>
+    <string name="quick_start_step3">صِل الجوال والتلفاز بنفس شبكة Wi-Fi.</string>
+    <string name="quick_start_step4">اضغط «البدء» ووافق على رسالة التأكيد على شاشة التلفاز.</string>
+    <string name="quick_start_video">شاهد الفيديو</string>
 </resources>

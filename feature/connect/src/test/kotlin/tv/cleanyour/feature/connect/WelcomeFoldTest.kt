@@ -72,6 +72,16 @@ class WelcomeFoldTest {
         compose.onNodeWithText("Looking for TVs", substring = true).assertIsDisplayed()
     }
 
+    @Test fun quickStartGuideOpensBottomSheetWithSteps() {
+        welcome(SetupState.Welcome(listOf(miTv), onWifi = true, looking = false), 600)
+        compose.onNodeWithText("Quick-start guide").assertIsDisplayed().performClick()
+        compose.onNodeWithText("1. Enable Developer options on your TV.").assertIsDisplayed()
+        compose.onNodeWithText("2. Enable network or USB debugging.").assertIsDisplayed()
+        compose.onNodeWithText("3. Connect phone and TV to the same Wi-Fi.").assertIsDisplayed()
+        compose.onNodeWithText("4. Tap Start and accept the prompt on the TV.").assertIsDisplayed()
+        compose.onNodeWithText("Watch the video").assertIsDisplayed()
+    }
+
     // Start went straight to the one device found: the door offers a quiet way to the address
     // sheet. A typed address does not get it (Back retypes it).
     @Test fun doorOfAFoundTvOffersNotThisTv() {

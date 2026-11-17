@@ -216,4 +216,11 @@ Samsung (Tizen) and LG (webOS) do not use Android APK files, but you can block s
     <string name="smarttv_ads_samsung">• Settings > Support > Terms and privacy: turn off Interest-based ads and Viewing information services.\n• Settings > General > Smart features: turn off Autorun Smart Hub and Autorun last app.\n• Settings > Broadcasting: turn off Autorun Samsung TV Plus.</string>
     <string name="smarttv_ads_lg">• Settings > General > System > Additional settings > Home settings: turn off Home promotion and Content recommendation.\n• Settings > General > System > Additional settings: turn off Live Plus.\n• Settings > Support > User agreements: untick Viewing information and Interest-based ads.</string>
     <string name="smarttv_ads_note">Menu names differ a little by year and model. Mi5G TV changes nothing on these TVs by itself.</string>
+    <!-- 2.4: Quick-start guide (task 11) -->
+    <string name="quick_start_title">Quick-start guide</string>
+    <string name="quick_start_step1">Enable Developer options on your TV.</string>
+    <string name="quick_start_step2">Enable network or USB debugging.</string>
+    <string name="quick_start_step3">Connect phone and TV to the same Wi-Fi.</string>
+    <string name="quick_start_step4">Tap Start and accept the prompt on the TV.</string>
+    <string name="quick_start_video">Watch the video</string>
 </resources>

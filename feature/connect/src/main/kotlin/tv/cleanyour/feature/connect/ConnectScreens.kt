@@ -46,6 +46,7 @@ import tv.cleanyour.core.flows.SetupIntent
 import tv.cleanyour.core.flows.SetupState
 import tv.cleanyour.core.flows.Sheet
 import tv.cleanyour.core.flows.StopAction
+import tv.cleanyour.core.flows.QUICK_START_VIDEO_URL
 import tv.cleanyour.core.flows.fingerprintTail
 import tv.cleanyour.ui.design.component.ActionColumn
 import tv.cleanyour.ui.design.component.AdbAllowMirror
@@ -132,6 +133,7 @@ fun WelcomeScreen(state: SetupState.Welcome, extras: SetupExtras, actions: Setup
         state.looking -> stringResource(R.string.welcome_looking)
         else -> stringResource(R.string.welcome_none_yet)
     }
+    var showQuickStart by rememberSaveable { mutableStateOf(false) }
     BoxWithConstraints(modifier.fillMaxSize()) {
         // A short phone (the 360 x 720 dp emulator leaves about 600 dp between its bars) gets a
         // smaller hero and tighter gaps, so the promise, the body and the live line all fit above
@@ -150,6 +152,7 @@ fun WelcomeScreen(state: SetupState.Welcome, extras: SetupExtras, actions: Setup
                 ActionColumn {
                     PrimaryButton(stringResource(R.string.welcome_start), { actions.intent(SetupIntent.Start) }, guardObscured = false)   // navigation: Sony overlays blocked it
                     TertiaryButton(stringResource(R.string.welcome_returning), onReturning)
+                    TertiaryButton(stringResource(R.string.quick_start_title), { showQuickStart = true }, quiet = true)
                 }
             },
         ) {
@@ -166,7 +169,42 @@ fun WelcomeScreen(state: SetupState.Welcome, extras: SetupExtras, actions: Setup
             Lead(stringResource(R.string.welcome_body), Modifier.padding(top = 12.dp))
             InlineCard(extras, actions)
         }
+        if (showQuickStart) {
+            CytBottomSheet({ showQuickStart = false }) {
+                QuickStartSheetContent()
+            }
+        }
     }
+}
+
+// 2.4: M1 item 11: Quick-start guide sheet on the first setup screen
+@Composable
+internal fun QuickStartSheetContent() {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    SheetHeader(stringResource(R.string.quick_start_title))
+    listOf(
+        R.string.quick_start_step1,
+        R.string.quick_start_step2,
+        R.string.quick_start_step3,
+        R.string.quick_start_step4,
+    ).forEachIndexed { i, line ->
+        Body("${i + 1}. ${stringResource(line)}", Modifier.padding(top = 10.dp, start = 4.dp, end = 4.dp))
+    }
+    PrimaryButton(
+        stringResource(R.string.quick_start_video),
+        {
+            runCatching {
+                context.startActivity(
+                    android.content.Intent(
+                        android.content.Intent.ACTION_VIEW,
+                        android.net.Uri.parse(QUICK_START_VIDEO_URL)
+                    )
+                )
+            }
+        },
+        Modifier.padding(top = 16.dp),
+        guardObscured = false
+    )
 }
 
 private val WELCOME_COMPACT_BELOW = 680.dp

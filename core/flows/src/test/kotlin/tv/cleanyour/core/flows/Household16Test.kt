@@ -24,6 +24,8 @@ class Household16Test {
         assertTrue(ShellRenderer.familyDnsLines(false).none { "hostname" in it.text })
         assertTrue(ShellRenderer.familyDnsLines(true).any { "family.adguard-dns.com" in it.text })
         assertTrue(ShellRenderer.resetPrivateDnsLines().first().text.let { "revoke" in it && "WRITE_SECURE_SETTINGS" in it })
+        // 2.4: verifies launcher WRITE_SECURE_SETTINGS revoke line (M1 item 7)
+        assertTrue(ShellRenderer.revokeHomeSecureSettingsLine().text.let { "revoke" in it && "com.gathin.tvhome" in it && "WRITE_SECURE_SETTINGS" in it })
     }
 
     @Test fun uninstallNeedsWordAndRestorePoint() {

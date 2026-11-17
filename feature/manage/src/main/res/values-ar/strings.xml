@@ -468,6 +468,8 @@
     <string name="tvtools_arrange_home">رتّب الشاشة الرئيسية من الهاتف</string>
     <string name="tvtools_label_arrange_home">فتح رمز الترتيب على التلفاز</string>
     <string name="tvtools_keep_home">تثبيت Mi5G كشاشة رئيسية</string>
+    <string name="tvtools_reapply_home">إعادة تثبيت الشاشة الرئيسية</string>
+    <string name="tvtools_label_reapply_home">إعادة تثبيت الشاشة الرئيسية</string>
     <string name="tvtools_stock_home">العودة لمشغّل التلفاز الأصلي</string>
     <string name="tvtools_label_keep_home">تثبيت شاشة Mi5G الرئيسية</string>
     <string name="tvtools_label_stock_home">العودة لمشغّل التلفاز الأصلي</string>

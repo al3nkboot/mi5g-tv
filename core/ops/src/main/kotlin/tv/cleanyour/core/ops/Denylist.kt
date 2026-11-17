@@ -47,6 +47,9 @@ object Denylist {
         "com.google.android.gms" to "it is Google Play services",
         "com.google.android.gsf" to "it is Google Play services",
         "com.android.vending" to "it is the Play Store",
+        // 2.4: core package protection (M1 item 6)
+        "com.google.android.apps.mediashell" to "it is Chromecast built-in",
+        "com.google.android.katniss" to "it is the Google Assistant voice assistant",
         // Android 14 SDK Runtime: a TCL TV hung on the boot logo with it switched off.
         "com.android.sdksandbox" to "it is the Android 14 SDK sandbox the TV needs to start",
         "com.google.android.sdksandbox" to "it is the Android 14 SDK sandbox the TV needs to start",
