@@ -134,6 +134,9 @@ tvOS Launcher — https://github.com/techgenius1/tvOS-Launcher
     Copyright 2026 techgenius
     Licensed under the Apache License, Version 2.0 (see LICENSE).
     Credits and acknowledgements: Hume Launcher (petrobot-admin/hume-launcher), Couch TV (Seagey/couch-tv).
+  Mi5G TV 2.4.0 takes two ideas from it into the bundled launcher, with Mi5G's own code: Keep Alive
+  (re-checking Home and the Home-key helper after boot, standby and updates) and Keep screen awake
+  (caffeine mode).
 
 OmarchyTV — https://github.com/piermark/omarchytv
   MIT License. Copyright (c) 2026 Marco Porro (x.com/MarcoPorro · www.marcoporro.it).
@@ -154,6 +157,8 @@ Aerial TV — https://github.com/pengchujin/aerial-tv
   screensaver. The code is Mi5G's own and the look is Mi5G's (teal and gold, Arabic RTL, Cairo font).
   Mi5G TV 2.3.0 ports code from it into the bundled launcher: the HDMI-CEC One Touch Play switch
   (CecSwitch, v1.89, commit 3a09e7d, #1020, off by default) and the idea of the Home lock (v1.89).
+  Mi5G TV 2.4.0 extends the Home lock idea (own code): dock edits, move, remove, hide and
+  arrange-from-phone edits are refused while it is on.
   No Apple aerial videos are included. Aerial TV's own font (Inter) is under the SIL Open Font License
   1.1 and is not included in Mi5G TV.
 

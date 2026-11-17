@@ -2,6 +2,40 @@
 
 All notable changes to the app. Versions follow [semantic versioning](https://semver.org/).
 
+## 2.4.0 (unreleased)
+
+<div dir="rtl">
+
+### الجديد منذ الإصدار 2.3.0
+- زر البدء والأزرار غير الخطرة في الإعداد تعمل حتى مع تطبيق يرسم فوق الشاشة (مثل تلفاز سوني)، وتبقى خطوات الحذف والإيقاف محمية، مع ذكر التطبيقات المعتادة التي تسبب ذلك.
+- حماية تطبيقات النظام الأساسية من الإيقاف والحذف: البث المدمج، المساعد الصوتي، مثبّت الحزم، إعدادات التلفاز وواجهة النظام.
+- سحب صلاحية الإعدادات الآمنة من الشاشة الرئيسية عند الرجوع للشاشة الأصلية للتلفاز.
+- شرح واضح لسبب فشل التثبيت على التلفاز (المساحة، المستخدم، التحقق) مع الرمز الأصلي بخط صغير.
+- رسالة واضحة عندما يتعذر الوصول للتلفاز في الاتصال والوحدات والريموت والأدوات.
+- دليل البدء السريع في أول شاشة: أربع خطوات قصيرة ورابط لمقطع الشرح.
+- إضافة الوحدات تقول دائماً لماذا توقفت.
+- خيار «إبقاء الشاشة الرئيسية» لأجهزة شاومي (مفعّل افتراضياً عليها): بعد التشغيل والاستيقاظ والتحديث يعيد مساعد زر الرئيسية، وزر «إعادة تثبيت الشاشة الرئيسية» في الهاتف، مع بقاء الرجوع الآمن للشاشة الأصلية.
+- قفل الشاشة الرئيسية يمنع الآن تعديل الشريط والنقل والإزالة والإخفاء والترتيب من الهاتف، ويظهر تنبيه قصير، وفتح التطبيقات يبقى متاحاً.
+- خيار «إبقاء الشاشة مستيقظة» في الشاشة الرئيسية ومركز التحكم: ساعة أو ساعتان أو أربع ساعات أو حتى الإيقاف، ويتوقف بعد إعادة التشغيل.
+- إصلاح تسرب ذاكرة في الشاشة الرئيسية عند إغلاقها أو إعادة بنائها.
+- الشاشة الرئيسية المرفقة 2.10.
+
+</div>
+
+### What's new since v2.3.0
+- Start and other non-destructive setup buttons work with a screen overlay app running (Sony Bravia); destructive steps stay guarded and the hint names the usual culprits.
+- Core packages protected from disable/uninstall: Chromecast built-in, voice assistant, package installer, TV Settings, System UI.
+- WRITE_SECURE_SETTINGS is revoked from the launcher on return to the stock home.
+- Install failures show the real `pm` reason (storage, user restriction, verification) with the raw code in small text.
+- Clear "can't reach the TV" message on connect, modules, remote and TV tools paths.
+- Quick-start guide on the first screen: four short steps and a link to the video.
+- Modules add always says why it stopped (re-verified).
+- Keep Alive for Xiaomi TVs and Mi Box S (on by default there): after boot, standby wake and updates the launcher puts its Home-key helper back; new phone action "Re-apply home screen"; the one-tap return to the stock home is unchanged. Idea from tvOS-Launcher (Apache-2.0).
+- Home lock now also refuses dock edits, move, remove, hide/unhide and arrange-from-phone edits with a short note; opening apps still works. Idea from Aerial TV (MIT).
+- Keep screen awake in the launcher and Control Center: 1 h, 2 h, 4 h or until turned off; off after a reboot. Idea from tvOS-Launcher (Apache-2.0).
+- Launcher Home no longer leaks after it closes or is recreated (posted callbacks, dialogs, Bing refresh, layout listener).
+- Bundled launcher 2.10-mi5g (source; the bundled APK is rebuilt and pinned at release).
+
 ## 2.3.0 (2026-11-11)
 
 ### الجديد منذ v2.2.1
