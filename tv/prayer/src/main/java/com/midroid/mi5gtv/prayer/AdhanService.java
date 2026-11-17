@@ -62,12 +62,27 @@ public class AdhanService extends Service {
             Banner.show(this, getString(R.string.time_of, Engine.NAMES_AR[prayer]), 30);
         }
         if (player != null) player.release();
-        player = MediaPlayer.create(this, R.raw.adhan_default, attrs,
-                audio.generateAudioSessionId());
+        // 2.4 M5: the phone's recording (a separate one for Fajr when chosen), else the built-in adhan.
+        player = customPlayer(s.soundFile(getExternalFilesDir(null), prayer), attrs);
+        if (player == null) player = MediaPlayer.create(this, R.raw.adhan_default, attrs, audio.generateAudioSessionId());
         if (player == null) { stopSelf(); return START_NOT_STICKY; }
         player.setOnCompletionListener(p -> stopSelf());
         player.start();
         return START_NOT_STICKY;
+    }
+
+    private static MediaPlayer customPlayer(java.io.File f, AudioAttributes attrs) {
+        if (f == null) return null;
+        MediaPlayer p = new MediaPlayer();
+        try {
+            p.setAudioAttributes(attrs);
+            p.setDataSource(f.getAbsolutePath());
+            p.prepare();
+            return p;
+        } catch (Exception e) {
+            p.release();   // not audio, or a format the TV can't play: the built-in adhan instead
+            return null;
+        }
     }
 
     private void startAsForeground(int prayer) {

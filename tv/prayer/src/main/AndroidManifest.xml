@@ -51,7 +51,14 @@
                 <action android:name="android.intent.action.TIME_SET" />
                 <action android:name="android.intent.action.TIMEZONE_CHANGED" />
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
                 <action android:name="com.midroid.mi5gtv.prayer.RELOAD" />
+            </intent-filter>
+        </receiver>
+        <!-- 2.4 M5: Keep Alive ping from Mi5G Home; it only re-arms the alarms (rate limited). -->
+        <receiver android:name=".KeepAliveReceiver" android:exported="true">
+            <intent-filter>
+                <action android:name="com.midroid.mi5gtv.prayer.KEEP_ALIVE" />
             </intent-filter>
         </receiver>
         <!-- Arabic TV banners from the phone (hex UTF-8); DUMP: only adb shell may send. -->

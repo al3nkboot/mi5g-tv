@@ -30,6 +30,11 @@ final class Settings {
     int overlaySize = 100, overlayOpacity = 85;
     boolean kahf = true;
     int kahfHour = 10;
+    /** 2.4 M5: "default" or "custom" (files/adhan_custom.audio); Fajr "same", "default" or "custom" (files/adhan_fajr.audio). */
+    String adhanSound = "default", fajrSound = "same";
+    /** 2.4 M5: re-arm every few hours and when Mi5G Home pings (KEEP_ALIVE). */
+    boolean keepAlive = true;
+    static final String SOUND_MAIN = "adhan_custom.audio", SOUND_FAJR = "adhan_fajr.audio";
 
     static Settings parse(String json) {
         Settings s = new Settings();
@@ -67,6 +72,12 @@ final class Settings {
                 s.overlaySize = clamp(ov.optInt("size", 100), 60, 160);
                 s.overlayOpacity = clamp(ov.optInt("opacity", 85), 30, 100);
             }
+            String as = o.optString("adhan_sound", s.adhanSound);
+            if (as.matches("default|custom")) s.adhanSound = as;
+            String fs = o.optString("fajr_sound", s.fajrSound);
+            if (fs.matches("same|default|custom")) s.fajrSound = fs;
+            s.keepAlive = o.optBoolean("keep_alive", s.keepAlive);
+            if (s.modes[Engine.SUNRISE] == MODE_ADHAN) s.modes[Engine.SUNRISE] = MODE_BANNER;   // no adhan at sunrise
             JSONObject k = o.optJSONObject("kahf");
             if (k != null) {
                 s.kahf = k.optBoolean("on", true);
@@ -93,6 +104,19 @@ final class Settings {
     }
 
     static int clamp(int v, int lo, int hi) { return Math.max(lo, Math.min(hi, v)); }
+
+    /**
+     * 2.4 M5: the recording for this prayer: the Fajr file for Fajr when chosen, else the main file when chosen;
+     * null means the built-in adhan (also when a chosen file is missing or empty).
+     */
+    File soundFile(File dir, int prayer) {
+        if (dir == null) return null;
+        String mode = prayer == Engine.FAJR && !"same".equals(fajrSound) ? fajrSound : adhanSound;
+        String name = prayer == Engine.FAJR && !"same".equals(fajrSound) ? SOUND_FAJR : SOUND_MAIN;
+        if (!"custom".equals(mode)) return null;
+        File f = new File(dir, name);
+        return f.isFile() && f.length() > 0 ? f : null;
+    }
 
     static Settings load(Context ctx) {
         File dir = ctx.getExternalFilesDir(null);

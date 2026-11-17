@@ -18,6 +18,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             // Title only, by design: no verses or other religious text are shown.
             Banner.show(ctx, ctx.getString(R.string.kahf_title), 30);
         }
+        // KIND_KEEP (2.4 M5): nothing to show; the re-arm below is the point.
         Alarms.arm(ctx);
     }
 }
