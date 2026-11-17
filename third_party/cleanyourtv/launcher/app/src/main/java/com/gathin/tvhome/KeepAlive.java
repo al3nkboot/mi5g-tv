@@ -31,6 +31,7 @@ final class KeepAlive {
     /** One check for one event; does nothing while the switch is off or a check just ran. */
     static void onEvent(Context ctx) {
         Context app = ctx.getApplicationContext();
+        pingPrayer(app);
         if (!LauncherSwitches.keepAlive(app)) return;
         synchronized (KeepAlive.class) {
             long now = SystemClock.elapsedRealtime();
@@ -45,6 +46,19 @@ final class KeepAlive {
             return;
         }
         LauncherSwitches.prefs(app).edit().putBoolean(LOST_KEY, !home).apply();
+    }
+
+    // 2.4 M5: the Mi5G prayer module re-arms its adhan alarms when Home comes back (after boot or standby a TV may
+    // have force-stopped it). Only the module's own Keep Alive switch decides; it re-arms at most once a minute.
+    static final String PRAYER_PKG = "com.midroid.mi5gtv.prayer", PRAYER_KEEP_ALIVE = PRAYER_PKG + ".KEEP_ALIVE";
+
+    static android.content.Intent prayerPing() {
+        return new android.content.Intent(PRAYER_KEEP_ALIVE).setPackage(PRAYER_PKG)
+                .addFlags(android.content.Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+    }
+
+    static void pingPrayer(Context ctx) {
+        try { ctx.sendBroadcast(prayerPing()); } catch (RuntimeException ignored) { }
     }
 
     // 2.4 M2 (Teevy idea 23, own code): a system update (Philips and others) can hand Home back to the stock
