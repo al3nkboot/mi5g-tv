@@ -53,6 +53,9 @@ import tv.cleanyour.core.flows.OverlayCorner
 import tv.cleanyour.core.flows.PrayerCities
 import tv.cleanyour.core.flows.PrayerMethod
 import tv.cleanyour.core.flows.PrayerTvSettings
+import tv.cleanyour.core.flows.PrayerAlert
+import tv.cleanyour.core.flows.PrayerSound
+import tv.cleanyour.core.flows.FajrSound
 import tv.cleanyour.core.flows.after
 import tv.cleanyour.core.flows.AppConfirm
 import tv.cleanyour.core.flows.AppSettingsIntent
@@ -895,6 +898,73 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
             GlassChip(
                 text = stringResource(R.string.tvtools_prayer_kahf) + ": " + if (p.kahf) on else off,
                 onClick = { set(p.copy(kahf = !p.kahf)) },
+            )
+            // 2.4 M5: Keep Alive for the prayer module (re-arms itself; Mi5G Home wakes it too).
+            GlassChip(
+                text = stringResource(R.string.tvtools_prayer_keep_alive) + ": " + if (p.keepAlive) on else off,
+                onClick = { set(p.copy(keepAlive = !p.keepAlive)) },
+            )
+        }
+        // 2.4 M5: per prayer, what happens at its time and a minute offset; then the adhan recordings.
+        Body(stringResource(R.string.tvtools_prayer_each_note), Modifier.padding(top = 12.dp, bottom = 4.dp, start = 4.dp, end = 4.dp))
+        val prayerNames = listOf(
+            R.string.tvtools_prayer_name_fajr, R.string.tvtools_prayer_name_sunrise, R.string.tvtools_prayer_name_dhuhr,
+            R.string.tvtools_prayer_name_asr, R.string.tvtools_prayer_name_maghrib, R.string.tvtools_prayer_name_isha,
+        )
+        for (i in 0 until PrayerTvSettings.PRAYERS) {
+            val alert = p.alertAt(i)
+            val offset = p.offsetAt(i)
+            FlowRow(
+                Modifier.fillMaxWidth().padding(vertical = 2.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                GlassChip(
+                    text = stringResource(prayerNames[i]) + ": " + stringResource(
+                        when (alert) {
+                            PrayerAlert.OFF -> R.string.tvtools_prayer_alert_off
+                            PrayerAlert.BANNER -> R.string.tvtools_prayer_alert_banner
+                            PrayerAlert.ADHAN -> R.string.tvtools_prayer_alert_adhan
+                        },
+                    ),
+                    onClick = { set(p.withNextAlert(i)) },
+                )
+                GlassChip(
+                    text = msg(R.string.tvtools_prayer_offset, "offset" to (if (offset > 0) "+$offset" else offset.toString())),
+                    onClick = { set(p.withNextOffset(i)) },
+                )
+            }
+        }
+        Body(stringResource(R.string.tvtools_prayer_sound_note), Modifier.padding(top = 12.dp, bottom = 4.dp, start = 4.dp, end = 4.dp))
+        FlowRow(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            val adhanFile = state.prayerAdhanFile
+            GlassChip(
+                text = msg(R.string.tvtools_prayer_sound, "name" to if (p.adhanSound == PrayerSound.CUSTOM)
+                    (adhanFile?.fileName ?: stringResource(R.string.tvtools_prayer_sound_on_tv)) else stringResource(R.string.tvtools_prayer_sound_default)),
+                onClick = { onIntent(TvToolsIntent.PickPrayerSound(fajr = false)) },
+            )
+            if (p.adhanSound == PrayerSound.CUSTOM) {
+                GlassChip(text = stringResource(R.string.tvtools_prayer_sound_use_default), onClick = { onIntent(TvToolsIntent.ClearPrayerSound(fajr = false)) })
+            }
+            val fajrFile = state.prayerFajrFile
+            GlassChip(
+                text = msg(R.string.tvtools_prayer_fajr_sound, "name" to when (p.fajrSound) {
+                    FajrSound.SAME -> stringResource(R.string.tvtools_prayer_fajr_same)
+                    FajrSound.DEFAULT -> stringResource(R.string.tvtools_prayer_sound_default)
+                    FajrSound.CUSTOM -> fajrFile?.fileName ?: stringResource(R.string.tvtools_prayer_sound_on_tv)
+                }),
+                onClick = {
+                    // Same → built-in → pick a file; a picked file goes back to "same".
+                    when (p.fajrSound) {
+                        FajrSound.SAME -> set(p.copy(fajrSound = FajrSound.DEFAULT))
+                        FajrSound.DEFAULT -> onIntent(TvToolsIntent.PickPrayerSound(fajr = true))
+                        FajrSound.CUSTOM -> onIntent(TvToolsIntent.ClearPrayerSound(fajr = true))
+                    }
+                },
             )
         }
         ActionColumn {

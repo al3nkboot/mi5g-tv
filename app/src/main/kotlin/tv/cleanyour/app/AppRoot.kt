@@ -224,6 +224,7 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
         onUndo: (ManageEffect.Snackbar) -> Unit = {},
         onPickApk: () -> Unit = {},
         onPickCastMedia: () -> Unit = {},
+        onPickPrayerSound: (Boolean) -> Unit = {},
         onDownloadUrlApk: (String, String) -> Unit = { _, _ -> },
     ) {
         when (e) {
@@ -236,6 +237,7 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
             is ManageEffect.CreateDocument -> onDocument(e.suggestedName)
             ManageEffect.PickApk -> onPickApk()
             ManageEffect.PickCastMedia -> onPickCastMedia()
+            is ManageEffect.PickPrayerSound -> onPickPrayerSound(e.fajr)
             is ManageEffect.SharePng -> sharePng(context, e.png, e.fileName)
             is ManageEffect.ShareApk -> shareApk(context, e.apkBytes, e.fileName)
             is ManageEffect.DownloadUrlApk -> onDownloadUrlApk(e.url, e.fileName)
@@ -361,12 +363,21 @@ fun AppRoot(graph: AppGraph, start: Dest, onExit: () -> Unit) {
                             if (picked != null) m.dispatch(picked)
                         }
                     }
+                    // 2.4 M5: an adhan recording for the TV's prayer module (the main adhan or the Fajr adhan).
+                    var pickingFajr by rememberSaveable { mutableStateOf(false) }
+                    val pickPrayerSound = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+                        if (uri != null) scope.launch {
+                            val file = withContext(Dispatchers.IO) { readPickedPrayerSound(context, graph, uri) }
+                            if (file != null) m.dispatch(TvToolsIntent.PrayerSoundPicked(pickingFajr, file))
+                        }
+                    }
                     LaunchedEffect(m) {
                         m.effects.collect { e ->
                             onManageEffect(
                                 e,
                                 onPickApk = { pickApk.launch(arrayOf("application/vnd.android.package-archive")) },
                                 onPickCastMedia = { pickCastMedia.launch(arrayOf("image/*", "video/*")) },
+                                onPickPrayerSound = { fajr -> pickingFajr = fajr; pickPrayerSound.launch(arrayOf("audio/*")) },
                                 onDownloadUrlApk = { url, fileName ->
                                     scope.launch {
                                         val downloaded = withContext(Dispatchers.IO) { downloadUrlApkToBlob(context, graph, url, fileName) }
@@ -566,6 +577,42 @@ private fun sharePng(context: android.content.Context, png: ByteArray, fileName:
         }
     }
 }
+
+/** 2.4 M5: copies a picked audio file (at most 12 MB) into the blob store for the next prayer settings push. */
+private suspend fun readPickedPrayerSound(context: android.content.Context, graph: AppGraph, uri: Uri): tv.cleanyour.core.flows.PrayerSoundFile? = runCatching {
+    val cr = context.contentResolver
+    var displayName = "adhan"
+    cr.query(uri, arrayOf(android.provider.OpenableColumns.DISPLAY_NAME), null, null, null)?.use { c ->
+        if (c.moveToFirst()) {
+            val idx = c.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME)
+            if (idx >= 0) c.getString(idx)?.takeIf { it.isNotBlank() }?.let { displayName = it.take(80) }
+        }
+    }
+    val tmp = java.io.File.createTempFile("adhan-", ".audio", context.cacheDir)
+    try {
+        val md = java.security.MessageDigest.getInstance("SHA-256")
+        var total = 0L
+        cr.openInputStream(uri)?.use { input ->
+            tmp.outputStream().use { out ->
+                val buf = ByteArray(64 * 1024)
+                while (true) {
+                    val n = input.read(buf)
+                    if (n <= 0) break
+                    total += n
+                    if (total > tv.cleanyour.core.ops.ShellRenderer.MAX_PRAYER_SOUND_BYTES) error("adhan file too large")
+                    md.update(buf, 0, n)
+                    out.write(buf, 0, n)
+                }
+            }
+        } ?: return@runCatching null
+        if (total <= 0L) return@runCatching null
+        val sha = tv.cleanyour.core.model.Sha256(md.digest().joinToString("") { "%02x".format(it) })
+        val blob = tmp.inputStream().use { graph.blobs.put(sha, it, total) }
+        tv.cleanyour.core.flows.PrayerSoundFile(displayName, blob.size, blob)
+    } finally {
+        tmp.delete()
+    }
+}.getOrNull()
 
 private suspend fun readPickedCastMedia(context: android.content.Context, graph: AppGraph, uri: Uri): TvToolsIntent.MediaPicked? = runCatching {
     val cr = context.contentResolver

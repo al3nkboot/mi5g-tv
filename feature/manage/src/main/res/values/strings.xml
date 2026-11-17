@@ -493,6 +493,26 @@
     <string name="tvtools_prayer_opacity">Opacity {percent}%</string>
     <string name="tvtools_prayer_kahf">📖 Friday reminder</string>
     <string name="tvtools_prayer_send">Send settings to the TV</string>
+    <!-- 2.4 M5: prayer module 2 -->
+    <string name="tvtools_prayer_keep_alive">🛡️ Keep Alive</string>
+    <string name="tvtools_prayer_each_note">Each prayer: tap the name to choose adhan, banner or off, and the minutes to move its time.</string>
+    <string name="tvtools_prayer_name_fajr">Fajr</string>
+    <string name="tvtools_prayer_name_sunrise">Sunrise</string>
+    <string name="tvtools_prayer_name_dhuhr">Dhuhr</string>
+    <string name="tvtools_prayer_name_asr">Asr</string>
+    <string name="tvtools_prayer_name_maghrib">Maghrib</string>
+    <string name="tvtools_prayer_name_isha">Isha</string>
+    <string name="tvtools_prayer_alert_off">off</string>
+    <string name="tvtools_prayer_alert_banner">banner</string>
+    <string name="tvtools_prayer_alert_adhan">adhan</string>
+    <string name="tvtools_prayer_offset">{offset} min</string>
+    <string name="tvtools_prayer_sound_note">Adhan sound: the built-in recording, or a recording you choose from the phone (up to 12 MB). Fajr can have its own.</string>
+    <string name="tvtools_prayer_sound">🔈 Adhan: {name}</string>
+    <string name="tvtools_prayer_fajr_sound">🌅 Fajr adhan: {name}</string>
+    <string name="tvtools_prayer_sound_default">built-in</string>
+    <string name="tvtools_prayer_sound_on_tv">file already on the TV</string>
+    <string name="tvtools_prayer_sound_use_default">Use the built-in adhan</string>
+    <string name="tvtools_prayer_fajr_same">same as the others</string>
     <string name="tvtools_label_prayer">Prayer settings</string>
     <!-- M4 item 34: updates -->
     <string name="appsettings_update_now">Update now to {version}</string>

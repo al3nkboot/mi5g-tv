@@ -1255,10 +1255,7 @@ class ManageMachinesTest {
         val after = h.session.execLines.map { tv.cleanyour.core.ops.ShellTokens.tokenize(it) }
         assertTrue(after.contains(listOf("cmd", "appops", "set", "com.android.vending", "RUN_ANY_IN_BACKGROUND", "default")))
     }
-}
 
-private fun kotlinx.coroutines.CoroutineScope.launchAccess(h: Harness, tv: Tv, done: (AccessResult) -> Unit) =
-    launch { done(h.access.session(tv.id)) 
     // 2.4 M3 (backlog 17 and 32): the mini store opens a store page; the live board draws and closes on the TV.
     @Test fun miniStoreAndLiveBoardRunTheirLines() = runTest(timeout = 30.seconds) {
         val h = Harness()
@@ -1286,4 +1283,60 @@ private fun kotlinx.coroutines.CoroutineScope.launchAccess(h: Harness, tv: Tv, d
         assertEquals(listOf("am", "start", "-n", "com.gathin.tvhome/.LiveBoardActivity", "--ez", "close", "true"),
             OpsTokens.tokenize(h.session.execLines.last()))
     }
+
+    // 2.4 M5: the prayer settings push carries the per-prayer offsets and alerts and, when chosen, the phone's
+    // recordings for the main and the Fajr adhan, moved into the module's files before the RELOAD.
+    @Test fun prayerPushSendsOffsetsAndAdhanRecordings() = runTest(timeout = 30.seconds) {
+        val h = Harness()
+        val known = h.knownTv()
+        h.session.recording.on("pm path com.midroid.mi5gtv.prayer", "package:/data/app/p/base.apk\n")
+        val files = "/sdcard/Android/data/com.midroid.mi5gtv.prayer/files"
+        for (line in listOf("mkdir -p /sdcard/cleanyourtv", "mkdir -p $files",
+                "cp /sdcard/cleanyourtv/mi5g_adhan.audio $files/adhan_custom.audio", "rm -f /sdcard/cleanyourtv/mi5g_adhan.audio",
+                "cp /sdcard/cleanyourtv/mi5g_adhan_fajr.audio $files/adhan_fajr.audio", "rm -f /sdcard/cleanyourtv/mi5g_adhan_fajr.audio",
+                "cp /sdcard/cleanyourtv/mi5g_prayer.json $files/settings.json",
+                "appops set com.midroid.mi5gtv.prayer SYSTEM_ALERT_WINDOW allow", "appops set com.midroid.mi5gtv.prayer SCHEDULE_EXACT_ALARM allow",
+                "cmd deviceidle whitelist +com.midroid.mi5gtv.prayer", "pm grant com.midroid.mi5gtv.prayer android.permission.POST_NOTIFICATIONS",
+                "am broadcast -a com.midroid.mi5gtv.prayer.RELOAD -p com.midroid.mi5gtv.prayer", "rm -f /sdcard/cleanyourtv/mi5g_prayer.json")) {
+            h.session.recording.on(line, "")
+        }
+        val tools = TvToolsMachine(h.manageDeps(), backgroundScope, known.id)
+        settle()
+        tools.effects.test {
+            tools.dispatch(TvToolsIntent.PickPrayerSound(fajr = true))
+            settle()
+            assertTrue(ManageEffect.PickPrayerSound(true) in drain())
+        }
+        val main = "main-adhan".encodeToByteArray()
+        val fajr = "fajr-adhan".encodeToByteArray()
+        val mainBlob = h.blobs.put(sha256Of(main), main.inputStream(), main.size.toLong())
+        val fajrBlob = h.blobs.put(sha256Of(fajr), fajr.inputStream(), fajr.size.toLong())
+        tools.dispatch(TvToolsIntent.PrayerSoundPicked(false, PrayerSoundFile("adhan.mp3", main.size.toLong(), mainBlob)))
+        tools.dispatch(TvToolsIntent.PrayerSoundPicked(true, PrayerSoundFile("fajr.mp3", fajr.size.toLong(), fajrBlob)))
+        settle()
+        assertEquals(PrayerSound.CUSTOM, tools.state.value.prayer.adhanSound)
+        assertEquals(FajrSound.CUSTOM, tools.state.value.prayer.fajrSound)
+        tools.dispatch(TvToolsIntent.UpdatePrayer(tools.state.value.prayer.withNextOffset(0).withNextAlert(4)))
+        settle()
+        tools.dispatch(TvToolsIntent.SendPrayerSettings)
+        settle(5_000)
+        assertEquals(PowerToolStatus.Done("@prayer"), tools.state.value.powerToolStatus)
+        val lines = h.session.execLines
+        val fajrCp = lines.indexOfFirst { "adhan_fajr.audio" in it && it.contains("cp") }
+        val reload = lines.indexOfFirst { "RELOAD" in it }
+        assertTrue(fajrCp in 0 until reload, "recordings go in before the reload")
+        val json = assertNotNull(h.session.files["/sdcard/cleanyourtv/mi5g_prayer.json"]).decodeToString()
+        assertTrue("\"adjust\":[1,0,0,0,0,0]" in json, json)
+        assertTrue("\"modes\":[2,0,2,2,0,2]" in json, json)
+        assertTrue("\"fajr_sound\":\"custom\"" in json, json)
+        assertTrue(h.session.files["/sdcard/cleanyourtv/mi5g_adhan_fajr.audio"]!!.contentEquals(fajr))
+        assertTrue(h.session.files["/sdcard/cleanyourtv/mi5g_adhan.audio"]!!.contentEquals(main))
+        tools.dispatch(TvToolsIntent.ClearPrayerSound(fajr = true))
+        settle()
+        assertEquals(FajrSound.SAME, tools.state.value.prayer.fajrSound)
+        assertEquals(null, tools.state.value.prayerFajrFile)
+    }
 }
+
+private fun kotlinx.coroutines.CoroutineScope.launchAccess(h: Harness, tv: Tv, done: (AccessResult) -> Unit) =
+    launch { done(h.access.session(tv.id)) }

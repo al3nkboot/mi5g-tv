@@ -47,6 +47,8 @@ sealed interface ManageEffect {
     data object HapticDouble : ManageEffect
     data object PickApk : ManageEffect
     data object PickCastMedia : ManageEffect
+    /** 2.4 M5: pick an audio file for the main adhan or the separate Fajr adhan on the TV. */
+    data class PickPrayerSound(val fajr: Boolean) : ManageEffect
     data class SharePng(val png: ByteArray, val fileName: String) : ManageEffect
     data class ShareApk(val apkBytes: ByteArray, val fileName: String) : ManageEffect
     data class DownloadUrlApk(val url: String, val fileName: String) : ManageEffect

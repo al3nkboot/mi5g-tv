@@ -146,7 +146,13 @@ data class TvToolsState(
     val tvBannerInput: String = "",
     val powerToolStatus: PowerToolStatus = PowerToolStatus.Idle,
     val prayer: PrayerTvSettings = PrayerTvSettings(),
+    /** 2.4 M5: adhan recordings picked on the phone, sent with the next settings push. */
+    val prayerAdhanFile: PrayerSoundFile? = null,
+    val prayerFajrFile: PrayerSoundFile? = null,
 )
+
+/** 2.4 M5: an audio file picked on the phone for the main or the Fajr adhan (in the phone's blob store). */
+data class PrayerSoundFile(val fileName: String, val sizeBytes: Long, val blob: BlobRef)
 
 sealed interface TvToolsIntent {
     data class PressKey(val key: TvKeyEvent) : TvToolsIntent
@@ -202,6 +208,10 @@ sealed interface TvToolsIntent {
     // M3 item 27: مواقيتي settings, edited on the phone and pushed to the TV module.
     data class UpdatePrayer(val settings: PrayerTvSettings) : TvToolsIntent
     data object SendPrayerSettings : TvToolsIntent
+    /** 2.4 M5: pick, hold and drop the recording for the main adhan or the separate Fajr adhan. */
+    data class PickPrayerSound(val fajr: Boolean) : TvToolsIntent
+    data class PrayerSoundPicked(val fajr: Boolean, val file: PrayerSoundFile) : TvToolsIntent
+    data class ClearPrayerSound(val fajr: Boolean) : TvToolsIntent
     // M4 item 32: push every bundled Mi5G TV app over Wi-Fi in one go (skips the ones already there).
     data object InstallAllMi5gApps : TvToolsIntent
 }
@@ -275,6 +285,16 @@ class TvToolsMachine(
         is TvToolsIntent.UpdateDownloaderInput -> state.copy(downloaderInput = event.input.take(ShellRenderer.MAX_URL_LEN))
         is TvToolsIntent.UpdateTvBannerInput -> state.copy(tvBannerInput = event.text.take(160))
         is TvToolsIntent.UpdatePrayer -> state.copy(prayer = event.settings)
+        is TvToolsIntent.PrayerSoundPicked -> if (event.fajr) {
+            state.copy(prayerFajrFile = event.file, prayer = state.prayer.copy(fajrSound = FajrSound.CUSTOM))
+        } else {
+            state.copy(prayerAdhanFile = event.file, prayer = state.prayer.copy(adhanSound = PrayerSound.CUSTOM))
+        }
+        is TvToolsIntent.ClearPrayerSound -> if (event.fajr) {
+            state.copy(prayerFajrFile = null, prayer = state.prayer.copy(fajrSound = if (state.prayer.fajrSound == FajrSound.CUSTOM) FajrSound.SAME else state.prayer.fajrSound))
+        } else {
+            state.copy(prayerAdhanFile = null, prayer = state.prayer.copy(adhanSound = PrayerSound.DEFAULT))
+        }
         is PowerToolUpdate -> state.copy(
             powerToolStatus = event.status,
             tvBannerInput = if (event.clearBanner) "" else state.tvBannerInput,
@@ -398,7 +418,16 @@ class TvToolsMachine(
                     }
                 }
             }
-            TvToolsIntent.SendPrayerSettings -> scope.launch { sendPrayerSettings(before.prayer) }
+            TvToolsIntent.SendPrayerSettings -> scope.launch { sendPrayerSettings(before.prayer, before.prayerAdhanFile, before.prayerFajrFile) }
+            is TvToolsIntent.PickPrayerSound -> effect(ManageEffect.PickPrayerSound(event.fajr))
+            is TvToolsIntent.PrayerSoundPicked -> {
+                val prev = if (event.fajr) before.prayerFajrFile else before.prayerAdhanFile
+                if (prev != null && prev.blob.sha256 != event.file.blob.sha256) scope.launch { attempt { d.blobs.delete(prev.blob.sha256) } }
+            }
+            is TvToolsIntent.ClearPrayerSound -> {
+                val prev = if (event.fajr) before.prayerFajrFile else before.prayerAdhanFile
+                if (prev != null) scope.launch { attempt { d.blobs.delete(prev.blob.sha256) } }
+            }
             else -> {}
         }
     }
@@ -412,7 +441,7 @@ class TvToolsMachine(
         else ShellRenderer.tvNotificationBannerLine(text)
     }
 
-    private suspend fun sendPrayerSettings(settings: PrayerTvSettings) {
+    private suspend fun sendPrayerSettings(settings: PrayerTvSettings, adhanFile: PrayerSoundFile?, fajrFile: PrayerSoundFile?) {
         val label = "@prayer"
         send(PowerToolUpdate(PowerToolStatus.Working(label)))
         val session = (d.access.session(tvId) as? AccessResult.Ok)?.session
@@ -431,6 +460,18 @@ class TvToolsMachine(
             if (pushed == null) {
                 send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.INSTALL)))
                 return
+            }
+            // 2.4 M5: the recordings first, so the module finds them when the RELOAD below re-arms it.
+            for ((fajr, file) in listOf(false to adhanFile.takeIf { settings.needsAdhanFile }, true to fajrFile.takeIf { settings.needsFajrFile })) {
+                if (file == null) continue
+                val sent = attempt { session.push(file.blob, ShellRenderer.prayerSoundStage(fajr)) {} }.getOrNull()
+                val moved = sent != null && ShellRenderer.prayerSoundLines(fajr).all { line ->
+                    attempt { TvShellRunner.run(session, line) }.getOrNull()?.exit == 0
+                }
+                if (!moved) {
+                    send(PowerToolUpdate(PowerToolStatus.Failed(label, PowerFailStep.INSTALL)))
+                    return
+                }
             }
             val grants = ShellRenderer.prayerGrantLines().toSet()
             var ok = true

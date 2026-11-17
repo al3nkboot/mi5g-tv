@@ -745,6 +745,22 @@ class ShellRenderer(private val watchdogVariant: WatchdogVariant = WatchdogVaria
             ShellLine(ShellTokens.line(listOf("rm", "-f", PRAYER_STAGE.absolute))),
         )
 
+        // ---- 2.4 M5: adhan recordings chosen on the phone (the main adhan and a separate Fajr adhan) ----
+        const val MAX_PRAYER_SOUND_BYTES = 12L * 1024 * 1024
+        const val PRAYER_SOUND_MAIN = "adhan_custom.audio"
+        const val PRAYER_SOUND_FAJR = "adhan_fajr.audio"
+        fun prayerSoundStage(fajr: Boolean) = RemotePath(RemoteDir.RESTORE, listOf(if (fajr) "mi5g_adhan_fajr.audio" else "mi5g_adhan.audio"))
+
+        /** After the phone pushed a recording to [prayerSoundStage]: move it into the module's files. */
+        fun prayerSoundLines(fajr: Boolean): List<ShellLine> {
+            val stage = prayerSoundStage(fajr).absolute
+            return listOf(
+                ShellLine(ShellTokens.line(listOf("mkdir", "-p", MI5G_PRAYER_FILES))),
+                ShellLine(ShellTokens.line(listOf("cp", stage, "$MI5G_PRAYER_FILES/" + if (fajr) PRAYER_SOUND_FAJR else PRAYER_SOUND_MAIN))),
+                ShellLine(ShellTokens.line(listOf("rm", "-f", stage))),
+            )
+        }
+
         // Best effort: an older Android simply has no such op or permission.
         fun prayerGrantLines(): List<ShellLine> = listOf(
             listOf("appops", "set", MI5G_PRAYER, "SYSTEM_ALERT_WINDOW", "allow"),
