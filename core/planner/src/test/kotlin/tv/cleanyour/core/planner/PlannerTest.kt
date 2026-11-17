@@ -55,8 +55,9 @@ class PlannerTest {
     @Test fun setupOnTheMiTvIsDebloatThenLauncherThenTheGuardedSection() {
         val p = plan(setup())
         val disables = p.steps.filter { it.op is Op.Disable && it.group == "mitv" }
-        val installed = debloatList.filter { it in snapshot().packages }
-        assertEquals(18, installed.size, "six of the 24 packages of the hand list are not on the capture")
+        // 2.4 M1: the voice assistant (katniss) is a protected core package now, shown but never switched off.
+        val installed = debloatList.filter { it in snapshot().packages && it.value !in Denylist.exact }
+        assertEquals(17, installed.size, "six of the 24 packages of the hand list are not on the capture, one is protected")
         assertEquals(installed, disables.map { (it.op as Op.Disable).pkg }, "one Disable per installed package of the hand list, in list order")
         assertTrue(disables.all { it.onFailure == FailurePolicy.SKIP_IF_REFUSED && it.prior == Prior(packageState = EnabledState.ENABLED) })
         val tail = ops(p).drop(disables.size)
@@ -86,7 +87,7 @@ class PlannerTest {
         // the plan does, the TV's home screen included.
         assertEquals(listOf("mitv", DefaultPlanner.GROUP_HOME), p.summary.groups.map { it.id })
         assertEquals(installed.size, p.summary.groups.first().off)
-        assertEquals(installed.size, p.summary.groups.first().total)
+        assertEquals(installed.size + 1, p.summary.groups.first().total)   // the protected voice assistant is listed, not switched off
         val home = p.summary.groups.last()
         assertEquals(DefaultPlanner.TITLE_HOME, home.title)
         assertEquals(listOf(stock.pkg), home.rows.map { it.pkg })
@@ -104,7 +105,7 @@ class PlannerTest {
         val p = plan(setup(choices = choices(kept = setOf(videos), extraOff = setOf(netflix))))
         assertTrue(ops(p).none { it == Op.Disable(videos) })
         assertTrue(ops(p).contains(Op.Disable(netflix)))
-        assertEquals(17, p.summary.groups.first().off)
+        assertEquals(16, p.summary.groups.first().off)
         assertEquals(listOf("Netflix").map { "com.netflix.ninja" }, p.summary.groups.single { it.id == DefaultPlanner.GROUP_CUSTOM }.rows.map { it.pkg.value })
         assertEquals(p.disabledPackages.toSet(), p.summary.switchOffPackages.toSet())
         // No facts in the fixture and no label from the probe: the name is read from the package
@@ -161,7 +162,7 @@ class PlannerTest {
         assertTrue(p.summary.homeScreenPossible)
         // Nothing is counted that the plan does not do: the already-off packages are not rows.
         assertEquals(0, p.summary.switchOffCount)
-        assertTrue(p.summary.groups.flatMap { it.rows }.none { it.pkg in debloatList })
+        assertTrue(p.summary.groups.flatMap { it.rows }.none { it.pkg in debloatList && !it.protected })
         assertEquals(renderer.planHash(emptyList()), p.hash)
     }
 
