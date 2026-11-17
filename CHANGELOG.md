@@ -18,6 +18,17 @@ All notable changes to the app. Versions follow [semantic versioning](https://se
 - قفل الشاشة الرئيسية يمنع الآن تعديل الشريط والنقل والإزالة والإخفاء والترتيب من الهاتف، ويظهر تنبيه قصير، وفتح التطبيقات يبقى متاحاً.
 - خيار «إبقاء الشاشة مستيقظة» في الشاشة الرئيسية ومركز التحكم: ساعة أو ساعتان أو أربع ساعات أو حتى الإيقاف، ويتوقف بعد إعادة التشغيل.
 - إصلاح تسرب ذاكرة في الشاشة الرئيسية عند إغلاقها أو إعادة بنائها.
+- الوضع الآمن للشاشة الرئيسية: إذا توقفت مرتين خلال خمس دقائق تبدأ بدون الإضافات، وبعد ثلاث مرات يفتح زر الرئيسية الشاشة الأصلية للتلفاز حتى تمر خمس دقائق بدون توقف، ويمكن إيقافه من إعداداتها.
+- أسماء عربية للتطبيقات المعروفة عندما تكون لغة التلفاز عربية، ويمكن إيقافها.
+- الوضع البسيط: يخفي البطاقات والتحية والإحصاءات والسماء المتحركة.
+- إخفاء تطبيق من الشاشة الرئيسية والشريط وكل التطبيقات بدون إيقافه، وإظهاره من «التطبيقات المخفية»، والإعدادات ومتجر بلاي لا يُخفيان أبداً.
+- زر «متجر بلاي» في ريموت الهاتف وفي مركز التحكم، ومتجر بلاي دائماً في الشاشة الرئيسية حتى على تلفاز جوجل.
+- بعد تحديث نظام التلفاز (فيليبس وغيرها) تعود الشاشة الرئيسية تلقائياً، و«إبقاء الشاشة الرئيسية» مفعّل افتراضياً على فيليبس أيضاً.
+- الشريط السفلي من صف إلى ثلاثة صفوف، مع التنقل بين الصفوف وظهور اسم التطبيق عند الوقوف عليه.
+- شاشة «كل التطبيقات» بشبكة وبحث يفهم أشكال الحروف العربية.
+- أصوات اختيارية للتنقل والنقر من صنعنا، متوقفة افتراضياً.
+- إيقاف عمل متجر بلاي في الخلفية من أدوات التلفاز في الهاتف، مع زر للسماح به مجدداً، بدون تعطيل المتجر.
+- خيار «استخدمه كريموت بس» في شاشات الاتصال: بعد الاقتران يفتح الريموت مباشرة بدون التنظيف وإعداد الشاشة الرئيسية، ويبقى الإعداد الكامل في صفحة التلفاز.
 - الشاشة الرئيسية المرفقة 2.10.
 
 </div>
@@ -34,6 +45,17 @@ All notable changes to the app. Versions follow [semantic versioning](https://se
 - Home lock now also refuses dock edits, move, remove, hide/unhide and arrange-from-phone edits with a short note; opening apps still works. Idea from Aerial TV (MIT).
 - Keep screen awake in the launcher and Control Center: 1 h, 2 h, 4 h or until turned off; off after a reboot. Idea from tvOS-Launcher (Apache-2.0).
 - Launcher Home no longer leaks after it closes or is recreated (posted callbacks, dialogs, Bing refresh, layout listener).
+- Launcher safe mode: two crashes within five minutes start Home with the extras off; three hand the Home key to the TV's own home screen until five quiet minutes pass (5-minute safety switch, v1.7 item 1). Turn it off in Mi5G settings.
+- Arabic names for well-known apps when the TV language is Arabic (switchable).
+- Clean mode: hides the cards, greeting, stats and animated sky.
+- Hide an app from Home, the dock and All apps without disabling it; show it again from Hidden apps. Settings and the Play Store can never be hidden.
+- "Play Store" button in the phone remote and the launcher Control Center; the Play Store is always on Home, Google TV included.
+- After a system update (Philips and others) the launcher puts itself back as Home; Keep Alive is now on by default on Philips/TP Vision too.
+- Dock with 1–3 rows: Up/Down move between rows, the focused dock tile shows its name.
+- All apps grid with search (Arabic letter shapes folded).
+- Optional navigation/click sounds (own tones), off by default.
+- TV tools: stop the Play Store running in the background (appops, not disabled), and allow it again.
+- "Use as a remote only" on the connect screens: after pairing the remote opens straight away, no clean-up or home setup; the full setup stays on the TV's page.
 - Bundled launcher 2.10-mi5g (source; the bundled APK is rebuilt and pinned at release).
 
 ## 2.3.0 (2026-11-11)

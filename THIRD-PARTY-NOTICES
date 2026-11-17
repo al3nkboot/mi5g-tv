@@ -137,6 +137,10 @@ tvOS Launcher — https://github.com/techgenius1/tvOS-Launcher
   Mi5G TV 2.4.0 takes two ideas from it into the bundled launcher, with Mi5G's own code: Keep Alive
   (re-checking Home and the Home-key helper after boot, standby and updates) and Keep screen awake
   (caffeine mode).
+  Mi5G TV 2.4.0 (M2) also takes ideas only, never code, from UrTV, CleanYourTV 3.x, SUL, Teevy and bdran:
+  a home-screen safe mode, Arabic app names, clean mode, hiding apps without disabling them, the Play Store
+  always on Home, restoring Home after system updates, a multi-row dock, an All apps grid with search,
+  navigation sounds (Mi5G's own generated tones) and a remote-only setup path.
 
 OmarchyTV — https://github.com/piermark/omarchytv
   MIT License. Copyright (c) 2026 Marco Porro (x.com/MarcoPorro · www.marcoporro.it).
