@@ -269,6 +269,10 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         && seen.add(ri.activityInfo.packageName)) found.add(ri);
             }
         }
+        final boolean kids = KidsProfile.on(ctx);
+        final Set<String> kidsAllowed = KidsProfile.allowed(ctx);
+        final boolean byTime = TimeOfDay.on(ctx) && !reordering;
+        final int slot = TimeOfDay.slotNow();
         Map<String, Cards.Card> cardByPkg = new HashMap<>();
         for (Cards.Card c : cards) cardByPkg.put(c.pkg, c);
         List<Entry> fresh = new ArrayList<>();
@@ -280,6 +284,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             String pkg = ri.activityInfo.packageName;
             // 2.4 M2: Settings and the Play Store always stay on Home (backlog 21, 22).
             boolean always = LauncherSwitches.alwaysVisible(pkg);
+            if (kids && !kidsAllowed.contains(pkg)) continue;   // 2.4 M7: kids profile shows only allowed apps
             if (pkg.equals(ctx.getPackageName()) || !ri.activityInfo.exported
                     || !LibraryApps.visible(tvPackages.contains(pkg), !always && hidden.contains(pkg), added.contains(pkg), !always && removed.contains(pkg))) continue;
             ComponentName component = new ComponentName(pkg, ri.activityInfo.name);
@@ -309,7 +314,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
         }
         // 2.4 M2 (backlog 22): the Play Store stays on Home also where it has no TV entry in the app list (Google TV).
-        Entry store = playStoreEntry(pm, fresh);
+        Entry store = kids && !kidsAllowed.contains("com.android.vending") ? null : playStoreEntry(pm, fresh);
         if (store != null) fresh.add(store);
         for (HomeLayout.Folder folder : layout.folders) {
             List<Entry> in = folderApps.get(folder.id);
@@ -322,6 +327,17 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             fresh.add(f);
         }
         Collections.sort(fresh, (a, b) -> {
+            if (byTime) {
+                // 2.4 M7: the dock keeps its place; the other tiles go by use at this time of day, then the usual rule.
+                int fa = favourites.indexOf(a.pkg), fb = favourites.indexOf(b.pkg);
+                if (fa >= 0 || fb >= 0) {
+                    if (fa < 0) return 1;
+                    if (fb < 0) return -1;
+                    return Integer.compare(fa, fb);
+                }
+                int t = TimeOfDay.compare(ctx, slot, a.pkg, b.pkg);
+                if (t != 0) return t;
+            }
             // The owner's own order first; tiles it does not know (new installs) follow by the rule below.
             int saved = Order.compare(savedRanks, a.orderKey, b.orderKey);
             if (saved != 0) return saved;
@@ -337,7 +353,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             return a.label.compareToIgnoreCase(b.label);
         });
         // Retain the optional Default-home tile until dependent tile-ordering work is merged.
-        if (showHomeSettings
+        if (showHomeSettings && !kids
                 && pm.resolveActivity(new Intent(Settings.ACTION_HOME_SETTINGS), 0) != null) {
             fresh.add(new Entry(Entry.HOME_SETTINGS, ctx.getString(R.string.home_settings),
                     new ComponentName(ctx, HomeSettingsActivity.class), null,
@@ -575,6 +591,10 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (e.kind == Entry.HOME_SETTINGS) {
             ctx.startActivity(new Intent(ctx, HomeSettingsActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            return;
+        }
+        if (e.kind != Entry.INPUT && KidsProfile.blocks(ctx, e.pkg)) {
+            Toast.makeText(ctx, R.string.mi5g_kids_not_allowed, Toast.LENGTH_SHORT).show();
             return;
         }
         Intent i = new Intent(Intent.ACTION_MAIN)

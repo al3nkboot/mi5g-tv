@@ -33,6 +33,7 @@ public final class ArrangeActivity extends Activity {
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
+        KidsProfile.guard(this);   // 2.4 M7: kids profile PIN
         float dp = getResources().getDisplayMetrics().density;
         Typeface cairo = getResources().getFont(R.font.cairo);
         LinearLayout root = new LinearLayout(this);

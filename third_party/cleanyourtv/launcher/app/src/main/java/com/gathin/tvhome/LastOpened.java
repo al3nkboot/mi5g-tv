@@ -20,6 +20,7 @@ final class LastOpened {
     /** Notes that Home just opened this app. */
     static void record(Context ctx, String pkg) {
         prefs(ctx).edit().putLong(pkg, System.currentTimeMillis()).apply();
+        TimeOfDay.record(ctx, pkg);   // 2.4 M7: apps ordered by time of day
     }
 
     /** Milliseconds since the epoch, or 0 when Home never opened the app. */

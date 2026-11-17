@@ -177,6 +177,8 @@ final class AppLibraryDialog {
             if (MakerExtras.hidden(e.getKey(), l, extrasFilter, shownAgain)) it.remove();
             // 2.4 M2 (backlog 21): an app hidden from Home stays out of All apps too, until shown again in Hidden apps.
             else if (hiddenFromHome.contains(e.getKey()) && !LauncherSwitches.alwaysVisible(e.getKey())) it.remove();
+            // 2.4 M7: the kids profile shows only the apps a parent allowed.
+            else if (KidsProfile.blocks(activity, e.getKey())) it.remove();
         }
         totalApps = unique.size();
         apps = new ArrayList<>(unique.values());

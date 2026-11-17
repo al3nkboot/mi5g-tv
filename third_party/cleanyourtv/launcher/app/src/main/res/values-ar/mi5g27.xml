@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Mi5G 2.4 M7 -->
+<resources>
+    <string name="mi5g_quiz">مسابقة العائلة</string>
+    <string name="mi5g_quiz_row_hint">كل واحد يجيب من جواله</string>
+    <string name="mi5g_quiz_scan">امسح الرمز بكاميرا الجوال للانضمام. نفس شبكة الواي فاي فقط.</string>
+    <string name="mi5g_quiz_no_wifi">صِل التلفاز بشبكة الواي فاي حتى تنضم الجوالات.</string>
+    <plurals name="mi5g_quiz_players">
+        <item quantity="zero">لا يوجد لاعبون</item>
+        <item quantity="one">لاعب واحد</item>
+        <item quantity="two">لاعبان</item>
+        <item quantity="few">%d لاعبين</item>
+        <item quantity="many">%d لاعبًا</item>
+        <item quantity="other">%d لاعب</item>
+    </plurals>
+    <string name="mi5g_quiz_game_choice">▶ أربعة خيارات</string>
+    <string name="mi5g_quiz_game_true_false">▶ صح أو خطأ</string>
+    <string name="mi5g_quiz_rules">عشرة أسئلة، عشرون ثانية لكل سؤال. الإجابة الصحيحة بمئة نقطة وحتى خمسين إضافية للسرعة.</string>
+    <string name="mi5g_quiz_need_players">بانتظار اللاعبين: امسح الرمز بجوال أولاً.</string>
+    <string name="mi5g_quiz_question_of">السؤال %1$d من %2$d</string>
+    <string name="mi5g_quiz_left">باقي %1$d ثانية</string>
+    <string name="mi5g_quiz_answered">أجاب %1$d من %2$d</string>
+    <string name="mi5g_quiz_next">التالي ◀</string>
+    <string name="mi5g_quiz_results">النتائج ◀</string>
+    <string name="mi5g_quiz_final">النتيجة النهائية</string>
+    <string name="mi5g_quiz_again">العب مرة أخرى</string>
+    <string name="mi5g_quiz_close">إغلاق</string>
+    <string name="mi5g_quiz_true">صح</string>
+    <string name="mi5g_quiz_false">خطأ</string>
+    <string name="mi5g_quiz_name_hint">اسمك</string>
+    <string name="mi5g_quiz_join">انضم</string>
+    <string name="mi5g_quiz_name_taken">الاسم مستخدم أو اللعبة ممتلئة. جرّب اسماً آخر.</string>
+    <string name="mi5g_quiz_wait">انضممت. تبدأ اللعبة على التلفاز.</string>
+    <string name="mi5g_quiz_sent">أُرسلت إجابتك.</string>
+    <string name="mi5g_quiz_right">صحيح!</string>
+    <string name="mi5g_quiz_wrong">ليس هذه المرة.</string>
+    <string name="mi5g_quiz_over">انتهت اللعبة. ترتيبك:</string>
+    <string name="mi5g_quiz_score_label">النقاط</string>
+    <string-array name="mi5g_quiz_choice">
+        <item>ما عاصمة سلطنة عُمان؟|مسقط|صلالة|صحار|نزوى|0</item>
+        <item>أي كوكب يُعرف بالكوكب الأحمر؟|الزهرة|المريخ|المشتري|عطارد|1</item>
+        <item>كم لاعباً لكل فريق كرة قدم داخل الملعب؟|9|10|11|12|2</item>
+        <item>ما أكبر محيط على الأرض؟|الأطلسي|الهندي|المتجمد الشمالي|الهادئ|3</item>
+        <item>أي غاز تأخذه النباتات من الهواء لتصنع غذاءها؟|الأكسجين|ثاني أكسيد الكربون|النيتروجين|الهيليوم|1</item>
+        <item>كم يوماً في السنة الكبيسة؟|364|365|366|367|2</item>
+        <item>في أي مدينة يقع برج خليفة؟|أبوظبي|الدوحة|دبي|الرياض|2</item>
+        <item>أي حيوان يُلقّب بسفينة الصحراء؟|الحصان|الجمل|الفيل|الحمار|1</item>
+        <item>عند أي درجة يغلي الماء عند مستوى سطح البحر؟|90 °م|100 °م|110 °م|120 °م|1</item>
+        <item>كم عدد القارات؟|5|6|7|8|2</item>
+        <item>ما أطول نهر في أفريقيا؟|الكونغو|النيجر|النيل|الزامبيزي|2</item>
+        <item>ما اللون الناتج عن خلط الأزرق والأصفر؟|الأخضر|البنفسجي|البرتقالي|البني|0</item>
+        <item>كم رِجلاً للعنكبوت؟|6|8|10|12|1</item>
+        <item>أي دولة استضافت كأس العالم 2022؟|قطر|السعودية|الإمارات|البحرين|0</item>
+        <item>ما أكبر كوكب في المجموعة الشمسية؟|زحل|الأرض|المشتري|نبتون|2</item>
+        <item>ما عملة سلطنة عُمان؟|الدرهم|الريال|الدينار|الجنيه|1</item>
+        <item>كم دقيقة في الساعة؟|30|60|90|100|1</item>
+        <item>أي عضو يضخ الدم في الجسم؟|الرئتان|الكبد|القلب|الكليتان|2</item>
+        <item>ما عاصمة المملكة العربية السعودية؟|جدة|الرياض|الدمام|أبها|1</item>
+        <item>كم ضلعاً للشكل السداسي؟|5|6|7|8|1</item>
+        <item>ما أسرع حيوان بري؟|الأسد|الفهد|الحصان|الغزال|1</item>
+        <item>في أي دولة تقع أهرامات الجيزة؟|مصر|الأردن|العراق|المغرب|0</item>
+    </string-array>
+    <string-array name="mi5g_quiz_true_false">
+        <item>الشمس نجم.|1</item>
+        <item>البطاريق تستطيع الطيران.|0</item>
+        <item>يتجمد الماء عند صفر درجة مئوية.|1</item>
+        <item>القمر أكبر من الأرض.|0</item>
+        <item>تقع الكويت على الخليج العربي.|1</item>
+        <item>الأسبوع ثمانية أيام.|0</item>
+        <item>الخفافيش من الثدييات.|1</item>
+        <item>الصوت أسرع من الضوء.|0</item>
+        <item>مسقط عاصمة سلطنة عُمان.|1</item>
+        <item>الدلافين من الأسماك.|0</item>
+        <item>جبل إيفرست أعلى جبل على الأرض.|1</item>
+        <item>تقام كأس العالم لكرة القدم كل أربع سنوات.|1</item>
+        <item>العناكب من الحشرات.|0</item>
+        <item>يقع البحر الأحمر بين أفريقيا وآسيا.|1</item>
+    </string-array>
+    <string name="mi5g_kids">ملف الأطفال</string>
+    <string name="mi5g_kids_note">تعرض الشاشة الرئيسية التطبيقات التي تسمح بها فقط، ويُقفل تعديلها، وتطلب إعدادات الشاشة الرئيسية رمزك السري. قفل بسيط للشاشة الرئيسية: إعدادات التلفاز وأزرار الريموت تبقى كما هي.</string>
+    <string name="mi5g_kids_pin_set">ضبط رمز سري</string>
+    <string name="mi5g_kids_pin_change">تغيير الرمز السري</string>
+    <string name="mi5g_kids_pin_new">رمز سري جديد من أربعة أرقام</string>
+    <string name="mi5g_kids_pin_again">اكتب الرمز مرة أخرى</string>
+    <string name="mi5g_kids_pin_digits">الرمز السري أربعة أرقام.</string>
+    <string name="mi5g_kids_pin_saved">حُفظ الرمز السري.</string>
+    <string name="mi5g_kids_pin_mismatch">الرمزان مختلفان. لم يتغير شيء.</string>
+    <string name="mi5g_kids_pin_first">اضبط رمزاً سرياً أولاً.</string>
+    <string name="mi5g_kids_pin_ask">ملف الأطفال: أدخل الرمز السري</string>
+    <string name="mi5g_kids_pin_wrong">رمز خاطئ.</string>
+    <string name="mi5g_kids_locked">محاولات كثيرة. حاول بعد %1$d ثانية.</string>
+    <string name="mi5g_kids_apps">التطبيقات المسموحة</string>
+    <string name="mi5g_kids_apps_none">لا شيء بعد</string>
+    <plurals name="mi5g_kids_apps_count">
+        <item quantity="zero">لا تطبيقات</item>
+        <item quantity="one">تطبيق واحد</item>
+        <item quantity="two">تطبيقان</item>
+        <item quantity="few">%d تطبيقات</item>
+        <item quantity="many">%d تطبيقًا</item>
+        <item quantity="other">%d تطبيق</item>
+    </plurals>
+    <string name="mi5g_kids_none_allowed">لم تسمح بأي تطبيق بعد، فستعرض الشاشة الرئيسية المداخل فقط.</string>
+    <string name="mi5g_kids_not_allowed">ليس ضمن ملف الأطفال.</string>
+    <string name="mi5g_tod_order">ترتيب التطبيقات حسب وقت اليوم</string>
+    <string name="mi5g_tod_now">مفعّل (الآن: %1$s)</string>
+    <string name="mi5g_tod_morning">الصباح</string>
+    <string name="mi5g_tod_afternoon">الظهيرة</string>
+    <string name="mi5g_tod_evening">المساء</string>
+    <string name="mi5g_tod_night">الليل</string>
+    <string name="mi5g_advanced">إعدادات متقدمة</string>
+    <string name="mi5g_advanced_note">ما المسموح للشاشة الرئيسية على هذا التلفاز. زر موافق يفتح شاشة التلفاز التي تغيّره.</string>
+    <string name="mi5g_adv_home">الشاشة الرئيسية هي التطبيق الرئيسي</string>
+    <string name="mi5g_adv_keys">مساعد زر الرئيسية (إمكانية الوصول)</string>
+    <string name="mi5g_adv_secure">الإعدادات الآمنة (من تطبيق الهاتف)</string>
+    <string name="mi5g_adv_media">الوصول إلى الإشعارات (ما يُشغَّل الآن)</string>
+    <string name="mi5g_adv_overlay">الظهور فوق التطبيقات الأخرى</string>
+    <string name="mi5g_adv_alarms">المنبهات الدقيقة (التذكيرات والجدول)</string>
+    <string name="mi5g_adv_ok">✓ مسموح</string>
+    <string name="mi5g_adv_missing">✗ غير مسموح</string>
+    <string name="mi5g_adv_from_phone">هذا الإذن يُمنح من تطبيق الهاتف: ترتيب الشاشة الرئيسية أو إعادة تثبيت الشاشة الرئيسية.</string>
+    <string name="mi5g_adv_no_screen">لا توجد في هذا التلفاز شاشة لهذا الإعداد.</string>
+    <string name="mi5g_adv_clear_usage">مسح عدّاد أوقات الاستخدام</string>
+    <string name="mi5g_adv_cleared">تم المسح.</string>
+    <string name="mi5g_adv_uninstall">قبل إلغاء تثبيت الشاشة الرئيسية</string>
+    <string name="mi5g_adv_uninstall_hint">يوقف مساعداتها ثم يفتح صفحة التطبيق</string>
+    <string name="mi5g_adv_uninstall_body">يُوقَف إبقاء الشاشة الرئيسية وإبقاء الشاشة مستيقظة وجدول النوم وملف الأطفال وزر الرئيسية السريع، وتخرج مساعدات الأزرار من قائمة إمكانية الوصول، ثم تُفتح صفحة التطبيق لإلغاء التثبيت. لإعادة الشاشة الرئيسية الأصلية استخدم العودة للشاشة الأصلية من تطبيق الهاتف.</string>
+    <plurals name="mi5g_adv_steps">
+        <item quantity="zero">لم يكن هناك ما يُوقَف.</item>
+        <item quantity="one">أُوقف مساعد واحد.</item>
+        <item quantity="two">أُوقف مساعدان.</item>
+        <item quantity="few">أُوقفت %d مساعدات.</item>
+        <item quantity="many">أُوقف %d مساعدًا.</item>
+        <item quantity="other">أُوقف %d مساعد.</item>
+    </plurals>
+    <string name="mi5g_adv_about">الإصدار</string>
+</resources>

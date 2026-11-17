@@ -46,7 +46,8 @@ final class LauncherSwitches {
 
     /** Home lock: holding OK on a tile or in the library does nothing until unlocked in Mi5G settings. */
     static boolean homeLocked(Context ctx) {
-        return prefs(ctx).getBoolean(HOME_LOCK, false);
+        // 2.4 M7: the kids profile locks Home edits too.
+        return prefs(ctx).getBoolean(HOME_LOCK, false) || KidsProfile.on(ctx);
     }
 
     static void setHomeLocked(Context ctx, boolean on) {

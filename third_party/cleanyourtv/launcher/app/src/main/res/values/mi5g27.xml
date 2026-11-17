@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Mi5G 2.4 M7 launcher strings: family quiz, kids profile, time-of-day order, Advanced settings. -->
+<resources>
+    <!-- Family quiz (own questions; no religious content) -->
+    <string name="mi5g_quiz">Family quiz</string>
+    <string name="mi5g_quiz_row_hint">Everyone answers on their phone</string>
+    <string name="mi5g_quiz_scan">Scan with the phone camera to join. Same Wi-Fi only.</string>
+    <string name="mi5g_quiz_no_wifi">Connect the TV to Wi-Fi so phones can join.</string>
+    <plurals name="mi5g_quiz_players">
+        <item quantity="one">%d player</item>
+        <item quantity="other">%d players</item>
+    </plurals>
+    <string name="mi5g_quiz_game_choice">▶ Four choices</string>
+    <string name="mi5g_quiz_game_true_false">▶ True or false</string>
+    <string name="mi5g_quiz_rules">10 questions, 20 seconds each. A right answer scores 100, plus up to 50 for speed.</string>
+    <string name="mi5g_quiz_need_players">Waiting for players: scan the code with a phone first.</string>
+    <string name="mi5g_quiz_question_of">Question %1$d of %2$d</string>
+    <string name="mi5g_quiz_left">%1$d s left</string>
+    <string name="mi5g_quiz_answered">%1$d of %2$d answered</string>
+    <string name="mi5g_quiz_next">Next ▶</string>
+    <string name="mi5g_quiz_results">Results ▶</string>
+    <string name="mi5g_quiz_final">Final scores</string>
+    <string name="mi5g_quiz_again">Play again</string>
+    <string name="mi5g_quiz_close">Close</string>
+    <string name="mi5g_quiz_true">True</string>
+    <string name="mi5g_quiz_false">False</string>
+    <string name="mi5g_quiz_name_hint">Your name</string>
+    <string name="mi5g_quiz_join">Join</string>
+    <string name="mi5g_quiz_name_taken">That name is taken or the game is full. Try another name.</string>
+    <string name="mi5g_quiz_wait">You are in. The game starts on the TV.</string>
+    <string name="mi5g_quiz_sent">Answer sent.</string>
+    <string name="mi5g_quiz_right">Right!</string>
+    <string name="mi5g_quiz_wrong">Not this time.</string>
+    <string name="mi5g_quiz_over">Game over. Your place:</string>
+    <string name="mi5g_quiz_score_label">Score</string>
+    <string-array name="mi5g_quiz_choice">
+        <item>What is the capital of Oman?|Muscat|Salalah|Sohar|Nizwa|0</item>
+        <item>Which planet is known as the Red Planet?|Venus|Mars|Jupiter|Mercury|1</item>
+        <item>How many players does a football team have on the pitch?|9|10|11|12|2</item>
+        <item>What is the largest ocean on Earth?|Atlantic|Indian|Arctic|Pacific|3</item>
+        <item>Which gas do plants take in from the air to make food?|Oxygen|Carbon dioxide|Nitrogen|Helium|1</item>
+        <item>How many days are in a leap year?|364|365|366|367|2</item>
+        <item>In which city is the Burj Khalifa?|Abu Dhabi|Doha|Dubai|Riyadh|2</item>
+        <item>Which animal is called the ship of the desert?|Horse|Camel|Elephant|Donkey|1</item>
+        <item>At what temperature does water boil at sea level?|90 °C|100 °C|110 °C|120 °C|1</item>
+        <item>How many continents are there?|5|6|7|8|2</item>
+        <item>Which is the longest river in Africa?|Congo|Niger|Nile|Zambezi|2</item>
+        <item>What colour do you get by mixing blue and yellow?|Green|Purple|Orange|Brown|0</item>
+        <item>How many legs does a spider have?|6|8|10|12|1</item>
+        <item>Which country hosted the 2022 FIFA World Cup?|Qatar|Saudi Arabia|UAE|Bahrain|0</item>
+        <item>What is the largest planet in the solar system?|Saturn|Earth|Jupiter|Neptune|2</item>
+        <item>What is the currency of Oman?|Dirham|Rial|Dinar|Pound|1</item>
+        <item>How many minutes are in an hour?|30|60|90|100|1</item>
+        <item>Which organ pumps blood around the body?|Lungs|Liver|Heart|Kidneys|2</item>
+        <item>What is the capital of Saudi Arabia?|Jeddah|Riyadh|Dammam|Abha|1</item>
+        <item>How many sides does a hexagon have?|5|6|7|8|1</item>
+        <item>Which is the fastest land animal?|Lion|Cheetah|Horse|Gazelle|1</item>
+        <item>In which country are the pyramids of Giza?|Egypt|Jordan|Iraq|Morocco|0</item>
+    </string-array>
+    <string-array name="mi5g_quiz_true_false">
+        <item>The Sun is a star.|1</item>
+        <item>Penguins can fly.|0</item>
+        <item>Water freezes at 0 °C.|1</item>
+        <item>The Moon is bigger than the Earth.|0</item>
+        <item>Kuwait lies on the Arabian Gulf.|1</item>
+        <item>A week has eight days.|0</item>
+        <item>Bats are mammals.|1</item>
+        <item>Sound travels faster than light.|0</item>
+        <item>Muscat is the capital of Oman.|1</item>
+        <item>Dolphins are fish.|0</item>
+        <item>Mount Everest is the highest mountain on Earth.|1</item>
+        <item>The football World Cup is held every four years.|1</item>
+        <item>Spiders are insects.|0</item>
+        <item>The Red Sea lies between Africa and Asia.|1</item>
+    </string-array>
+    <!-- Kids profile -->
+    <string name="mi5g_kids">Kids profile</string>
+    <string name="mi5g_kids_note">Home shows only the apps you allow, Home edits are locked, and Mi5G settings ask for your PIN. A simple lock for Home: the TV\'s own Settings and remote keys still work.</string>
+    <string name="mi5g_kids_pin_set">Set a PIN</string>
+    <string name="mi5g_kids_pin_change">Change the PIN</string>
+    <string name="mi5g_kids_pin_new">New 4-digit PIN</string>
+    <string name="mi5g_kids_pin_again">Type the PIN again</string>
+    <string name="mi5g_kids_pin_digits">The PIN is 4 digits.</string>
+    <string name="mi5g_kids_pin_saved">PIN saved.</string>
+    <string name="mi5g_kids_pin_mismatch">The two PINs differ. Nothing changed.</string>
+    <string name="mi5g_kids_pin_first">Set a PIN first.</string>
+    <string name="mi5g_kids_pin_ask">Kids profile: enter the PIN</string>
+    <string name="mi5g_kids_pin_wrong">Wrong PIN.</string>
+    <string name="mi5g_kids_locked">Too many tries. Try again in %1$d s.</string>
+    <string name="mi5g_kids_apps">Allowed apps</string>
+    <string name="mi5g_kids_apps_none">None yet</string>
+    <plurals name="mi5g_kids_apps_count">
+        <item quantity="one">%d app</item>
+        <item quantity="other">%d apps</item>
+    </plurals>
+    <string name="mi5g_kids_none_allowed">No apps are allowed yet, so Home will show only the inputs.</string>
+    <string name="mi5g_kids_not_allowed">Not in the kids profile.</string>
+    <!-- Time-of-day order -->
+    <string name="mi5g_tod_order">Order apps by time of day</string>
+    <string name="mi5g_tod_now">On (now: %1$s)</string>
+    <string name="mi5g_tod_morning">morning</string>
+    <string name="mi5g_tod_afternoon">afternoon</string>
+    <string name="mi5g_tod_evening">evening</string>
+    <string name="mi5g_tod_night">night</string>
+    <!-- Advanced -->
+    <string name="mi5g_advanced">Advanced</string>
+    <string name="mi5g_advanced_note">What Mi5G Home is allowed to do on this TV. OK opens the TV screen that changes it.</string>
+    <string name="mi5g_adv_home">Mi5G is the Home app</string>
+    <string name="mi5g_adv_keys">Home key helper (accessibility)</string>
+    <string name="mi5g_adv_secure">Secure settings (given by the phone app)</string>
+    <string name="mi5g_adv_media">Notification access (now playing)</string>
+    <string name="mi5g_adv_overlay">Show over other apps</string>
+    <string name="mi5g_adv_alarms">Exact alarms (reminders, schedule)</string>
+    <string name="mi5g_adv_ok">✓ Allowed</string>
+    <string name="mi5g_adv_missing">✗ Not allowed</string>
+    <string name="mi5g_adv_from_phone">This one is given from the Mi5G TV phone app: Arrange Home or Re-apply home screen.</string>
+    <string name="mi5g_adv_no_screen">This TV has no screen for that setting.</string>
+    <string name="mi5g_adv_clear_usage">Clear time-of-day counts</string>
+    <string name="mi5g_adv_cleared">Cleared.</string>
+    <string name="mi5g_adv_uninstall">Before uninstalling Mi5G Home</string>
+    <string name="mi5g_adv_uninstall_hint">Turns off its helpers, then opens its app page</string>
+    <string name="mi5g_adv_uninstall_body">Keep Home screen, Keep screen awake, the sleep schedule, the kids profile and the fast Home key are turned off, and the key helpers leave the accessibility list. Then the app page opens so you can uninstall. To give Home back to the TV, use Back to stock home on the phone.</string>
+    <plurals name="mi5g_adv_steps">
+        <item quantity="one">%d helper turned off.</item>
+        <item quantity="other">%d helpers turned off.</item>
+    </plurals>
+    <string name="mi5g_adv_about">Version</string>
+</resources>

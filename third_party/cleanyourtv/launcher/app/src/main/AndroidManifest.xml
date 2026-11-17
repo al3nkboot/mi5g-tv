@@ -138,6 +138,10 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"
             android:screenOrientation="landscape" />
         <activity android:name=".HomeWidgetsActivity" android:exported="false" android:excludeFromRecents="true" android:screenOrientation="landscape" />
+        <!-- 2.4 M7: kids profile, Advanced settings, and the family quiz (also opened over adb, DUMP holders only). -->
+        <activity android:name=".KidsActivity" android:exported="false" android:excludeFromRecents="true" android:screenOrientation="landscape" />
+        <activity android:name=".AdvancedActivity" android:exported="false" android:excludeFromRecents="true" android:screenOrientation="landscape" />
+        <activity android:name=".QuizActivity" android:exported="true" android:permission="android.permission.DUMP" android:excludeFromRecents="true" android:screenOrientation="landscape" android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenLayout|screenSize" />
         <!-- 2.4: Keep screen awake, chosen by the owner for 1, 2 or 4 hours or until turned off. -->
         <service
             android:name=".CaffeineService"

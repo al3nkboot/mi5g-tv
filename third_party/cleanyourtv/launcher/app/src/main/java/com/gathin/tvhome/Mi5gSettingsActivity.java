@@ -20,6 +20,7 @@ public final class Mi5gSettingsActivity extends Activity {
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
+        KidsProfile.guard(this);   // 2.4 M7: kids profile PIN
         float dp = getResources().getDisplayMetrics().density;
         ScrollView scroll = new ScrollView(this);
         scroll.setBackgroundColor(0xFF0B1F1E);
@@ -147,6 +148,20 @@ public final class Mi5gSettingsActivity extends Activity {
                     Schedule.setOn(this, !Schedule.on(this));
                     build();
                 });
+        // 2.4 M7: family quiz (backlog 37), kids profile (3), time-of-day order (2), Advanced (29).
+        Rows.add(this, rows, R.drawable.ic_play, getString(R.string.mi5g_quiz), getString(R.string.mi5g_quiz_row_hint),
+                () -> startActivity(new Intent(this, QuizActivity.class)));
+        Rows.add(this, rows, R.drawable.ic_lock, getString(R.string.mi5g_kids), onOff(KidsProfile.on(this)),
+                () -> startActivityForResult(new Intent(this, KidsActivity.class), 71));
+        Rows.add(this, rows, R.drawable.ic_swap_vert, getString(R.string.mi5g_tod_order),
+                TimeOfDay.on(this) ? getString(R.string.mi5g_tod_now, getString(TimeOfDay.labelRes(TimeOfDay.slotNow()))) : onOff(false), () -> {
+                    TimeOfDay.setOn(this, !TimeOfDay.on(this));
+                    setResult(RESULT_OK);
+                    HomeLayout.changed();
+                    build();
+                });
+        Rows.add(this, rows, R.drawable.ic_keys, getString(R.string.mi5g_advanced), null,
+                () -> startActivity(new Intent(this, AdvancedActivity.class)));
         // 2.4: Keep Alive (on by default on Xiaomi) and Keep screen awake, ideas from tvOS-Launcher (Apache-2.0).
         Rows.add(this, rows, R.drawable.ic_home_settings, getString(R.string.mi5g_keep_alive),
                 KeepAlive.homeLost(this) ? getString(R.string.mi5g_keep_alive_lost) : onOff(LauncherSwitches.keepAlive(this)),
@@ -192,6 +207,11 @@ public final class Mi5gSettingsActivity extends Activity {
             });
         }
         rows.getChildAt(0).requestFocus();
+    }
+
+    @Override protected void onActivityResult(int request, int result, Intent data) {
+        super.onActivityResult(request, result, data);
+        if (request == 71 && result == RESULT_OK) { setResult(RESULT_OK); HomeLayout.changed(); }
     }
 
     @Override public void onRequestPermissionsResult(int request,String[] permissions,int[] grants){

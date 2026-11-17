@@ -169,6 +169,15 @@ public final class AllAppsActivity extends Activity {
         }
         Collator c = Collator.getInstance();
         all.sort((x, y) -> c.compare(x.label, y.label));
+        // 2.4 M7: the kids profile keeps only the allowed apps; time-of-day order puts this time's apps first.
+        if (KidsProfile.on(this)) {
+            Set<String> ok = KidsProfile.allowed(this);
+            all.removeIf(a -> !ok.contains(a.pkg));
+        }
+        if (TimeOfDay.on(this)) {
+            int slot = TimeOfDay.slotNow();
+            all.sort((x, y) -> TimeOfDay.compare(this, slot, x.pkg, y.pkg));
+        }
     }
 
     /** Hidden apps stay out, except the ones that always show (Settings, Play Store). */
