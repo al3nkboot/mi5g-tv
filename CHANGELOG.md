@@ -2,7 +2,7 @@
 
 All notable changes to the app. Versions follow [semantic versioning](https://semver.org/).
 
-## 2.4.0 (unreleased)
+## 2.4.0 (2026-11-20)
 
 <div dir="rtl">
 
