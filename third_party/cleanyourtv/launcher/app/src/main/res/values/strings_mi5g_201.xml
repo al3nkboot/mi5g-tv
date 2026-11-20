@@ -12,5 +12,5 @@
     <string name="mi5g_city_dream_hint">Clock, Hijri date, next prayer, weather</string>
     <string name="mi5g_city_next_prayer">Next prayer: %1$s</string>
     <string name="mi5g_credits">About and credits</string>
-    <string name="mi5g_credits_body">Mi5G TV by @midroid5G, built on Clean Your TV by Gathin (MIT). Ideas from Aerial TV by pengchujin (MIT), tv-vibehack by Gathin (MIT), talkies by TechPP (MIT). QR: ZXing (Apache-2.0). Cairo font: SIL OFL 1.1.</string>
+    <string name="mi5g_credits_body">Mi5G TV by @midroid5G, built on Clean Your TV by Gathin (MIT). Ideas from Aerial TV by pengchujin (MIT), tv-vibehack by Gathin (MIT), talkies by TechPP (MIT), tvOS Launcher by techgenius (Apache-2.0). QR: ZXing (Apache-2.0). Cairo font: SIL OFL 1.1.</string>
 </resources>

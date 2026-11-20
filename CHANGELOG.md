@@ -2,6 +2,114 @@
 
 All notable changes to the app. Versions follow [semantic versioning](https://semver.org/).
 
+## 2.4.0 (2026-11-20)
+
+<div dir="rtl">
+
+### الجديد منذ الإصدار 2.3.0
+- زر البدء والأزرار غير الخطرة في الإعداد تعمل حتى مع تطبيق يرسم فوق الشاشة (مثل تلفاز سوني)، وتبقى خطوات الحذف والإيقاف محمية، مع ذكر التطبيقات المعتادة التي تسبب ذلك.
+- حماية تطبيقات النظام الأساسية من الإيقاف والحذف: البث المدمج، المساعد الصوتي، مثبّت الحزم، إعدادات التلفاز وواجهة النظام.
+- سحب صلاحية الإعدادات الآمنة من الشاشة الرئيسية عند الرجوع للشاشة الأصلية للتلفاز.
+- شرح واضح لسبب فشل التثبيت على التلفاز (المساحة، المستخدم، التحقق) مع الرمز الأصلي بخط صغير.
+- رسالة واضحة عندما يتعذر الوصول للتلفاز في الاتصال والوحدات والريموت والأدوات.
+- دليل البدء السريع في أول شاشة: أربع خطوات قصيرة ورابط لمقطع الشرح.
+- إضافة الوحدات تقول دائماً لماذا توقفت.
+- خيار «إبقاء الشاشة الرئيسية» لأجهزة شاومي (مفعّل افتراضياً عليها): بعد التشغيل والاستيقاظ والتحديث يعيد مساعد زر الرئيسية، وزر «إعادة تثبيت الشاشة الرئيسية» في الهاتف، مع بقاء الرجوع الآمن للشاشة الأصلية.
+- قفل الشاشة الرئيسية يمنع الآن تعديل الشريط والنقل والإزالة والإخفاء والترتيب من الهاتف، ويظهر تنبيه قصير، وفتح التطبيقات يبقى متاحاً.
+- خيار «إبقاء الشاشة مستيقظة» في الشاشة الرئيسية ومركز التحكم: ساعة أو ساعتان أو أربع ساعات أو حتى الإيقاف، ويتوقف بعد إعادة التشغيل.
+- إصلاح تسرب ذاكرة في الشاشة الرئيسية عند إغلاقها أو إعادة بنائها.
+- الوضع الآمن للشاشة الرئيسية: إذا توقفت مرتين خلال خمس دقائق تبدأ بدون الإضافات، وبعد ثلاث مرات يفتح زر الرئيسية الشاشة الأصلية للتلفاز حتى تمر خمس دقائق بدون توقف، ويمكن إيقافه من إعداداتها.
+- أسماء عربية للتطبيقات المعروفة عندما تكون لغة التلفاز عربية، ويمكن إيقافها.
+- الوضع البسيط: يخفي البطاقات والتحية والإحصاءات والسماء المتحركة.
+- إخفاء تطبيق من الشاشة الرئيسية والشريط وكل التطبيقات بدون إيقافه، وإظهاره من «التطبيقات المخفية»، والإعدادات ومتجر بلاي لا يُخفيان أبداً.
+- زر «متجر بلاي» في ريموت الهاتف وفي مركز التحكم، ومتجر بلاي دائماً في الشاشة الرئيسية حتى على تلفاز جوجل.
+- بعد تحديث نظام التلفاز (فيليبس وغيرها) تعود الشاشة الرئيسية تلقائياً، و«إبقاء الشاشة الرئيسية» مفعّل افتراضياً على فيليبس أيضاً.
+- الشريط السفلي من صف إلى ثلاثة صفوف، مع التنقل بين الصفوف وظهور اسم التطبيق عند الوقوف عليه.
+- شاشة «كل التطبيقات» بشبكة وبحث يفهم أشكال الحروف العربية.
+- أصوات اختيارية للتنقل والنقر من صنعنا، متوقفة افتراضياً.
+- إيقاف عمل متجر بلاي في الخلفية من أدوات التلفاز في الهاتف، مع زر للسماح به مجدداً، بدون تعطيل المتجر.
+- خيار «استخدمه كريموت بس» في شاشات الاتصال: بعد الاقتران يفتح الريموت مباشرة بدون التنظيف وإعداد الشاشة الرئيسية، ويبقى الإعداد الكامل في صفحة التلفاز.
+- ربط الجوال بالتلفاز برمز سريع: خيار «اربط جوالاً» في إعدادات الشاشة الرئيسية يعرض رمزاً تمسحه كاميرا الجوال فيفتح التطبيق على عنوان التلفاز، ويسألك التطبيق قبل الاتصال.
+- التبديل بين أجهزة التلفاز المحفوظة من أعلى الريموت مباشرة.
+- زر «كل تطبيقات التلفاز» في الريموت وزر البحث في ريموت التلفاز يفتحان شبكة كل التطبيقات مع مربع البحث.
+- المتجر المصغّر في أدوات التلفاز: تطبيقات معروفة ومرخّصة تُفتح صفحتها في متجر بلاي على التلفاز للتثبيت من هناك.
+- رسالة أو رسمة بالإصبع من الجوال تظهر على التلفاز فوراً فوق أي تطبيق، مع زر لإزالتها، وتُغلق وحدها بعد عشر دقائق.
+- إرسال حتى عشرين صورة أو فيديو دفعة واحدة كخلفية، مع تأكيد «تم الحفظ على التلفاز» لكل ملف بعد أن يتحقق التلفاز من حفظه.
+- عدّ تنازلي اختياري في الشاشة الرئيسية لرمضان وعيد الفطر ويوم عرفة وعيد الأضحى، ولليوم الوطني لدولتك الخليجية (عُمان 20 نوفمبر)، والتواريخ الهجرية تقريبية حسب تقويم أم القرى.
+- سطر اختياري للتقويم الهجري على شاشة التوقف: اليوم من رمضان والأيام البيض أو أقرب مناسبة، متوقف افتراضياً.
+- تذكيرات بمواعيد تكتبها من صفحة الترتيب على الجوال، تظهر على التلفاز في وقتها، وإن وافقت وقت الأذان تنتظر حتى ينتهي.
+- جدول أسبوعي للنوم والتشغيل: رسالة لمدة دقيقة مع زر إلغاء ثم ينام التلفاز، والتشغيل محاولة حسب الجهاز.
+- أدوات الشاشة الرئيسية: إظهار وإخفاء العد التنازلي والتذكير التالي ونتيجة كرة القدم وعنوان إخباري من بي بي سي عربي والإحصاءات والسباقات، والضغط المطوّل لنقل الأداة للأعلى.
+- مركز التحكم: قائمة المداخل للتبديل من فوق أي تطبيق، وقائمة التطبيقات المفتوحة مؤخراً.
+- إصلاح حفظ رسالة شاشة التوقف وساعات الهدوء وموقع الطقس من صفحة الترتيب، إذ كانت تُحفظ وتظهر رسالة فشل.
+- مواقيتي على التلفاز ٢: من الجوال تختار لكل صلاة أذاناً أو تنبيهاً أو إيقافاً، وتقدّم وقتها أو تؤخره حتى عشر دقائق.
+- صوت الأذان من تسجيل تختاره من الجوال، وأذان خاص للفجر، مع بقاء الأذان المرفق احتياطاً إن لم يعمل الملف على التلفاز.
+- الإبقاء نشطاً لوحدة الصلاة: تعيد ضبط مواعيد الأذان كل ست ساعات وكلما عادت الشاشة الرئيسية بعد التشغيل أو الاستعداد، حتى لو أوقفها التلفاز.
+- الأذان الإجباري باقٍ ومفعّل افتراضياً، والشروق لا يكون عليه أذان أبداً.
+- تطبيق النتائج على التلفاز: تبويب «البطولات الكبرى» لكأس العالم وتصفياتها الآسيوية وكأس العالم للأندية وكأس آسيا وكأس الأمم الأفريقية وكأس أمم أوروبا وكوبا أمريكا ودوري الأمم الأوروبية ودوري الأبطال، بالجولة الحالية أو القادمة، من بيانات النتائج العامة فقط وبدون أي بث.
+- تذكير قبل انطلاق المباراة بعشر دقائق يظهر في زاوية الشاشة فوق أي تطبيق، أو كإشعار إن لم يُسمح بالظهور فوق التطبيقات، ويُعاد ضبطه بعد إعادة التشغيل.
+- ملاحظة على بطاقة المباراة إن وقعت صلاة أثناءها، من مواقيت وحدة الصلاة على التلفاز نفسه، والشروق لا يُحسب.
+- تثبيت النتيجة المباشرة في زاوية الشاشة فوق أي تطبيق، تتحدث كل خمس وأربعين ثانية وتختفي وحدها بعد نهاية المباراة بثلاث دقائق.
+- فتح تطبيق النتائج من أدوات التلفاز في الجوال يمنحه إذن الظهور فوق التطبيقات والتنبيهات في وقتها.
+- مسابقة العائلة على التلفاز: أسئلة بأربعة خيارات أو صح وخطأ، يجيب عليها كل لاعب من جواله بعد مسح الرمز على نفس الشبكة، مع النقاط والترتيب. الأسئلة من إعدادنا وبدون أي محتوى ديني.
+- ملف الأطفال: تعرض الشاشة الرئيسية التطبيقات المسموحة فقط ويُقفل تعديلها، وتطلب الإعدادات ومركز التحكم والترتيب من الجوال رمزاً سرياً من أربعة أرقام، مع إيقاف مؤقت بعد خمس محاولات خاطئة.
+- ترتيب التطبيقات حسب وقت اليوم، متوقف افتراضياً: التطبيقات الأكثر فتحاً في الصباح أو الظهيرة أو المساء أو الليل تأتي أولاً، والمرسى يبقى مكانه، والعدّاد يبقى على التلفاز ويمكن مسحه.
+- إعدادات متقدمة: قائمة بما سُمح للشاشة الرئيسية به، كل سطر يفتح شاشة التلفاز التي تغيّره، وخطوة «قبل إلغاء التثبيت» توقف مساعداتها ثم تفتح صفحة التطبيق.
+- الشاشة الرئيسية المرفقة 2.10.
+
+</div>
+
+### What's new since v2.3.0
+- Start and other non-destructive setup buttons work with a screen overlay app running (Sony Bravia); destructive steps stay guarded and the hint names the usual culprits.
+- Core packages protected from disable/uninstall: Chromecast built-in, voice assistant, package installer, TV Settings, System UI.
+- WRITE_SECURE_SETTINGS is revoked from the launcher on return to the stock home.
+- Install failures show the real `pm` reason (storage, user restriction, verification) with the raw code in small text.
+- Clear "can't reach the TV" message on connect, modules, remote and TV tools paths.
+- Quick-start guide on the first screen: four short steps and a link to the video.
+- Modules add always says why it stopped (re-verified).
+- Keep Alive for Xiaomi TVs and Mi Box S (on by default there): after boot, standby wake and updates the launcher puts its Home-key helper back; new phone action "Re-apply home screen"; the one-tap return to the stock home is unchanged. Idea from tvOS-Launcher (Apache-2.0).
+- Home lock now also refuses dock edits, move, remove, hide/unhide and arrange-from-phone edits with a short note; opening apps still works. Idea from Aerial TV (MIT).
+- Keep screen awake in the launcher and Control Center: 1 h, 2 h, 4 h or until turned off; off after a reboot. Idea from tvOS-Launcher (Apache-2.0).
+- Launcher Home no longer leaks after it closes or is recreated (posted callbacks, dialogs, Bing refresh, layout listener).
+- Launcher safe mode: two crashes within five minutes start Home with the extras off; three hand the Home key to the TV's own home screen until five quiet minutes pass (5-minute safety switch, v1.7 item 1). Turn it off in Mi5G settings.
+- Arabic names for well-known apps when the TV language is Arabic (switchable).
+- Clean mode: hides the cards, greeting, stats and animated sky.
+- Hide an app from Home, the dock and All apps without disabling it; show it again from Hidden apps. Settings and the Play Store can never be hidden.
+- "Play Store" button in the phone remote and the launcher Control Center; the Play Store is always on Home, Google TV included.
+- After a system update (Philips and others) the launcher puts itself back as Home; Keep Alive is now on by default on Philips/TP Vision too.
+- Dock with 1–3 rows: Up/Down move between rows, the focused dock tile shows its name.
+- All apps grid with search (Arabic letter shapes folded).
+- Optional navigation/click sounds (own tones), off by default.
+- TV tools: stop the Play Store running in the background (appops, not disabled), and allow it again.
+- "Use as a remote only" on the connect screens: after pairing the remote opens straight away, no clean-up or home setup; the full setup stays on the TV's page.
+- Connect a phone by QR: "Connect a phone" in the launcher's Mi5G settings shows a code; the phone camera opens a small page on the TV whose button opens the Mi5G TV app with that TV's address. The app asks before it connects (mi5gtv://connect, home-network addresses only). SUL idea, own code.
+- Switch between saved TVs from the remote's title.
+- "All apps on TV" in the phone remote, and the TV remote's Search key on Home, open the All apps grid with search.
+- Mini store in TV tools: well-known legal apps open on their Play Store page on the TV.
+- Live message or finger drawing from the phone, shown at once over any app by Mi5G Home, with "Take it off"; closes by itself after 10 minutes. UrTV idea, own code.
+- Send up to 20 photos/videos at once as wallpapers from the arrange page; each shows "saved on TV" only after the TV read back its size (Teevy idea). Up to 20 phone uploads are kept (was 12).
+- Home countdowns (off by default): Ramadan, Eid al-Fitr, the Day of Arafah (Hajj), Eid al-Adha and a chosen Gulf national day (Oman 20 November); Hijri dates are Umm al-Qura and shown as approximate. Dates and names only.
+- Optional Hijri line on the city screensaver (off by default): the day of Ramadan, the white days, or the nearest occasion.
+- Timed reminders typed on the phone's arrange page (up to 12, weekdays each); one that falls on an adhan (2 min before to 20 min after, from the Mi5G prayer module) waits until it has passed. UrTV idea, own code.
+- Weekly sleep and wake schedule: a one-minute card with Cancel, then the TV sleeps; waking is best effort and depends on the TV. CleanYourTV 3.5 idea, own code.
+- Home widgets screen: show/hide countdowns, next reminder, a football score (ESPN public scoreboard, cached 10 min), a BBC Arabic headline (RSS, credited, cached 30 min), stats and the race panel; hold OK to move one up. A movies widget is not included (no keyless legal source).
+- Control Center: an Inputs panel that switches HDMI/AV over any app (names and hiding from Inputs), and Recently opened apps (tvOS-Launcher idea, Apache-2.0).
+- Fixed: saving the screensaver message, quiet hours and weather place from the arrange page showed "couldn't save" even though it saved.
+- Prayer module 2 (مواقيتي on the TV, module 2.2.0): from the phone, each prayer can be adhan, banner or off, with its own minute offset (±10); the TV re-checks every value.
+- Adhan sound: the built-in recording or one picked on the phone (up to 12 MB), plus a separate Fajr adhan; a file the TV can't play falls back to the built-in adhan.
+- Keep Alive for the prayer module: it re-arms its alarms every 6 hours and whenever Mi5G Home comes back after boot or standby (works even after a force stop). Idea from tvOS-Launcher (Apache-2.0).
+- Forced adhan stays, on by default; sunrise never gets an adhan.
+- Mi5G Score 2.1.0 (TV module): a Big tournaments tab (World Cup, AFC World Cup qualifiers, Club World Cup, Asian Cup, AFCON, Euro, Copa América, UEFA Nations League, Champions League, AFC Champions League Elite) with each one's current or next round; ESPN's public scoreboard only, no streams. UrTV idea, own code.
+- Kick-off reminders: 10 minutes before kick-off a corner banner over any app (a notification when the overlay isn't allowed); re-armed after a reboot or update.
+- Prayer-clash notes on match cards: any prayer from 10 minutes before kick-off to the end of the match, read from the Mi5G prayer module on the same TV (sunrise is skipped).
+- Pin the live score in a corner over any app; it refreshes every 45 s and goes away 3 minutes after full time. talkies idea (MIT), own code.
+- Opening Mi5G Score from the phone's TV tools grants it the overlay, exact alarms and notifications (best effort). Favourite clubs and leagues were already in Mi5G Score 2.0.
+- Family quiz on the TV (Mi5G settings): four-choice or true-or-false rounds of 10 questions, answered from each player's phone after scanning the TV's QR (same Wi-Fi, token protected, up to 8 players), with speed points and standings. Own questions, no religious content. UrTV idea, own code.
+- Kids profile: Home, the dock, All apps and the library show only the allowed apps; Home edits are locked; Mi5G settings, Control Center and arrange-from-phone ask for a 4-digit PIN (salted hash, a 1-minute lockout after 5 wrong tries). A simple Home lock, not device security.
+- Order apps by time of day (off by default): apps opened most in the morning, afternoon, evening or night come first; the dock keeps its place; counts stay on the TV and can be cleared.
+- Advanced settings: what Mi5G Home is allowed to do (Home app, key helper, secure settings, notification access, overlay, exact alarms), each opening the TV screen that changes it, and "Before uninstalling" that turns its helpers off and opens its app page. Ideas from tvOS-Launcher 2.2.0 (Apache-2.0), own code.
+- Bundled launcher 2.10-mi5g (source; the bundled APK is rebuilt and pinned at release).
+
 ## 2.3.0 (2026-11-11)
 
 ### الجديد منذ v2.2.1

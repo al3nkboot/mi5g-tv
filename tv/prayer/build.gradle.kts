@@ -8,8 +8,8 @@ android {
     namespace = "com.midroid.mi5gtv.prayer"
     defaultConfig {
         applicationId = "com.midroid.mi5gtv.prayer"
-        versionCode = 6
-        versionName = "2.1.0"
+        versionCode = 7
+        versionName = "2.2.0"
     }
     testOptions { unitTests { isIncludeAndroidResources = true } }
 }

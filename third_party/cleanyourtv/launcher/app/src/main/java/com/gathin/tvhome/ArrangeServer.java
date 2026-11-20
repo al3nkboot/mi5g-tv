@@ -135,6 +135,12 @@ final class ArrangeServer {
         return ip == null ? null : "http://" + ip + ":" + socket.getLocalPort() + "/" + token + "/";
     }
 
+    /** 2.4 M3: http://<TV address>:<port>/connect, the token-free "Connect a phone" page, or null. */
+    String connectUrl() {
+        String ip = localAddress();
+        return ip == null ? null : "http://" + ip + ":" + socket.getLocalPort() + "/connect";
+    }
+
     /**
      * The TV's IPv4 address for the QR code. Mi5G 2.0.2: a private address first, then any other IPv4
      * address on a working interface, as some routers hand out addresses outside the usual private
@@ -264,6 +270,14 @@ final class ArrangeServer {
             }
             Request r = parseLine(first, headers);
             if (r == null) { respond(out, 400, "text/plain", "bad request".getBytes()); return; }
+            // 2.4 M3: the "Connect a phone" page carries only the TV's address, so it needs no token (and the
+            // token-free path reaches nothing else).
+            if ("GET".equals(r.method) && "/connect".equals(r.path)) {
+                lastUse = System.currentTimeMillis();
+                String ip = localAddress();
+                respond(out, 200, "text/html; charset=utf-8", PhoneConnectActivity.page(ip == null ? "" : ip, PhoneConnectActivity.tvName()));
+                return;
+            }
             String prefix = "/" + token + "/";
             String[] seg = r.path.split("/", 3);   // "", token, rest
             if (seg.length < 2 || !tokenMatches(token, seg[1])) { respond(out, 404, "text/plain", "not found".getBytes()); return; }
@@ -306,6 +320,9 @@ final class ArrangeServer {
             case "api/state":
                 respond(out, 200, "application/json", state().toString().getBytes(StandardCharsets.UTF_8));
                 return;
+            case "api/reminders":
+                if (!post) { respond(out, 200, "application/json", plans(ctx).toString().getBytes(StandardCharsets.UTF_8)); return; }
+                break;
             case "api/tile.png": {
                 byte[] png = tilePng(r.query.get("key"));
                 if (png == null) respond(out, 404, "text/plain", new byte[0]); else respond(out, 200, "image/png", png);
@@ -315,6 +332,12 @@ final class ArrangeServer {
                 break;
         }
         if (!post) { respond(out, 405, "text/plain", "method".getBytes()); return; }
+        // 2.4: Home lock refuses layout and tile-image edits from the phone (423 Locked) and says so on the TV.
+        if (lockedEdit(rest) && LauncherSwitches.homeLocked(ctx)) {
+            main.post(() -> LauncherSwitches.refuseIfLocked(ctx));
+            respond(out, 423, "application/json", "{\"ok\":false,\"locked\":true}".getBytes(StandardCharsets.UTF_8));
+            return;
+        }
         switch (rest) {
             case "api/layout": {
                 JSONObject body = new JSONObject(new String(readBody(in, length, MAX_JSON), StandardCharsets.UTF_8));
@@ -338,8 +361,14 @@ final class ArrangeServer {
                 return;
             }
             case "api/wallpaper": {
+                // 2.4 M3 (backlog 19, Teevy idea): the reply says what the TV saved (name and size read back from
+                // its storage), so the phone shows "saved on TV" only for files that are really there.
                 byte[] data = readBody(in, length, MAX_WALLPAPER);
-                ok(out, Mi5gWallpapers.saveUpload(ctx, data) != null && changedTrue());
+                String name = Mi5gWallpapers.saveUpload(ctx, data);
+                long saved = name == null ? -1 : Mi5gWallpapers.savedSize(ctx, name);
+                boolean ok = name != null && saved == data.length;
+                if (ok) changed();
+                respond(out, ok ? 200 : 400, "application/json", savedReply(ok, name, saved).getBytes(StandardCharsets.UTF_8));
                 return;
             }
             case "api/wallpaper/choose":
@@ -366,6 +395,18 @@ final class ArrangeServer {
                 ok(out, applyWeather(ctx, body, Weather.HTTP));
                 return;
             }
+            case "api/reminders": {
+                // 2.4 M4 (backlog 30): the whole list, replaced; bad entries are dropped.
+                JSONObject body = new JSONObject(new String(readBody(in, length, 16384), StandardCharsets.UTF_8));
+                ok(out, applyReminders(ctx, body));
+                return;
+            }
+            case "api/schedule": {
+                // 2.4 M4 (backlog 34): seven sleep and seven wake times ("" for none) and the switch.
+                JSONObject body = new JSONObject(new String(readBody(in, length, 4096), StandardCharsets.UTF_8));
+                ok(out, applySchedule(ctx, body));
+                return;
+            }
             case "api/stop":
                 ok(out, true);
                 main.post(this::stop);
@@ -373,6 +414,40 @@ final class ArrangeServer {
             default:
                 respond(out, 404, "text/plain", "not found".getBytes());
         }
+    }
+
+    /** 2.4 M4: reminders and the weekly schedule for the phone page. */
+    static JSONObject plans(Context ctx) throws org.json.JSONException {
+        return new JSONObject()
+                .put("reminders", new org.json.JSONArray(Reminders.toJson(Reminders.load(ctx))))
+                .put("schedule", new JSONObject(Schedule.load(ctx).toJson()))
+                .put("scheduleOn", Schedule.on(ctx))
+                .put("max", Reminders.MAX).put("maxText", Reminders.MAX_TEXT);
+    }
+
+    static boolean applyReminders(Context ctx, JSONObject body) {
+        org.json.JSONArray a = body.optJSONArray("reminders");
+        if (a == null || a.length() > Reminders.MAX) return false;
+        Reminders.save(ctx, Reminders.parse(a.toString()));
+        return true;
+    }
+
+    static boolean applySchedule(Context ctx, JSONObject body) {
+        if (body.optJSONArray("sleep") == null && body.optJSONArray("wake") == null) return false;
+        Schedule.save(ctx, Schedule.parse(body.toString()), body.optBoolean("on", true));
+        return true;
+    }
+
+    /** 2.4: the POST paths that change the Home layout (refused while Home is locked). */
+    static boolean lockedEdit(String path) {
+        return "api/layout".equals(path) || "api/icon".equals(path) || "api/icon/reset".equals(path);
+    }
+
+    /** 2.4 M3: {"saved":true,"name":"phone-1.jpg","bytes":1234} or {"saved":false}. */
+    static String savedReply(boolean ok, String name, long bytes) {
+        if (!ok || name == null) return "{\"saved\":false}";
+        try { return new JSONObject().put("saved", true).put("name", name).put("bytes", bytes).toString(); }
+        catch (org.json.JSONException e) { return "{\"saved\":false}"; }
     }
 
     private boolean changedTrue() { changed(); return true; }
@@ -549,7 +624,7 @@ final class ArrangeServer {
             Set<String> s = new HashSet<>();
             for (int i = 0; i < hidden.length() && s.size() < 1000; i++) {
                 String p = hidden.optString(i);
-                if (HomeLayout.validPackage(p)) s.add(p);
+                if (HomeLayout.validPackage(p) && !LauncherSwitches.alwaysVisible(p)) s.add(p);   // 2.4 M2
             }
             TileMenu.prefs(ctx).edit().putStringSet(TileMenu.REMOVED_KEY, s).apply();
         }

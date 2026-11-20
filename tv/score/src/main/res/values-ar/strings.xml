@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mi5G 2.4 (M6) -->
+    <string name="score_tab_tournaments">🏆 البطولات الكبرى</string>
+    <string name="score_tournaments_head">🏆 كأس العالم والبطولات القارية وبطولات الأندية الكبرى: الجولة الحالية أو القادمة</string>
+    <string name="score_tournaments_empty">لا توجد مباريات في البطولات الكبرى خلال الأسابيع القادمة.</string>
+    <string name="score_loading">جاري التحميل…</string>
+    <string name="score_remind_on">🔔 ذكّرني قبل الانطلاق</string>
+    <string name="score_remind_off">🔕 إلغاء التذكير</string>
+    <string name="score_remind_set">تم ضبط التذكير: قبل الانطلاق بـ %1$d دقائق، فوق أي تطبيق.</string>
+    <string name="score_remind_cleared">أُلغي التذكير.</string>
+    <string name="score_pin">📌 ثبّت النتيجة في زاوية الشاشة</string>
+    <string name="score_unpin">📌 أزل النتيجة المثبتة</string>
+    <string name="score_pinned">النتيجة الآن ظاهرة في زاوية الشاشة فوق أي تطبيق.</string>
+    <string name="score_overlay_needed">الظهور فوق التطبيقات الأخرى غير مسموح بعد. افتح تطبيق النتائج مرة من تطبيق الهاتف للسماح به.</string>
+    <string name="score_kickoff_soon">⚽ تنطلق قريبًا: %1$s (%2$s)</string>
+    <string name="score_prayer_clash">🕌 صلاة %1$s أثناء المباراة (%2$s)</string>
+    <string name="score_reminders_channel">تذكيرات انطلاق المباريات</string>
+    <string name="score_corner_channel">النتيجة في الزاوية</string>
+</resources>

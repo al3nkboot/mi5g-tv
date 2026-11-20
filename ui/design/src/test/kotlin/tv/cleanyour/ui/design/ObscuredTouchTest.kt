@@ -133,6 +133,18 @@ class ObscuredTouchTest {
         compose.onNodeWithText(hint).assertDoesNotExist()
     }
 
+    // 2.4: Sony Bravia tap-jacking overlay protection bug: onboarding/setup Start button must fire with FLAG_WINDOW_IS_OBSCURED
+    @Test
+    fun setupStartButtonFiresWithFlagWindowIsObscured() {
+        var startClicked = false
+        show {
+            PrimaryButton("Start", { startClicked = true }, guardObscured = false)
+        }
+        tap("Start", MotionEvent.FLAG_WINDOW_IS_OBSCURED)
+        assertEquals(true, startClicked)
+        compose.onNodeWithText(hint).assertDoesNotExist()
+    }
+
     // R4-W8: a secondary, a tertiary, a banner action and the theme picker are guarded when the
     // caller says they write to the TV, and only then.
     @Test

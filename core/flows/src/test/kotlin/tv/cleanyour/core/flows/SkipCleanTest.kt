@@ -101,4 +101,35 @@ class SkipCleanTest {
         assertFalse(m.state.value is SetupState.Found)
         assertFalse(h.planner.requests.any { it == PlanRequest.DebugOff })
     }
+
+    // 2.4: "Use as a remote only" on the connect screens: once the TV is paired the remote opens at once, the
+    // clean-up and home-screen setup never show, nothing runs on the TV, and the TV is remembered like a skipped
+    // clean, so the next connect opens Manage where the full setup stays one tap away.
+    @Test fun remoteOnlyPairsThenOpensTheRemoteWithoutTheCleanUp() = runTest(timeout = 30.seconds) {
+        val h = Harness()
+        h.sessions.allowPromptFor[HOST] = "AB:CD:7F:2A"
+        val m = h.setup(backgroundScope)
+        m.dispatch(SetupIntent.RemoteOnly(true)); settle()
+        assertTrue(m.extras.value.remoteOnly)
+        m.effects.test {
+            toFound(h, m)
+            assertEquals(SetupEffect.Navigate("remoteonly/${Samples.miTvId().value}"), drain().last())
+        }
+        assertFalse(m.state.value is SetupState.Found)
+        val tv = h.tvs.tvs.value.single()
+        assertEquals(true, tv.wizard?.cleanSkipped)
+        assertTrue(h.engine.calls.filterIsInstance<FakeEngine.Call.Start>().isEmpty())
+        assertFalse(h.planner.requests.any { it == PlanRequest.DebugOff })
+        assertEquals(StartDestination.Manage(tv.id), resolveStart(listOf(tv), h.journal))
+    }
+
+    @Test fun remoteOnlyCanBeTurnedBackToTheFullSetup() = runTest(timeout = 30.seconds) {
+        val h = Harness()
+        h.sessions.allowPromptFor[HOST] = "AB:CD:7F:2A"
+        val m = h.setup(backgroundScope)
+        m.dispatch(SetupIntent.RemoteOnly(true)); settle()
+        m.dispatch(SetupIntent.RemoteOnly(false)); settle()
+        toFound(h, m)
+        assertIs<SetupState.Found>(m.state.value)
+    }
 }

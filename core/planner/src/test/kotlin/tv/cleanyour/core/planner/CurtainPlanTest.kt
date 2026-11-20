@@ -1,5 +1,6 @@
 package tv.cleanyour.core.planner
 
+import tv.cleanyour.core.ops.Denylist
 import tv.cleanyour.core.model.BlobRef
 import tv.cleanyour.core.model.CurtainGroup
 import tv.cleanyour.core.model.CurtainStage
@@ -37,7 +38,7 @@ class CurtainPlanTest {
     private val curtainSha = Sha256("e".repeat(64))
     private val curtain = LauncherArtifact(curtainPkg, 1, "0.1", curtainSha, Samples.launcherArtifact().signer, BlobRef(curtainSha, 49_571, "bundled:cleanyourtv-curtain.apk"))
     private val config = BlobRef(Sha256("c".repeat(64)), 100, "blobs/config")
-    private val installed = debloatList.filter { it in snapshot().packages }
+    private val installed = debloatList.filter { it in snapshot().packages && it.value !in Denylist.exact }   // 2.4 M1: katniss is protected
     // Our own earlier run's install of the curtain, as the change records keep it.
     private val ourInstall = listOf(PlannerFixtures.change(0, Op.InstallStream(curtain.blob, curtain.sha256, curtainPkg, 1, curtain.signer), Prior(present = false)))
 
@@ -53,10 +54,10 @@ class CurtainPlanTest {
     private fun curtainSteps(p: Plan) = p.steps.filter { it.group == DefaultPlanner.GROUP_CURTAIN }
     private fun body(p: Plan) = p.steps.filter { it.group != DefaultPlanner.GROUP_CURTAIN }
 
-    private fun head() = listOf("InstallStream tv.cleanyour.curtain", "start tv.cleanyour.curtain/.CurtainActivity", "cue SCAN 0/18", "cue RESTORE_SAVED 0/0")
+    private fun head() = listOf("InstallStream tv.cleanyour.curtain", "start tv.cleanyour.curtain/.CurtainActivity", "cue SCAN 0/17", "cue RESTORE_SAVED 0/0")
     private fun cleaning(group: String) = installed.indices.flatMap { i ->
         val k = i + 1
-        listOf("Disable ${installed[i].value}", "cue OFF $k/18 $group $k/18") + if (k == 18) listOf("cue GROUP_DONE 18/18 $group 18/18") else emptyList()
+        listOf("Disable ${installed[i].value}", "cue OFF $k/17 $group $k/17") + if (k == 17) listOf("cue GROUP_DONE 17/17 $group 17/17") else emptyList()
     }
 
     // The Mi TV, Simple, the launcher installed by the plan, no look: FINALE right before the takeover
@@ -100,7 +101,7 @@ class CurtainPlanTest {
     @Test fun pinAlreadyInstalledIsStartedOnly() {
         val snap = withPackage(curtainState(versionCode = 1))
         val p = plan(withCurtain(), snapshot = snap, journals = ourInstall, planner = planner())
-        assertEquals(listOf("start tv.cleanyour.curtain/.CurtainActivity", "cue SCAN 0/18"), p.steps.take(2).map(::label))
+        assertEquals(listOf("start tv.cleanyour.curtain/.CurtainActivity", "cue SCAN 0/17"), p.steps.take(2).map(::label))
         assertEquals("Uninstall tv.cleanyour.curtain", label(p.steps.last()))
         // An older version is replaced (D39 ladder with the package present).
         val older = plan(withCurtain(), snapshot = withPackage(curtainState(versionCode = 0)), journals = ourInstall, planner = planner())
@@ -164,7 +165,7 @@ class CurtainPlanTest {
         assertTrue(p.sections.isEmpty())
         val debloatOnly = plan(withCurtain(setup(choices = choices(takeover = false, installLauncher = false))), planner = planner())
         assertTrue(debloatOnly.steps.none { (it.op as? Op.CurtainCue)?.stage == CurtainStage.INSTALL })
-        assertEquals(listOf("cue GROUP_DONE 18/18 OTHER 18/18", "cue FINALE 0/0", "Settle", "Uninstall tv.cleanyour.curtain"), debloatOnly.steps.takeLast(4).map(::label))
+        assertEquals(listOf("cue GROUP_DONE 17/17 OTHER 17/17", "cue FINALE 0/0", "Settle", "Uninstall tv.cleanyour.curtain"), debloatOnly.steps.takeLast(4).map(::label))
     }
 
     // The group words: a profile's category ids map to the fixed vocabulary; counts restart per group,

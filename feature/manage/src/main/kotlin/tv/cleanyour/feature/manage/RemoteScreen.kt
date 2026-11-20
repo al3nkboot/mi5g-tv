@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 
 package tv.cleanyour.feature.manage
 
@@ -108,7 +108,7 @@ fun RemoteScreen(state: RemoteState, onIntent: (RemoteIntent) -> Unit, onBack: (
                 RemoteTab.Remote -> {
                     ModeSwitch(state.mode, onIntent)
                     when (state.mode) {
-                        RemoteMode.Buttons -> ButtonsPane(press, onMore = { moreOpen = true })
+                        RemoteMode.Buttons -> ButtonsPane(press, onMore = { moreOpen = true }, onPlayStore = { onIntent(RemoteIntent.OpenPlayStore) }, onAllApps = { onIntent(RemoteIntent.OpenTvAllApps) })
                         RemoteMode.Trackpad -> TrackpadPane(press)
                         RemoteMode.Keyboard -> KeyboardPane(state, onIntent)
                     }
@@ -129,7 +129,27 @@ private fun RemoteTopBar(state: RemoteState, onIntent: (RemoteIntent) -> Unit, o
         Box(Modifier.heightIn(min = 56.dp).clip(RoundedCornerShape(24.dp)).clickable(role = Role.Button, onClick = onBack).padding(horizontal = 12.dp), contentAlignment = Alignment.Center) {
             Text(stringResource(R.string.remote_back), color = Gold, style = MaterialTheme.typography.labelLarge)
         }
-        Text(state.tvName, Modifier.weight(1f).padding(horizontal = 8.dp), color = CytTheme.colors.textPrimary, style = MaterialTheme.typography.titleLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        // 2.4 M3 (backlog 20): with more than one saved TV, the name opens a list of the others.
+        var pickTv by remember { mutableStateOf(false) }
+        val switchLabel = stringResource(R.string.remote_switch_tv)
+        Box(Modifier.weight(1f).padding(horizontal = 8.dp)) {
+            Text(
+                if (state.otherTvs.isEmpty()) state.tvName else "${state.tvName} ▾",
+                (if (state.otherTvs.isEmpty()) Modifier else Modifier.clip(RoundedCornerShape(12.dp)).heightIn(min = 48.dp)
+                    .clickable(role = Role.Button, onClickLabel = switchLabel) { pickTv = true }.padding(vertical = 12.dp))
+                    .semantics { if (state.otherTvs.isNotEmpty()) contentDescription = "${state.tvName}, $switchLabel" },
+                color = CytTheme.colors.textPrimary, style = MaterialTheme.typography.titleLarge, maxLines = 1, overflow = TextOverflow.Ellipsis,
+            )
+            androidx.compose.material3.DropdownMenu(expanded = pickTv, onDismissRequest = { pickTv = false }) {
+                Text(switchLabel, Modifier.padding(horizontal = 16.dp, vertical = 8.dp), color = Gold, style = MaterialTheme.typography.labelLarge)
+                state.otherTvs.forEach { t ->
+                    androidx.compose.material3.DropdownMenuItem(
+                        text = { Text(t.name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                        onClick = { pickTv = false; onIntent(RemoteIntent.SwitchTv(t.id)) },
+                    )
+                }
+            }
+        }
         val (label, dot) = when (state.connection) {
             RemoteConnection.Connected -> R.string.remote_connected to CytTheme.colors.success
             RemoteConnection.Connecting -> R.string.remote_connecting to Gold
@@ -151,7 +171,9 @@ private fun RemoteTopBar(state: RemoteState, onIntent: (RemoteIntent) -> Unit, o
 private fun NotConnectedCard(onIntent: (RemoteIntent) -> Unit) {
     Surface(Modifier.fillMaxWidth().padding(bottom = 12.dp), shape = RoundedCornerShape(20.dp), color = CytTheme.colors.surface2, border = BorderStroke(1.dp, Gold.copy(alpha = .5f))) {
         Column(Modifier.padding(16.dp)) {
-            Text(stringResource(R.string.remote_connect_prompt), color = CytTheme.colors.textPrimary, style = MaterialTheme.typography.bodyLarge)
+            Text(stringResource(R.string.manage_unreachable_title), color = CytTheme.colors.textPrimary, style = MaterialTheme.typography.titleMedium)
+            Spacer(Modifier.height(4.dp))
+            Text(stringResource(R.string.manage_unreachable_body), color = CytTheme.colors.textSecondary, style = MaterialTheme.typography.bodyMedium)
             Spacer(Modifier.height(12.dp))
             GoldPill(stringResource(R.string.remote_connect), filled = true) { onIntent(RemoteIntent.OpenPairing) }
         }
@@ -175,7 +197,7 @@ private fun ModeSwitch(mode: RemoteMode, onIntent: (RemoteIntent) -> Unit) {
 }
 
 @Composable
-private fun ColumnScope.ButtonsPane(press: (RemoteButton) -> Unit, onMore: () -> Unit) {
+private fun ColumnScope.ButtonsPane(press: (RemoteButton) -> Unit, onMore: () -> Unit, onPlayStore: () -> Unit = {}, onAllApps: () -> Unit = {}) {
     BoxWithConstraints(Modifier.weight(1f).fillMaxWidth()) {
     val ring = if (maxHeight > 560.dp) 236.dp else 196.dp
     Column(Modifier.fillMaxWidth().heightIn(min = maxHeight).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.SpaceEvenly, horizontalAlignment = Alignment.CenterHorizontally) {
@@ -197,7 +219,13 @@ private fun ColumnScope.ButtonsPane(press: (RemoteButton) -> Unit, onMore: () ->
             }
         }
         Spacer(Modifier.height(8.dp))
-        GoldPill(stringResource(R.string.remote_more), filled = false, onClick = onMore)
+        androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            GoldPill(stringResource(R.string.remote_more), filled = false, onClick = onMore)
+            // 2.4: open the Play Store on the TV, also on Google TV where it hides from the app list.
+            GoldPill(stringResource(R.string.remote_play_store), filled = false, onClick = onPlayStore)
+            // 2.4 M3 (backlog 4): the TV's All apps grid with its search box (Mi5G Home).
+            GoldPill(stringResource(R.string.remote_tv_all_apps), filled = false, onClick = onAllApps)
+        }
         Spacer(Modifier.height(8.dp))
     }
     }

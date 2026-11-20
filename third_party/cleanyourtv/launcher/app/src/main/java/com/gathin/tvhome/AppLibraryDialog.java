@@ -169,11 +169,16 @@ final class AppLibraryDialog {
         // Mi5G 2.0.2: TV-maker extras stay out of All apps unless shown again in Mi5G settings > Hidden apps.
         boolean extrasFilter = MakerExtras.filterOn(activity);
         java.util.Set<String> shownAgain = MakerExtras.shownAgain(activity);
+        java.util.Set<String> hiddenFromHome = TileMenu.removed(activity);
         for (java.util.Iterator<Map.Entry<String, ResolveInfo>> it = unique.entrySet().iterator(); it.hasNext(); ) {
             Map.Entry<String, ResolveInfo> e = it.next();
             String l;
             try { l = String.valueOf(e.getValue().loadLabel(pm)); } catch (RuntimeException unavailable) { l = ""; }
             if (MakerExtras.hidden(e.getKey(), l, extrasFilter, shownAgain)) it.remove();
+            // 2.4 M2 (backlog 21): an app hidden from Home stays out of All apps too, until shown again in Hidden apps.
+            else if (hiddenFromHome.contains(e.getKey()) && !LauncherSwitches.alwaysVisible(e.getKey())) it.remove();
+            // 2.4 M7: the kids profile shows only the apps a parent allowed.
+            else if (KidsProfile.blocks(activity, e.getKey())) it.remove();
         }
         totalApps = unique.size();
         apps = new ArrayList<>(unique.values());

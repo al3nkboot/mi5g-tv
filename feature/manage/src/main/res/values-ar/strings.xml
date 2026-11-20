@@ -468,6 +468,8 @@
     <string name="tvtools_arrange_home">رتّب الشاشة الرئيسية من الهاتف</string>
     <string name="tvtools_label_arrange_home">فتح رمز الترتيب على التلفاز</string>
     <string name="tvtools_keep_home">تثبيت Mi5G كشاشة رئيسية</string>
+    <string name="tvtools_reapply_home">إعادة تثبيت الشاشة الرئيسية</string>
+    <string name="tvtools_label_reapply_home">إعادة تثبيت الشاشة الرئيسية</string>
     <string name="tvtools_stock_home">العودة لمشغّل التلفاز الأصلي</string>
     <string name="tvtools_label_keep_home">تثبيت شاشة Mi5G الرئيسية</string>
     <string name="tvtools_label_stock_home">العودة لمشغّل التلفاز الأصلي</string>
@@ -484,6 +486,26 @@
     <string name="tvtools_prayer_opacity">الشفافية {percent}%</string>
     <string name="tvtools_prayer_kahf">📖 تذكير الجمعة</string>
     <string name="tvtools_prayer_send">إرسال الإعدادات إلى التلفاز</string>
+    <!-- 2.4 M5: وحدة الصلاة 2 -->
+    <string name="tvtools_prayer_keep_alive">🛡️ الإبقاء نشطاً</string>
+    <string name="tvtools_prayer_each_note">لكل صلاة: اضغط الاسم لاختيار الأذان أو التنبيه أو الإيقاف، واضغط الدقائق لتقديم الوقت أو تأخيره.</string>
+    <string name="tvtools_prayer_name_fajr">الفجر</string>
+    <string name="tvtools_prayer_name_sunrise">الشروق</string>
+    <string name="tvtools_prayer_name_dhuhr">الظهر</string>
+    <string name="tvtools_prayer_name_asr">العصر</string>
+    <string name="tvtools_prayer_name_maghrib">المغرب</string>
+    <string name="tvtools_prayer_name_isha">العشاء</string>
+    <string name="tvtools_prayer_alert_off">متوقف</string>
+    <string name="tvtools_prayer_alert_banner">تنبيه</string>
+    <string name="tvtools_prayer_alert_adhan">أذان</string>
+    <string name="tvtools_prayer_offset">{offset} دقيقة</string>
+    <string name="tvtools_prayer_sound_note">صوت الأذان: التسجيل المرفق، أو تسجيل تختاره من الجوال (حتى 12 ميغابايت). ويمكن أن يكون للفجر أذان خاص.</string>
+    <string name="tvtools_prayer_sound">🔈 الأذان: {name}</string>
+    <string name="tvtools_prayer_fajr_sound">🌅 أذان الفجر: {name}</string>
+    <string name="tvtools_prayer_sound_default">المرفق</string>
+    <string name="tvtools_prayer_sound_on_tv">الملف الموجود على التلفاز</string>
+    <string name="tvtools_prayer_sound_use_default">استخدم الأذان المرفق</string>
+    <string name="tvtools_prayer_fajr_same">مثل باقي الصلوات</string>
     <string name="tvtools_label_prayer">إعدادات مواقيتي</string>
     <!-- M4 item 34: updates -->
     <string name="appsettings_update_now">تحديث الآن إلى {version}</string>
@@ -506,5 +528,26 @@
     <string name="appsettings_update_rate_limited">تجاوزت حد GitHub المؤقت، جرّب بعد قليل أو افتح صفحة الإصدارات</string>
     <string name="appsettings_update_cannot_install">لا يمكن تثبيت التحديث على هذا الجهاز</string>
     <string name="appsettings_update_cannot_install_note">لا توجد على هذا الجهاز شاشة لتثبيت ملفات APK. نزّل التحديث من صفحة الإصدارات على الكمبيوتر أو الهاتف، ثم ثبّته من هناك (مثلًا عبر «تثبيت APK» في أدوات التلفاز من تطبيق الهاتف أو عبر adb).</string>
+    <!-- 2.4 -->
+    <string name="remote_play_store">متجر بلاي</string>
+    <string name="tvtools_play_store_bg_stop">منع متجر بلاي من العمل في الخلفية</string>
+    <string name="tvtools_play_store_bg_allow">السماح لمتجر بلاي بالعمل في الخلفية مرة أخرى</string>
+    <string name="tvtools_label_play_store_bg_stop">منع متجر بلاي من العمل في الخلفية</string>
+    <string name="tvtools_label_play_store_bg_allow">السماح لمتجر بلاي بالعمل في الخلفية</string>
+    <!-- 2.4 M3: رفيق الجوال -->
+    <string name="remote_tv_all_apps">كل تطبيقات التلفاز</string>
+    <string name="remote_switch_tv">تبديل التلفاز</string>
+    <string name="tvtools_store_section">المتجر المصغّر</string>
+    <string name="tvtools_store_note">يفتح صفحة التطبيق في متجر بلاي على التلفاز، وثبّته من هناك بريموت التلفاز.</string>
+    <string name="tvtools_label_store_open">جارٍ فتح صفحة المتجر على التلفاز</string>
+    <string name="tvtools_live_section">رسالة أو رسمة على التلفاز الآن</string>
+    <string name="tvtools_live_note">اكتب رسالة قصيرة أو ارسم بإصبعك أو الاثنين معاً. تظهر على التلفاز فوراً عبر الشاشة الرئيسية حتى يُضغط زر الرجوع هناك أو تزيلها من هنا.</string>
+    <string name="tvtools_live_text_label">الرسالة (اختياري)</string>
+    <string name="tvtools_live_pad_cd">لوحة الرسم. ارسم بإصبع واحد.</string>
+    <string name="tvtools_live_send">اعرض على التلفاز</string>
+    <string name="tvtools_live_clear_pad">مسح</string>
+    <string name="tvtools_live_close">إزالتها من التلفاز</string>
+    <string name="tvtools_label_live_board">جارٍ العرض على التلفاز</string>
+    <string name="tvtools_label_live_board_close">جارٍ الإزالة من التلفاز</string>
 </resources>
 

@@ -39,6 +39,7 @@ public final class InputsEditActivity extends Activity {
             String title = names.containsKey(in.id) ? names.get(in.id) + " \u00B7 " + in.label : in.label;
             int icon = HomeLayout.LIVE_TV.equals(in.id) ? R.drawable.ic_livetv : in.hdmi ? R.drawable.ic_input : R.drawable.ic_av;
             Rows.add(this, rows, icon, title, getString(hidden ? R.string.mi5g_input_hidden : R.string.mi5g_input_shown), () -> {
+                if (LauncherSwitches.refuseIfLocked(this)) return;   // 2.4: Home lock
                 new android.app.AlertDialog.Builder(this).setTitle(title).setItems(new String[]{getString(R.string.mi5g_hide_input), getString(R.string.mi5g_rename_input)}, (dialog, which) -> {
                     if (which == 0) {
                         HomeLayout now = HomeLayout.load(this);

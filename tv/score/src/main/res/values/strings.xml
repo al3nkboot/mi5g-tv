@@ -1,4 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Mi5G Score</string>
+    <!-- Mi5G 2.4 (M6): big tournaments, kick-off reminders, prayer-clash notes, pinned corner score. -->
+    <string name="score_tab_tournaments">🏆 Big tournaments</string>
+    <string name="score_tournaments_head">🏆 World Cup, continental cups and the big club cups: current or next round</string>
+    <string name="score_tournaments_empty">No big-tournament matches in the coming weeks.</string>
+    <string name="score_loading">Loading…</string>
+    <string name="score_remind_on">🔔 Remind me before kick-off</string>
+    <string name="score_remind_off">🔕 Cancel the reminder</string>
+    <string name="score_remind_set">Reminder set: %1$d minutes before kick-off, over any app.</string>
+    <string name="score_remind_cleared">Reminder cancelled.</string>
+    <string name="score_pin">📌 Pin the score in a corner</string>
+    <string name="score_unpin">📌 Remove the pinned score</string>
+    <string name="score_pinned">The score now stays in a corner over any app.</string>
+    <string name="score_overlay_needed">Showing over other apps is not allowed yet. Open Mi5G Score once from the Mi5G phone app to allow it.</string>
+    <string name="score_kickoff_soon">⚽ Kick-off soon: %1$s (%2$s)</string>
+    <string name="score_prayer_clash">🕌 %1$s prayer during the match (%2$s)</string>
+    <string name="score_reminders_channel">Kick-off reminders</string>
+    <string name="score_corner_channel">Score in a corner</string>
 </resources>

@@ -1,5 +1,6 @@
 package tv.cleanyour.core.flows
 
+import tv.cleanyour.core.ops.ShellTokens as OpsTokens
 import app.cash.turbine.test
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -1204,6 +1205,161 @@ class ManageMachinesTest {
         settle()
         assertFalse(appMgr.state.value.apps.any { it.pkg == kodiApp.pkg })
         assertNull(appMgr.state.value.selectedApp)
+    }
+
+    @Test fun unreachableTvInTvToolsReportsClearUnreachableError() = runTest(timeout = 30.seconds) {
+        val h = Harness()
+        val unreachableTv = h.knownTv().copy(id = tv.cleanyour.core.model.TvId("0123456789abcdef"), nickname = "Unreachable TV").also { h.tvs.upsert(it) }
+        val tools = TvToolsMachine(h.manageDeps(), backgroundScope, unreachableTv.id)
+        settle()
+
+        // 1. Power lines (ArrangeHomeFromPhone)
+        tools.dispatch(TvToolsIntent.ArrangeHomeFromPhone)
+        settle()
+        h.access.cancelWaiting()
+        settle(2_500)
+        val powerStatus = tools.state.value.powerToolStatus
+        assertIs<PowerToolStatus.Failed>(powerStatus)
+        assertEquals(PowerFailStep.UNREACHABLE, powerStatus.step)
+
+        val apkBytes = "fake apk".encodeToByteArray()
+        val blob = h.blobs.put(sha256Of(apkBytes), apkBytes.inputStream(), apkBytes.size.toLong())
+        tools.dispatch(TvToolsIntent.ApkPicked("app.apk", blob.size, blob))
+        settle()
+        tools.dispatch(TvToolsIntent.InstallApk)
+        settle()
+        h.access.cancelWaiting()
+        settle(2_500)
+        val sideloadStatus = tools.state.value.sideloadStatus
+        assertIs<SideloadStatus.Failed>(sideloadStatus)
+        assertEquals("UNREACHABLE", sideloadStatus.detail)
+    }
+
+    // 2.4 (v1.7 item 5): TV tools keep the Play Store from running in the background, and let it again.
+    @Test fun playStoreBackgroundRunsOnlyItsAppopsLines() = runTest(timeout = 30.seconds) {
+        val h = Harness()
+        val known = h.knownTv()
+        for (op in listOf("RUN_IN_BACKGROUND", "RUN_ANY_IN_BACKGROUND")) for (mode in listOf("ignore", "default")) {
+            h.session.recording.on("'cmd' 'appops' 'set' 'com.android.vending' '$op' '$mode'", "")
+        }
+        val tools = TvToolsMachine(h.manageDeps(), backgroundScope, known.id)
+        settle()
+        tools.dispatch(TvToolsIntent.PlayStoreBackground(stop = true))
+        settle(2_500)
+        assertIs<PowerToolStatus.Done>(tools.state.value.powerToolStatus)
+        val lines = h.session.execLines.map { tv.cleanyour.core.ops.ShellTokens.tokenize(it) }
+        assertTrue(lines.contains(listOf("cmd", "appops", "set", "com.android.vending", "RUN_ANY_IN_BACKGROUND", "ignore")))
+        assertTrue(lines.none { "disable-user" in it || "uninstall" in it })
+        tools.dispatch(TvToolsIntent.PlayStoreBackground(stop = false))
+        settle(2_500)
+        val after = h.session.execLines.map { tv.cleanyour.core.ops.ShellTokens.tokenize(it) }
+        assertTrue(after.contains(listOf("cmd", "appops", "set", "com.android.vending", "RUN_ANY_IN_BACKGROUND", "default")))
+    }
+
+    // 2.4 M3 (backlog 17 and 32): the mini store opens a store page; the live board draws and closes on the TV.
+    @Test fun miniStoreAndLiveBoardRunTheirLines() = runTest(timeout = 30.seconds) {
+        val h = Harness()
+        val known = h.knownTv()
+        h.session.recording.on("'am' 'start' '-a' 'android.intent.action.VIEW' '-d' 'market://details?id=org.videolan.vlc' '-p' 'com.android.vending'", "Starting: Intent")
+        val tools = TvToolsMachine(h.manageDeps(), backgroundScope, known.id)
+        settle()
+        tools.dispatch(TvToolsIntent.OpenStorePage("org.videolan.vlc"))
+        settle()
+        assertEquals(PowerToolStatus.Done("@store_open"), tools.state.value.powerToolStatus)
+        tools.dispatch(TvToolsIntent.OpenStorePage("bad pkg; reboot"))
+        settle()
+        assertEquals(PowerToolStatus.Failed("@store_open"), tools.state.value.powerToolStatus)
+        assertTrue(h.session.execLines.none { "reboot" in it })
+
+        tools.dispatch(TvToolsIntent.SendLiveBoard(listOf(listOf(0f to 0f, 1f to 1f)), "مرحبا"))
+        settle()
+        val line = OpsTokens.tokenize(h.session.execLines.last())
+        assertEquals(listOf("am", "start", "-n", "com.gathin.tvhome/.LiveBoardActivity", "--es", "strokes", "000000999999", "--es", "hex"), line.take(9))
+        tools.dispatch(TvToolsIntent.SendLiveBoard(emptyList(), "  "))
+        settle()
+        assertEquals(PowerToolStatus.Failed("@live_board"), tools.state.value.powerToolStatus)
+        tools.dispatch(TvToolsIntent.CloseLiveBoard)
+        settle()
+        assertEquals(listOf("am", "start", "-n", "com.gathin.tvhome/.LiveBoardActivity", "--ez", "close", "true"),
+            OpsTokens.tokenize(h.session.execLines.last()))
+    }
+
+    // 2.4 M5: the prayer settings push carries the per-prayer offsets and alerts and, when chosen, the phone's
+    // recordings for the main and the Fajr adhan, moved into the module's files before the RELOAD.
+    @Test fun prayerPushSendsOffsetsAndAdhanRecordings() = runTest(timeout = 30.seconds) {
+        val h = Harness()
+        val known = h.knownTv()
+        h.session.recording.on("pm path com.midroid.mi5gtv.prayer", "package:/data/app/p/base.apk\n")
+        val files = "/sdcard/Android/data/com.midroid.mi5gtv.prayer/files"
+        for (line in listOf("mkdir -p /sdcard/cleanyourtv", "mkdir -p $files",
+                "cp /sdcard/cleanyourtv/mi5g_adhan.audio $files/adhan_custom.audio", "rm -f /sdcard/cleanyourtv/mi5g_adhan.audio",
+                "cp /sdcard/cleanyourtv/mi5g_adhan_fajr.audio $files/adhan_fajr.audio", "rm -f /sdcard/cleanyourtv/mi5g_adhan_fajr.audio",
+                "cp /sdcard/cleanyourtv/mi5g_prayer.json $files/settings.json",
+                "appops set com.midroid.mi5gtv.prayer SYSTEM_ALERT_WINDOW allow", "appops set com.midroid.mi5gtv.prayer SCHEDULE_EXACT_ALARM allow",
+                "cmd deviceidle whitelist +com.midroid.mi5gtv.prayer", "pm grant com.midroid.mi5gtv.prayer android.permission.POST_NOTIFICATIONS",
+                "am broadcast -a com.midroid.mi5gtv.prayer.RELOAD -p com.midroid.mi5gtv.prayer", "rm -f /sdcard/cleanyourtv/mi5g_prayer.json")) {
+            h.session.recording.on(line, "")
+        }
+        val tools = TvToolsMachine(h.manageDeps(), backgroundScope, known.id)
+        settle()
+        tools.effects.test {
+            tools.dispatch(TvToolsIntent.PickPrayerSound(fajr = true))
+            settle()
+            assertTrue(ManageEffect.PickPrayerSound(true) in drain())
+        }
+        val main = "main-adhan".encodeToByteArray()
+        val fajr = "fajr-adhan".encodeToByteArray()
+        val mainBlob = h.blobs.put(sha256Of(main), main.inputStream(), main.size.toLong())
+        val fajrBlob = h.blobs.put(sha256Of(fajr), fajr.inputStream(), fajr.size.toLong())
+        tools.dispatch(TvToolsIntent.PrayerSoundPicked(false, PrayerSoundFile("adhan.mp3", main.size.toLong(), mainBlob)))
+        tools.dispatch(TvToolsIntent.PrayerSoundPicked(true, PrayerSoundFile("fajr.mp3", fajr.size.toLong(), fajrBlob)))
+        settle()
+        assertEquals(PrayerSound.CUSTOM, tools.state.value.prayer.adhanSound)
+        assertEquals(FajrSound.CUSTOM, tools.state.value.prayer.fajrSound)
+        tools.dispatch(TvToolsIntent.UpdatePrayer(tools.state.value.prayer.withNextOffset(0).withNextAlert(4)))
+        settle()
+        tools.dispatch(TvToolsIntent.SendPrayerSettings)
+        settle(5_000)
+        assertEquals(PowerToolStatus.Done("@prayer"), tools.state.value.powerToolStatus)
+        val lines = h.session.execLines
+        val fajrCp = lines.indexOfFirst { "adhan_fajr.audio" in it && it.contains("cp") }
+        val reload = lines.indexOfFirst { "RELOAD" in it }
+        assertTrue(fajrCp in 0 until reload, "recordings go in before the reload")
+        val json = assertNotNull(h.session.files["/sdcard/cleanyourtv/mi5g_prayer.json"]).decodeToString()
+        assertTrue("\"adjust\":[1,0,0,0,0,0]" in json, json)
+        assertTrue("\"modes\":[2,0,2,2,0,2]" in json, json)
+        assertTrue("\"fajr_sound\":\"custom\"" in json, json)
+        assertTrue(h.session.files["/sdcard/cleanyourtv/mi5g_adhan_fajr.audio"]!!.contentEquals(fajr))
+        assertTrue(h.session.files["/sdcard/cleanyourtv/mi5g_adhan.audio"]!!.contentEquals(main))
+        tools.dispatch(TvToolsIntent.ClearPrayerSound(fajr = true))
+        settle()
+        assertEquals(FajrSound.SAME, tools.state.value.prayer.fajrSound)
+        assertEquals(null, tools.state.value.prayerFajrFile)
+    }
+
+    // 2.4 M6: opening Mi5G Score from the phone also gives it the overlay, exact-alarm and notification grants
+    // its kick-off reminders and pinned corner score need; other bundled apps get nothing extra.
+    @Test fun openingScoreGrantsItsOverlay() = runTest(timeout = 30.seconds) {
+        val h = Harness()
+        val known = h.knownTv()
+        val grants = listOf("appops set com.midroid.mi5gtv.matches SYSTEM_ALERT_WINDOW allow",
+            "appops set com.midroid.mi5gtv.matches SCHEDULE_EXACT_ALARM allow",
+            "pm grant com.midroid.mi5gtv.matches android.permission.POST_NOTIFICATIONS")
+        for (line in listOf("am start -n com.midroid.mi5gtv.matches/.MainActivity", "am start -n com.midroid.mi5gtv.quran/.MainActivity") + grants) {
+            h.session.recording.on(line, "")
+        }
+        val tools = TvToolsMachine(h.manageDeps(), backgroundScope, known.id)
+        settle()
+        tools.dispatch(TvToolsIntent.LaunchBundledCard("tv-matches", "com.midroid.mi5gtv.matches", "@score"))
+        settle(5_000)
+        assertEquals(PowerToolStatus.Done("@score"), tools.state.value.powerToolStatus)
+        val lines = h.session.execLines.map { OpsTokens.tokenize(it).joinToString(" ") }
+        val start = lines.indexOf("am start -n com.midroid.mi5gtv.matches/.MainActivity")
+        assertTrue(start >= 0, lines.toString())
+        assertEquals(grants, lines.drop(start + 1))
+        tools.dispatch(TvToolsIntent.LaunchBundledCard("tv-quran", "com.midroid.mi5gtv.quran", "@quran"))
+        settle(5_000)
+        assertEquals("am start -n com.midroid.mi5gtv.quran/.MainActivity", OpsTokens.tokenize(h.session.execLines.last()).joinToString(" "))
     }
 }
 

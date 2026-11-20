@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Mi5G Score on the TV (Mi5G 2.0, backlog 30): today's and tomorrow's matches, favourite clubs and
-     leagues, match events and statistics, league tables. Data: ESPN's public JSON endpoints. -->
+     leagues, match events and statistics, league tables. Data: ESPN's public JSON endpoints.
+     Mi5G 2.4 (M6): big tournaments, kick-off reminders, prayer-clash notes (times from Mi5G Prayer),
+     and a live score pinned in a corner over any app (overlay granted over ADB by the phone app). -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <queries>
+        <provider android:authorities="com.midroid.mi5gtv.prayer.times" />
+    </queries>
     <uses-feature android:name="android.software.leanback" android:required="false" />
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
     <application
@@ -27,5 +38,15 @@
         </activity>
         <activity android:name=".MatchActivity" android:exported="false" />
         <activity android:name=".StandingsActivity" android:exported="false" />
+        <service android:name=".CornerService" android:exported="false" android:foregroundServiceType="specialUse">
+            <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE" android:value="Live score corner card and kick-off reminder" />
+        </service>
+        <receiver android:name=".ReminderReceiver" android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

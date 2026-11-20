@@ -261,8 +261,14 @@ class ModulesMachine(
         // A paused install (or a run another write left open) is the OpenWrites card's to resolve (O2).
         if (outcome is RunOutcome.Paused) { d.openWrites.show(tv, outcome.state); return send(Step(null)) }
         if (outcome is RunOutcome.StartRefused && outcome.refusal == StartRefusal.RUN_OPEN && TvWriter(d).openRun(tv, session) != null) return send(Step(null))
-        if (outcome !is RunOutcome.Finished) return send(Step(refused?.let { InstallStep.Failed(m.name, null, InstallBlock.REFUSED, it.joinToString("; ")) }
-            ?: InstallStep.Failed(m.name, null, InstallBlock.RUN_FAILED, outcome?.toString()?.take(300))))
+        if (outcome !is RunOutcome.Finished) {
+            val unreachable = d.access.live(tvId) == null
+            return send(Step(
+                if (unreachable) InstallStep.Failed(m.name, null, InstallBlock.NO_TV)
+                else refused?.let { InstallStep.Failed(m.name, null, InstallBlock.REFUSED, it.joinToString("; ")) }
+                    ?: InstallStep.Failed(m.name, null, InstallBlock.RUN_FAILED, outcome?.toString()?.take(300))
+            ))
+        }
         if (id == "adguard-dns") {
             ShellRenderer.applyAdGuardDnsLines().forEach { line -> attempt { TvShellRunner.run(session, line) } }
         }

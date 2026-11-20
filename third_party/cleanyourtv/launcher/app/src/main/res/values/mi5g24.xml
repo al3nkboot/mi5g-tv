@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Mi5G 2.4 launcher strings. -->
+<resources>
+    <string name="mi5g_keep_alive">Keep Home screen</string>
+    <string name="mi5g_keep_alive_lost">Another home screen took over. Use Re-apply home screen on the phone.</string>
+    <string name="mi5g_caffeine">Keep screen awake</string>
+    <string name="mi5g_caffeine_1h">1 hour</string>
+    <string name="mi5g_caffeine_2h">2 hours</string>
+    <string name="mi5g_caffeine_4h">4 hours</string>
+    <string name="mi5g_caffeine_forever">Until turned off</string>
+    <string name="mi5g_caffeine_note">The screen stays awake</string>
+    <!-- 2.4 M2 -->
+    <string name="mi5g_safe_mode">Safe mode</string>
+    <string name="mi5g_safe_mode_status_on">On, after Home stopped twice</string>
+    <string name="mi5g_safe_mode_on">Safe mode: Home stopped twice, so it started with the extras off. Turn it off in Mi5G settings.</string>
+    <string name="mi5g_safe_handover">Mi5G Home did not start. The TV\'s own home screen opens for the next five minutes.</string>
+    <string name="mi5g_minimal">Clean mode</string>
+    <string name="mi5g_arabic_names">Arabic app names</string>
+    <string name="mi5g_sounds">Navigation sounds</string>
+    <string name="mi5g_all_apps">All apps</string>
+    <string name="mi5g_all_apps_search">Search apps</string>
+    <string name="mi5g_all_apps_none">No app matches.</string>
+    <string name="mi5g_play_store">Play Store</string>
+    <string name="mi5g_dock_rows">Dock rows</string>
+    <string name="mi5g_always_on_home">Settings and the Play Store always stay on Home.</string>
+    <string name="mi5g_hidden_removed_title">Hidden from Home</string>
+    <!-- 2.4 M3 -->
+    <string name="mi5g_connect_phone">Connect a phone</string>
+    <string name="mi5g_connect_phone_body">Scan this code with the phone\'s camera, open the page, then tap Open Mi5G TV. The app asks before it connects, and the TV asks you to allow the phone. Same Wi-Fi only.</string>
+    <string name="mi5g_live_hint">From the Mi5G TV phone app. Press Back to close.</string>
+    <!-- 2.4 M4 -->
+    <string name="mi5g_nd_none">Off</string>
+    <string name="mi5g_nd_om">Oman National Day</string>
+    <string name="mi5g_nd_sa">Saudi National Day</string>
+    <string name="mi5g_nd_ae">UAE National Day</string>
+    <string name="mi5g_nd_qa">Qatar National Day</string>
+    <string name="mi5g_nd_bh">Bahrain National Day</string>
+    <string name="mi5g_nd_kw">Kuwait National Day</string>
+    <string name="mi5g_occ_ramadan">Ramadan</string>
+    <string name="mi5g_occ_eid_fitr">Eid al-Fitr</string>
+    <string name="mi5g_occ_arafah">The Day of Arafah (Hajj)</string>
+    <string name="mi5g_occ_eid_adha">Eid al-Adha</string>
+    <string name="mi5g_occ_today">Today: %1$s</string>
+    <string name="mi5g_occ_in">%1$s in %2$s</string>
+    <string name="mi5g_occ_in_about">%1$s in about %2$s</string>
+    <string name="mi5g_occ_ramadan_day">Day %1$d of Ramadan</string>
+    <string name="mi5g_occ_white_days">The white days (13th to 15th of the Hijri month)</string>
+    <string name="mi5g_occ_white_days_tomorrow">The white days start tomorrow</string>
+    <plurals name="mi5g_days">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+    <plurals name="mi5g_seconds">
+        <item quantity="one">The TV sleeps in %d second</item>
+        <item quantity="other">The TV sleeps in %d seconds</item>
+    </plurals>
+    <plurals name="mi5g_reminders_count">
+        <item quantity="one">%d reminder</item>
+        <item quantity="other">%d reminders</item>
+    </plurals>
+    <string name="mi5g_reminder_title">Reminder</string>
+    <string name="mi5g_reminder_next">Next reminder %1$s: %2$s</string>
+    <string name="mi5g_reminders">Reminders</string>
+    <string name="mi5g_reminders_none">None yet</string>
+    <string name="mi5g_set_on_phone">Set these from the phone: Arrange Home from phone, then Reminders and schedule.</string>
+    <string name="mi5g_schedule">Weekly sleep and wake</string>
+    <string name="mi5g_schedule_empty">Not set</string>
+    <string name="mi5g_schedule_sleep_title">Sleep schedule</string>
+    <string name="mi5g_schedule_cancel">Cancel</string>
+    <string name="mi5g_saver_info">Hijri calendar on the screensaver</string>
+    <string name="mi5g_widgets">Home widgets</string>
+    <string name="mi5g_widgets_note">OK shows or hides a widget. Hold OK to move it up.</string>
+    <string name="mi5g_widget_countdown">Countdowns (Ramadan, Eid, Hajj, national day)</string>
+    <string name="mi5g_widget_reminder">Next reminder</string>
+    <string name="mi5g_widget_sports">Football score</string>
+    <string name="mi5g_widget_news">News headline</string>
+    <string name="mi5g_widget_news_line">BBC Arabic: %1$s</string>
+    <string name="mi5g_widget_stats">System stats</string>
+    <string name="mi5g_widget_race">Race calendar</string>
+    <string name="mi5g_widget_league">Football league</string>
+    <string name="mi5g_league_ksa">Saudi Pro League</string>
+    <string name="mi5g_league_ucl">UEFA Champions League</string>
+    <string name="mi5g_league_eng">Premier League</string>
+    <string name="mi5g_league_esp">LaLiga</string>
+    <string name="mi5g_league_uae">UAE Pro League</string>
+    <string name="mi5g_national_day">National day countdown</string>
+    <string name="mi5g_cc_inputs">Inputs</string>
+    <string name="mi5g_cc_no_inputs">This TV lists no inputs.</string>
+    <string name="mi5g_cc_recent_apps">Recently opened</string>
+    <string name="mi5g_cc_no_recent">Apps you open from Home show here.</string>
+</resources>

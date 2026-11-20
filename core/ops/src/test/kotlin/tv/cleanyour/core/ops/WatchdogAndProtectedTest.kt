@@ -113,6 +113,28 @@ class ProtectedTest {
             assertNotNull(p, Protected.isProtected(PackageName(p), null, null))
     }
 
+    // 2.4: Core package protection (M1 item 6)
+    @Test fun corePackagesAreProtected() {
+        val core = listOf(
+            "com.google.android.apps.mediashell",
+            "com.google.android.katniss",
+            "com.android.packageinstaller",
+            "com.google.android.packageinstaller",
+            "com.android.tv.settings",
+            "com.android.systemui",
+            "com.android.providers.settings",
+        )
+        val r = ShellRenderer()
+        for (name in core) {
+            val pkg = PackageName(name)
+            assertNotNull(Protected.isProtected(pkg, null, null), name)
+            assertFailsWith<RenderRefused>(name) { r.render(Op.Disable(pkg)) }
+            assertFailsWith<RenderRefused>(name) { r.render(Op.Uninstall(pkg)) }
+        }
+        // tvrecommendations is NOT core
+        assertNull(Protected.isProtected(PackageName("com.google.android.tvrecommendations"), null, null))
+    }
+
     @Test fun liveFactsAndProfile() {
         val pkg = PackageName("com.vendor.service")
         assertNull(Protected.isProtected(pkg, state(), null))

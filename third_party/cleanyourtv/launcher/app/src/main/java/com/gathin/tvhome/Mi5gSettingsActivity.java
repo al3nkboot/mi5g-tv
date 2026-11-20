@@ -20,6 +20,7 @@ public final class Mi5gSettingsActivity extends Activity {
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
+        KidsProfile.guard(this);   // 2.4 M7: kids profile PIN
         float dp = getResources().getDisplayMetrics().density;
         ScrollView scroll = new ScrollView(this);
         scroll.setBackgroundColor(0xFF0B1F1E);
@@ -54,7 +55,7 @@ public final class Mi5gSettingsActivity extends Activity {
         rows.removeAllViews();
         SharedPreferences p = getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE);
         // Mi5G 2.0.1: credits for the projects this launcher builds on.
-        Rows.add(this, rows, R.drawable.ic_home_settings, getString(R.string.mi5g_credits), "Aerial TV · Clean Your TV · tv-vibehack · talkies",
+        Rows.add(this, rows, R.drawable.ic_home_settings, getString(R.string.mi5g_credits), "Aerial TV · Clean Your TV · tv-vibehack · talkies · tvOS Launcher",
                 () -> new android.app.AlertDialog.Builder(this).setTitle(R.string.mi5g_credits)
                         .setMessage(R.string.mi5g_credits_body).setPositiveButton(android.R.string.ok, null).show());
         // Mi5G 2.0.1: arrange Home from a phone on the same Wi-Fi (QR code, off when this screen closes).
@@ -96,6 +97,77 @@ public final class Mi5gSettingsActivity extends Activity {
         Rows.add(this, rows, R.drawable.ic_lock, getString(R.string.mi5g_home_lock),
                 onOff(LauncherSwitches.homeLocked(this)),
                 () -> { LauncherSwitches.setHomeLocked(this, !LauncherSwitches.homeLocked(this)); build(); });
+        // 2.4 M2: home screen polish (own code). Clean mode, Arabic names, sounds, All apps, safe mode.
+        Rows.add(this, rows, R.drawable.ic_apps, getString(R.string.mi5g_minimal), onOff(LauncherSwitches.minimal(this)), () -> {
+            LauncherSwitches.setMinimal(this, !LauncherSwitches.minimal(this));
+            setResult(RESULT_OK);
+            HomeLayout.changed();
+            build();
+        });
+        Rows.add(this, rows, R.drawable.ic_apps, getString(R.string.mi5g_arabic_names), onOff(LauncherSwitches.arabicNames(this)), () -> {
+            LauncherSwitches.setArabicNames(this, !LauncherSwitches.arabicNames(this));
+            setResult(RESULT_OK);
+            HomeLayout.changed();
+            build();
+        });
+        Rows.add(this, rows, R.drawable.ic_speaker, getString(R.string.mi5g_sounds), onOff(LauncherSwitches.sounds(this)), () -> {
+            LauncherSwitches.setSounds(this, !LauncherSwitches.sounds(this));
+            Sounds.click(this);
+            build();
+        });
+        // 2.4 M3 (backlog 15): a QR that connects the Mi5G TV phone app to this TV.
+        Rows.add(this, rows, R.drawable.ic_home_settings, getString(R.string.mi5g_connect_phone), null,
+                () -> startActivity(new Intent(this, PhoneConnectActivity.class)));
+        Rows.add(this, rows, R.drawable.ic_apps, getString(R.string.mi5g_all_apps), null,
+                () -> startActivity(new Intent(this, AllAppsActivity.class)));
+        Rows.add(this, rows, R.drawable.ic_home_settings, getString(R.string.mi5g_safe_mode),
+                SafeMode.active(this) ? getString(R.string.mi5g_safe_mode_status_on) : onOff(false), () -> {
+                    SafeMode.setActive(this, !SafeMode.active(this));
+                    setResult(RESULT_OK);
+                    HomeLayout.changed();
+                    build();
+                });
+        // 2.4 M4: Home widgets (backlog 26), the screensaver's calendar line (backlog 5), reminders (backlog 30)
+        // and the weekly sleep and wake schedule (backlog 34). Reminders and the week are set on the phone page.
+        Rows.add(this, rows, R.drawable.ic_swap_vert, getString(R.string.mi5g_widgets), null,
+                () -> startActivity(new Intent(this, HomeWidgetsActivity.class)));
+        Rows.add(this, rows, R.drawable.ic_clock, getString(R.string.mi5g_saver_info), onOff(Occasions.saverInfoOn(this)), () -> {
+            Occasions.setSaverInfo(this, !Occasions.saverInfoOn(this));
+            build();
+        });
+        int reminders = Reminders.load(this).size();
+        Rows.add(this, rows, R.drawable.ic_timer, getString(R.string.mi5g_reminders),
+                reminders == 0 ? getString(R.string.mi5g_reminders_none) : getResources().getQuantityString(R.plurals.mi5g_reminders_count, reminders, reminders),
+                this::showReminders);
+        Rows.add(this, rows, R.drawable.ic_wake, getString(R.string.mi5g_schedule),
+                Schedule.load(this).empty() ? getString(R.string.mi5g_schedule_empty) : onOff(Schedule.on(this)), () -> {
+                    if (Schedule.load(this).empty()) {
+                        android.widget.Toast.makeText(this, R.string.mi5g_set_on_phone, android.widget.Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    Schedule.setOn(this, !Schedule.on(this));
+                    build();
+                });
+        // 2.4 M7: family quiz (backlog 37), kids profile (3), time-of-day order (2), Advanced (29).
+        Rows.add(this, rows, R.drawable.ic_play, getString(R.string.mi5g_quiz), getString(R.string.mi5g_quiz_row_hint),
+                () -> startActivity(new Intent(this, QuizActivity.class)));
+        Rows.add(this, rows, R.drawable.ic_lock, getString(R.string.mi5g_kids), onOff(KidsProfile.on(this)),
+                () -> startActivityForResult(new Intent(this, KidsActivity.class), 71));
+        Rows.add(this, rows, R.drawable.ic_swap_vert, getString(R.string.mi5g_tod_order),
+                TimeOfDay.on(this) ? getString(R.string.mi5g_tod_now, getString(TimeOfDay.labelRes(TimeOfDay.slotNow()))) : onOff(false), () -> {
+                    TimeOfDay.setOn(this, !TimeOfDay.on(this));
+                    setResult(RESULT_OK);
+                    HomeLayout.changed();
+                    build();
+                });
+        Rows.add(this, rows, R.drawable.ic_keys, getString(R.string.mi5g_advanced), null,
+                () -> startActivity(new Intent(this, AdvancedActivity.class)));
+        // 2.4: Keep Alive (on by default on Xiaomi) and Keep screen awake, ideas from tvOS-Launcher (Apache-2.0).
+        Rows.add(this, rows, R.drawable.ic_home_settings, getString(R.string.mi5g_keep_alive),
+                KeepAlive.homeLost(this) ? getString(R.string.mi5g_keep_alive_lost) : onOff(LauncherSwitches.keepAlive(this)),
+                () -> { LauncherSwitches.setKeepAlive(this, !LauncherSwitches.keepAlive(this)); KeepAlive.onEvent(this); build(); });
+        Rows.add(this, rows, R.drawable.ic_timer, getString(R.string.mi5g_caffeine), getString(Caffeine.labelRes(Caffeine.choice(this))),
+                () -> { Caffeine.set(this, Caffeine.next(Caffeine.choice(this))); build(); });
         Rows.add(this, rows, R.drawable.ic_input, getString(R.string.mi5g_cec_switch),
                 onOff(LauncherSwitches.cecSwitch(this)),
                 () -> { LauncherSwitches.setCecSwitch(this, !LauncherSwitches.cecSwitch(this)); build(); });
@@ -137,6 +209,11 @@ public final class Mi5gSettingsActivity extends Activity {
         rows.getChildAt(0).requestFocus();
     }
 
+    @Override protected void onActivityResult(int request, int result, Intent data) {
+        super.onActivityResult(request, result, data);
+        if (request == 71 && result == RESULT_OK) { setResult(RESULT_OK); HomeLayout.changed(); }
+    }
+
     @Override public void onRequestPermissionsResult(int request,String[] permissions,int[] grants){
         super.onRequestPermissionsResult(request,permissions,grants);
         if(request==61){boolean granted=grants.length>0&&grants[0]==android.content.pm.PackageManager.PERMISSION_GRANTED;
@@ -161,6 +238,32 @@ public final class Mi5gSettingsActivity extends Activity {
         if (EffectsMode.FULL.equals(m)) return getString(R.string.mi5g_effects_full);
         if (EffectsMode.LITE.equals(m)) return getString(R.string.mi5g_effects_lite);
         return getString(EffectsMode.lite(this) ? R.string.mi5g_effects_auto_lite : R.string.mi5g_effects_auto);
+    }
+
+    /** 2.4 M4: the reminders, OK turns one on or off; new ones come from the phone's arrange page. */
+    private void showReminders() {
+        List<Reminders.Item> items = Reminders.load(this);
+        if (items.isEmpty()) {
+            android.widget.Toast.makeText(this, R.string.mi5g_set_on_phone, android.widget.Toast.LENGTH_LONG).show();
+            return;
+        }
+        LinearLayout[] r = new LinearLayout[1];
+        android.app.Dialog d = TileMenu.panel(this, getString(R.string.mi5g_reminders), r);
+        for (int i = 0; i < items.size(); i++) {
+            final int k = i;
+            Reminders.Item it = items.get(i);
+            Rows.add(this, r[0], R.drawable.ic_timer, Schedule.hhmm(it.minute) + "  " + it.text, onOff(it.on), () -> {
+                List<Reminders.Item> now = Reminders.load(this);
+                if (k < now.size()) {
+                    Reminders.Item x = now.get(k);
+                    now.set(k, new Reminders.Item(x.text, x.minute, x.days, !x.on));
+                    Reminders.save(this, now);
+                }
+                d.dismiss();
+                build();
+            });
+        }
+        d.show();
     }
 
     private String onOff(boolean on) { return getString(on ? R.string.mi5g_on : R.string.mi5g_off); }

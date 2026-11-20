@@ -475,6 +475,8 @@
     <string name="tvtools_arrange_home">Arrange Home from the phone</string>
     <string name="tvtools_label_arrange_home">Open the arrange QR code on the TV</string>
     <string name="tvtools_keep_home">Lock Home to Mi5G</string>
+    <string name="tvtools_reapply_home">Re-apply home screen</string>
+    <string name="tvtools_label_reapply_home">Re-applying the Mi5G home screen</string>
     <string name="tvtools_stock_home">Return to the TV launcher</string>
     <string name="tvtools_label_keep_home">Locking Home to Mi5G</string>
     <string name="tvtools_label_stock_home">Returning to the TV launcher</string>
@@ -491,6 +493,26 @@
     <string name="tvtools_prayer_opacity">Opacity {percent}%</string>
     <string name="tvtools_prayer_kahf">📖 Friday reminder</string>
     <string name="tvtools_prayer_send">Send settings to the TV</string>
+    <!-- 2.4 M5: prayer module 2 -->
+    <string name="tvtools_prayer_keep_alive">🛡️ Keep Alive</string>
+    <string name="tvtools_prayer_each_note">Each prayer: tap the name to choose adhan, banner or off, and the minutes to move its time.</string>
+    <string name="tvtools_prayer_name_fajr">Fajr</string>
+    <string name="tvtools_prayer_name_sunrise">Sunrise</string>
+    <string name="tvtools_prayer_name_dhuhr">Dhuhr</string>
+    <string name="tvtools_prayer_name_asr">Asr</string>
+    <string name="tvtools_prayer_name_maghrib">Maghrib</string>
+    <string name="tvtools_prayer_name_isha">Isha</string>
+    <string name="tvtools_prayer_alert_off">off</string>
+    <string name="tvtools_prayer_alert_banner">banner</string>
+    <string name="tvtools_prayer_alert_adhan">adhan</string>
+    <string name="tvtools_prayer_offset">{offset} min</string>
+    <string name="tvtools_prayer_sound_note">Adhan sound: the built-in recording, or a recording you choose from the phone (up to 12 MB). Fajr can have its own.</string>
+    <string name="tvtools_prayer_sound">🔈 Adhan: {name}</string>
+    <string name="tvtools_prayer_fajr_sound">🌅 Fajr adhan: {name}</string>
+    <string name="tvtools_prayer_sound_default">built-in</string>
+    <string name="tvtools_prayer_sound_on_tv">file already on the TV</string>
+    <string name="tvtools_prayer_sound_use_default">Use the built-in adhan</string>
+    <string name="tvtools_prayer_fajr_same">same as the others</string>
     <string name="tvtools_label_prayer">Prayer settings</string>
     <!-- M4 item 34: updates -->
     <string name="appsettings_update_now">Update now to {version}</string>
@@ -513,5 +535,26 @@
     <string name="appsettings_update_rate_limited">GitHub\'s temporary limit was reached. Try again shortly or open the releases page</string>
     <string name="appsettings_update_cannot_install">The update can\'t be installed on this device</string>
     <string name="appsettings_update_cannot_install_note">This device has no screen for installing APK files. Download the update from the releases page on a computer or phone and install it from there (for example with Install APK in the phone app\'s TV tools, or with adb).</string>
+    <!-- 2.4 -->
+    <string name="remote_play_store">Play Store</string>
+    <string name="tvtools_play_store_bg_stop">Stop the Play Store running in the background</string>
+    <string name="tvtools_play_store_bg_allow">Let the Play Store run in the background again</string>
+    <string name="tvtools_label_play_store_bg_stop">Stopping the Play Store in the background</string>
+    <string name="tvtools_label_play_store_bg_allow">Letting the Play Store run in the background</string>
+    <!-- 2.4 M3: phone companion -->
+    <string name="remote_tv_all_apps">All apps on TV</string>
+    <string name="remote_switch_tv">Switch TV</string>
+    <string name="tvtools_store_section">Mini store</string>
+    <string name="tvtools_store_note">Opens the app\'s Play Store page on the TV; install it there with the TV remote.</string>
+    <string name="tvtools_label_store_open">Opening the store page on the TV</string>
+    <string name="tvtools_live_section">Message or drawing on the TV now</string>
+    <string name="tvtools_live_note">Write a short message, draw with your finger, or both. It shows on the TV straight away (Mi5G Home), until Back is pressed there or you take it off.</string>
+    <string name="tvtools_live_text_label">Message (optional)</string>
+    <string name="tvtools_live_pad_cd">Drawing pad. Draw with one finger.</string>
+    <string name="tvtools_live_send">Show on TV</string>
+    <string name="tvtools_live_clear_pad">Clear</string>
+    <string name="tvtools_live_close">Take it off</string>
+    <string name="tvtools_label_live_board">Showing it on the TV</string>
+    <string name="tvtools_label_live_board_close">Taking it off the TV</string>
 </resources>
 

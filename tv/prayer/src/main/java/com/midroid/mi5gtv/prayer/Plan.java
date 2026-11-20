@@ -8,7 +8,10 @@ import java.util.List;
 
 /** The next alarms to arm, without Android types so it is unit-tested. */
 final class Plan {
-    static final int KIND_PRAYER = 0, KIND_PRE = 1, KIND_KAHF = 2;
+    static final int KIND_PRAYER = 0, KIND_PRE = 1, KIND_KAHF = 2, KIND_KEEP = 3;
+    /** 2.4 M5: Keep Alive re-arms at least this often, so a TV that dropped the alarms gets them back. */
+    static final int KEEP_HOURS = 6;
+    static final int CODES = 40;
 
     static final class Alarm {
         final int kind, prayer; final ZonedDateTime at;
@@ -20,7 +23,7 @@ final class Plan {
     static List<Alarm> upcoming(Settings s, ZonedDateTime now) {
         ZonedDateTime local = now.withZoneSameInstant(ZoneId.of(s.zone));
         List<Alarm> out = new ArrayList<>();
-        boolean[] armed = new boolean[30];
+        boolean[] armed = new boolean[CODES];
         for (int off = 0; off <= 2; off++) {
             ZonedDateTime[] d = Engine.day(s, local.toLocalDate().plusDays(off));
             for (int p = 0; p < Engine.COUNT; p++) {
@@ -31,6 +34,7 @@ final class Plan {
             ZonedDateTime day = local.toLocalDate().plusDays(off).atStartOfDay(local.getZone());
             if (s.kahf && day.getDayOfWeek() == DayOfWeek.FRIDAY) add(out, armed, new Alarm(KIND_KAHF, 0, day.plusHours(s.kahfHour)), local);
         }
+        if (s.keepAlive) add(out, armed, new Alarm(KIND_KEEP, 0, local.plusHours(KEEP_HOURS)), local);
         out.sort((a, b) -> a.at.compareTo(b.at));
         return out;
     }

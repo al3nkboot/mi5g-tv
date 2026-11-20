@@ -39,7 +39,7 @@ final class ContinueWatching {
  private static String str(Cursor c,String key){int i=c.getColumnIndex(key);return i<0||c.isNull(i)?"":c.getString(i);}
  private static long num(Cursor c,String key){int i=c.getColumnIndex(key);return i<0||c.isNull(i)?0:c.getLong(i);}
  static void refresh(Activity a,LinearLayout container){
-  container.removeAllViews();container.setVisibility(View.GONE);if(!enabled(a))return;
+  container.removeAllViews();container.setVisibility(View.GONE);if(!enabled(a)||KidsProfile.on(a))return;   // 2.4 M7: not in the kids profile
   new Thread(()->{List<Item> items=read(a);a.runOnUiThread(()->{if(!a.isFinishing()&&!a.isDestroyed()&&enabled(a))bind(a,container,items);});},"Mi5gWatchNext").start();
  }
  static void bind(Activity a,LinearLayout container,List<Item> items){

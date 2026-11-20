@@ -98,4 +98,34 @@ class NavigationTest {
         assertTrue(applyRoute(stack, "back", noTvs = false))
         assertEquals(Dest.TvTools("0123456789abcdef"), stack.last())
     }
+
+    // 2.4: "Use as a remote only": after pairing the wizard is replaced by the TV's Manage with its remote on top,
+    // so Back from the remote lands where the full setup ("Clean this TV") stays one tap away.
+    @Test fun remoteOnlyOpensTheRemoteOverManage() {
+        val id = "0123456789abcdef"
+        val stack = mutableListOf<NavKey>(Dest.Setup())
+        assertTrue(applyRoute(stack, "remoteonly/$id", noTvs = false))
+        assertEquals(listOf<NavKey>(Dest.Manage(id), Dest.Remote(id)), stack)
+        assertTrue(applyRoute(stack, "back", noTvs = false))
+        assertEquals(listOf<NavKey>(Dest.Manage(id)), stack)
+        assertTrue(applyRoute(stack, "remoteonly", noTvs = false))   // no id: nothing opens
+        assertEquals(listOf<NavKey>(Dest.Manage(id)), stack)
+    }
+
+    // 2.4 M3 (backlog 20): switching TV in the remote replaces the remote, so Back still lands on Manage.
+    @Test fun remoteSwitchReplacesTheRemote() {
+        val a = "0123456789abcdef"; val b = "fedcba9876543210"
+        val stack = mutableListOf<NavKey>(Dest.Manage(a), Dest.Remote(a))
+        assertTrue(applyRoute(stack, "remoteswitch/$b", noTvs = false))
+        assertEquals(listOf<NavKey>(Dest.Manage(a), Dest.Remote(b)), stack)
+    }
+
+    // 2.4 M3 (backlog 15): after the yes, one fresh setup screen is on top, where the address goes in.
+    @Test fun connectLinkOpensOneFreshSetup() {
+        val stack = mutableListOf<NavKey>(Dest.Setup(), Dest.Manage("0123456789abcdef"))
+        applyConnect(stack)
+        assertEquals(listOf<NavKey>(Dest.Manage("0123456789abcdef"), Dest.Setup()), stack)
+        applyConnect(stack)
+        assertEquals(listOf<NavKey>(Dest.Manage("0123456789abcdef"), Dest.Setup()), stack)
+    }
 }

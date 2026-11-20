@@ -438,7 +438,7 @@ fun DockSheet(current: List<AppChoice>, apps: List<AppChoice>, columns: Int, onD
 internal fun DockContent(state: DockEditorState, apps: List<AppChoice>, onDone: () -> Unit, scroll: ScrollState? = null, undo: UndoSnackbarState? = null) {
     SheetHeader(stringResource(R.string.dock_title), subtitle = msg(R.string.dock_body, "count" to state.columns))
     DockEditor(state, remember(apps) { apps.map { it.toDockApp() } }, scroll = scroll, undo = undo)
-    PrimaryButton(stringResource(R.string.action_done), onDone, Modifier.padding(top = 20.dp))
+    PrimaryButton(stringResource(R.string.action_done), onDone, Modifier.padding(top = 20.dp), guardObscured = false) // 2.4: non-destructive setup sheet
 }
 
 internal fun AppChoice.toDockApp() = DockApp(pkg.value, name)
@@ -625,6 +625,7 @@ fun DoneScreen(state: SetupState.Done, extras: SetupExtras, actions: SetupAction
             PrimaryButton(
                 when (finishing) { Finishing.SWITCHING -> stringResource(R.string.done_finishing); Finishing.DONE -> stringResource(R.string.done_finished); null -> stringResource(R.string.done_finish) },
                 { actions.intent(SetupIntent.Finish) }, loading = finishing == Finishing.SWITCHING, enabled = finishing == null,
+                guardObscured = false, // 2.4: non-destructive navigation to manage
             )
         },
     ) {

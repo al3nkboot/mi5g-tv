@@ -162,7 +162,7 @@ public final class MainActivity extends Activity {
         EN_TO_AR_TEAMS.put("sharjah", "الشارقة");
     }
 
-    private static final class MatchItem {
+    static final class MatchItem {
         final String leagueCode;
         final String leagueAr;
         final String homeAr;
@@ -174,6 +174,7 @@ public final class MainActivity extends Activity {
         final String timeText;   // local kickoff time e.g., "9:00 م"
         final boolean isLiveSource;
         String eventId = "", slug = "";
+        long kickoff = -1;
 
         MatchItem(String leagueCode, String leagueAr, String homeAr, String awayAr,
                   String homeScore, String awayScore, String state, String statusText,
@@ -194,7 +195,7 @@ public final class MainActivity extends Activity {
     private SharedPreferences prefs;
     private final Set<String> favTeams = new HashSet<String>();
     private final Set<String> favLeagues = new HashSet<String>();
-    private int activeTab = 0; // 0: فرقي المفضلة, 1: مباريات اليوم, 2: مباريات الغد, 3: تحديد الفرق والدوريات
+    private int activeTab = 0; // 0: فرقي المفضلة, 1: مباريات اليوم, 2: مباريات الغد, 3: تحديد الفرق والدوريات, 4: البطولات الكبرى
 
     private final List<MatchItem> todayMatches = new ArrayList<MatchItem>();
     private final List<MatchItem> tomorrowMatches = new ArrayList<MatchItem>();
@@ -205,7 +206,13 @@ public final class MainActivity extends Activity {
     private TextView statusBannerText;
     private TextView subStatusText;
     private TextView refreshBtn;
-    private final TextView[] tabButtons = new TextView[4];
+    private final TextView[] tabButtons = new TextView[5];
+    private TextView unpinBtn;
+    /** Today's prayer times from Mi5G Prayer ({name, "HH:mm"}), for the prayer-clash notes. */
+    private List<String[]> prayers = new ArrayList<String[]>();
+    private final List<MatchItem> tournamentMatches = new ArrayList<MatchItem>();
+    private boolean tournamentsLoading = false;
+    private long tournamentsAt = 0;
     private LinearLayout contentContainer;
     private final Handler handler = new Handler(Looper.getMainLooper());
 
@@ -273,6 +280,21 @@ public final class MainActivity extends Activity {
         LinearLayout.LayoutParams tbl = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         tbl.setMarginStart(dp(10));
         headerRow.addView(tableBtn, tbl);
+        unpinBtn = makeText(getString(R.string.score_unpin), 14, "#F2F7F5", true);
+        unpinBtn.setGravity(Gravity.CENTER);
+        unpinBtn.setPadding(dp(18), dp(10), dp(18), dp(10));
+        styleInteractiveButton(unpinBtn, "#0E241B", "#D4AF37", "#16382B", "#FFD166", dp(999));
+        unpinBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CornerService.unpin(MainActivity.this);
+                unpinBtn.setVisibility(View.GONE);
+            }
+        });
+        LinearLayout.LayoutParams ubl = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        ubl.setMarginStart(dp(10));
+        headerRow.addView(unpinBtn, ubl);
+        unpinBtn.setVisibility(TextUtils.isEmpty(CornerService.pinned(this)) ? View.GONE : View.VISIBLE);
         root.addView(headerRow);
 
         // Status Hero Banner
@@ -294,7 +316,8 @@ public final class MainActivity extends Activity {
             "⭐ فرقي المفضلة",
             "🔥 مباريات اليوم",
             "📅 مباريات الغد",
-            "⚙️ تحديد الفرق والدوريات"
+            "⚙️ تحديد الفرق والدوريات",
+            getString(R.string.score_tab_tournaments)
         };
         for (int i = 0; i < tabLabels.length; i++) {
             final int tabIdx = i;
@@ -348,6 +371,8 @@ public final class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        if (unpinBtn != null) unpinBtn.setVisibility(TextUtils.isEmpty(CornerService.pinned(this)) ? View.GONE : View.VISIBLE);
+        if (contentContainer != null && activeTab != 3) renderContent();
         handler.removeCallbacks(autoRefreshRunnable);
         handler.postDelayed(autoRefreshRunnable, 60000L);
     }
@@ -360,7 +385,7 @@ public final class MainActivity extends Activity {
 
     private void loadPreferences() {
         activeTab = prefs.getInt("active_tab", 0);
-        if (activeTab < 0 || activeTab > 3) activeTab = 0;
+        if (activeTab < 0 || activeTab > 4) activeTab = 0;
 
         boolean initialized = prefs.getBoolean("initialized_v1", false);
         favTeams.clear();
@@ -436,6 +461,10 @@ public final class MainActivity extends Activity {
             renderSelectionPanel();
             return;
         }
+        if (activeTab == 4) {
+            renderTournaments();
+            return;
+        }
 
         List<MatchItem> sourceList = (activeTab == 2) ? tomorrowMatches : todayMatches;
         List<MatchItem> filtered = new ArrayList<MatchItem>();
@@ -496,7 +525,11 @@ public final class MainActivity extends Activity {
         topInfoRow.addView(quickPickBtn);
         contentContainer.addView(topInfoRow);
 
-        // Render match cards in 2-column TV grid rows for easy D-Pad navigation
+        addGrid(filtered);
+    }
+
+    /** Match cards in 2-column TV grid rows for easy D-Pad navigation. */
+    private void addGrid(List<MatchItem> filtered) {
         LinearLayout currentRow = null;
         for (int i = 0; i < filtered.size(); i++) {
             if (i % 2 == 0) {
@@ -517,6 +550,63 @@ public final class MainActivity extends Activity {
             View spacer = new View(this);
             currentRow.addView(spacer, new LinearLayout.LayoutParams(0, 1, 1f));
         }
+    }
+
+    /** M6: World Cup, continental cups and the big club cups, each with its current or next round. */
+    private void renderTournaments() {
+        TextView head = makeText(getString(R.string.score_tournaments_head), 17, "#2EC4B6", true);
+        head.setPadding(0, 0, 0, dp(10));
+        contentContainer.addView(head);
+        if (System.currentTimeMillis() - tournamentsAt > 10 * 60_000L) fetchTournamentsAsync();
+        if (tournamentMatches.isEmpty()) {
+            TextView t = makeText(getString(tournamentsLoading ? R.string.score_loading : R.string.score_tournaments_empty), 16, "#A3BEB2", false);
+            t.setFocusable(true);
+            contentContainer.addView(t);
+            return;
+        }
+        String league = null;
+        List<MatchItem> group = new ArrayList<MatchItem>();
+        for (MatchItem m : tournamentMatches) {
+            if (!m.leagueAr.equals(league)) {
+                if (!group.isEmpty()) addGrid(group);
+                group = new ArrayList<MatchItem>();
+                league = m.leagueAr;
+                TextView h = makeText("🏆 " + league, 16, "#D4AF37", true);
+                h.setPadding(dp(6), dp(8), dp(6), dp(6));
+                contentContainer.addView(h);
+            }
+            group.add(m);
+        }
+        if (!group.isEmpty()) addGrid(group);
+    }
+
+    void setTournaments(List<MatchItem> items) {
+        tournamentMatches.clear();
+        tournamentMatches.addAll(items);
+        tournamentsAt = System.currentTimeMillis();
+        tournamentsLoading = false;
+        if (activeTab == 4) renderContent();
+    }
+
+    private void fetchTournamentsAsync() {
+        if (tournamentsLoading) return;
+        tournamentsLoading = true;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final List<MatchItem> out = new ArrayList<MatchItem>();
+                long now = System.currentTimeMillis();
+                for (String[] t : Football.TOURNAMENTS) {
+                    List<MatchItem> one = new ArrayList<MatchItem>();
+                    fetchEspnDay(t[2], t[0], t[1], null, one);
+                    for (MatchItem m : one) if (Football.inTournamentWindow(m.kickoff, now)) out.add(m);
+                }
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() { setTournaments(out); }
+                });
+            }
+        }).start();
     }
 
     private void renderEmptyFavoritesPrompt() {
@@ -584,7 +674,9 @@ public final class MainActivity extends Activity {
                     startActivity(new android.content.Intent(MainActivity.this, MatchActivity.class)
                         .putExtra("slug", m.slug).putExtra("event", m.eventId)
                         .putExtra("title", m.homeAr + "  " + m.homeScore + " - " + m.awayScore + "  " + m.awayAr)
-                        .putExtra("league", m.leagueAr));
+                        .putExtra("league", m.leagueAr)
+                        .putExtra("home", m.homeAr).putExtra("away", m.awayAr)
+                        .putExtra("state", m.state).putExtra("kickoff", m.kickoff));
                 }
             }
         });
@@ -654,11 +746,38 @@ public final class MainActivity extends Activity {
         // Subtle footer hint
         String footerInfo = ("pre".equals(m.state) ? "موعد انطلاق المباراة بالتوقيت المحلي: " + m.timeText : "انطلقت الساعة " + m.timeText)
             + (hasFavTeam ? "  •  ⭐ ضمن فرقك المفضلة  •  OK للتفاصيل" : "  •  OK للتفاصيل، ضغط مطوّل للمفضلة");
+        if (m.kickoff > 0 && !sameDay(m.kickoff, System.currentTimeMillis())) {
+            footerInfo = "📅 " + new SimpleDateFormat("EEEE d/M", new Locale("ar")).format(new Date(m.kickoff)) + "  •  " + footerInfo;
+        }
+        if (!TextUtils.isEmpty(m.eventId) && Reminders.has(this, m.eventId)) footerInfo = "🔔 " + footerInfo;
         TextView footTv = makeText(footerInfo, 11, "#6E8F80", false);
         card.addView(footTv);
+        if (!"post".equals(m.state)) {
+            String clash = clashNote(this, m.kickoff, prayers);
+            if (clash != null) card.addView(makeText(clash, 12, "#7FD8C4", true));
+        }
 
         return card;
     }
+
+    /** "🕌 صلاة العصر أثناء المباراة (15:12)" for each prayer inside the match window; null when none. */
+    static String clashNote(android.content.Context c, long kickoff, List<String[]> prayers) {
+        List<String[]> hits = Football.clashes(kickoff, prayers, TimeZone.getDefault());
+        if (hits.isEmpty()) return null;
+        StringBuilder b = new StringBuilder();
+        for (String[] h : hits) {
+            if (b.length() > 0) b.append("  •  ");
+            b.append(c.getString(R.string.score_prayer_clash, h[0], h[1]));
+        }
+        return b.toString();
+    }
+
+    private static boolean sameDay(long a, long b) {
+        SimpleDateFormat f = new SimpleDateFormat("yyyyMMdd", Locale.US);
+        return f.format(new Date(a)).equals(f.format(new Date(b)));
+    }
+
+    void setPrayers(List<String[]> p) { prayers = p == null ? new ArrayList<String[]>() : p; }
 
     private void renderSelectionPanel() {
         // Quick action bar inside the selection panel
@@ -821,6 +940,7 @@ public final class MainActivity extends Activity {
                     }
                 }
 
+                final List<String[]> todayPrayers = Prayers.today(MainActivity.this);
                 final boolean online = anyNetworkSuccess;
                 final String nowHm = new SimpleDateFormat("HH:mm", Locale.US).format(new Date());
 
@@ -830,6 +950,7 @@ public final class MainActivity extends Activity {
                         isFetching = false;
                         lastFetchOnline = online;
                         lastUpdatedTime = nowHm;
+                        prayers = todayPrayers;
                         mergeLiveWithFallback(liveToday, liveTomorrow, online);
                         renderContent();
                     }
@@ -841,7 +962,7 @@ public final class MainActivity extends Activity {
     private boolean fetchEspnDay(String slug, String leagueCode, String leagueAr, String ymd, List<MatchItem> out) {
         HttpURLConnection conn = null;
         try {
-            String urlStr = "https://site.api.espn.com/apis/site/v2/sports/soccer/" + slug + "/scoreboard?dates=" + ymd;
+            String urlStr = "https://site.api.espn.com/apis/site/v2/sports/soccer/" + slug + "/scoreboard" + (ymd == null ? "" : "?dates=" + ymd);
             conn = (HttpURLConnection) new URL(urlStr).openConnection();
             conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Android TV; Mi5G TV)");
             conn.setConnectTimeout(4500);
@@ -917,6 +1038,7 @@ public final class MainActivity extends Activity {
                 );
                 item.eventId = ev.optString("id", "");
                 item.slug = slug;
+                item.kickoff = Football.kickoffMs(isoDate);
                 out.add(item);
             }
             return true;

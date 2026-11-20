@@ -47,6 +47,8 @@ sealed interface ManageEffect {
     data object HapticDouble : ManageEffect
     data object PickApk : ManageEffect
     data object PickCastMedia : ManageEffect
+    /** 2.4 M5: pick an audio file for the main adhan or the separate Fajr adhan on the TV. */
+    data class PickPrayerSound(val fajr: Boolean) : ManageEffect
     data class SharePng(val png: ByteArray, val fileName: String) : ManageEffect
     data class ShareApk(val apkBytes: ByteArray, val fileName: String) : ManageEffect
     data class DownloadUrlApk(val url: String, val fileName: String) : ManageEffect
@@ -56,7 +58,8 @@ enum class SnackKind { PUT_BACK, SWITCHED_OFF, HOME_SAVED, MODULE_REMOVED, EXPOR
     KEPT_TV_INPUT,    // RF-LAUNCHER-250 F1: a switch-off the live check kept because it runs the TV's inputs
     KEPT_ON,          // issue #10: a switch-off the TV kept on (or the live check refused); nothing changed
     RUN_BUSY,         // Forget this TV refused: setup is still working on this TV
-    RUN_BUSY_ANY }    // Delete everything refused: setup is still working on the TV named
+    RUN_BUSY_ANY,     // Delete everything refused: setup is still working on the TV named
+    UNREACHABLE }
 
 // What a write in the Manage family is doing, for the narration row and the disabled buttons.
 sealed interface Busy {

@@ -93,6 +93,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     static final String ACTION_LAUNCHER_SETTINGS = "com.gathin.tvhome.action.LAUNCHER_SETTINGS";
     /** Tiles per row and dock slots (res/values/config.xml, columns). Set in onCreate. */
     static int COLUMNS = 4;
+    /** 2.4 M2: dock places, COLUMNS times the dock rows (1 to 3, LauncherSwitches.dockRows). Set in onCreate. */
+    static int DOCK = 4;
+    /** 2.4 M2: Home handed over to the TV's own home screen in onCreate (SafeMode); nothing else was set up. */
+    private boolean handedOver;
+    /** 2.4 M2: crash safe mode, or the owner's clean mode: the extras stay off. */
+    private boolean safeMode, calm;
     private boolean rtlAppGrid;
     private static final long MINUTE_MS = 60_000L;
     private static final long STATS_MS = 10_000L;
@@ -220,6 +226,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private RecyclerView.OnScrollListener pendingFocusScroll;
 
     private final Handler handler = new Handler(Looper.getMainLooper());
+    /** 2.4 (leak fix): kept so onDestroy clears only our own listener, not the one a recreated Home just set. */
+    private final Runnable layoutListener = () -> { if (this.isResumedNow && !isDestroyed()) recreate(); else this.layoutChanged = true; };
     /** Refreshes the network pill when the connection changes: at boot Wi-Fi often connects after Home is shown. */
     private final ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback() {
         @Override
@@ -286,6 +294,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         public void run() {
             updateGreeting();
             updateRace();
+            updateInfoLines();
             updateWifiLabel();
             sky.update();
             wallpaperPlayer.update();
@@ -296,10 +305,29 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // 2.4 M2: crash safe mode and the 5-minute safety switch (v1.7 item 1). Three crashes within five minutes:
+        // a Home press opens the TV's own home screen until five quiet minutes have passed.
+        SafeMode.install(this);
+        if (SafeMode.isHomeLaunch(getIntent()) && SafeMode.handOver(this, System.currentTimeMillis())) {
+            Intent stock = SafeMode.stockHome(this);
+            if (stock != null) {
+                try {
+                    startActivity(stock);
+                    Toast.makeText(this, R.string.mi5g_safe_handover, Toast.LENGTH_LONG).show();
+                    handedOver = true;
+                    finish();
+                    return;
+                } catch (RuntimeException ignored) {
+                    // no stock home to open: start in safe mode below
+                }
+            }
+        }
+        safeMode = SafeMode.active(this);
+        calm = safeMode || LauncherSwitches.minimal(this);
         setContentView(R.layout.activity_main);
         density = getResources().getDisplayMetrics().density;
         // Mi5G 2.0.1: a layout saved from the phone rebuilds Home (now, or when it comes back to the front).
-        HomeLayout.setListener(() -> { if (isResumedNow) recreate(); else layoutChanged = true; });
+        HomeLayout.setListener(layoutListener);
         applyClockOptions(HomeLayout.load(this).options);
         // config.xml, overlaid by config.json from a pushed theme (see Config and tools/theme.sh).
         Config cfg = Config.load(this);
@@ -307,11 +335,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         settingsKeyPanel = cfg.settingsKeyPanel;
         int savedColumns = HomeLayout.load(this).options.columns;
         COLUMNS = savedColumns >= 4 && savedColumns <= 6 ? savedColumns : cfg.columns;
+        DOCK = COLUMNS * (cfg.dockRow ? LauncherSwitches.dockRows(this) : 1);
         animations = cfg.animations;
         advancedEffects = cfg.animations && cfg.advancedEffects;
         reducedMotion = cfg.reducedMotion;
         // Mi5G 2.0.2: Lite effects (set, or found by timing the first D-pad moves on a slow TV).
-        if (EffectsMode.lite(this)) { animations = false; advancedEffects = false; reducedMotion = true; }
+        if (EffectsMode.lite(this) || safeMode) { animations = false; advancedEffects = false; reducedMotion = true; }
         effectsProbe = new EffectsMode.Probe(this, () -> { animations = false; advancedEffects = false; reducedMotion = true; if(isResumedNow) handler.post(this::recreate); });
         dockRow = cfg.dockRow;
         festival = cfg.festival;
@@ -386,6 +415,27 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         moduleCards = cfg.moduleCards;
         hiddenApps = new HashSet<>(cfg.hiddenApps);
         hiddenApps.addAll(TileMenu.removed(this));
+        // 2.4 M2: clean mode (backlog 6) and safe mode: the clock, the dock and the apps; the rest stays off.
+        if (calm) {
+            raceCalendar = Collections.emptyList();
+            racePanel.setVisibility(View.GONE);
+            showStats = false;
+            if (stats != null) stats.setVisibility(View.GONE);
+            moduleCards = false;
+            greeting.setVisibility(View.GONE);
+            sky.setVisibility(View.GONE);
+        }
+        if (safeMode) Toast.makeText(this, R.string.mi5g_safe_mode_on, Toast.LENGTH_LONG).show();
+        // 2.4 M4 (backlog 26): Home widgets hidden in Mi5G settings, and the info lines under the date.
+        if (!HomeWidgets.shown(this, HomeWidgets.STATS)) {
+            showStats = false;
+            if (stats != null) stats.setVisibility(View.GONE);
+        }
+        if (!HomeWidgets.shown(this, HomeWidgets.RACE)) {
+            raceCalendar = Collections.emptyList();
+            racePanel.setVisibility(View.GONE);
+        }
+        if (!calm) addInfoLines();
 
         grid = findViewById(R.id.grid);
         rtlAppGrid = getResources().getBoolean(R.bool.rtl_app_grid);
@@ -409,7 +459,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             public boolean requestChildRectangleOnScreen(@NonNull RecyclerView parent, @NonNull View child,
                                                          @NonNull Rect rect, boolean immediate,
                                                          boolean focusedChildVisible) {
-                if (dockRow && getPosition(child) < COLUMNS) return false;
+                if (dockRow && getPosition(child) < DOCK) return false;
                 int top = child.getTop() + rect.top;
                 int bottom = top + rect.height();
                 // A row already fully on screen stays put, even inside the bottom padding (the last row
@@ -443,14 +493,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             public void onChildViewDetachedFromWindow(@NonNull View v) {
             }
         });
-        if (dockRow) grid.addItemDecoration(new DockDecoration(COLUMNS, density, cinematic));
+        if (dockRow) grid.addItemDecoration(new DockDecoration(DOCK, density, cinematic));
         if (animations) {
             int enterAnim = reducedMotion ? R.anim.tile_enter_reduced : R.anim.tile_enter;
             float enterDelay = reducedMotion ? 0f : 0.06f;
             grid.setLayoutAnimation(new LayoutAnimationController(
                     AnimationUtils.loadAnimation(this, enterAnim), enterDelay));
         }
-        adapter = new AppAdapter(this, this, COLUMNS, cfg);
+        adapter = new AppAdapter(this, this, COLUMNS, DOCK, cfg);
         dockApps = cfg.dockApps;
         fillDockLeavesSlots = !cfg.fillDock;
         adapter.setSavedOrder(Order.ranks(Order.load(Order.file(this)), dockApps));
@@ -463,9 +513,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             int h = b - t;
             // Item height follows the tile size, which follows the columns and the rows that must fit (AppAdapter.tileWidthPx).
             int inner = (r - l) - grid.getPaddingLeft() - grid.getPaddingRight();
-            int tileW = AppAdapter.tileWidthPx(inner, h, COLUMNS, rowsBelowDock, cfg.dockTitle, cfg.dockRow, density);
+            int dockRows = DOCK / COLUMNS;   // 2.4 M2: 1 to 3
+            int tileW = AppAdapter.tileWidthPx(inner, h, COLUMNS, rowsBelowDock + dockRows - 1, cfg.dockTitle, cfg.dockRow, density);
             int itemH = AppAdapter.itemHeightPx(AppAdapter.tileHeightPx(tileW), density);
-            int dockRow = itemH + (int) (AppAdapter.DOCK_EXTRA_DP * density);   // item height plus DockDecoration offsets
+            int dockRow = (itemH + (int) (AppAdapter.DOCK_EXTRA_DP * density)) * dockRows;   // item height plus DockDecoration offsets
             int gridRows = itemH * rowsBelowDock;
             // Keep the hero below the header when the library is enabled on a short screen,
             // even when the theme requests an extra visible row below the dock.
@@ -641,12 +692,24 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // and listens for HDMI-CEC One Touch Play while the owner has it on.
         Revival.restore(this);
         CecSwitch.register(this);
+        // 2.4: Keep Alive (Xiaomi) checks Home and the helper once per resume; caffeine keeps the window on.
+        KeepAlive.register(this);
+        KeepAlive.onEvent(this);
+        Caffeine.sync(this);
+        if (Caffeine.active(this)) getWindow().addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        else getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         if (layoutChanged) {   // Mi5G 2.0.1: arranged from the phone while Home was behind
             layoutChanged = false;
             recreate();
             return;
         }
-        Mi5gWallpapers.refreshBingAsync(this, () -> { if (isResumedNow) recreate(); else layoutChanged = true; });
+        // 2.4 (leak fix): the download thread holds Home only weakly; a Home closed meanwhile is left alone.
+        final java.lang.ref.WeakReference<MainActivity> self = new java.lang.ref.WeakReference<>(this);
+        Mi5gWallpapers.refreshBingAsync(this, () -> {
+            MainActivity a = self.get();
+            if (a == null || a.isDestroyed()) return;
+            if (a.isResumedNow) a.recreate(); else a.layoutChanged = true;
+        });
         // A festival that started or ended while Home was in the background: rebuild with or without it.
         if (festive != festival.active(LocalDate.now())) {
             recreate();
@@ -660,13 +723,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         rebuildOnResume = false;
         updateGreeting();
         updateRace();
+        updateInfoLines();
         updateWifiLabel();
         updateInputsButton();
         seedDeviceStates();   // Mi5G 2.0.2
         ContinueWatching.refresh(this, findViewById(R.id.continueRow));
         if (showStats) startStats();
         sky.update();
-        wallpaperPlayer.start();
+        if (!safeMode) wallpaperPlayer.start();   // 2.4 M2: no wallpaper video in safe mode
         mediaPill.start();
         handler.postDelayed(minuteTick, MINUTE_MS);
         if (festive && diya != null) {
@@ -804,7 +868,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        HomeLayout.setListener(null);   // Mi5G 2.0.1
+        if (handedOver) return;   // 2.4 M2: finished in onCreate before anything was set up
+        HomeLayout.clearListener(layoutListener);   // Mi5G 2.0.1; 2.4: only ours
+        // 2.4 (leak fix): nothing posted (minute tick, clock check, petal shower, network refreshes) outlives Home,
+        // and no dialog keeps the destroyed window.
+        handler.removeCallbacksAndMessages(null);
+        stopStats();
+        if (cardPrompt != null) cardPrompt.dismiss();
+        if (appLibrary != null) appLibrary.close();
+        if (openPopup != null) openPopup.dismiss();
+        if (deviceOn != null) deviceOn.dismiss();
         wallpaperPlayer.close();
         ConnectivityManager cm = getSystemService(ConnectivityManager.class);
         TvInputManager tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);
@@ -850,6 +923,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // Mi5G 2.2 / CleanYourTV home_ignore_channel_keys: swallow Channel Up/Down on Home only.
         if (LauncherSwitches.homeIgnoreChannelKeys(this) && RemoteKeys.isChannelKey(event.getKeyCode())) return true;
         if (handleSettingsKey(event)) return true;
+        // 2.4 M3 (backlog 4): the remote's Search key on Home opens All apps with its search box.
+        if (event.getKeyCode() == KeyEvent.KEYCODE_SEARCH && !reordering) {
+            if (event.getAction() == KeyEvent.ACTION_UP) startActivity(new Intent(this, AllAppsActivity.class));
+            return true;
+        }
         if (event.getAction() == KeyEvent.ACTION_DOWN && effectsProbe != null) {
             int k = event.getKeyCode();
             if (k == KeyEvent.KEYCODE_DPAD_LEFT || k == KeyEvent.KEYCODE_DPAD_RIGHT || k == KeyEvent.KEYCODE_DPAD_UP || k == KeyEvent.KEYCODE_DPAD_DOWN) effectsProbe.onMove();
@@ -901,6 +979,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     /** The reorder button: turns the mode on (focus goes back to the last tile), or off again. */
     private void toggleReorder() {
+        if (!reordering && LauncherSwitches.refuseIfLocked(this)) return;   // 2.4: Home lock
         if (reordering) {
             endReorder();
             return;
@@ -924,6 +1003,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     /** Edit dock (Settings menu): focus goes to the first dock place, which OK then chooses. */
     private void startDockEdit() {
+        if (LauncherSwitches.refuseIfLocked(this)) return;   // 2.4: Home lock
         if (reordering) endReorder();
         if (!beginReorder()) return;
         dockEditing = true;
@@ -961,10 +1041,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             if (!down) {
                 int n = adapter.movableCount();
                 if (dockEditSlot < 0) {
-                    if (pos < Math.min(COLUMNS, n)) {
+                    if (pos < Math.min(DOCK, n)) {
                         dockEditSlot = pos;
                         dimOthers();
-                        focusTile(Math.min(COLUMNS, n - 1));
+                        focusTile(Math.min(DOCK, n - 1));
                         Toast.makeText(this, R.string.dock_edit_pick_app, Toast.LENGTH_LONG).show();
                     }
                 } else if (pos < n) {
@@ -1014,7 +1094,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (movingKey != null) {
             return pos != RecyclerView.NO_POSITION && movingKey.equals(adapter.keyAt(pos)) ? 1f : 0.45f;
         }
-        if (dockEditSlot >= 0 && pos >= 0 && pos < COLUMNS && pos != dockEditSlot) return 0.45f;
+        if (dockEditSlot >= 0 && pos >= 0 && pos < DOCK && pos != dockEditSlot) return 0.45f;
         return 1f;
     }
 
@@ -1195,6 +1275,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     public boolean onTileMenu(String pkg, String name) {
         if (reordering) return false;
+        if (LauncherSwitches.refuseIfLocked(this)) return true;   // 2.4: Home lock (move, remove)
         TileMenu.show(this, pkg, name, this::toggleReorder, this::recreate);
         return true;
     }
@@ -1253,7 +1334,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         glassTargetX = x;
         glassTargetY = y;
         // Cinematic shelf: the highlight glows in the dock app's colour, plain white in the grid.
-        int accent = cinematic && !festive && position < COLUMNS ? adapter.ambientColorAt(position) : 0;
+        int accent = cinematic && !festive && position < DOCK ? adapter.ambientColorAt(position) : 0;
         if (cinematic && !festive && accent != glassAccent) {
             glassAccent = accent;
             glass.setAccent(accent);
@@ -1276,8 +1357,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             springY.animateToFinalPosition(y - glassScrollShift);
         }
         View item = (View) card.getParent();
-        if (dockRow && position < COLUMNS) {
-            // Dock: park it at the bottom of the screen and show the top shelf for this app.
+        if (dockRow && position < DOCK) {
+            // Dock: park it at the bottom of the screen and show the top shelf for this app. 2.4 M2: with 2 or 3
+            // dock rows the first row is the one parked, so moving between dock rows never shifts the dock.
+            View firstRow = position >= COLUMNS ? grid.getLayoutManager().findViewByPosition(position % COLUMNS) : null;
+            if (firstRow != null) {
+                View firstCard = firstRow.findViewById(R.id.card);
+                if (firstCard != null) {
+                    Rect fr = new Rect(0, 0, firstCard.getWidth(), firstCard.getHeight());
+                    root.offsetDescendantRectToMyCoords(firstCard, fr);
+                    r = new Rect(r.left, fr.top, r.right, fr.top + r.height());
+                }
+                item = firstRow;
+            }
             int decoratedTop = item.getTop() - (int) (6 * density);
             int dy = decoratedTop - grid.getPaddingTop();
             // A 1px mismatch used to start a scroll on every dock move. Only scroll when the row is
@@ -1803,7 +1895,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 return true;
             }
             // In the dock, the last app is the row's end: the empty slots after it take no focus.
-            int rowCount = position < COLUMNS ? Math.min(count, adapter.dockFilled()) : count;
+            int rowCount = position < DOCK ? Math.min(count, adapter.dockFilled()) : count;
             return GridNavigation.atHorizontalEdge(position, rowCount, COLUMNS,
                     rtlAppGrid, keyCode == KeyEvent.KEYCODE_DPAD_LEFT);
         }
@@ -1969,6 +2061,44 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      * Shows or hides the race-weekend panel for this minute. Text only, set once a minute with the clock:
      * nothing animates, so the panel costs the GPU nothing between ticks.
      */
+    // ---- 2.4 M4: Home info lines (countdowns, next reminder, score, headline) ------------------------
+    private TextView infoLines;
+
+    private void addInfoLines() {
+        View date = findViewById(R.id.date);
+        if (date == null || !(date.getParent() instanceof LinearLayout)) return;
+        LinearLayout col = (LinearLayout) date.getParent();
+        infoLines = new TextView(this);
+        infoLines.setId(R.id.mi5gInfoLines);
+        infoLines.setTextColor(0xD9FFE8A8);
+        infoLines.setTextSize(13f);
+        infoLines.setMaxLines(HomeWidgets.MAX_LINES);
+        infoLines.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        infoLines.setTypeface(getResources().getFont(R.font.cairo));
+        infoLines.setTextDirection(View.TEXT_DIRECTION_LOCALE);
+        infoLines.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
+        infoLines.setFocusable(false);
+        infoLines.setVisibility(View.GONE);
+        col.addView(infoLines, col.indexOfChild(date) + 1,
+                new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+    }
+
+    private void updateInfoLines() {
+        if (infoLines == null) return;
+        final android.content.Context app = getApplicationContext();
+        final java.lang.ref.WeakReference<MainActivity> self = new java.lang.ref.WeakReference<>(this);
+        new Thread(() -> {
+            List<String> lines = HomeWidgets.lines(app, Weather.HTTP, System.currentTimeMillis());
+            final String text = String.join("\n", lines);
+            handler.post(() -> {
+                MainActivity a = self.get();
+                if (a == null || a.isDestroyed() || a.infoLines == null) return;
+                a.infoLines.setText(text);
+                a.infoLines.setVisibility(text.isEmpty() ? View.GONE : View.VISIBLE);
+            });
+        }, "Mi5gInfo").start();
+    }
+
     private void updateRace() {
         if (raceCalendar.isEmpty()) return;
         RaceWeekend.State s = RaceWeekend.at(raceCalendar, java.time.Instant.now());
@@ -2681,6 +2811,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 // The list stays open; the decision is for the card as it is now, not as it was listed.
                 Cards.Card now = cardFor(pkg);
                 if (now == null) return null;
+                if (LauncherSwitches.refuseIfLocked(this)) return null;   // 2.4: Home lock (show / hide a card)
                 decideCard(now, now.state != Cards.State.SHOWN);
                 // Every row, not only this one: a toggle can move another card across the limit of 8.
                 updateCardStates(rows);

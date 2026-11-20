@@ -707,6 +707,8 @@ class ShellRenderer(private val watchdogVariant: WatchdogVariant = WatchdogVaria
             }
             add(ShellLine(ShellTokens.line(listOf(CMD, "notification", "disallow_listener", MI5G_MEDIA_LISTENER))))
             add(ShellLine(ShellTokens.line(listOf(CMD, "deviceidle", "whitelist", "-$MI5G_HOME"))))
+            // 2.4: revoke WRITE_SECURE_SETTINGS from launcher on return to stock (M1 item 7)
+            add(revokeHomeSecureSettingsLine())
             installedStock.firstOrNull()?.let {
                 add(ShellLine(ShellTokens.line(listOf(CMD, "package", "resolve-activity", "--brief", "-a", "android.intent.action.MAIN", "-c", "android.intent.category.HOME", it))))
             }
@@ -743,12 +745,38 @@ class ShellRenderer(private val watchdogVariant: WatchdogVariant = WatchdogVaria
             ShellLine(ShellTokens.line(listOf("rm", "-f", PRAYER_STAGE.absolute))),
         )
 
+        // ---- 2.4 M5: adhan recordings chosen on the phone (the main adhan and a separate Fajr adhan) ----
+        const val MAX_PRAYER_SOUND_BYTES = 12L * 1024 * 1024
+        const val PRAYER_SOUND_MAIN = "adhan_custom.audio"
+        const val PRAYER_SOUND_FAJR = "adhan_fajr.audio"
+        fun prayerSoundStage(fajr: Boolean) = RemotePath(RemoteDir.RESTORE, listOf(if (fajr) "mi5g_adhan_fajr.audio" else "mi5g_adhan.audio"))
+
+        /** After the phone pushed a recording to [prayerSoundStage]: move it into the module's files. */
+        fun prayerSoundLines(fajr: Boolean): List<ShellLine> {
+            val stage = prayerSoundStage(fajr).absolute
+            return listOf(
+                ShellLine(ShellTokens.line(listOf("mkdir", "-p", MI5G_PRAYER_FILES))),
+                ShellLine(ShellTokens.line(listOf("cp", stage, "$MI5G_PRAYER_FILES/" + if (fajr) PRAYER_SOUND_FAJR else PRAYER_SOUND_MAIN))),
+                ShellLine(ShellTokens.line(listOf("rm", "-f", stage))),
+            )
+        }
+
         // Best effort: an older Android simply has no such op or permission.
         fun prayerGrantLines(): List<ShellLine> = listOf(
             listOf("appops", "set", MI5G_PRAYER, "SYSTEM_ALERT_WINDOW", "allow"),
             listOf("appops", "set", MI5G_PRAYER, "SCHEDULE_EXACT_ALARM", "allow"),
             listOf(CMD, "deviceidle", "whitelist", "+$MI5G_PRAYER"),
             listOf(PM, "grant", MI5G_PRAYER, "android.permission.POST_NOTIFICATIONS"),
+        ).map { ShellLine(ShellTokens.line(it)) }
+
+        // ---- 2.4 M6: Mi5G Score's kick-off reminders and the live score pinned over any app ----
+        const val MI5G_SCORE = "com.midroid.mi5gtv.matches"
+
+        /** Best effort, like [prayerGrantLines]: overlay, exact alarms and notifications for Mi5G Score. */
+        fun scoreGrantLines(): List<ShellLine> = listOf(
+            listOf("appops", "set", MI5G_SCORE, "SYSTEM_ALERT_WINDOW", "allow"),
+            listOf("appops", "set", MI5G_SCORE, "SCHEDULE_EXACT_ALARM", "allow"),
+            listOf(PM, "grant", MI5G_SCORE, "android.permission.POST_NOTIFICATIONS"),
         ).map { ShellLine(ShellTokens.line(it)) }
 
         /**
@@ -759,6 +787,81 @@ class ShellRenderer(private val watchdogVariant: WatchdogVariant = WatchdogVaria
         fun arrangeHomeLines(): List<ShellLine> = listOf(
             ShellLine(ShellTokens.line(listOf(PM, "grant", MI5G_HOME, "android.permission.WRITE_SECURE_SETTINGS"))),
             ShellLine(ShellTokens.line(listOf(AM, "start", "-n", "$MI5G_HOME/.ArrangeActivity"))),
+        )
+
+        /**
+         * 2.4: Revoke WRITE_SECURE_SETTINGS from com.gathin.tvhome (M1 item 7).
+         * Granted for arrange-from-phone; revoked when arrange-from-phone is turned off and on return to stock home.
+         */
+        fun revokeHomeSecureSettingsLine(): ShellLine =
+            ShellLine(ShellTokens.line(listOf(PM, "revoke", MI5G_HOME, "android.permission.WRITE_SECURE_SETTINGS")))
+
+        const val PLAY_STORE = "com.android.vending"
+
+        /**
+         * 2.4 (Teevy idea 22, own code): open the Play Store on the TV from the phone remote. The store's own
+         * category first (works where the store hides from the app list, as on Google TV), then its TV entry.
+         */
+        fun openPlayStoreLines(): List<ShellLine> = listOf(
+            ShellLine(ShellTokens.line(listOf(AM, "start", "-a", "android.intent.action.MAIN", "-c", "android.intent.category.APP_MARKET"))),
+            ShellLine(ShellTokens.line(listOf("monkey", "-p", PLAY_STORE, "-c", "android.intent.category.LEANBACK_LAUNCHER", "1"))),
+        )
+
+        /**
+         * 2.4 (v1.7 item 5): keep the Play Store from running in the background. It still opens and updates apps
+         * when opened; only its background runs and wake-ups stop. Not a switch-off: nothing is disabled, and
+         * [stop] false puts the defaults back.
+         */
+        fun playStoreBackgroundLines(stop: Boolean): List<ShellLine> {
+            val mode = if (stop) "ignore" else "default"
+            return buildList {
+                add(ShellLine(ShellTokens.line(listOf(CMD, "appops", "set", PLAY_STORE, "RUN_IN_BACKGROUND", mode))))
+                add(ShellLine(ShellTokens.line(listOf(CMD, "appops", "set", PLAY_STORE, "RUN_ANY_IN_BACKGROUND", mode))))
+                if (stop) add(ShellLine(ShellTokens.line(listOf(AM, "force-stop", PLAY_STORE))))
+            }
+        }
+
+        // ---- 2.4 M3: phone companion ----------------------------------------------------------------------
+
+        /** 2.4 M3 (backlog 4): the launcher's All apps grid with search, opened on the TV from the phone remote. */
+        fun tvAllAppsLine(): ShellLine = ShellLine(ShellTokens.line(listOf(AM, "start", "-n", "$MI5G_HOME/.AllAppsActivity")))
+
+        /** 2.4 M3 (backlog 17, mini store): an app's Play Store page on the TV; the person installs it there. */
+        fun playStorePageLine(pkg: String): ShellLine {
+            require(PACKAGE_RE.matches(pkg) && pkg.length <= 200) { "invalid package" }
+            return ShellLine(ShellTokens.line(listOf(AM, "start", "-a", "android.intent.action.VIEW", "-d", "market://details?id=$pkg", "-p", PLAY_STORE)))
+        }
+
+        /**
+         * 2.4 M3 (backlog 32, UrTV idea, own code): a drawing and/or a short message from the phone, shown at once on
+         * the TV by the launcher's LiveBoardActivity (shell-only: it needs DUMP). Strokes come from [LiveBoard.encode];
+         * the text travels as UTF-8 hex, as the Arabic banner does, because shell lines are ASCII only.
+         */
+        fun liveBoardLine(strokes: String, text: String): ShellLine {
+            require(strokes.isEmpty() || LiveBoard.valid(strokes)) { "invalid strokes" }
+            val clean = text.trim().filter { !it.isISOControl() }.take(LiveBoard.MAX_TEXT)
+            require(strokes.isNotEmpty() || clean.isNotEmpty()) { "nothing to show" }
+            val argv = mutableListOf(AM, "start", "-n", "$MI5G_HOME/.LiveBoardActivity")
+            if (strokes.isNotEmpty()) argv += listOf("--es", "strokes", strokes)
+            if (clean.isNotEmpty()) argv += listOf("--es", "hex", clean.toByteArray(Charsets.UTF_8).joinToString("") { "%02x".format(it.toInt() and 0xff) })
+            return ShellLine(ShellTokens.line(argv))
+        }
+
+        /** 2.4 M3: takes the live drawing or message off the TV. */
+        fun liveBoardCloseLine(): ShellLine = ShellLine(ShellTokens.line(listOf(AM, "start", "-n", "$MI5G_HOME/.LiveBoardActivity", "--ez", "close", "true")))
+
+        /**
+         * 2.4 (Keep Alive, Xiaomi): "Re-apply home screen". Makes Mi5G the default Home again and gives the launcher
+         * back WRITE_SECURE_SETTINGS, which its Keep Alive needs to put the Home-key helper back after standby. The
+         * helper itself is merged in by putAccessibilityLines before these. Nothing is switched off here (the stock
+         * home stays as it is), so the one-tap return to the stock home is unchanged.
+         */
+        fun reapplyHomeLines(): List<ShellLine> = listOf(
+            ShellLine(ShellTokens.line(listOf(CMD, "package", "set-home-activity", MI5G_HOME_ACTIVITY))),
+            ShellLine(ShellTokens.line(listOf(PM, "grant", MI5G_HOME, "android.permission.WRITE_SECURE_SETTINGS"))),
+            ShellLine(ShellTokens.line(listOf(CMD, "appops", "set", MI5G_HOME, "RUN_IN_BACKGROUND", "allow"))),
+            ShellLine(ShellTokens.line(listOf(CMD, "deviceidle", "whitelist", "+$MI5G_HOME"))),
+            ShellLine(ShellTokens.line(listOf(AM, "start", "-a", "android.intent.action.MAIN", "-c", "android.intent.category.HOME", "-n", MI5G_HOME_ACTIVITY))),
         )
 
         fun startHomeLine(): ShellLine =

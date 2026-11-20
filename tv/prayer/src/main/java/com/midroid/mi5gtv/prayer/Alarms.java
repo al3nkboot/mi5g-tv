@@ -15,7 +15,7 @@ final class Alarms {
     static void arm(Context ctx) {
         Settings s = Settings.load(ctx);
         AlarmManager am = (AlarmManager) ctx.getSystemService(Context.ALARM_SERVICE);
-        for (int code = 0; code < 30; code++) am.cancel(pending(ctx, code, null));
+        for (int code = 0; code < Plan.CODES; code++) am.cancel(pending(ctx, code, null));
         List<Plan.Alarm> plan = Plan.upcoming(s, ZonedDateTime.now());
         for (Plan.Alarm a : plan) {
             PendingIntent pi = pending(ctx, a.code(), a);

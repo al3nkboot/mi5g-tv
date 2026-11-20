@@ -53,6 +53,9 @@ import tv.cleanyour.core.flows.OverlayCorner
 import tv.cleanyour.core.flows.PrayerCities
 import tv.cleanyour.core.flows.PrayerMethod
 import tv.cleanyour.core.flows.PrayerTvSettings
+import tv.cleanyour.core.flows.PrayerAlert
+import tv.cleanyour.core.flows.PrayerSound
+import tv.cleanyour.core.flows.FajrSound
 import tv.cleanyour.core.flows.after
 import tv.cleanyour.core.flows.AppConfirm
 import tv.cleanyour.core.flows.AppSettingsIntent
@@ -135,6 +138,7 @@ import tv.cleanyour.ui.design.theme.CytTheme
 import tv.cleanyour.ui.design.theme.Glow
 import tv.cleanyour.ui.design.theme.LocalCardScale
 import tv.cleanyour.core.flows.PowerFailStep
+import tv.cleanyour.core.flows.QUICK_START_VIDEO_URL
 
 // Screens M1, M1a, M4, M5, M7 and M8 (PRODUCT-SPEC 4, UX 4.3, 4.11, 4.13, 6.1), built from the
 // :ui:design components (ui/design/API.md). Each sheet keeps its body in an internal *Content
@@ -579,7 +583,6 @@ fun AppSettingsScreen(
     }
 }
 
-const val QUICK_START_VIDEO_URL = "https://github.com/al3nkboot/mi5g-tv#quick-start"
 
 @Composable
 internal fun QuickStartContent() {
@@ -791,6 +794,8 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
             )
         }
         Banner(stringResource(R.string.tvtools_smarttube_tip), BannerTone.INFO, Modifier.padding(top = 12.dp))
+        // 2.4 M3 (backlog 17): the mini store beside the Downloader codes.
+        MiniStoreSection(enabled = !powerWorking, onIntent = onIntent)
 
         // The mapper and screensaver actions remain available through their next home surfaces.
         ActionColumn {
@@ -813,6 +818,23 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
             PrimaryButton(
                 stringResource(R.string.tvtools_keep_home),
                 { onIntent(TvToolsIntent.KeepMi5gHome) },
+                enabled = !powerWorking,
+            )
+            // 2.4: Keep Alive (Xiaomi PatchWall, Mi Box S): put Mi5G back as Home without switching anything off.
+            SecondaryButton(
+                stringResource(R.string.tvtools_reapply_home),
+                { onIntent(TvToolsIntent.ReapplyHome) },
+                enabled = !powerWorking,
+            )
+            // 2.4 (v1.7 item 5): the Play Store stops running in the background; it still opens and updates apps.
+            SecondaryButton(
+                stringResource(R.string.tvtools_play_store_bg_stop),
+                { onIntent(TvToolsIntent.PlayStoreBackground(stop = true)) },
+                enabled = !powerWorking,
+            )
+            TertiaryButton(
+                stringResource(R.string.tvtools_play_store_bg_allow),
+                { onIntent(TvToolsIntent.PlayStoreBackground(stop = false)) },
                 enabled = !powerWorking,
             )
             SecondaryButton(
@@ -877,6 +899,73 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
                 text = stringResource(R.string.tvtools_prayer_kahf) + ": " + if (p.kahf) on else off,
                 onClick = { set(p.copy(kahf = !p.kahf)) },
             )
+            // 2.4 M5: Keep Alive for the prayer module (re-arms itself; Mi5G Home wakes it too).
+            GlassChip(
+                text = stringResource(R.string.tvtools_prayer_keep_alive) + ": " + if (p.keepAlive) on else off,
+                onClick = { set(p.copy(keepAlive = !p.keepAlive)) },
+            )
+        }
+        // 2.4 M5: per prayer, what happens at its time and a minute offset; then the adhan recordings.
+        Body(stringResource(R.string.tvtools_prayer_each_note), Modifier.padding(top = 12.dp, bottom = 4.dp, start = 4.dp, end = 4.dp))
+        val prayerNames = listOf(
+            R.string.tvtools_prayer_name_fajr, R.string.tvtools_prayer_name_sunrise, R.string.tvtools_prayer_name_dhuhr,
+            R.string.tvtools_prayer_name_asr, R.string.tvtools_prayer_name_maghrib, R.string.tvtools_prayer_name_isha,
+        )
+        for (i in 0 until PrayerTvSettings.PRAYERS) {
+            val alert = p.alertAt(i)
+            val offset = p.offsetAt(i)
+            FlowRow(
+                Modifier.fillMaxWidth().padding(vertical = 2.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                GlassChip(
+                    text = stringResource(prayerNames[i]) + ": " + stringResource(
+                        when (alert) {
+                            PrayerAlert.OFF -> R.string.tvtools_prayer_alert_off
+                            PrayerAlert.BANNER -> R.string.tvtools_prayer_alert_banner
+                            PrayerAlert.ADHAN -> R.string.tvtools_prayer_alert_adhan
+                        },
+                    ),
+                    onClick = { set(p.withNextAlert(i)) },
+                )
+                GlassChip(
+                    text = msg(R.string.tvtools_prayer_offset, "offset" to (if (offset > 0) "+$offset" else offset.toString())),
+                    onClick = { set(p.withNextOffset(i)) },
+                )
+            }
+        }
+        Body(stringResource(R.string.tvtools_prayer_sound_note), Modifier.padding(top = 12.dp, bottom = 4.dp, start = 4.dp, end = 4.dp))
+        FlowRow(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            val adhanFile = state.prayerAdhanFile
+            GlassChip(
+                text = msg(R.string.tvtools_prayer_sound, "name" to if (p.adhanSound == PrayerSound.CUSTOM)
+                    (adhanFile?.fileName ?: stringResource(R.string.tvtools_prayer_sound_on_tv)) else stringResource(R.string.tvtools_prayer_sound_default)),
+                onClick = { onIntent(TvToolsIntent.PickPrayerSound(fajr = false)) },
+            )
+            if (p.adhanSound == PrayerSound.CUSTOM) {
+                GlassChip(text = stringResource(R.string.tvtools_prayer_sound_use_default), onClick = { onIntent(TvToolsIntent.ClearPrayerSound(fajr = false)) })
+            }
+            val fajrFile = state.prayerFajrFile
+            GlassChip(
+                text = msg(R.string.tvtools_prayer_fajr_sound, "name" to when (p.fajrSound) {
+                    FajrSound.SAME -> stringResource(R.string.tvtools_prayer_fajr_same)
+                    FajrSound.DEFAULT -> stringResource(R.string.tvtools_prayer_sound_default)
+                    FajrSound.CUSTOM -> fajrFile?.fileName ?: stringResource(R.string.tvtools_prayer_sound_on_tv)
+                }),
+                onClick = {
+                    // Same → built-in → pick a file; a picked file goes back to "same".
+                    when (p.fajrSound) {
+                        FajrSound.SAME -> set(p.copy(fajrSound = FajrSound.DEFAULT))
+                        FajrSound.DEFAULT -> onIntent(TvToolsIntent.PickPrayerSound(fajr = true))
+                        FajrSound.CUSTOM -> onIntent(TvToolsIntent.ClearPrayerSound(fajr = true))
+                    }
+                },
+            )
         }
         ActionColumn {
             PrimaryButton(
@@ -922,6 +1011,9 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
                 )
             }
         }
+
+        // 2.4 M3 (backlog 32): a live message or drawing on the TV.
+        LiveBoardSection(enabled = !powerWorking, onIntent = onIntent)
 
         SectionLabel(stringResource(R.string.tvtools_cast_section))
         Body(stringResource(R.string.tvtools_cast_url_note), Modifier.padding(bottom = 8.dp, start = 4.dp, end = 4.dp))
@@ -1237,7 +1329,10 @@ fun TvToolsScreen(state: TvToolsState, onIntent: (TvToolsIntent) -> Unit, onBack
                 SecondaryButton(stringResource(R.string.tvtools_apk_pick), { onIntent(TvToolsIntent.PickApk) }, Modifier.padding(top = 12.dp))
             }
             is SideloadStatus.Failed -> {
-                Body(msg(R.string.tvtools_apk_failed, "name" to s.fileName), Modifier.padding(top = 8.dp, start = 4.dp), color = CytTheme.colors.danger)
+                val isAr = LocalConfiguration.current.locales[0].language == "ar"
+                val mapped = s.detail?.let { tv.cleanyour.core.flows.PmInstallErrors.format(it, isAr) }
+                val errorMsg = mapped ?: (msg(R.string.tvtools_apk_failed, "name" to s.fileName) + (s.detail?.let { "\n$it" } ?: ""))
+                Body(errorMsg, Modifier.padding(top = 8.dp, start = 4.dp), color = CytTheme.colors.danger)
                 SecondaryButton(stringResource(R.string.tvtools_apk_pick), { onIntent(TvToolsIntent.PickApk) }, Modifier.padding(top = 12.dp))
             }
         }
@@ -1592,6 +1687,12 @@ private fun powerLabel(raw: String): String = when {
     raw == "@hdmi" -> stringResource(R.string.tvtools_label_hdmi)
     raw == "@banner" -> stringResource(R.string.tvtools_label_banner)
     raw == "@keep_home" -> stringResource(R.string.tvtools_label_keep_home)
+    raw == "@reapply_home" -> stringResource(R.string.tvtools_label_reapply_home)
+    raw == "@play_store_bg_stop" -> stringResource(R.string.tvtools_label_play_store_bg_stop)
+    raw == "@store_open" -> stringResource(R.string.tvtools_label_store_open)
+    raw == "@live_board" -> stringResource(R.string.tvtools_label_live_board)
+    raw == "@live_board_close" -> stringResource(R.string.tvtools_label_live_board_close)
+    raw == "@play_store_bg_allow" -> stringResource(R.string.tvtools_label_play_store_bg_allow)
     raw == "@prayer" -> stringResource(R.string.tvtools_label_prayer)
     raw == "@install_all" -> stringResource(R.string.tvtools_label_install_all)
     raw == "@stock_home" -> stringResource(R.string.tvtools_label_stock_home)

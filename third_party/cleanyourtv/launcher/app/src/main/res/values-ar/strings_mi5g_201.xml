@@ -12,5 +12,5 @@
     <string name="mi5g_city_dream_hint">الساعة، التاريخ الهجري، الصلاة القادمة، الطقس</string>
     <string name="mi5g_city_next_prayer">الصلاة القادمة: %1$s</string>
     <string name="mi5g_credits">حول وشكر</string>
-    <string name="mi5g_credits_body">Mi5G TV من @midroid5G، مبني على Clean Your TV من Gathin (MIT). أفكار من Aerial TV لـ pengchujin (MIT) و tv-vibehack لـ Gathin (MIT) و talkies من TechPP (MIT). رمز QR: ZXing (Apache-2.0). خط Cairo: SIL OFL 1.1.</string>
+    <string name="mi5g_credits_body">Mi5G TV من @midroid5G، مبني على Clean Your TV من Gathin (MIT). أفكار من Aerial TV لـ pengchujin (MIT) و tv-vibehack لـ Gathin (MIT) و talkies من TechPP (MIT) و tvOS Launcher من techgenius (Apache-2.0). رمز QR: ZXing (Apache-2.0). خط Cairo: SIL OFL 1.1.</string>
 </resources>

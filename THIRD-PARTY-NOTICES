@@ -134,6 +134,31 @@ tvOS Launcher — https://github.com/techgenius1/tvOS-Launcher
     Copyright 2026 techgenius
     Licensed under the Apache License, Version 2.0 (see LICENSE).
     Credits and acknowledgements: Hume Launcher (petrobot-admin/hume-launcher), Couch TV (Seagey/couch-tv).
+  Mi5G TV 2.4.0 takes two ideas from it into the bundled launcher, with Mi5G's own code: Keep Alive
+  (re-checking Home and the Home-key helper after boot, standby and updates) and Keep screen awake
+  (caffeine mode).
+  Mi5G TV 2.4.0 (M2) also takes ideas only, never code, from UrTV, CleanYourTV 3.x, SUL, Teevy and bdran:
+  a home-screen safe mode, Arabic app names, clean mode, hiding apps without disabling them, the Play Store
+  always on Home, restoring Home after system updates, a multi-row dock, an All apps grid with search,
+  navigation sounds (Mi5G's own generated tones) and a remote-only setup path.
+  Mi5G TV 2.4.0 (M3), ideas only, never code: connecting the phone by a QR on the TV and the mini store (SUL),
+  a live phone message or drawing on the TV (UrTV), and the "saved on TV" confirmation for uploads (Teevy).
+  Mi5G TV 2.4.0 (M4), ideas only, never code: timed reminders that wait for the adhan (UrTV), a weekly
+  sleep and wake schedule (CleanYourTV 3.5), and an inputs and recent-apps panel in Control Center
+  (tvOS Launcher, Apache-2.0, credited above). The Home football line reads ESPN's public scoreboard as
+  Mi5G Score does (unofficial, not affiliated with ESPN); the optional news line shows the headline of the
+  public BBC Arabic RSS feed (feeds.bbci.co.uk/arabic) credited to BBC Arabic, not affiliated with the BBC.
+  Hijri dates come from the Umm al-Qura calendar in Android's ICU (Unicode License).
+  Mi5G TV 2.4.0 (M5): the prayer module's Keep Alive re-arm follows the same tvOS Launcher idea (Apache-2.0),
+  with Mi5G's own code; prayer times stay on adhan-java (MIT, Batoul Apps). Adhan recordings the owner picks on the
+  phone are copied only to their own TV and are not part of this project.
+  Mi5G TV 2.4.0 (M6), ideas only, never code: Mi5G Score's football home with kick-off reminders and big
+  tournaments (UrTV), and the live score pinned in a corner over any app (talkies, MIT, credited below).
+  Tournament, match and score data come from ESPN's public JSON endpoints (unofficial, not affiliated with
+  ESPN); no streams. Prayer-clash notes read today's times from the Mi5G prayer module on the same TV.
+  Mi5G TV 2.4.0 (M7), ideas only, never code: the family quiz answered from phones (UrTV; the questions are
+  Mi5G's own), and the Advanced page's permission status list and "before uninstalling" step (tvOS Launcher
+  2.2.0, Apache-2.0, credited above). The kids profile and time-of-day order are Mi5G's own.
 
 OmarchyTV — https://github.com/piermark/omarchytv
   MIT License. Copyright (c) 2026 Marco Porro (x.com/MarcoPorro · www.marcoporro.it).
@@ -142,6 +167,7 @@ OmarchyTV — https://github.com/piermark/omarchytv
 talkies v1.2.8 — https://github.com/rajupp/talkies
   MIT License. Copyright (c) 2026 TechPP.
   Mi5G 2.1 keeps this notice; the added device/input, screensaver and weather implementations are our own.
+  Mi5G TV 2.4.0 (M6): the idea of a small score card pinned over any app; Mi5G Score's corner card is our own code.
 
 tv-vibehack — https://github.com/samdegan2311/tv-vibehack
   MIT License. Copyright (c) 2026 Gathin. The launcher Control Center is adapted from it.
@@ -154,6 +180,8 @@ Aerial TV — https://github.com/pengchujin/aerial-tv
   screensaver. The code is Mi5G's own and the look is Mi5G's (teal and gold, Arabic RTL, Cairo font).
   Mi5G TV 2.3.0 ports code from it into the bundled launcher: the HDMI-CEC One Touch Play switch
   (CecSwitch, v1.89, commit 3a09e7d, #1020, off by default) and the idea of the Home lock (v1.89).
+  Mi5G TV 2.4.0 extends the Home lock idea (own code): dock edits, move, remove, hide and
+  arrange-from-phone edits are refused while it is on.
   No Apple aerial videos are included. Aerial TV's own font (Inter) is under the SIL Open Font License
   1.1 and is not included in Mi5G TV.
 

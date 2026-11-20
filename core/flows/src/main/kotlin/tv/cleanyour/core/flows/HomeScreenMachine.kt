@@ -253,10 +253,17 @@ class HomeScreenMachine(
         // 0.3.3 D2: the TV said the new home screen is gone (removed since the snapshot this screen
         // read): the reload shows why there is nothing to send, which says more than "We stopped".
         if (r is WriteResult.Refused && state.value.notOnTv != null) return
-        if (r !is WriteResult.GateCancelled && r !is WriteResult.NoTv && r !is WriteResult.Paused) {   // Paused: the open-run card (O2)
+        if (r is WriteResult.NoTv) {
+            effect(ManageEffect.Snackbar(SnackKind.UNREACHABLE, "", false))
+            return
+        }
+        if (!r.isHandledSilently()) {
             effect(ManageEffect.Snackbar(SnackKind.FAILED, "", false))
         }
     }
+
+    private fun WriteResult.isHandledSilently(): Boolean =
+        this is WriteResult.GateCancelled || this is WriteResult.NoTv || this is WriteResult.Paused
 
     // "Use the TV's own home screen": re-enables the stock launcher, sets it as home, keeps ours
     // installed (PRODUCT-SPEC M2).

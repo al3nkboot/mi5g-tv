@@ -15,6 +15,15 @@ enum class OverlayCorner(val key: String, val ar: String) {
     BOTTOM_END("bottom_end", "أسفل اليسار"), BOTTOM_START("bottom_start", "أسفل اليمين"),
 }
 
+/** 2.4 M5: the adhan sound, the module's own recording or a file sent from the phone. */
+enum class PrayerSound(val key: String) { DEFAULT("default"), CUSTOM("custom") }
+
+/** 2.4 M5: a separate Fajr adhan: the same as the others, the module's own, or a file sent from the phone. */
+enum class FajrSound(val key: String) { SAME("same"), DEFAULT("default"), CUSTOM("custom") }
+
+/** What happens at each prayer time on the TV (the module's MODE_OFF / MODE_BANNER / MODE_ADHAN). */
+enum class PrayerAlert(val code: Int) { OFF(0), BANNER(1), ADHAN(2) }
+
 data class PrayerTvSettings(
     val city: PrayerCity = PrayerCities.ALL.first(),
     val method: PrayerMethod = PrayerMethod.OMAN,
@@ -27,7 +36,34 @@ data class PrayerTvSettings(
     val overlaySize: Int = 100,
     val overlayOpacity: Int = 85,
     val kahf: Boolean = true,
+    // 2.4 M5: per-prayer alert and minute offset (Fajr, Sunrise, Dhuhr, Asr, Maghrib, Isha), the adhan sounds,
+    // and Keep Alive (the module re-arms itself every few hours and whenever Mi5G Home wakes it).
+    val alerts: List<PrayerAlert> = DEFAULT_ALERTS,
+    val offsets: List<Int> = List(PRAYERS) { 0 },
+    val adhanSound: PrayerSound = PrayerSound.DEFAULT,
+    val fajrSound: FajrSound = FajrSound.SAME,
+    val keepAlive: Boolean = true,
 ) {
+    /** Sunrise has no adhan: at most a banner. */
+    fun alertAt(i: Int): PrayerAlert {
+        val a = alerts.getOrElse(i) { DEFAULT_ALERTS[i] }
+        return if (i == SUNRISE && a == PrayerAlert.ADHAN) PrayerAlert.BANNER else a
+    }
+
+    fun offsetAt(i: Int): Int = offsets.getOrElse(i) { 0 }.coerceIn(-MAX_OFFSET, MAX_OFFSET)
+
+    fun withNextAlert(i: Int): PrayerTvSettings {
+        val choices = if (i == SUNRISE) listOf(PrayerAlert.OFF, PrayerAlert.BANNER) else PrayerAlert.entries
+        val next = choices.after(alertAt(i))
+        return copy(alerts = List(PRAYERS) { if (it == i) next else alertAt(it) })
+    }
+
+    fun withNextOffset(i: Int): PrayerTvSettings = copy(offsets = List(PRAYERS) { if (it == i) OFFSETS.after(offsetAt(i)) else offsetAt(it) })
+
+    /** Whether the TV needs the phone's file for the main or the Fajr adhan. */
+    val needsAdhanFile: Boolean get() = adhanSound == PrayerSound.CUSTOM
+    val needsFajrFile: Boolean get() = fajrSound == FajrSound.CUSTOM
+
     fun toJson(): String = buildString {
         append("{\"city\":{\"id\":").append(q(city.id)).append(",\"ar\":").append(q(city.ar))
         append(",\"lat\":").append(city.lat).append(",\"lon\":").append(city.lon).append(",\"zone\":").append(q(city.zone)).append("},")
@@ -37,11 +73,21 @@ data class PrayerTvSettings(
         append("\"pre_minutes\":").append(preMinutes.coerceIn(0, 60)).append(',')
         append("\"overlay\":{\"on\":").append(overlay).append(",\"corner\":").append(q(corner.key))
         append(",\"size\":").append(overlaySize.coerceIn(60, 160)).append(",\"opacity\":").append(overlayOpacity.coerceIn(30, 100)).append("},")
-        append("\"kahf\":{\"on\":").append(kahf).append(",\"hour\":10}}")
+        append("\"kahf\":{\"on\":").append(kahf).append(",\"hour\":10},")
+        append("\"adjust\":[").append((0 until PRAYERS).joinToString(",") { offsetAt(it).toString() }).append("],")
+        append("\"modes\":[").append((0 until PRAYERS).joinToString(",") { alertAt(it).code.toString() }).append("],")
+        append("\"adhan_sound\":").append(q(adhanSound.key)).append(",\"fajr_sound\":").append(q(fajrSound.key)).append(',')
+        append("\"keep_alive\":").append(keepAlive).append('}')
     }
 
     companion object {
         val PRE_MINUTES = listOf(0, 5, 10, 15, 20, 30)
+        const val PRAYERS = 6
+        const val SUNRISE = 1
+        const val MAX_OFFSET = 10
+        /** Minute offsets a tap cycles through: up to +10, then from -10 back to 0. */
+        val OFFSETS = listOf(0, 1, 2, 3, 4, 5, 10, -10, -5, -4, -3, -2, -1)
+        val DEFAULT_ALERTS = listOf(PrayerAlert.ADHAN, PrayerAlert.OFF, PrayerAlert.ADHAN, PrayerAlert.ADHAN, PrayerAlert.ADHAN, PrayerAlert.ADHAN)
         val SIZES = listOf(80, 100, 130, 160)
         val OPACITIES = listOf(50, 70, 85, 100)
         val VOLUMES = listOf(40, 55, 70, 85, 100)

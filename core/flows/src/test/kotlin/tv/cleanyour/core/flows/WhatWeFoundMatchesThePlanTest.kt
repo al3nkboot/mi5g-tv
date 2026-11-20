@@ -282,7 +282,7 @@ class WhatWeFoundMatchesThePlanTest {
         // The dock sheet's candidates on the emulator: readable names, no home screen among them.
         val apps = DockCandidates.of(snapshot, launchable, null, facts)
         assertEquals(setOf("com.android.traceur", "com.lego.android.tvleanback"), apps.map { it.value }.toSet())
-        assertEquals(setOf("Traceur", "Lego"), apps.map { AppNames.of(it, facts, snapshot.packages[it]?.label) }.toSet())
+        assertEquals(setOf("System Tracing", "Lego"), apps.map { AppNames.of(it, facts, snapshot.packages[it]?.label) }.toSet())
         assertTrue(snapshot.home.claimants.none { it.component.pkg in apps })
     }
 

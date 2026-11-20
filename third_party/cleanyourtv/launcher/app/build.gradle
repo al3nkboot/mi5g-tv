@@ -11,8 +11,8 @@ android {
         applicationId providers.gradleProperty('launcherApplicationId').getOrElse('com.gathin.tvhome')
         minSdk 26
         targetSdk 34
-        versionCode 11
-        versionName '2.9-mi5g'   // Mi5G 2.3
+        versionCode 12
+        versionName '2.10-mi5g'   // Mi5G 2.4
     }
 
     buildTypes {
