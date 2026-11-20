@@ -16,7 +16,7 @@
 
 - **[تحميل تطبيق الهاتف Mi5G TV v2.4.0 (APK)](https://github.com/al3nkboot/mi5g-tv/releases/download/v2.4.0/Mi5G-TV-v2.4.0.apk)**
 - رابط دائم لآخر إصدار: [Mi5G-TV.apk](https://github.com/al3nkboot/mi5g-tv/releases/latest/download/Mi5G-TV.apk)
-- كود تطبيق Downloader: `XXXXXXX` (يُضاف بعد النشر)
+- كود تطبيق Downloader: `2592729`
 - بصمة التوقيع (SHA-256): `c1f317965f154fe5e79fe7483abd5dd5dec7df57d87f3a645a5fd12f39a5480c`
 - **[صفحة جميع الإصدارات والوحدات الإضافية (Releases)](https://github.com/al3nkboot/mi5g-tv/releases/latest)**
 
@@ -141,7 +141,7 @@
 - **New in 2.2.0:** optional ignore channel keys on Home; optional clear Settings task on gear; clearer Inputs status when focused; Gulf debloat profile refresh from CleanYourTV (MIT); Google TV main-user install fix with clearer failure messages.
 - **New in 2.1.1:** crash fixes for denying the notification permission during cleanup and for opening Customise on Android 15 (OnePlus 13).
 - **New in 2.1:** everything prepared since v1.6.0, including the new phone remote and Wireless Debugging pairing, arrange-Home from the phone via QR, HDMI device-on cards, city screensaver, Mawaqiti (including Shafi/Hanafi Asr) and Mi5G Score on the TV, optional Continue Watching, QR file transfer, and clearer GAORUI and update checks.
-- **Download:** [Mi5G-TV-v2.4.0.apk](https://github.com/al3nkboot/mi5g-tv/releases/download/v2.4.0/Mi5G-TV-v2.4.0.apk), or the permanent latest link [Mi5G-TV.apk](https://github.com/al3nkboot/mi5g-tv/releases/latest/download/Mi5G-TV.apk). Downloader code `XXXXXXX` (to be filled after publishing). Signer SHA-256 `c1f317965f154fe5e79fe7483abd5dd5dec7df57d87f3a645a5fd12f39a5480c`.
+- **Download:** [Mi5G-TV-v2.4.0.apk](https://github.com/al3nkboot/mi5g-tv/releases/download/v2.4.0/Mi5G-TV-v2.4.0.apk), or the permanent latest link [Mi5G-TV.apk](https://github.com/al3nkboot/mi5g-tv/releases/latest/download/Mi5G-TV.apk). Downloader code `2592729`. Signer SHA-256 `c1f317965f154fe5e79fe7483abd5dd5dec7df57d87f3a645a5fd12f39a5480c`.
 - **Credits:** Clean Your TV (udhaykumarbala, Gathin), tvOS-Launcher (Apache-2.0), OmarchyTV, talkies (TechPP), tv-vibehack (Gathin), Aerial TV (pengchujin), ZXing, adhan-java, GeoNames and the fonts.
 
 - **Support Development:** [PayPal (@Midroid5G)](https://paypal.me/Midroid5G) · [@midroid5G on X](https://x.com/midroid5G)
